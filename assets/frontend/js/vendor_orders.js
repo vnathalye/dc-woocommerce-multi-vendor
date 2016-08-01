@@ -66,12 +66,6 @@ jQuery(document).ready(function($) {
 		}); 
 	});
 	
-	
-        /*
-         *  Shipment Tracking.
-         */
-        $('.fancybox').fancybox();
-    
 	$('.submit_tracking').on( "click", function(e) {
 		e.preventDefault();
                 var order_id = $(this).attr('data-id');
@@ -95,10 +89,9 @@ jQuery(document).ready(function($) {
 		$.post(woocommerce_params.ajax_url, data, function(response) {
 				
 				//console.log(response);
-                                $('.shipping_msg').html(wcmp_mark_shipped_text.text);
-				//alert(wcmp_mark_shipped_text.text);
+                                $('.shipping_msg_'+order_id).html(wcmp_mark_shipped_text.text);
                                 setTimeout(function(){
-                                    $('.fancybox-close').click();
+                                    $('.popup-exit').click();
                                 }, 3000);
 		});
 	});

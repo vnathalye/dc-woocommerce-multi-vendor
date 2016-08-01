@@ -2,9 +2,9 @@
 Contributors: Dualcube, prabhakarkumarshaw, arimghosh, sandy-wcmp, arka422, dualcube_subrata
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
 Donate link: https://dualcube.com/
-Requires at least: 3.8.1
+Requires at least: 4.0
 Tested up to: 4.5.3
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -175,6 +175,11 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.4.3 =
+* Removed: fancyBox - jQuery Plugin.
+* Removed: jquery-2.1.3.js.
+
+
 = 2.4.2 =
 * Added: Shipment tracking.
 
@@ -423,6 +428,11 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.4.3 =
+* Removed: fancyBox - jQuery Plugin.
+* Removed: jquery-2.1.3.js.
+
+
 = 2.4.2 =
 * Added: Shipment tracking.
 

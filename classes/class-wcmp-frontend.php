@@ -731,6 +731,7 @@ class WCMp_Frontend {
 
         // Enqueue your frontend javascript from here
         wp_enqueue_script('frontend_js', $frontend_script_path . 'frontend' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        
         if (is_shop_settings()) {
             $WCMp->library->load_upload_lib();
             wp_enqueue_script('edit_user_js', $WCMp->plugin_url . 'assets/admin/js/edit_user' . $suffix . '.js', array('jquery'), $WCMp->version, true);
@@ -776,6 +777,8 @@ class WCMp_Frontend {
         if (is_singular('product')) {
             wp_enqueue_script('wcmp_single_product_multiple_vendors', $frontend_script_path . '/single-product-multiple-vendors' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         }
+        // Enqueue popup script
+        wp_enqueue_script('popup_js', $frontend_script_path . 'wcmp-popup' . $suffix . '.js', array('jquery'), $WCMp->version, true);
     }
 
     /**
@@ -793,7 +796,7 @@ class WCMp_Frontend {
         }
 
         wp_enqueue_style('product_css', $frontend_style_path . 'product' . $suffix . '.css', array(), $WCMp->version);
-
+        
         if (is_vendor_order_by_product_page()) {
             wp_enqueue_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         }
@@ -823,6 +826,7 @@ class WCMp_Frontend {
             }
         }
         wp_enqueue_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
+        
     }
 
     /**

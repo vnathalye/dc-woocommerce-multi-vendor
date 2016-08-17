@@ -27,6 +27,135 @@ class WCMp_Frontend {
         $this->give_tax_to_vendor = get_wcmp_vendor_settings('give_tax', 'payment');
         $this->give_shipping_to_vendor = get_wcmp_vendor_settings('give_shipping', 'payment');
         //add_action( 'woocommerce_flat_rate_shipping_add_rate', array($this, 'add_vendor_shipping_rate'), 10, 2 );
+        add_action('wcmp_vendor_register_form', array(&$this, 'wcmp_vendor_register_form_callback'));
+        add_action('woocommerce_register_post', array(&$this, 'wcmp_validate_extra_register_fields'), 10, 3);
+        add_action('woocommerce_created_customer', array(&$this, 'wcmp_save_extra_register_fields'), 10, 3);
+    }
+
+    /**
+     * Save the extra register fields.
+     *
+     * @param  int  $customer_id Current customer ID.
+     *
+     * @return void
+     */
+    function wcmp_save_extra_register_fields($customer_id) {
+        if (isset($_POST['wcmp_vendor_fields']) && isset($_POST['pending_vendor'])) {
+
+            if (isset($_FILES['wcmp_vendor_fields'])) {
+                $attacment_files = $_FILES['wcmp_vendor_fields'];
+                $files = array();
+                $count = 0;
+                if (!empty($attacment_files) && is_array($attacment_files)) {
+                    foreach ($attacment_files['name'] as $key => $attacment) {
+                        foreach ($attacment as $key_attacment => $value_attacment) {
+                            $files[$count]['name'] = $value_attacment;
+                            $files[$count]['type'] = $attacment_files['type'][$key][$key_attacment];
+                            $files[$count]['tmp_name'] = $attacment_files['tmp_name'][$key][$key_attacment];
+                            $files[$count]['error'] = $attacment_files['error'][$key][$key_attacment];
+                            $files[$count]['size'] = $attacment_files['size'][$key][$key_attacment];
+                            $files[$count]['field_key'] = $key;
+                            $count++;
+                        }
+                    }
+                }
+                $upload_dir = wp_upload_dir();
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                if (!function_exists('wp_handle_upload')) {
+                    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                }
+                foreach ($files as $file) {
+                    $uploadedfile = $file;
+                    $upload_overrides = array('test_form' => false);
+                    $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+                    if ($movefile && !isset($movefile['error'])) {
+                        $filename = $movefile['file'];
+                        $filetype = wp_check_filetype($filename, null);
+                        $attachment = array(
+                            'post_mime_type' => $filetype['type'],
+                            'post_title' => $file['name'],
+                            'post_content' => '',
+                            'post_status' => 'inherit',
+                            'guid' => $movefile['url']
+                        );
+                        $attach_id = wp_insert_attachment($attachment, $movefile['file']);
+                        $attach_data = wp_generate_attachment_metadata($attach_id, $filename);
+                        wp_update_attachment_metadata($attach_id, $attach_data);
+                        $_POST['wcmp_vendor_fields'][$file['field_key']]['value'][] = $attach_id;
+                    }
+                }
+            }
+            $wcmp_vendor_fields = $_POST['wcmp_vendor_fields'];
+            $user_data = get_userdata($customer_id);
+            $user_name = $user_data->user_login;
+            $user_email = $user_data->user_email;
+
+
+            // Create post object
+            $my_post = array(
+                'post_title' => $user_name,
+                'post_status' => 'publish',
+                'post_author' => 1,
+                'post_type' => 'wcmp_vendorrequest'
+            );
+
+            // Insert the post into the database
+            $register_vendor_post_id = wp_insert_post($my_post);
+            update_post_meta($register_vendor_post_id, 'user_id', $customer_id);
+            update_post_meta($register_vendor_post_id, 'username', $user_name);
+            update_post_meta($register_vendor_post_id, 'email', $user_email);
+            update_post_meta($register_vendor_post_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
+            update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $register_vendor_post_id);
+        }
+    }
+
+    /**
+     * Validate the extra register fields.
+     *
+     * @param  string $username          Current username.
+     * @param  string $email             Current email.
+     * @param  object $validation_errors WP_Error object.
+     *
+     * @return void
+     */
+    function wcmp_validate_extra_register_fields($username, $email, $validation_errors) {
+        $wcmp_vendor_registration_form_data = get_option('wcmp_vendor_registration_form_data');
+        if (isset($_POST['g-recaptcha-response']) && empty($_POST['g-recaptcha-response'])) {
+            $validation_errors->add('recaptcha is not validate', __('Please Verify  Recaptcha', 'woocommerce'));
+        }
+        if (isset($_FILES['wcmp_vendor_fields'])) {
+            $attacment_files = $_FILES['wcmp_vendor_fields'];
+            if (!empty($attacment_files) && is_array($attacment_files)) {
+                foreach ($attacment_files['name'] as $key => $value) {
+                    $file_type = array();
+                    foreach ($wcmp_vendor_registration_form_data[$key]['fileType'] as $key1 => $value1) {
+                        if ($value1['selected']) {
+                            array_push($file_type, $value1['value']);
+                        }
+                    }
+                    foreach ($attacment_files['type'][$key] as $file_key => $file_value) {
+                        if (!in_array($file_value, $file_type)) {
+                            $validation_errors->add('file type error', __('Please Upload valid file', 'woocommerce'));
+                        }
+                    }
+                    foreach ($attacment_files['size'][$key] as $file_size_key => $file_size_value) {
+                        if(!empty($wcmp_vendor_registration_form_data[$key]['fileSize'])){
+                            if ($file_size_value > $wcmp_vendor_registration_form_data[$key]['fileSize']) {
+                                $validation_errors->add('file size error', __('File upload limit exceeded', 'woocommerce'));
+                            }
+                        } 
+                    }
+                }
+            }
+        }
+    }
+
+    
+
+    function wcmp_vendor_register_form_callback() {
+        global $WCMp;
+        $wcmp_vendor_registration_form_data = get_option('wcmp_vendor_registration_form_data');
+        $WCMp->template->get_template('vendor_registration_form.php', array('wcmp_vendor_registration_form_data' => $wcmp_vendor_registration_form_data));
     }
 
     public function display_vendor_msg_in_thank_you_page($order_id) {
@@ -731,7 +860,7 @@ class WCMp_Frontend {
 
         // Enqueue your frontend javascript from here
         wp_enqueue_script('frontend_js', $frontend_script_path . 'frontend' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        
+
         if (is_shop_settings()) {
             $WCMp->library->load_upload_lib();
             wp_enqueue_script('edit_user_js', $WCMp->plugin_url . 'assets/admin/js/edit_user' . $suffix . '.js', array('jquery'), $WCMp->version, true);
@@ -796,7 +925,7 @@ class WCMp_Frontend {
         }
 
         wp_enqueue_style('product_css', $frontend_style_path . 'product' . $suffix . '.css', array(), $WCMp->version);
-        
+
         if (is_vendor_order_by_product_page()) {
             wp_enqueue_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         }
@@ -826,7 +955,6 @@ class WCMp_Frontend {
             }
         }
         wp_enqueue_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
-        
     }
 
     /**
@@ -928,6 +1056,16 @@ class WCMp_Frontend {
             //rediect to myaccount page when a non logged in user is on vendor_order_detail
             if (!is_user_logged_in() && is_page(absint($pages['vendor_order_detail'])) && !is_page(woocommerce_get_page_id('myaccount'))) {
                 wp_safe_redirect(get_permalink(woocommerce_get_page_id('myaccount')));
+                exit();
+            }
+            
+            //redirect to my account or vendor dashbord page if user loggedin
+            if(is_user_logged_in() && is_page($pages['vendor_registration'])){
+                if(is_user_wcmp_vendor(get_current_user_id())){
+                    wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
+                } else{
+                    wp_safe_redirect(get_permalink(woocommerce_get_page_id('myaccount')));
+                }
                 exit();
             }
         }

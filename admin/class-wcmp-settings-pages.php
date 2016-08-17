@@ -46,7 +46,7 @@ class WCMp_Settings_Pages {
                                                                                                            "vendor_university" => array('title' => __('Vendor University', $WCMp->text_domain), 'type' => 'select', 'id' => 'vendor_university', 'label_for' => 'vendor_university', 'name' => 'vendor_university', 'options' => $pages_array, 'hints' => __('Choose your preferred page for university', $WCMp->text_domain)), // Select
                                                                                                            "vendor_announcements" => array('title' => __('Vendor Announcements', $WCMp->text_domain), 'type' => 'select', 'id' => 'vendor_announcements', 'label_for' => 'vendor_announcements', 'name' => 'vendor_announcements', 'options' => $pages_array, 'hints' => __('Choose your preferred page for vendor announcements', $WCMp->text_domain)), // Select
                                                                                                            "vendor_shipping" => array('title' => __('Vendor Shipping', $WCMp->text_domain), 'type' => 'select', 'id' => 'vendor_shipping', 'label_for' => 'vendor_shipping', 'name' => 'vendor_shipping', 'options' => $pages_array, 'hints' => __('Choose your preferred page for vendor shipping', $WCMp->text_domain)), // Select
-                                                                                                           
+                                                                                                           "vendor_registration" => array('title' => __('Vendor Registration', $WCMp->text_domain), 'type' => 'select', 'id' => 'vendor_registration', 'label_for' => 'vendor_registration', 'name' => 'vendor_registration', 'options' => $pages_array, 'hints' => __('Choose your preferred page for vendor Registration', $WCMp->text_domain)), // Select
                                                                                          ), 
                                                                                          )
                                                       
@@ -105,6 +105,9 @@ class WCMp_Settings_Pages {
       $new_input['vendor_announcements'] = sanitize_text_field( $input['vendor_announcements'] );
     if( isset( $input['vendor_shipping'] ) )
       $new_input['vendor_shipping'] = sanitize_text_field( $input['vendor_shipping'] );
+    
+    if( isset( $input['vendor_registration'] ) )
+      $new_input['vendor_registration'] = sanitize_text_field( $input['vendor_registration'] );
     
     
     

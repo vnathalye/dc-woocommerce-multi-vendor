@@ -341,44 +341,148 @@ if( ! function_exists( 'is_vendor_page' ) ) {
 
 		$return = false;
 
-		if(isset($pages['shop_settings'] )) {
-			if(is_page( absint ( $pages['shop_settings'] ) ) ) $return = true;
+		if(isset($pages['shop_settings'] )) {			
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['shop_settings'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['shop_settings'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
-		if(isset($pages['vendor_dashboard'] )) {
-			if(is_page( absint( $pages['vendor_dashboard'] ) ) ) $return = true;
+		if(isset($pages['vendor_dashboard'] )) {			
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_dashboard'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_dashboard'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['view_order'] )) {
-			if(is_page( absint ( $pages['view_order'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['view_order'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['view_order'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_transaction_thankyou'] )) {
-			if(is_page( absint ( $pages['vendor_transaction_thankyou'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_transaction_thankyou'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_transaction_thankyou'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_transaction_detail'] )) {
-			if(is_page( absint ( $pages['vendor_transaction_detail'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_transaction_detail'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_transaction_detail'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_order_detail'] )) {
-			if(is_page( absint ( $pages['vendor_order_detail'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_order_detail'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_order_detail'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_policies'] )) {
-			if(is_page( absint ( $pages['vendor_policies'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_policies'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_policies'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_billing'] )) {
-			if(is_page( absint ( $pages['vendor_billing'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_billing'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_billing'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_shipping'] )) {
-			if(is_page( absint ( $pages['vendor_shipping'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_shipping'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_shipping'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_report'] )) {
-			if(is_page( absint ( $pages['vendor_report'] ) ) ) $return = true;
+                        if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_report'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_report'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_widthdrawals'] )) {
-			if(is_page( absint ( $pages['vendor_widthdrawals'] ) ) ) $return = true;
+			if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_widthdrawals'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_widthdrawals'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_university'] )) {
-			if(is_page( absint ( $pages['vendor_university'] ) ) ) $return = true;
+			if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_university'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_university'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 		if(isset($pages['vendor_announcements'] )) {
-			if(is_page( absint ( $pages['vendor_announcements'] ) ) ) $return = true;
+			if ( function_exists('icl_object_id') ) {
+                            if(is_page( icl_object_id(absint ( $pages['vendor_announcements'] ), 'page', false, ICL_LANGUAGE_CODE ) ) ){
+                                $return = true;
+                            }
+                        } else {
+                            if(is_page( absint ( $pages['vendor_announcements'] ) ) ){
+                                $return = true;
+                            }
+                        }
 		}
 
 

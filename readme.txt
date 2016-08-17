@@ -1,10 +1,10 @@
 ﻿=== WC Marketplace ===
-Contributors: Dualcube, prabhakarkumarshaw, arimghosh, sandy-wcmp, arka422, dualcube_subrata
+Contributors: Dualcube, arimghosh, arka422, dualcube_subrata, prabhakarkumarshaw, sandy-wcmp
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
 Donate link: https://dualcube.com/
 Requires at least: 4.0
 Tested up to: 4.5.3
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,7 +35,7 @@ Wondering why 2000+ marketplaces love and use WCMp? Here you go:
 >
 >
 > <strong>Boatload of Features</strong>
->
+> - [Vendor Registration]( http://wc-marketplace.com/knowledgebase/setting-vendor-registration-wcmp/ )
 > - [Admin Capabilities]( http://wc-marketplace.com/admin-capabilities )
 > - [Vendor Capabilities]( http://wc-marketplace.com/vendors-capabilities )
 > - [User Capabilities]( http://wc-marketplace.com/users-capabilities )
@@ -131,7 +131,7 @@ Plugins > Add new > Upload plugin > Upload dc-woocommerce-multi-vendor.zip > Ins
 
 == Frequently Asked Questions ==
 = Does this plugin work with newest WP version and also older versions? =
-Ans. Yes, this plugin works fine with WordPress 4.5.2! It is also compatible for older WordPress versions upto 3.8.1.
+Ans. Yes, this plugin works fine with WordPress 4.5.3! It is also compatible for older WordPress versions upto 3.8.1.
 = Up to which version of WooCommerce this plugin compatible with? =
 Ans. This plugin is compatible with the latest version of WooCommerce.
 = Up to which version of PHP this plugin is compatible with? =
@@ -170,11 +170,21 @@ Ans. This plugin is tested with PHP version 5.5.
 27. Vendor review and rating in front-end upper section.
 28. More Vendor Settings.
 29. Show Multiple Seller in Single Product.
+30. Default settings for Vendor Registration.
+31. Vendor registration form builder.
+32. Vendor registration form builder with fields.
+33. Front end vendor registration form.
 
 
 
 
 == Changelog ==
+= 2.4.4 =
+* Added: Vendor Registration
+* Removed: Apply Become a vendor checkbox from my-account page.
+* Fixed: Vendor description formatting
+* Fixed: WPML support
+
 = 2.4.3 =
 * Removed: fancyBox - jQuery Plugin.
 * Removed: jquery-2.1.3.js.
@@ -428,6 +438,12 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.4.4 =
+* Added: Vendor Registration
+* Removed: Apply Become a vendor checkbox from my-account page.
+* Fixed: Vendor description formatting
+* Fixed: WPML support
+
 = 2.4.3 =
 * Removed: fancyBox - jQuery Plugin.
 * Removed: jquery-2.1.3.js.

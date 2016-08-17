@@ -15,7 +15,11 @@ $user = wp_get_current_user();
 if($user && !in_array( 'dc_pending_vendor', $user->roles ) && !in_array( 'administrator', $user->roles )) {
 ?>
 <div class="wcmp_main_holder toside_fix">
-  <div class="wcmp_headding2">General</div>
+    <?php
+    add_filter('wcmp_vendor_registration_submit',  function ($text){ return 'Apply to become a vendor'; });
+    echo do_shortcode('[vendor_registration]');
+    ?>
+<!--  <div class="wcmp_headding2">General</div>
 	<div class="vendor_apply">
 		<form method="post">
 			<table class="vendor_apply" >
@@ -27,7 +31,7 @@ if($user && !in_array( 'dc_pending_vendor', $user->roles ) && !in_array( 'admini
 				</tbody>
 			</table>
 		</form>
-	</div>
+	</div>-->
 </div>
 <?php } 
 

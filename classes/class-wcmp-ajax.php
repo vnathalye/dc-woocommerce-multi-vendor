@@ -68,9 +68,22 @@ class WCMp_Ajax {
 	    add_action( 'wp_ajax_nopriv_wcmp_add_review_rating_vendor', array($this, 'wcmp_add_review_rating_vendor')); 
 	    // load more vendor review
 	    add_action( 'wp_ajax_wcmp_load_more_review_rating_vendor', array($this, 'wcmp_load_more_review_rating_vendor'));
-	    add_action( 'wp_ajax_nopriv_wcmp_load_more_review_rating_vendor', array($this, 'wcmp_load_more_review_rating_vendor'));        
+	    add_action( 'wp_ajax_nopriv_wcmp_load_more_review_rating_vendor', array($this, 'wcmp_load_more_review_rating_vendor')); 
+            
+            add_action('wp_ajax_wcmp_save_vendor_registration_form',array(&$this,'wcmp_save_vendor_registration_form_callback'));
   }
-
+  
+  public function wcmp_save_vendor_registration_form_callback(){
+      $form_data = json_decode(stripslashes_deep($_REQUEST['form_data']),true);
+      if(!empty($form_data) && is_array($form_data)){
+          foreach ($form_data as $key => $value){
+              $form_data[$key]['hidden'] = true;
+          }
+      }
+      
+      update_option('wcmp_vendor_registration_form_data', $form_data);
+      die;
+  }
   function single_product_multiple_vendors_sorting() {
   	global $WCMp;	
   	$sorting_value = $_POST['sorting_value'];

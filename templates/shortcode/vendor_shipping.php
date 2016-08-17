@@ -260,7 +260,7 @@ if($vendor_data) {
 											<td><label><?php echo sprintf( __( 'Enter Shipping Cost for : "%s" Shipping Class', 'woocommerce' ), esc_html( $shipping_class->name ) ); ?></label></td>
 										</tr>
 										<tr>
-											<td><input name="vendor_shipping_data[<?php echo $option_name.'_'.$class;?>]" class="no_input" readonly type="text" step="0.01" value="<?php echo $shipping_details[$class]; ?>" /></td>
+											<td><input name="vendor_shipping_data[<?php echo $option_name.'_'.$class;?>]" class="no_input" readonly type="text" step="0.01" value='<?php echo $shipping_details[$class]; ?>' /></td>
 										</tr>
 										<tr>
 											<td class="hints">
@@ -337,7 +337,7 @@ if($vendor_data) {
 							<td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
 	                        </tr>
 							<tr>
-							<td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value="<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>" /></td>
+							<td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>' /></td>
 						</tr>
 					<?php } else { ?>
 						<tr>
@@ -356,7 +356,7 @@ if($vendor_data) {
 							<td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
 	                        </tr>
 							<tr>
-							<td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value="<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>" /></td>
+							<td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>' /></td>
 						</tr>
 					<?php } ?>					
 					<?php do_action('wcmp_before_shipping_form_end_vendor_dashboard'); ?>

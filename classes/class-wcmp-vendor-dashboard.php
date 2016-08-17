@@ -756,7 +756,7 @@ Class WCMp_Admin_Dashboard {
 											<tr>
 												<td><label><?php echo sprintf( __( '"%s" Shipping Class Cost', 'woocommerce' ), esc_html( $shipping_class->name ) ); ?></label></td>
 												<td>
-													<input name="vendor_shipping_data[<?php echo $option_name.'_'.$class;?>]" type="text" value="<?php echo $shipping_details[$class]; ?>" />
+													<input name="vendor_shipping_data[<?php echo $option_name.'_'.$class;?>]" type="text" value='<?php echo $shipping_details[$class]; ?>' />
 													
 												</td>
 											</tr>
@@ -798,7 +798,7 @@ Class WCMp_Admin_Dashboard {
 							<tr><td></td><td><?php _e( 'Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain );?> <br><br></td></tr>
 							<tr>
 								<td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
-								<td><input name="vendor_shipping_data[ship_from]" type="text" value="<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>" /></td>
+								<td><input name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>' /></td>
 							</tr>
 						<?php } else { ?>
 							<tr>
@@ -811,7 +811,7 @@ Class WCMp_Admin_Dashboard {
 							</tr>
 							<tr>
 								<td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
-								<td><input name="vendor_shipping_data[ship_from]" type="text" value="<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>" /></td>
+								<td><input name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] :  ''; ?>' /></td>
 							</tr>
 						<?php } ?>						
 					</tbody>

@@ -265,6 +265,9 @@ final class WCMp {
 
         $this->load_class('post-notices');
         new WCMp_Notices();
+        
+        $this->load_class('post-vendorapplication');
+        new WCMp_Vendor_Application();
 
         register_activation_hook(__FILE__, 'flush_rewrite_rules');
     }
@@ -801,7 +804,24 @@ final class WCMp {
                 update_option('wcmp_product_vendor_university_page_id', $vendor_university_page_id);
                 $wcmp_pages['vendor_university'] = $vendor_university_page_id;
             }
-
+            
+            $page_slug = 'wcmp_vendor_registration';
+            $page_foundd = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = '$page_slug' LIMIT 1;");
+            if (!$page_foundd) {
+                $page_data = array(
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'post_author' => 1,
+                    'post_name' => $page_slug,
+                    'post_title' => __('Vendor Registration', $WCMp->text_domain),
+                    'post_content' => '[vendor_registration]',
+                    'comment_status' => 'closed'
+                );
+                $vendor_registration_page_id = wp_insert_post($page_data);
+                update_option('wcmp_product_vendor_registration_page_id', $vendor_registration_page_id);
+                $wcmp_pages['vendor_registration'] = $vendor_registration_page_id;
+            }
+            
             $page_slug = 'wcmp_vendor_announcements';
             $page_foundd = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = 'wcmp_vendor_messages' LIMIT 1;");
             $page_foundd2 = $wpdb->get_var("SELECT ID FROM " . $wpdb->posts . " WHERE post_name = 'wcmp_vendor_announcements' LIMIT 1;");

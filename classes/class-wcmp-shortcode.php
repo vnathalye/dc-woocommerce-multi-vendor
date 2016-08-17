@@ -80,10 +80,22 @@ class WCMp_Shortcode {
 		add_shortcode( 'wcmp_product_category', array(&$this, 'wcmp_show_product_category'));
 		// List of paginated vendors 
 		add_shortcode( 'wcmp_vendorslist', array(&$this, 'wcmp_show_vendorslist' ) );
+                //Vendor Registration
+                add_shortcode('vendor_registration', array(&$this,'vendor_registration_shortcode'));
 		
 	}
-	
-	/**
+	/*
+         * Vendor Registration shortcode
+         */
+        function vendor_registration_shortcode($attr){
+            global $WCMp;
+//            if(is_user_logged_in()){
+//                wp_safe_redirect(get_permalink( get_option('woocommerce_myaccount_page_id')));
+//            }
+            $this->load_class('vendor-registration');
+            return $this->shortcode_wrapper(array('WCMp_Vendor_Registration_Shortcode', 'output'));
+        }
+        /**
 	 * Vendor Shipping Settings
 	 *
 	 * @return void

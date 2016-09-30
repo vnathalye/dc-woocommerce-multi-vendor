@@ -1,10 +1,10 @@
 ﻿=== WC Marketplace ===
-Contributors: Dualcube, arimghosh, arka422, dualcube_subrata, prabhakarkumarshaw, sandy-wcmp
+Contributors: Dualcube, arimghosh, arka422, dualcube_subrata, rimpadualcube
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
 Donate link: https://dualcube.com/
 Requires at least: 4.0
-Tested up to: 4.5.3
-Stable tag: 2.4.4
+Tested up to: 4.6.1
+Stable tag: 2.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,7 +131,7 @@ Plugins > Add new > Upload plugin > Upload dc-woocommerce-multi-vendor.zip > Ins
 
 == Frequently Asked Questions ==
 = Does this plugin work with newest WP version and also older versions? =
-Ans. Yes, this plugin works fine with WordPress 4.5.3! It is also compatible for older WordPress versions upto 3.8.1.
+Ans. Yes, this plugin works fine with WordPress 4.6! It is also compatible for older WordPress versions upto 4.2.
 = Up to which version of WooCommerce this plugin compatible with? =
 Ans. This plugin is compatible with the latest version of WooCommerce.
 = Up to which version of PHP this plugin is compatible with? =
@@ -179,6 +179,12 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.4.5 =
+* Fixed: Database error in product name Issue#4.
+* Fixed: User role capabilities Issue#5.
+* Fixed: WCMp speed optimization Issue#7.   
+* Fixed: Vendor registration javascript error fixed.
+  
 = 2.4.4 =
 * Added: Vendor Registration
 * Removed: Apply Become a vendor checkbox from my-account page.
@@ -438,6 +444,12 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.4.5 =
+* Fixed: Database error in product name Issue#4.
+* Fixed: User role capabilities Issue#5.
+* Fixed: WCMp speed optimization Issue#7.   
+* Fixed: Vendor registration javascript error fixed.
+
 = 2.4.4 =
 * Added: Vendor Registration
 * Removed: Apply Become a vendor checkbox from my-account page.

@@ -76,7 +76,7 @@ class WCMp_Settings_Vendor_Registration {
                             <div ng-if="fields.length === 0" class="wcmp-form-empty-container">Build your form here</div>
                             
                             <ul class="meta-box-sortables" ui-sortable="fieldSortableOptions" ng-model="fields">
-                                <li ng-repeat="(parentIndex,field) in fields">
+                                <li ng-repeat="(parentIndex,field) in fields track by $index">
                                     <div class="postbox" ng-class="{'closed' : field.hidden }">
                                         <button aria-expanded="false" ng-click="togglePostboxField($index)" class="handlediv button-link" type="button"><span class="screen-reader-text">Toggle panel: Format</span><span aria-hidden="true" class="toggle-indicator"></span></button>
                                         <h2 class="hndle ui-sortable-handle" ng-dblclick="togglePostboxField($index)"><span>{{field.label}}</span></h2>

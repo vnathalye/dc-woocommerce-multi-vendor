@@ -28,6 +28,10 @@ class WCMp_Vendor_Application {
         global $WCMp;
         if (post_type_exists($this->post_type))
             return;
+        $post_type_visibility = false;
+        if(is_super_admin(get_current_user_id())){
+            $post_type_visibility = true;
+        }
         $labels = array(
             'name' => _x('Vendor Application', $WCMp->text_domain),
             'singular_name' => _x('Vendor Application', $WCMp->text_domain),
@@ -50,7 +54,7 @@ class WCMp_Vendor_Application {
             'public' => false,
             'publicly_queryable' => false,
             'exclude_from_search' => true,
-            'show_ui' => true,
+            'show_ui' => $post_type_visibility,
             'show_in_menu' => 'users.php',
             'show_in_nav_menus' => false,
             'query_var' => false,

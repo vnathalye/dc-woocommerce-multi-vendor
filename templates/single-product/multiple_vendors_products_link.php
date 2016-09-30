@@ -17,7 +17,9 @@
 global $WCMp, $post, $wpdb;
 $results_str = '';
 $searchstr = $post->post_title;
-$querystr = "select  * from {$wpdb->prefix}wcmp_products_map where product_title = '{$searchstr}'";
+$searchstr = str_replace("'", "", $searchstr);
+$searchstr = str_replace('"', '', $searchstr);
+$querystr = "select  * from {$wpdb->prefix}wcmp_products_map where replace(replace(product_title, '\'',''), '\"','') = '{$searchstr}'";
 $results_obj_arr = $wpdb->get_results($querystr);
 if(isset($results_obj_arr) && count($results_obj_arr) > 0 ) {
 	$results_str = $results_obj_arr[0]->product_ids;

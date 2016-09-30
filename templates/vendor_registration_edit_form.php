@@ -1,9 +1,8 @@
 <?php
-
 /**
  * The Template for displaying vendor registration form.
  *
- * Override this template by copying it to yourtheme/dc-product-vendor/vendor_registration_form.php
+ * Override this template by copying it to yourtheme/dc-product-vendor/vendor_registration_edit_form.php
  *
  * @author 		Dualcube
  * @package 	WCMp/Templates
@@ -17,7 +16,7 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
             case 'separator':
                 ?>
                 <div class="clearboth"></div>
-                </div>
+<!--                </div>-->
                 <div class="wcmp_regi_form_box">
                 <h3 class="reg_header2"><?php echo __($value['label'],$WCMp->text_domain); ?></h3>
                 <?php
@@ -157,5 +156,4 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                 break;
         }
     }
-    echo '<input type="hidden" value="'.  json_encode($wcmp_vendor_registration_form_data).'" />';
 }

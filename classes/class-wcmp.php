@@ -466,43 +466,43 @@ final class WCMp {
         if (!empty($wpdb->collate))
             $charset_collate .= " COLLATE $wpdb->collate";
         $migs = array();
-
+        $previous_plugin_version = get_option('dc_product_vendor_plugin_db_version');
         // Create wcmp table
+        if(!$previous_plugin_version || $previous_plugin_version < '2.4'){
+            $migs[] = "
+                    CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_vendor_orders` (
+                    `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                    `order_id` bigint(20) NOT NULL,
+                    `commission_id` bigint(20) NOT NULL,
+                    `vendor_id` bigint(20) NOT NULL,
+                    `shipping_status` varchar(255) NOT NULL,
+                    `order_item_id` bigint(20) NOT NULL,
+                    `product_id` bigint(20) NOT NULL,
+                    `commission_amount` varchar(255) NOT NULL,
+                    `shipping` varchar(255) NOT NULL,
+                    `tax` varchar(255) NOT NULL,
+                    `is_trashed` varchar(10) NOT NULL,				
+                    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
+                    PRIMARY KEY (`ID`),
+                    CONSTRAINT vendor_orders UNIQUE (order_id, vendor_id, commission_id, product_id)
+            )$charset_collate;";
 
-        $migs[] = "
-		CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_vendor_orders` (
-		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
-		`order_id` bigint(20) NOT NULL,
-		`commission_id` bigint(20) NOT NULL,
-		`vendor_id` bigint(20) NOT NULL,
-		`shipping_status` varchar(255) NOT NULL,
-		`order_item_id` bigint(20) NOT NULL,
-		`product_id` bigint(20) NOT NULL,
-		`commission_amount` varchar(255) NOT NULL,
-		`shipping` varchar(255) NOT NULL,
-		`tax` varchar(255) NOT NULL,
-		`is_trashed` varchar(10) NOT NULL,				
-		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
-		PRIMARY KEY (`ID`),
-		CONSTRAINT vendor_orders UNIQUE (order_id, vendor_id, commission_id, product_id)
-	)$charset_collate;";
+            $migs[] = "
+                    CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_products_map` (
+                    `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                    `product_title` varchar(255) NOT NULL,
+                    `product_ids`text NOT NULL,						
+                    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
+                    PRIMARY KEY (`ID`)
+            )$charset_collate;";
 
-        $migs[] = "
-		CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_products_map` (
-		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
-		`product_title` varchar(255) NOT NULL,
-		`product_ids`text NOT NULL,						
-		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
-		PRIMARY KEY (`ID`)
-	)$charset_collate;";
+            $needed_migration = count($migs);
 
-        $needed_migration = count($migs);
-
-        for ($i = 0; $i < $needed_migration; $i++) {
-            $mig = $migs[$i];
-            $wpdb->query($mig);
+            for ($i = 0; $i < $needed_migration; $i++) {
+                $mig = $migs[$i];
+                $wpdb->query($mig);
+            }
         }
-
 
         $table_name = $wpdb->prefix . 'wcmp_products_map';
         $is_product_sync = get_option('is_wcmp_product_sync_with_multivendor');
@@ -533,7 +533,7 @@ final class WCMp {
             update_option('is_wcmp_product_sync_with_multivendor', 1);
         }
         //delete_option('dc_product_vendor_plugin_db_version');
-        $previous_plugin_version = get_option('dc_product_vendor_plugin_db_version');
+        
         if (!$previous_plugin_version || $previous_plugin_version < $WCMp->version) {
 
             $prev_general = get_option('dc_general_settings_name');

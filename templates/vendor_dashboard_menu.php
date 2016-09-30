@@ -48,8 +48,8 @@ if(in_array('wcmp-vendor_shop_seo/wcmp_vendor_shop_seo.php',$active_plugins)){
 			<li class="ic_shop"><a target="_blank" href="<?php echo $vendor->permalink; ?>" data-menu_item="Vendor_shop" ><i class="icon_stand ic10"> </i> <span class="writtings"><?php _e( 'Shop', $WCMp->text_domain ); ?></span></a></li>
 			<li class="ic_announment"><a  target="_self"  href="<?php echo isset($pages['vendor_announcements']) ? get_permalink($pages['vendor_announcements']) : ''; ?>" data-menu_item="vendor_announcements" ><i class="icon_stand ic9"> </i> <span class="writtings"><?php _e( 'Announcements', $WCMp->text_domain ); ?></span></a></li>
 			<li><a <?php if($selected_item == "dashboard") { echo 'class="active"'; } ?> data-menu_item="dashboard" href="<?php echo isset($pages['vendor_dashboard']) ? get_permalink($pages['vendor_dashboard']) : ''; ?>" data-menu_item="dashboard" ><i class="icon_stand ic1"> </i> <span class="writtings"><?php _e( 'Dashboard', $WCMp->text_domain ); ?></span></a></li>
-			<li class="hasmenu"><a <?php if(in_array($selected_item, array('shop_front', 'policies', 'billing', 'shipping'))) {  echo 'class="active"'; } ?> href="#"><i class="icon_stand ic2"> </i> <span class="writtings"><?php _e( 'Store Settings', $WCMp->text_domain ); ?></span></a>
-				<ul class="submenu" <?php if(!in_array($selected_item, array('shop_front', 'policies', 'billing', 'shipping'))) { ?> style="display:none;"<?php } ?>>
+                        <li class="hasmenu"><a <?php if(in_array($selected_item, apply_filters('wcmp_store_settings_sub_menu_options',array('shop_front', 'policies', 'billing', 'shipping')))) {  echo 'class="active"'; } ?> href="#"><i class="icon_stand ic2"> </i> <span class="writtings"><?php _e( 'Store Settings', $WCMp->text_domain ); ?></span></a>
+				<ul class="submenu" <?php if(!in_array($selected_item, apply_filters('wcmp_store_settings_sub_menu_options',array('shop_front', 'policies', 'billing', 'shipping')))) { ?> style="display:none;"<?php } ?>>
 					<li><a href="<?php echo isset($pages['shop_settings']) ? get_permalink($pages['shop_settings']) : ''; ?>" <?php if($selected_item == "shop_front") { echo 'class="selected_menu"'; } ?> data-menu_item="shop_front"><?php _e( '- Shop front', $WCMp->text_domain ); ?></a></li>
 					<?php if($is_policy_show_in_menu == 1) {?>
 					<li><a href="<?php echo isset($pages['vendor_policies']) ? get_permalink($pages['vendor_policies']) : ''; ?>" <?php if($selected_item == "policies") { echo 'class="selected_menu"'; } ?> data-menu_item="policies"><?php _e( '- Policies', $WCMp->text_domain ); ?></a></li>
@@ -58,7 +58,7 @@ if(in_array('wcmp-vendor_shop_seo/wcmp_vendor_shop_seo.php',$active_plugins)){
 					<?php if(isset($wcmp_payment_settings_name['give_shipping']) && get_option('woocommerce_calc_shipping') != 'no') { if(empty($_vendor_give_shipping)) {?>
 					<li><a href="<?php echo isset($pages['vendor_shipping']) ? get_permalink($pages['vendor_shipping']) : ''; ?>" <?php if($selected_item == "shipping") { echo 'class="selected_menu"'; } ?> data-menu_item="shipping"><?php _e( '- Shipping', $WCMp->text_domain ); ?></a></li>
 					<?php } }?>
-					<?php do_action('wcmp_store_settings_sub_menu'); ?>
+					<?php do_action('wcmp_store_settings_sub_menu',$selected_item); ?>
 				</ul>
 			</li>			
 			<?php if($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product') && get_user_meta($vendor->id, '_vendor_submit_product' ,true)) { ?>

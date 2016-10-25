@@ -4,7 +4,7 @@ Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce 
 Donate link: https://dualcube.com/
 Requires at least: 4.0
 Tested up to: 4.6.1
-Stable tag: 2.4.5
+Stable tag: 2.4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,10 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.4.6 =
+* Fixed: Payment method dropdown in backend Issue#9.
+* Fixed: Vendor registration form error.
+
 = 2.4.5 =
 * Fixed: Database error in product name Issue#4.
 * Fixed: User role capabilities Issue#5.
@@ -444,6 +448,10 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.4.6 =
+* Fixed: Payment method dropdown in backend Issue#9.
+* Fixed: Vendor registration form error.
+
 = 2.4.5 =
 * Fixed: Database error in product name Issue#4.
 * Fixed: User role capabilities Issue#5.

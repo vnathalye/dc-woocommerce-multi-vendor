@@ -51,7 +51,7 @@ class WCMp_Admin {
         if (!empty($form_data) && is_array($form_data)) {
             foreach ($form_data as $key => $value) {
                 echo '<div class="wcmp-form-field">';
-                echo '<label>' . $value['label'] . ':</label>';
+                echo '<label>' . html_entity_decode($value['label']) . ':</label>';
                 if ($value['type'] == 'file') {
                     foreach ($value['value'] as $attacment_id) {
                         echo '<span> <a href="' . wp_get_attachment_url($attacment_id) . '" download>' . get_the_title($attacment_id) . '</a> </span>';

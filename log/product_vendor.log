@@ -1,2 +1,0 @@
-UPDATE `wp_wcmp_vendor_orders` 	SET commission_id = 75, commission_amount = '9', `shipping` = '0', `tax` = '0'	WHERE order_id =74 AND order_item_id = 1 AND product_id	=25
--------------------------------------

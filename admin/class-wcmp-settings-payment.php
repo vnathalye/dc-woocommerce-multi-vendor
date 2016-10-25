@@ -19,22 +19,6 @@ class WCMp_Settings_Payment {
   public function __construct($tab) {
     $this->tab = $tab;
     $this->options = get_option( "wcmp_{$this->tab}_settings_name" );
-//    $paypal_details = get_option('woocommerce_paypal_settings');
-//    if(isset($paypal_details['api_username']) && !empty($paypal_details['api_username'])){
-//    	$this->paypal_api_username = $paypal_details['api_username'];
-//    }
-//    if(isset($paypal_details['api_password']) && !empty($paypal_details['api_password'])){
-//    	$this->paypal_api_password = $paypal_details['api_password'];
-//    }
-//    if(isset($paypal_details['api_signature']) && !empty($paypal_details['api_signature'])){
-//    	$this->paypal_api_signature = $paypal_details['api_signature'];
-//    }
-//    if(isset($paypal_details['client_id']) && !empty($paypal_details['client_id'])){
-//    	$this->paypal_client_id = $paypal_details['client_id'];
-//    }
-//    if(isset($paypal_details['client_secret']) && !empty($paypal_details['client_secret'])){
-//    	$this->paypal_client_secret = $paypal_details['client_secret'];
-//    }
     $this->settings_page_init();
   }
   
@@ -191,69 +175,6 @@ class WCMp_Settings_Payment {
 				wp_unschedule_event($timestamp, 'masspay_cron_start' );
 			}
     } 
-
-//    if( isset( $input['is_testmode'] ) )
-//      $new_input['is_testmode'] = sanitize_text_field( $input['is_testmode'] );
-//		
-//    if( isset( $input['api_username'] ) ) {
-//      $new_input['api_username'] = trim($input['api_username']);
-//    } else {
-//      add_settings_error(
-//        "dc_{$this->tab}_settings_name",
-//        esc_attr( "dc_{$this->tab}_settings_admin_error" ),
-//        __('Set API Username', $WCMp->text_domain),
-//        'error'
-//      );
-//      $hasError = true;
-//    }
-//    
-//    if( isset( $input['api_pass'] ) ) {
-//      $new_input['api_pass'] = trim($input['api_pass']);
-//    } else {
-//      add_settings_error(
-//        "dc_{$this->tab}_settings_name",
-//        esc_attr( "dc_{$this->tab}_settings_admin_error" ),
-//        __('Set API Password', $WCMp->text_domain),
-//        'error'
-//      );
-//      $hasError = true;
-//    }
-//      
-//    if( isset( $input['api_signature'] ) ) {
-//      $new_input['api_signature'] = trim($input['api_signature']);
-//    } else {
-//      add_settings_error(
-//        "dc_{$this->tab}_settings_name",
-//        esc_attr( "dc_{$this->tab}_settings_admin_error" ),
-//        __('Set API Signature', $WCMp->text_domain),
-//        'error'
-//      );
-//      $hasError = true;
-//    }
-//    
-//    if( isset( $input['client_id'] ) ) {
-//      $new_input['client_id'] = trim($input['client_id']);
-//    } else {
-//      add_settings_error(
-//        "dc_{$this->tab}_settings_name",
-//        esc_attr( "dc_{$this->tab}_settings_admin_error" ),
-//        __('Set APP Client Id', $WCMp->text_domain),
-//        'error'
-//      );
-//      $hasError = true;
-//    }
-//    
-//    if( isset( $input['client_secret'] ) ) {
-//      $new_input['client_secret'] = trim($input['client_secret']);
-//    } else {
-//      add_settings_error(
-//        "dc_{$this->tab}_settings_name",
-//        esc_attr( "dc_{$this->tab}_settings_admin_error" ),
-//        __('Set APP Client Secret', $WCMp->text_domain),
-//        'error'
-//      );
-//      $hasError = true;
-//    }
     
     if(!$hasError) {
         add_settings_error(

@@ -683,6 +683,9 @@ class WCMp_User {
             if (isset($payment_admin_settings['payment_method_paypal_masspay']) && $payment_admin_settings['payment_method_paypal_masspay'] = 'Enable') {
                 $payment_mode['paypal_masspay'] = __('PayPal Masspay', $WCMp->text_domain);
             }
+            if(isset($payment_admin_settings['payment_method_paypal_payout']) && $payment_admin_settings['payment_method_paypal_payout'] = 'Enable') {
+                $payment_mode['paypal_payout'] = __('PayPal Payout', $WCMp->text_domain);
+            }
             if (isset($payment_admin_settings['payment_method_direct_bank']) && $payment_admin_settings['payment_method_direct_bank'] = 'Enable') {
                 $payment_mode['direct_bank'] = __('Direct Bank', $WCMp->text_domain);
             }

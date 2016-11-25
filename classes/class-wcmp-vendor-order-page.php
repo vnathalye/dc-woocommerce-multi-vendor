@@ -199,7 +199,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 		$user_id = get_current_user_id(); 
 		
 		$vendor = get_wcmp_vendor($user_id);
-		
+		$vendor = apply_filters( 'wcmp_get_vendor_orders_vendor', $vendor);
 		$orders = array();
 		
 		$vendor_orders_array = $vendor->get_orders();

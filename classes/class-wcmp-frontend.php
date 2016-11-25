@@ -134,8 +134,10 @@ class WCMp_Frontend {
                         }
                     }
                     foreach ($attacment_files['type'][$key] as $file_key => $file_value) {
-                        if (!in_array($file_value, $file_type)) {
-                            $validation_errors->add('file type error', __('Please Upload valid file', 'woocommerce'));
+                        if(!empty($attacment_files['name'][$key][$file_key])){
+                            if (!in_array($file_value, $file_type)) {
+                                $validation_errors->add('file type error', __('Please Upload valid file', 'woocommerce'));
+                            }
                         }
                     }
                     foreach ($attacment_files['size'][$key] as $file_size_key => $file_size_value) {

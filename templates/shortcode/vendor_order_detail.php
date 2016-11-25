@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $woocommerce, $WCMp;
 $user = wp_get_current_user();
 $vendor = get_wcmp_vendor($user->ID);
+$vendor = apply_filters( 'wcmp_dashboard_order_details_vendor', $vendor);
 $order_id = $_GET['order_id'];
 if( $vendor && $order_id ) {
 	$vendor_items = $vendor->get_vendor_items_from_order($order_id, $vendor->term_id);

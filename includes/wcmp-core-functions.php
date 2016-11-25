@@ -113,6 +113,7 @@ if( ! function_exists( 'get_wcmp_vendor_by_term' ) ) {
 	function get_wcmp_vendor_by_term( $term_id ) {
 		$vendor = false;
 		if ( $user_id = get_woocommerce_term_meta( $term_id, '_vendor_user_id' ) ) {
+                        $vendor = apply_filters( 'wcmp_vendor_by_term', $vendor);
 			if ( is_user_wcmp_vendor( $user_id ) ) {
 
 				$vendor = get_wcmp_vendor( $user_id );

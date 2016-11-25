@@ -56,7 +56,7 @@ class WCMp_Paypal_Masspay {
 			}
 			$nvpstr.="&EMAILSUBJECT=$emailSubject&RECEIVERTYPE=$receiverType&CURRENCYCODE=$currency" ;			
 			doProductVendorLOG($nvpstr);			
-			$resArray=hash_call("DoDirectPayment",$nvpstr);			
+			$resArray=hash_call("MassPay",$nvpstr);			
 			$ack = strtoupper($resArray["ACK"]);
 			if($ack == "SUCCESS" ||  $ack == "SuccessWithWarning" ){
 				doProductVendorLOG(json_encode($resArray));

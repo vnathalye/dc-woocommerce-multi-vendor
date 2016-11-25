@@ -36,7 +36,7 @@ class WCMp_Vendor_Orders_Shortcode {
 		
 		$user = wp_get_current_user();
 		$vendor = get_wcmp_vendor($user->ID);
-		
+		$vendor = apply_filters( 'wcmp_order_vendor', $vendor);
 		if($vendor) {
 			
 			if(!empty($_GET['wcmp_start_date_order'])) $start_date = $_GET['wcmp_start_date_order'];

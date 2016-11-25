@@ -93,6 +93,7 @@ if(is_user_wcmp_vendor($user->ID)) {
 			global $wpdb;
 			$prefix = $wpdb->prefix;
 			$current_user = wp_get_current_user();
+                        $current_user = apply_filters( 'wcmp_dashboard_vendor', $current_user);
 			$current_user_id =  $current_user->ID;			
 			$today_date = @date('Y-m-d');
 			

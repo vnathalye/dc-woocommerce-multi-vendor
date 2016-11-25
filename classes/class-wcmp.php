@@ -534,7 +534,7 @@ final class WCMp {
         }
         //delete_option('dc_product_vendor_plugin_db_version');
         
-        if (!$previous_plugin_version || $previous_plugin_version < $WCMp->version) {
+        if (!$previous_plugin_version || $previous_plugin_version < '2.4') {
 
             $prev_general = get_option('dc_general_settings_name');
             $prev_product = get_option('dc_product_settings_name');

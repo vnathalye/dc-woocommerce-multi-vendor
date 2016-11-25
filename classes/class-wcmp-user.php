@@ -314,7 +314,8 @@ class WCMp_User {
                     }
                 }
                 $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
-                if (empty($shipping_class_id)) {
+                $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class',true);
+                if (empty($shipping_class_id) && $add_vendor_shipping_class) {
                     $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
                     update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
                     add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);

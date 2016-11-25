@@ -777,7 +777,7 @@ class WCMp_Vendor {
         if (!isset($vendor_totals['shipping']))
             $vendor_totals['shipping'] = 0;
 
-        $return['commission_subtotal'] = array('label' => __('Commission Subtotal:', $WCMp->text_domain), 'value' => $vendor_totals['commission']);
+        $return['commission_subtotal'] = array('label' => __('Commission Subtotal:', $WCMp->text_domain), 'value' => woocommerce_price($vendor_totals['commission']));
         if ($WCMp->vendor_caps->vendor_payment_settings('give_tax')) {
             $return['tax_subtotal'] = array('label' => '', 'value' => '');
             $return['tax_subtotal']['label'] = __('Tax Subtotal:', $WCMp->text_domain);

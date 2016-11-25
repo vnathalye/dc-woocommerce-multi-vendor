@@ -35,6 +35,7 @@ class WCMp_Vendor_Transaction_Detail_Shortcode {
 		$user_id = get_current_user_id();
 		if(is_user_wcmp_vendor($user_id)) {
 			$vendor = get_wcmp_vendor($user_id);
+                        $vendor = apply_filters( 'wcmp_transaction_vendor', $vendor);
 			$start_date = date('01-m-Y');				
 			$end_date =  date('t-m-Y'); 
 			if($_SERVER['REQUEST_METHOD'] == 'GET') {

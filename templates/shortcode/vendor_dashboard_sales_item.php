@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $woocommerce, $WCMp, $wpdb;
 $prefix = $wpdb->prefix;
 $current_user = wp_get_current_user();
+$current_user = apply_filters( 'wcmp_dashboard_sales_vendor', $current_user);
 $current_user_id =  $current_user->ID;
 $today_date = @date('Y-m-d');
 $curent_week_range = wcmp_rangeWeek($today_date);

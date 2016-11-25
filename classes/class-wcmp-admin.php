@@ -53,8 +53,10 @@ class WCMp_Admin {
                 echo '<div class="wcmp-form-field">';
                 echo '<label>' . html_entity_decode($value['label']) . ':</label>';
                 if ($value['type'] == 'file') {
-                    foreach ($value['value'] as $attacment_id) {
-                        echo '<span> <a href="' . wp_get_attachment_url($attacment_id) . '" download>' . get_the_title($attacment_id) . '</a> </span>';
+                    if(!empty($value['value']) && is_array($value['value'])){
+                        foreach ($value['value'] as $attacment_id) {
+                            echo '<span> <a href="' . wp_get_attachment_url($attacment_id) . '" download>' . get_the_title($attacment_id) . '</a> </span>';
+                        }
                     }
                 } else {
                     if(is_array($value['value'])){
@@ -89,7 +91,7 @@ class WCMp_Admin {
             $user_id = get_post_meta($post->ID, 'user_id', true);
             $user = new WP_User($user_id);
             $user_data = get_userdata($user_id);
-            $actions['view'] = '<a href="' . get_edit_post_link($post->ID) . '" title="" rel="permalink">' . __('View', $WCMp->text_domain) . '</a>';
+            $actions['view'] = '<a href="' . get_edit_post_link($post->ID,'display') . '" title="" rel="permalink">' . __('View', $WCMp->text_domain) . '</a>';
             if (!in_array('dc_vendor', $user->roles) && !in_array('dc_rejected_vendor', $user->roles) && $user_data != false) {
                 $actions['aprove'] = '<a class="activate_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Approve', $WCMp->text_domain) . '</a>';
                 $actions['reject'] = '<a class="reject_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Reject', $WCMp->text_domain) . '</a>';

@@ -285,6 +285,7 @@ Class WCMp_Admin_Dashboard {
 			if( $WCMp->vendor_caps->vendor_capabilities_settings('is_order_csv_export') && !empty( $_POST[ 'wcmp_stat_export_submit' ] ) ) {
 				$user = wp_get_current_user();
 				$vendor = get_wcmp_vendor($user->ID);
+                                $vendor = apply_filters( 'wcmp_order_details_export_vendor', $vendor); 
                                 $records = $vendor->get_orders();
 				if(!empty($records) && is_array($records)){ 
 					$vendor_orders = array_unique($records); 
@@ -486,6 +487,7 @@ Class WCMp_Admin_Dashboard {
 		global $WCMp;
 		$user = wp_get_current_user();
 		$vendor = get_wcmp_vendor($user->ID);
+                $vendor = apply_filters( 'wcmp_vendor_dashboard_pages_vendor', $vendor);
 		if($vendor) {
 			$hook = add_menu_page( __( 'Orders', $WCMp->text_domain ), __( 'Orders', $WCMp->text_domain ), 'read', 'dc-vendor-orders', array( $this, 'wcmp_vendor_orders_page' ) );
 			add_action( "load-$hook", array( $this, 'add_order_page_options' ) );
@@ -505,6 +507,7 @@ Class WCMp_Admin_Dashboard {
 		global $WCMp, $post, $wpdb;
 		
 		$vendor_user_id = get_current_user_id();
+                $vendor_user_id = apply_filters( 'wcmp_dashboard_shipping_vendor', $vendor_user_id);
 		$vendor_data = get_wcmp_vendor($vendor_user_id);
 		if($_SERVER['REQUEST_METHOD'] == 'POST') {
 			if(isset( $_POST['vendor_shipping_data'] )) {

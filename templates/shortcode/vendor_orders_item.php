@@ -20,6 +20,7 @@ if(!empty($orders)) {
 		$order_obj = new WC_Order ( $order );
 		$mark_ship =  $WCMp->vendor_dashboard->is_order_shipped($order, get_wcmp_vendor(get_current_user_id()));
 		$user_id = get_current_user_id();
+                $user_id = apply_filters( 'wcmp_shipping_vendor', $user_id);
 		?>
 		<tr>
 			<td align="center"  width="20" ><span class="input-group-addon beautiful">

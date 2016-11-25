@@ -140,6 +140,7 @@ class WCMp_Report {
 		$total_earnings = 0;
 		$total_customers = array();
 		$vendor = get_wcmp_vendor(get_current_user_id());
+                $vendor = apply_filters( 'wcmp_dashboard_sale_stats_vendor', $vendor);
 		for( $date = strtotime($start_date); $date <= strtotime( '+1 day', strtotime($end_date)); $date = strtotime( '+1 day', $date ) ) {
 			
 			$year = date( 'Y', $date );

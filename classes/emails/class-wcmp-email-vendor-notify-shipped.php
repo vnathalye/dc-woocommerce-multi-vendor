@@ -60,8 +60,12 @@ class WC_Email_Notify_Shipped extends WC_Email {
 			$this->find[] = '{order_number}';
 			$this->replace[] = $this->object->get_order_number();
 			$this->vendor_id = $vendor_id;
-                        $this->tracking_url = $tracking_url;
-                        $this->tracking_id = $tracking_id;
+                        if(isset($param['tracking_id'])){
+                            $this->tracking_id = $param['tracking_id'];
+                        }
+                        if(isset($param['tracking_url'])){
+                            $this->tracking_url = $param['tracking_url'];
+                        }
 			
 			//$user = get_user_by( 'id', $user_id );
 			

@@ -54,7 +54,7 @@ class WCMp_Template {
 	 */
 	public function locate_template($template_name, $template_path = '', $default_path = '') {
 		global $woocommerce, $WCMp;
-
+                $default_path = apply_filters( 'template_path', $default_path);
 		if (!$template_path)
 			$template_path = $this->template_url;
 		if (!$default_path)

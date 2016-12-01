@@ -109,8 +109,8 @@ if( $vendor && $order_id ) {
 						</tr>
 					</tbody>
 				</table>
-			<?php 
-			if( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_view_comment') ) { 
+			<?php $is_vendor_view_comment_field = apply_filters('is_vendor_view_comment_field', true);
+			if( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_view_comment') && $is_vendor_view_comment_field ) { 
 				$vendor_comments = $order->get_customer_order_notes();
 				if($vendor_comments) { ?>
 				<h2><?php _e( 'Comments', $WCMp->text_domain ); ?></h2>
@@ -127,7 +127,8 @@ if( $vendor && $order_id ) {
 				}
 			} ?>
 			
-			<?php if( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_submit_comment') ) { ?>
+			<?php $is_vendor_submit_comment_field = apply_filters('is_vendor_submit_comment_field', true);
+                        if( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_submit_comment') && $is_vendor_submit_comment_field ) { ?>
 				<h2><?php _e( 'Add Comment', $WCMp->text_domain ); ?></h2>
 				<form method="post" name="add_comment" id="add-comment_<?php echo $order_id; ?>">
 					<?php wp_nonce_field( 'dc-add-comment' ); ?>
@@ -137,7 +138,7 @@ if( $vendor && $order_id ) {
 				</form>
 			<?php } ?>
 			
-			<?php if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') ) { ?>
+			<?php if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') && !$is_not_show_customer_dtl_field = apply_filters('is_not_show_customer_dtl_field', false) ) { ?>
 			<header>
 				<h2><?php _e( 'Customer Details', $WCMp->text_domain ); ?></h2>
 			</header>
@@ -155,7 +156,7 @@ if( $vendor && $order_id ) {
 			<?php } ?>
 			
 			
-			<?php if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') ) { ?>
+			<?php if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') && !$is_not_show_customer_billing_field = apply_filters('is_not_show_customer_billing_field', false) ) { ?>
 				<div class="col-1">
 					<header class="title">
 						<h3><?php _e( 'Billing Address', $WCMp->text_domain ); ?></h3>
@@ -167,7 +168,7 @@ if( $vendor && $order_id ) {
 					</p></address>
 				</div><!-- /.col-1 -->
 			<?php } 
-			if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') ) {
+			if( $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') && !$is_not_show_customer_shipping_field = apply_filters('is_not_show_customer_shipping_field', false) ) {
 			?>
 			<?php if ( ! wc_ship_to_billing_address_only() && get_option( 'woocommerce_calc_shipping' ) !== 'no' ) { ?>
 				<div class="col-2">

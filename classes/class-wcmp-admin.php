@@ -35,9 +35,10 @@ class WCMp_Admin {
         add_filter('post_row_actions', array(&$this, 'modify_wcmp_vendorrequest_row_actions'), 10, 2);
         add_filter('bulk_actions-edit-wcmp_vendorrequest', array(&$this, 'wcmp_vendorrequest_bulk_actions'));
         add_action('admin_menu', array(&$this, 'remove_wcmp_vendorrequest_meta_boxes'));
-        add_action('add_meta_boxes', array(&$this, 'adding_vendor_application_meta_boxes'), 10, 2);
+        add_action('add_meta_boxes', array(&$this, 'adding_vendor_application_meta_boxes'), 10, 2);      
+        
     }
-
+    
     function adding_vendor_application_meta_boxes($post_type, $post) {
         global $WCMp;
         add_meta_box(

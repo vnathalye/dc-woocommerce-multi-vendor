@@ -65,6 +65,25 @@ class WCMp_User {
         $this->register_vendor_from_vendor_dashboard();
 
         add_filter('woocommerce_login_redirect', array($this, 'wcmp_vendor_login'), 10, 2);
+        add_filter('login_redirect', array($this, 'wp_wcmp_vendor_login'), 10, 3);
+    }
+
+    function wp_wcmp_vendor_login($redirect_to, $request, $user) {
+        global $WCMp;
+        $pages = get_wcmp_vendor_settings('wcmp_pages_settings_name');
+        //is there a user to check?
+        if (isset($user->roles) && is_array($user->roles)) {
+            //check for admins
+            if (in_array('dc_vendor', $user->roles)) {
+                // redirect them to the default place
+                $redirect_to = get_permalink($pages['vendor_dashboard']);
+                return $redirect_to;
+            } else {
+                return $redirect_to;
+            }
+        } else {
+            return $redirect_to;
+        }
     }
 
     function wcmp_vendor_login($redirect, $user) {
@@ -314,7 +333,7 @@ class WCMp_User {
                     }
                 }
                 $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
-                $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class',true);
+                $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class', true);
                 if (empty($shipping_class_id) && $add_vendor_shipping_class) {
                     $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
                     update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
@@ -672,8 +691,9 @@ class WCMp_User {
                 'class' => "user-profile-fields"
             ), // Text
                 ), $user_id);
-
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url')) {
+        
+        $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
+        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') || !$is_vendor_add_external_url_field) {
             unset($fields['vendor_external_store_url']);
             unset($fields['vendor_external_store_label']);
         }
@@ -684,7 +704,7 @@ class WCMp_User {
             if (isset($payment_admin_settings['payment_method_paypal_masspay']) && $payment_admin_settings['payment_method_paypal_masspay'] = 'Enable') {
                 $payment_mode['paypal_masspay'] = __('PayPal Masspay', $WCMp->text_domain);
             }
-            if(isset($payment_admin_settings['payment_method_paypal_payout']) && $payment_admin_settings['payment_method_paypal_payout'] = 'Enable') {
+            if (isset($payment_admin_settings['payment_method_paypal_payout']) && $payment_admin_settings['payment_method_paypal_payout'] = 'Enable') {
                 $payment_mode['paypal_payout'] = __('PayPal Payout', $WCMp->text_domain);
             }
             if (isset($payment_admin_settings['payment_method_direct_bank']) && $payment_admin_settings['payment_method_direct_bank'] = 'Enable') {

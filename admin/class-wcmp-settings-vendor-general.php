@@ -67,7 +67,7 @@ class WCMp_Settings_Vendor_General {
      */
     public function wcmp_vendor_general_settings_section_info() {
         global $WCMp;
-        printf(__('Setup vendor registration field from <a href="'.  admin_url('admin.php').'?page=wcmp-setting-admin&tab=vendor&tab_section=registration">here</a>.', $WCMp->text_domain));
+        //printf(__('Setup vendor registration field from <a href="'.  admin_url('admin.php').'?page=wcmp-setting-admin&tab=vendor&tab_section=registration">here</a>.', $WCMp->text_domain));
     }
 
 }

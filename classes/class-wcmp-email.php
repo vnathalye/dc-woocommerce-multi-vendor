@@ -49,11 +49,12 @@ class WCMp_Email {
 		if($plain_text) {
 			
 		}
-		else {		
-			if( isset( $capability_settings['can_vendor_add_message_on_email_and_thankyou_page'] ) ) {
+		else {	$can_vendor_add_message_on_email_and_thankyou_page = apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true);
+                        $is_customer_support_details = apply_filters('is_customer_support_details', true);
+			if( isset( $capability_settings['can_vendor_add_message_on_email_and_thankyou_page'] ) && $can_vendor_add_message_on_email_and_thankyou_page ) {
 				$WCMp->template->get_template( 'vendor_message_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
-			elseif(isset($customer_support_details_settings['is_customer_support_details'])) {
+			elseif(isset($customer_support_details_settings['is_customer_support_details']) && $is_customer_support_details) {
 				$WCMp->template->get_template( 'customer_support_details_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
 		}		

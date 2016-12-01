@@ -20,6 +20,8 @@ if($vendor) {
 	$vendor_hide_phone = get_user_meta($user->ID, '_vendor_hide_phone', true);
 	$vendor_hide_message_to_buyers = get_user_meta($user->ID, '_vendor_hide_message_to_buyers', true);
 	$capabality_settings = get_option('wcmp_capabilities_settings_name');
+        
+        $is_hide_option_show_enable = apply_filters('is_hide_option_show_enable', true);
 	?>
 	
 	<div class="wcmp_main_holder toside_fix">
@@ -47,7 +49,7 @@ if($vendor) {
 				} echo $shop_page_url = trailingslashit(get_home_url()); echo $store_slug;  ?><input class="small no_input" readonly type="text" name="vendor_page_slug" readonly value="<?php echo isset($vendor_page_slug['value']) ? $vendor_page_slug['value'] : ''; ?>" placeholder="<?php _e( 'Enter your Store Name here', $WCMp->text_domain );?>">
 				</span>				
 				<p> <?php _e( 'Shop Description', $WCMp->text_domain );?>
-				<?php if(isset($capabality_settings['is_hide_option_show'])) {?>
+				<?php if(isset($capabality_settings['is_hide_option_show']) && $is_hide_option_show_enable) {?>
 				<span class="input-group-addon beautiful" ><input type="checkbox" name="vendor_hide_description"  value="Enable" <?php if($vendor_hide_description == 'Enable') echo 'checked=checked'; ?>><span>  <?php _e( 'Hide from user', $WCMp->text_domain );?></span></span></p>
 				<?php }?>
 				<textarea class="no_input" readonly name="vendor_description" cols="" rows="" placeholder="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. "><?php echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea>
@@ -57,7 +59,7 @@ if($vendor) {
 				<?php } ?>
 				<div class="half_part">
 					<p><?php _e( 'Phone', $WCMp->text_domain );?>
-					<?php if(isset($capabality_settings['is_hide_option_show'])) {?>
+					<?php if(isset($capabality_settings['is_hide_option_show']) && $is_hide_option_show_enable) {?>
 					<span class="input-group-addon beautiful" >
 						<input type="checkbox" name="vendor_hide_phone"  value="Enable" <?php if($vendor_hide_phone == 'Enable') echo 'checked=checked'; ?> >
 						<span> <?php _e( 'Hide from user', $WCMp->text_domain );?></span> </span> 
@@ -67,7 +69,7 @@ if($vendor) {
 				</div>
 				<div class="half_part">
 					<p><?php _e( 'Email *', $WCMp->text_domain );?> 
-					<?php if(isset($capabality_settings['is_hide_option_show'])) {?>
+					<?php if(isset($capabality_settings['is_hide_option_show']) && $is_hide_option_show_enable) {?>
 						<span class="input-group-addon beautiful" >
 						<input type="checkbox"  name="vendor_hide_email"  value="Enable" <?php if($vendor_hide_email == 'Enable') echo 'checked=checked'; ?>>
 						<span><?php _e( 'Hide from user', $WCMp->text_domain );?></span> </span>
@@ -77,7 +79,7 @@ if($vendor) {
 				</div>
 				<div class="clear"></div>
 				<p><?php _e( 'Address', $WCMp->text_domain );?> 
-				<?php if(isset($capabality_settings['is_hide_option_show'])) {?>
+				<?php if(isset($capabality_settings['is_hide_option_show']) && $is_hide_option_show_enable) {?>
 					<span class="input-group-addon beautiful" >
 					<input type="checkbox" name="vendor_hide_address"  value="Enable" <?php if($vendor_hide_address == 'Enable') echo 'checked=checked'; ?>>
 					<span><?php _e( ' Hide from user', $WCMp->text_domain );?></span> </span> 
@@ -95,8 +97,8 @@ if($vendor) {
 					<input class="no_input" readonly type="text" placeholder="city"  name="vendor_city" value="<?php echo isset($vendor_city['value']) ? $vendor_city['value']:''; ?>">
 				</div>
 				<input class="no_input" readonly type="text" placeholder="Zipcode" style="width:50%;" name="vendor_postcode" value="<?php echo  isset($vendor_postcode['value']) ? $vendor_postcode['value']:''; ?>">
-				<?php
-					if ( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') ) {
+				<?php $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
+					if ( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') && $is_vendor_add_external_url) {
 						?>
 						<div class="half_part">
 							<input class="no_input" readonly type="text" placeholder="External store URL" name="vendor_external_store_url" value="<?php echo  isset($vendor_external_store_url['value']) ? $vendor_external_store_url['value']:''; ?>">

@@ -331,17 +331,17 @@ Class WCMp_Admin_Dashboard {
 			'commission_share'   => __( 'Commission Share', $WCMp->text_domain ),
 		);
 		
-		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_show_email') ) {
+		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_show_email') ||  $is_not_show_email_field = apply_filters('is_not_show_email_field', false) ) {
 			unset( $headers[ 'buyer_name' ] );
 		}
-		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') ) {
+		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') ||  $is_not_show_customer_dtl_field = apply_filters('is_not_show_customer_dtl_field', false) ) {
 			unset( $headers[ 'buyer_email' ] );
 			unset( $headers[ 'buyer_contact' ] );
 		}
-		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') ) {
+		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') ||  $is_not_show_customer_billing_field = apply_filters('is_not_show_customer_billing_field', false) ) {
 			unset( $headers[ 'billing_address' ] );
 		}
-		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') ) {
+		if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') ||  $is_not_show_customer_shipping_field = apply_filters('is_not_show_customer_shipping_field', false) ) {
 			unset( $headers[ 'shipping_address' ] );
 		}
 		
@@ -414,17 +414,17 @@ Class WCMp_Admin_Dashboard {
 							'shipping' => get_post_meta($commission_id, '_shipping', true),
 							'commission_share' => get_post_meta($commission_id, '_commission_amount', true),
 						);
-						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_show_email') ) {
+						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_show_email') ||  $is_not_show_email_field = apply_filters('is_not_show_email_field', false)  ) {
 							unset( $order_datas[$index][ 'buyer_name' ] );
 						}
-						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') ) {
+						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') ||  $is_not_show_customer_dtl_field = apply_filters('is_not_show_customer_dtl_field', false) ) {
 							unset( $order_datas[$index][ 'buyer_email' ] );
 							unset( $order_datas[$index][ 'buyer_contact' ] );
 						}
-						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') ) {
+						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') ||  $is_not_show_customer_billing_field = apply_filters('is_not_show_customer_billing_field', false) ) {
 							unset( $order_datas[$index][ 'billing_address' ] );
 						}
-						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') ) {
+						if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') ||  $is_not_show_customer_shipping_field = apply_filters('is_not_show_customer_shipping_field', false) ) {
 							unset( $order_datas[$index][ 'shipping_address' ] );
 						}
 						$index++;
@@ -440,7 +440,7 @@ Class WCMp_Admin_Dashboard {
 		fputcsv( $file, $headers );
 		// Add data to file
 		foreach ( $order_datas as $order_data ) {
-			if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_order_show_email') ) {
+			if ( ! $WCMp->vendor_caps->vendor_capabilities_settings('is_order_show_email') ||  $is_not_show_email_field = apply_filters('is_not_show_email_field', true) ) {
 				unset( $order_data[ 'buyer' ] );
 			}
 			fputcsv( $file, $order_data );
@@ -489,9 +489,14 @@ Class WCMp_Admin_Dashboard {
 		$vendor = get_wcmp_vendor($user->ID);
                 $vendor = apply_filters( 'wcmp_vendor_dashboard_pages_vendor', $vendor);
 		if($vendor) {
+                    $order_page = apply_filters( 'wcmp_vendor_view_order_page', true);
+                    if($order_page) {
 			$hook = add_menu_page( __( 'Orders', $WCMp->text_domain ), __( 'Orders', $WCMp->text_domain ), 'read', 'dc-vendor-orders', array( $this, 'wcmp_vendor_orders_page' ) );
 			add_action( "load-$hook", array( $this, 'add_order_page_options' ) );
-			if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping') ) {
+                    }
+                    
+                        $shipping_page = apply_filters( 'wcmp_vendor_view_shipping_page', true);
+			if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping')  && $shipping_page) {
 				$give_shipping_override = get_user_meta( $user->ID, '_vendor_give_shipping', true ); 
 				if(!$give_shipping_override) {
 					add_menu_page( __( 'Shipping', $WCMp->text_domain ), __( 'Shipping', $WCMp->text_domain ), 'read', 'dc-vendor-shipping', array( $this, 'shipping_page' ) );

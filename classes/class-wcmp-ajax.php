@@ -1270,6 +1270,7 @@ class WCMp_Ajax {
 			$shipping_term = wp_insert_term( $user->user_login.'-'.$user_id, 'product_shipping_class' );
 			update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
 		}
+                do_action('wcmp_add_user_role', $user_id, 'dc_vendor');
 		die();
 	}
 	

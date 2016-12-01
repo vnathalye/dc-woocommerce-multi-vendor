@@ -66,10 +66,10 @@ global $WCMp;
 		</div>
 		<div class="clear"></div>
 	</div>
-	<?php
+	<?php $is_order_csv_export_button = apply_filters('is_order_csv_export_button', true); 
 		$capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_settings_name');
 		if( isset($capabilities_settings['is_order_csv_export']) ) {
-			if( $capabilities_settings['is_order_csv_export'] == 'Enable' ) {
+			if( $capabilities_settings['is_order_csv_export'] == 'Enable' && $is_order_csv_export_button ) {
 				?>
 				<div class="wcmp_mixed_txt" > <span><?php _e( 'Download CSV to get complete Stats & Reports', $WCMp->text_domain );?></span>
 					<form name="wcmp_vendor_dashboard_stat_export" method="post" >

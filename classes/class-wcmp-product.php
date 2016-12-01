@@ -1215,8 +1215,9 @@ class WCMp_Product {
 		global $product, $WCMp;
 		$policies_can_override_by_vendor = '';	
 		$wcmp_capabilities_settings_name = get_option('wcmp_capabilities_settings_name');
+                $can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
 		$policies_settings = get_option('wcmp_general_policies_settings_name');
-		if(isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && ( isset($policies_settings['is_cancellation_on'] ) || isset($policies_settings['is_refund_on'] ) || isset($policies_settings['is_shipping_on'] ) )){
+		if(isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && ( isset($policies_settings['is_cancellation_on'] ) || isset($policies_settings['is_refund_on'] ) || isset($policies_settings['is_shipping_on'] ) )){
 			$policies_can_override_by_vendor = 'Enable';			
 		}		
 		$title = __( 'Policies', $WCMp->text_domain );

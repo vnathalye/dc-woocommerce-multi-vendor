@@ -23,8 +23,8 @@ $review_settings = get_option('wcmp_general_sellerreview_settings_name');
 				<?php if(!empty($location) && $vendor_hide_address != 'Enable') { ?><p><img height="25" width="25" src=<?php echo $WCMp->plugin_url . 'assets/images/location_pin.png';?> /><label><?php echo apply_filters( 'vendor_shop_page_location', $location, $vendor_id ); ?></label></p><?php } ?>
 				<?php if(!empty($mobile) && $vendor_hide_phone != 'Enable') { ?><p><img height="25" width="25" src=<?php echo $WCMp->plugin_url . 'assets/images/mobile-phone.png';?> /><label><?php echo apply_filters( 'vendor_shop_page_contact', $mobile, $vendor_id ); ?></label></p><?php } ?>
 				<?php if(!empty($email) && $vendor_hide_email != 'Enable') { ?><p><img height="25" width="25" src=<?php echo $WCMp->plugin_url . 'assets/images/email_envelope_message.png';?> /><label><?php echo apply_filters( 'vendor_shop_page_email', $email, $vendor_id ); ?></label></p><?php } ?>
-				<?php
-					if ( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') ) {
+				<?php  $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
+					if ( $WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') && $is_vendor_add_external_url_field ) {
 						$external_store_url = get_user_meta( $vendor_id, '_vendor_external_store_url', true );
 						$external_store_label = get_user_meta( $vendor_id, '_vendor_external_store_label', true );
 						if( empty($external_store_label) ) $external_store_label = __('External Store URL', $WCMp->text_domain);

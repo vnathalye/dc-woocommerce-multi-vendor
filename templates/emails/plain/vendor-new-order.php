@@ -31,7 +31,8 @@ $vendor_items_dtl = $vendor->plain_vendor_order_item_table($order, $vendor_id);
 echo $vendor_items_dtl;
 
 echo "----------\n\n";
-if($WCMp->vendor_caps->vendor_capabilities_settings('show_cust_order_calulations')) {
+$show_cust_order_calulations_field = apply_filters('show_cust_order_calulations_field', true);
+if($WCMp->vendor_caps->vendor_capabilities_settings('show_cust_order_calulations') && $show_cust_order_calulations_field) {
 	
 	if ( $totals = $vendor->wcmp_vendor_get_order_item_totals($order, $vendor_id) ) {
 		foreach ( $totals as $total ) {
@@ -43,8 +44,9 @@ if($WCMp->vendor_caps->vendor_capabilities_settings('show_cust_order_calulations
 echo "\n****************************************************\n\n";
 
 do_action( 'woocommerce_email_after_order_table', $order, $sent_to_admin, $plain_text );
+$show_cust_add_field = apply_filters('show_cust_add_field', true);
 $show_customer_detail = $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_add');
-if($show_customer_detail) {
+if($show_customer_detail && $show_cust_add_field) {
 	echo __( 'Customer Details',  $WCMp->text_domain ) . "\n";
 
 	if ( $order->billing_email )
@@ -54,13 +56,15 @@ if($show_customer_detail) {
 		echo __( 'Telephone:',  $WCMp->text_domain ); ?> <?php echo $order->billing_phone . "\n";
 }
 
+$show_cust_billing_add_field = apply_filters('show_cust_billing_add_field', true);
+$show_cust_shipping_add_field = apply_filters('show_cust_shipping_add_field', true);
 $show_cust_billing_add =  $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_billing_add');
 $show_cust_shipping_add =  $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_shipping_add');
-if($show_cust_billing_add) {
+if($show_cust_billing_add && $show_cust_billing_add_field) {
 	echo "\n" . __( 'Billing Address',  $WCMp->text_domain ) . ":\n";
 	echo $order->get_formatted_billing_address() . "\n\n";
 }
-if($show_cust_shipping_add) {
+if($show_cust_shipping_add && $show_cust_shipping_add_field) {
 	if ( get_option( 'woocommerce_ship_to_billing_address_only' ) == 'no' && ( $shipping = $order->get_formatted_shipping_address() ) ) {
 	
 		echo __( 'Shipping Address',  $WCMp->text_domain ) . ":\n";

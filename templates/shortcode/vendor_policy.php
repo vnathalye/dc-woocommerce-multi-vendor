@@ -13,6 +13,10 @@ global $WCMp;
 $wcmp_policy_settings = get_option("wcmp_general_policies_settings_name");
 $wcmp_capabilities_settings_name = get_option("wcmp_capabilities_settings_name");
 $customer_support_details_settings = get_option('wcmp_general_customer_support_details_settings_name');
+$can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
+$can_vendor_edit_cancellation_policy_field = apply_filters('can_vendor_edit_cancellation_policy_field', true);
+$can_vendor_edit_refund_policy_field = apply_filters('can_vendor_edit_refund_policy_field', true);
+$can_vendor_edit_shipping_policy_field = apply_filters('can_vendor_edit_shipping_policy_field', true);
 ?>
 <div class="wcmp_main_holder toside_fix">
 	<div class="wcmp_headding1">
@@ -26,20 +30,20 @@ $customer_support_details_settings = get_option('wcmp_general_customer_support_d
 	</div>
 	<form method="post" name="shop_settings_form" class="wcmp_policy_form">
     <div class="wcmp_form1">
-    	<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label'] )  && (isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy'] ) || isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy'] ) || isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy'] ) ) ) {			?>
+    	<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label'] ) && $can_vendor_edit_policy_tab_label_field  && (isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy'] ) || isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy'] ) || isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy'] ) ) ) {			?>
     		<p> <?php _e( 'Policy Tab Label', $WCMp->text_domain );?>	</p>
 				<input class="no_input" type="text" readonly name="vendor_policy_tab_title" placeholder="<?php _e( 'Policies. ', $WCMp->text_domain );?>" value="<?php echo isset($vendor_policy_tab_title['value']) ? $vendor_policy_tab_title['value'] : ''; ?>" >
 			<?php }?>
 			
-    	<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_cancellation_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy'] ) ) {			?>
+    	<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_cancellation_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy'] ) && $can_vendor_edit_cancellation_policy_field ) {			?>
     		<p> <?php _e( 'Cancellation/Return/Exchange Policy', $WCMp->text_domain );?>	</p>
 				<textarea class="no_input" readonly name="vendor_cancellation_policy" cols="" rows="" placeholder="<?php _e( 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ', $WCMp->text_domain );?>"><?php echo isset($vendor_cancellation_policy['value']) ? $vendor_cancellation_policy['value'] : $wcmp_policy_settings['cancellation_policy']; ?></textarea>
 			<?php }?>
-			<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_refund_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy'] ) ) {			?>
+			<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_refund_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy'] ) && $can_vendor_edit_refund_policy_field ) {			?>
 				<p> <?php _e( 'Refund Policy', $WCMp->text_domain );?>	</p>
 				<textarea  class="no_input" readonly name="vendor_refund_policy" cols="" rows="" placeholder="<?php _e( 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ', $WCMp->text_domain );?>"><?php echo isset($vendor_refund_policy['value']) ? $vendor_refund_policy['value'] : $wcmp_policy_settings['refund_policy']; ?></textarea>
 			<?php }?>
-			<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_shipping_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy'] ) ) {			?>
+			<?php if( isset( $wcmp_policy_settings['is_policy_on'] ) && isset($wcmp_policy_settings['is_shipping_on'] )  && isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy'] ) && $can_vendor_edit_shipping_policy_field ) {			?>
 				<p> <?php _e( 'Shipping Policy', $WCMp->text_domain );?></p>
 				<textarea  class="no_input" readonly name="vendor_shipping_policy" cols="" rows="" placeholder="<?php _e( 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ', $WCMp->text_domain );?>"><?php echo isset($vendor_shipping_policy['value']) ? $vendor_shipping_policy['value'] : $wcmp_policy_settings['shipping_policy']; ?></textarea>
 			<?php } ?>

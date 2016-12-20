@@ -1,10 +1,10 @@
-﻿=== WC Marketplace ===
+=== WC Marketplace ===
 Contributors: Dualcube, arimghosh, arka422, dualcube_subrata, rimpadualcube
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
 Donate link: https://dualcube.com/
 Requires at least: 4.0
-Tested up to: 4.6.1
-Stable tag: 2.4.8
+Tested up to: 4.7
+Stable tag: 2.4.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,8 @@ WC Marketplace is the fastest growing multi-store marketplace plugin for WooComm
 == Description ==
 Transform your site into a marketplace and allow people to sell products from your site - just like Themeforest, Etsy or Amazon.
 
+<strong>Christmas Cheers!!! Checkout [Christmas offer](http://wc-marketplace.com/addons/) and [Bundled add-ons](http://wc-marketplace.com/wcmp-bundle/)</strong>
+
 Check out the plugin site here: [WC Marketplace](http://wc-marketplace.com)
 
 
@@ -25,12 +27,12 @@ Check out the plugin site here: [WC Marketplace](http://wc-marketplace.com)
 = Why use WC Marketplace: =
 
 
-Wondering why 2000+ marketplaces love and use WCMp? Here you go:
+Wondering why 3000+ marketplaces love and use WCMp? Here you go:
 
 
 > <strong>Lightening quick support</strong>
 >
-> 75+ reviews here in WordPress.org, and everyone loves WCMp. Here is why: [http://wc-marketplace.com/support-forum/]( http://wc-marketplace.com/support-forum )
+> 85+ reviews here in WordPress.org, and everyone loves WCMp. Here is why: [http://wc-marketplace.com/support-forum/]( http://wc-marketplace.com/support-forum )
 >
 >
 >
@@ -48,6 +50,7 @@ Wondering why 2000+ marketplaces love and use WCMp? Here you go:
 > <strong>Compatible plugins addons</strong>
 >
 > - [Frontend Manager](http://wc-marketplace.com/product/wcmp-frontend-product-manager)
+> - [Vedor Categorization](http://wc-marketplace.com/product/wcmp-vedor-categorization/)
 > - [Addons](http://wc-marketplace.com/addons)
 > - [Compatible plugins and themes](http://wc-marketplace.com/themes)
 >
@@ -179,6 +182,11 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.4.9 =
+* Added: Support Wordpress 4.7
+* Fixed: CSS issue in Dashboard
+* Fixed: Email Notification on new vendor registration
+
 = 2.4.8 =
 * Added: Filters & hook.
 * Fixed: Vendor dashboard menu.
@@ -457,6 +465,11 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.4.9 =
+* Added: Support Wordpress 4.7
+* Fixed: CSS issue in Dashboard
+* Fixed: Email Notification on new vendor registration
+
 = 2.4.8 =
 * Added: Filters & hook.
 * Fixed: Vendor dashboard menu.

@@ -40,6 +40,7 @@ class WCMp_Frontend {
      * @return void
      */
     function wcmp_save_extra_register_fields($customer_id) {
+        global $WCMp;
         if (isset($_POST['wcmp_vendor_fields']) && isset($_POST['pending_vendor'])) {
 
             if (isset($_FILES['wcmp_vendor_fields'])) {
@@ -106,6 +107,7 @@ class WCMp_Frontend {
             update_post_meta($register_vendor_post_id, 'email', $user_email);
             update_post_meta($register_vendor_post_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
             update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $register_vendor_post_id);
+            $WCMp->user->wcmp_woocommerce_created_customer_notification();
         }
     }
 

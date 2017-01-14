@@ -4,7 +4,7 @@ Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce 
 Donate link: https://dualcube.com/
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.4.9
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ WC Marketplace is the fastest growing multi-store marketplace plugin for WooComm
 == Description ==
 Transform your site into a marketplace and allow people to sell products from your site - just like Themeforest, Etsy or Amazon.
 
-<strong>Christmas Cheers!!! Checkout [Christmas offer](http://wc-marketplace.com/addons/) and [Bundled add-ons](http://wc-marketplace.com/wcmp-bundle/)</strong>
+<strong>Checkout [Bundled add-ons](http://wc-marketplace.com/wcmp-bundle/)</strong>
 
 Check out the plugin site here: [WC Marketplace](http://wc-marketplace.com)
 
@@ -182,6 +182,9 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.5.0 =
+* Fixed: Plugin deactivation hook
+
 = 2.4.9 =
 * Added: Support Wordpress 4.7
 * Fixed: CSS issue in Dashboard
@@ -465,6 +468,9 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.5.0 =
+* Fixed: Plugin deactivation hook
+
 = 2.4.9 =
 * Added: Support Wordpress 4.7
 * Fixed: CSS issue in Dashboard

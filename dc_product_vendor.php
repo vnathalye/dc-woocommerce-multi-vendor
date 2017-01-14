@@ -4,7 +4,7 @@ Plugin Name: WC Marketplace
 Plugin URI: http://dualcube.com
 Description: A Free Extension That Transforms Your WooCommerce Site into a Marketplace.
 Author: Team DualCube
-Version: 2.4.9
+Version: 2.5.0
 Author URI: http://dualcube.com
 */
 
@@ -19,6 +19,7 @@ if(!defined('WCMp_TEXT_DOMAIN')) exit;
 // Activation Hooks
 register_activation_hook( __FILE__, 'wcmp_check_if_another_vendor_plugin_exits' );
 register_activation_hook( __FILE__, 'activate_wcmp_plugin');
+register_deactivation_hook(__FILE__, 'deactivate_wcmp_plugin');
 register_activation_hook( __FILE__, 'flush_rewrite_rules' );
 
 

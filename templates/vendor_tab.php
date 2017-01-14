@@ -19,7 +19,7 @@ $review_settings = get_option('wcmp_general_sellerreview_settings_name');
 		$html .= '<h2>' . $vendor->user_data->display_name . '</h2>';
 		echo $html;
 		$term_vendor = wp_get_post_terms( $product->id, 'dc_vendor_shop' );	
-		if( !is_wp_error($term_vendor) ) {
+		if( !is_wp_error($term_vendor) && !empty($term_vendor) ) {
 			$rating_result_array = wcmp_get_vendor_review_info($term_vendor[0]->term_id);
 			if(isset($review_settings['is_sellerreview'])) {
 				$term_link = get_term_link($term_vendor[0]);

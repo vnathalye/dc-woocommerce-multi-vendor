@@ -623,6 +623,15 @@ if( ! function_exists( 'activate_wcmp_plugin' ) ) {
 	}
 }
 
+if(!function_exists('deactivate_wcmp_plugin')){
+    /**
+     * On deactivation delete page install option
+     */
+    function deactivate_wcmp_plugin(){
+        delete_option('dc_product_vendor_plugin_page_install');
+    }
+}
+
 
 
 

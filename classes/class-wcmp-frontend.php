@@ -1065,7 +1065,7 @@ class WCMp_Frontend {
             }
             
             //redirect to my account or vendor dashbord page if user loggedin
-            if(is_user_logged_in() && is_page($pages['vendor_registration'])){
+            if(isset($pages['vendor_registration']) && is_user_logged_in() && is_page($pages['vendor_registration'])){
                 if(is_user_wcmp_vendor(get_current_user_id())){
                     wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
                 } else{

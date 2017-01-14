@@ -210,8 +210,10 @@ class WCMp_Product {
 						$more_product_array[$i]['seller_name'] = $vendor_data->user_data->data->display_name;
 						$more_product_array[$i]['is_vendor'] = 1;
 						$terms = get_the_terms ( $result, 'dc_vendor_shop' );
-						$more_product_array[$i]['shop_link'] = get_term_link ( $terms[0], 'dc_vendor_shop' );
-						$more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($terms[0]->term_id);
+                                                if(!empty($terms)){
+                                                    $more_product_array[$i]['shop_link'] = get_term_link ( $terms[0], 'dc_vendor_shop' );
+                                                    $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($terms[0]->term_id);
+                                                }
 					}
 				}
 				else {

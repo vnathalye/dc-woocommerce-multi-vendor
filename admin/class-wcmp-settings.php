@@ -34,6 +34,7 @@ class WCMp_Settings {
         add_action('settings_page_general_sellerreview_tab_init', array(&$this, 'general_sellerreview_tab_init'), 10, 2);
         add_action('settings_page_vendor_general_tab_init', array(&$this, 'vendor_general_tab_init'), 10, 2);
         add_action('settings_page_vendor_registration_tab_init', array(&$this, 'vendor_registration_tab_init'), 10, 2);
+        add_action('settings_page_wcmp-addons_tab_init', array(&$this, 'wcmp_addons_tab_init'), 10, 2);
     }
 
     public function delete_dc_product_vendor_plugin_db_version() {
@@ -46,27 +47,68 @@ class WCMp_Settings {
     public function add_settings_page() {
         global $WCMp;
 
-        add_submenu_page(
+        $wcmp_settings_page = add_submenu_page(
                 'woocommerce', __('WCMp', $WCMp->text_domain), __('WCMp', $WCMp->text_domain), 'manage_woocommerce', 'wcmp-setting-admin', array($this, 'create_wcmp_settings'), $WCMp->plugin_url . 'assets/images/dualcube.png'
         );
 
         $this->tabs = $this->get_wcmp_settings_tabs();
         $this->tabsection_general = $this->get_wcmp_settings_tabsections_general();
         $this->tabsection_payment = $this->get_wcmp_settings_tabsections_payment();
-        $this->tabsection_vendor =  $this->get_wcmp_settings_tabsections_vendor();
+        $this->tabsection_vendor = $this->get_wcmp_settings_tabsections_vendor();
+        // Add WCMp Help Tab
+        add_action('load-' . $wcmp_settings_page, array(&$this, 'wcmp_settings_add_help_tab'));
+    }
+
+    function wcmp_settings_add_help_tab() {
+        global $WCMp;
+        $screen = get_current_screen();
+        
+        $screen->add_help_tab(array(
+            'id' => 'wcmp_intro',
+            'title' => __('WC Marketplace',$WCMp->text_domain),
+            'content' => '<h2>WC Marketplace '.WCMp_PLUGIN_VERSION.'</h2>'.'<iframe src="https://player.vimeo.com/video/198159291?title=0&byline=0&portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+        ));
+        $screen->add_help_tab(array(
+            'id' => 'wcmp_help',
+            'title' => __('Help &amp; Support',$WCMp->text_domain),
+            'content' => '<h2>Help &amp; Support</h2>'.
+            '<p>Our enrich documentation is suffice to answer all of your queries on WC Marketplace. We have covered all of your questions with snippets, graphics and a complete set-up guide.</p>'
+            .'<p>For further assistance in WC Marketplace please contact to our <a target="_blank" href="https://wc-marketplace.com/support-forum/">support forum</a> .</p>',
+        ));
+        $screen->add_help_tab(array(
+           'id' => 'wcmp_found_bug',
+            'title'=> __('Found a bug?',$WCMp->text_domain),
+            'content' => '<h2>Found a bug?</h2>'
+            .'<p>If you find a bug within WC Marketplace core you can submit your report by raising a ticket via <a target="_blank" href="https://github.com/dualcube/dc-woocommerce-multi-vendor/issues">Github issues</a>. Prior to submitting the report, please read the contribution guide.</p>'
+        ));
+        $screen->add_help_tab(array(
+            'id' => 'wcmp_knowledgebase',
+            'title' => __('Knowledgebase',$WCMp->text_domain),
+            'content' => '<h2>Knowledgebase</h2>'
+            .'<p>If you would like to learn more about using WC Marketplace, please follow our <a target="_blank" href="https://wc-marketplace.com/knowledgebase/">knowledgebase</a> section.</p>'
+        ));
+        $screen->set_help_sidebar(
+            '<p><strong>' . __( 'For more information:', $WCMp->text_domain ) . '</strong></p>' .
+            '<p><a href="' . 'https://wordpress.org/plugins/dc-woocommerce-multi-vendor/' . '" target="_blank">' . __( 'WordPress.org Project', $WCMp->text_domain ) . '</a></p>' .
+            '<p><a href="' . 'https://github.com/dualcube/dc-woocommerce-multi-vendor' . '" target="_blank">' . __( 'Github Project', $WCMp->text_domain ) . '</a></p>' .
+            '<p><a href="' . 'https://demo.wc-marketplace.com/addon/WCMp/' . '" target="_blank">' . __( 'View Demo', $WCMp->text_domain ) . '</a></p>' .
+            '<p><a href="' . 'https://wc-marketplace.com/third-party-themes/' . '" target="_blank">' . __( 'Supported Themes', $WCMp->text_domain ) . '</a></p>' .
+            '<p><a href="' . 'https://wc-marketplace.com/addons/' . '" target="_blank">' . __( 'Official Extensions', $WCMp->text_domain ) . '</a></p>'
+        );
     }
 
     function get_wcmp_settings_tabs() {
         global $WCMp;
         $tabs = apply_filters('wcmp_tabs', array(
             'general' => __('General', $WCMp->text_domain),
-            'vendor' => __('Vendor',$WCMp->text_domain),
+            'vendor' => __('Vendor', $WCMp->text_domain),
             'product' => __('Products', $WCMp->text_domain),
             'frontend' => __('Frontend', $WCMp->text_domain),
             'payment' => __('Payment', $WCMp->text_domain),
             'capabilities' => __('Capabilities', $WCMp->text_domain),
             'to_do_list' => __('To-do List', $WCMp->text_domain),
             'pages' => __('Pages', $WCMp->text_domain),
+            'wcmp-addons' => __('Extensions', $WCMp->text_domain)
         ));
         return $tabs;
     }
@@ -95,7 +137,8 @@ class WCMp_Settings {
         ));
         return $tabsection_payment;
     }
-    function get_wcmp_settings_tabsections_vendor(){
+
+    function get_wcmp_settings_tabsections_vendor() {
         global $WCMp;
         $tabsection_vendor = apply_filters('wcmp_tabsection_vendor', array(
             'general' => 'Vendor Settings',
@@ -193,7 +236,7 @@ class WCMp_Settings {
         echo '</h2>';
 
         foreach ($this->tabs as $tab => $name) :
-            if ($tab == $current) :
+            if ($tab == $current && $tab != 'wcmp-addons') :
                 printf(__("<h2>%s Settings</h2>", $WCMp->text_domain), $name);
             endif;
         endforeach;
@@ -233,14 +276,13 @@ class WCMp_Settings {
                 $tab_section = $_GET['tab_section'];
                 $this->options = get_option("wcmp_{$tab}_{$tab_section}_settings_name");
             } else if ($tab == 'vendor') {
-                if(isset($_GET['tab_section']) && $_GET['tab_section'] != 'vendor'){
+                if (isset($_GET['tab_section']) && $_GET['tab_section'] != 'vendor') {
                     $tab_section = $_GET['tab_section'];
-                } else{
+                } else {
                     $tab_section = 'general';
                 }
                 $this->options = get_option("wcmp_{$tab}_{$tab_section}_settings_name");
-            }
-            else {
+            } else {
                 $this->options = get_option("wcmp_{$tab}_settings_name");
             }
 
@@ -252,8 +294,7 @@ class WCMp_Settings {
                 settings_errors("wcmp_{$tab}_{$tab_section}_settings_name");
             } else if ($tab == 'vendor') {
                 settings_errors("wcmp_{$tab}_{$tab_section}_settings_name");
-            }
-            else {
+            } else {
                 settings_errors("wcmp_{$tab}_settings_name");
             }
             ?>
@@ -274,19 +315,20 @@ class WCMp_Settings {
                     settings_fields("wcmp_{$tab}_{$tab_section}_settings_group");
                     do_action("wcmp_{$tab}_{$tab_section}_settings_before_submit");
                     do_settings_sections("wcmp-{$tab}-{$tab_section}-settings-admin");
-                    if($tab_section == 'registration'){
-                        do_action("settings_page_{$tab}_{$tab_section}_tab_init", $tab,$tab_section);
+                    if ($tab_section == 'registration') {
+                        do_action("settings_page_{$tab}_{$tab_section}_tab_init", $tab, $tab_section);
                         wp_enqueue_style('wcmp_vendor_registration', $WCMp->plugin_url . 'assets/admin/css/admin-vendor_registration.css', array(), $WCMp->version);
                         wp_enqueue_script('wcmp_angular', $WCMp->plugin_url . 'assets/admin/js/angular.min.js', array(), $WCMp->version);
-                        wp_enqueue_script('wcmp_angular-ui',$WCMp->plugin_url . 'assets/admin/js/sortable.js',array('wcmp_angular'),$WCMp->version);
-                        wp_enqueue_script('wcmp_vendor_registration', $WCMp->plugin_url . 'assets/admin/js/vendor_registration_app.js', array('wcmp_angular','wcmp_angular-ui'), $WCMp->version);
+                        wp_enqueue_script('wcmp_angular-ui', $WCMp->plugin_url . 'assets/admin/js/sortable.js', array('wcmp_angular'), $WCMp->version);
+                        wp_enqueue_script('wcmp_vendor_registration', $WCMp->plugin_url . 'assets/admin/js/vendor_registration_app.js', array('wcmp_angular', 'wcmp_angular-ui'), $WCMp->version);
                         $wcmp_vendor_registration_form_data = get_option('wcmp_vendor_registration_form_data');
-                        wp_localize_script('wcmp_vendor_registration', 'vendor_registration_param', array('partials' => $WCMp->plugin_url . 'assets/admin/partials/','ajax_url' => admin_url('admin-ajax.php'),'form_data' => $wcmp_vendor_registration_form_data));
-                    } else{
+                        wp_localize_script('wcmp_vendor_registration', 'vendor_registration_param', array('partials' => $WCMp->plugin_url . 'assets/admin/partials/', 'ajax_url' => admin_url('admin-ajax.php'), 'form_data' => $wcmp_vendor_registration_form_data));
+                    } else {
                         submit_button();
                     }
-                }
-                else {
+                } else if ($tab == 'wcmp-addons') {
+                    do_action("settings_page_{$tab}_tab_init", $tab);
+                } else {
                     settings_fields("wcmp_{$tab}_settings_group");
                     do_action("wcmp_{$tab}_settings_before_submit");
                     do_settings_sections("wcmp-{$tab}-settings-admin");
@@ -321,7 +363,7 @@ class WCMp_Settings {
         do_action('befor_settings_page_init');
         // Register each tab settings
         foreach ($this->tabs as $tab => $name) :
-            if ($tab == 'to_do_list')
+            if ($tab == 'to_do_list' || $tab == 'wcmp-addons')
                 continue;
             do_action("settings_page_{$tab}_tab_init", $tab);
             if ($tab == 'general') {
@@ -345,7 +387,8 @@ class WCMp_Settings {
                     if ($tabsection == 'vendor') {
                         
                     } else {
-                        if($tabsection == 'registration') continue;
+                        if ($tabsection == 'registration')
+                            continue;
                         do_action("settings_page_{$tab}_{$tabsection}_tab_init", $tab, $tabsection);
                     }
                 }
@@ -562,18 +605,25 @@ class WCMp_Settings {
         $WCMp->admin->load_class("settings-{$tab}", $WCMp->plugin_path, $WCMp->token);
         new WCMp_Settings_To_Do_List($tab);
     }
-    
-    function vendor_registration_tab_init($tab, $subsection){
+
+    function vendor_registration_tab_init($tab, $subsection) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
         new WCMp_Settings_Vendor_Registration($tab, $subsection);
     }
-    
-    function vendor_general_tab_init($tab, $subsection){
+
+    function vendor_general_tab_init($tab, $subsection) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
         new WCMp_Settings_Vendor_General($tab, $subsection);
     }
+
+    function wcmp_addons_tab_init($tab) {
+        global $WCMp;
+        $WCMp->admin->load_class("settings-{$tab}", $WCMp->plugin_path, $WCMp->token);
+        new WCMp_Settings_WCMp_Addons($tab);
+    }
+
     function get_field_callback_type($fieldType) {
         $callBack = '';
         switch ($fieldType) {

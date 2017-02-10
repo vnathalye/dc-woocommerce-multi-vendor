@@ -5,7 +5,7 @@
  *
  * Plugin install script which adds default pages, taxonomies, and database tables to WordPress. Runs on activation and upgrade.
  *
- * @author 		Dualcube
+ * @author 		WC Marketplace
  * @package 	wcmp/Admin/Install
  * @version    0.0.1
  */

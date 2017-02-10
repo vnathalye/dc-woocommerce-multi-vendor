@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/policies_tab.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	dc-product-vendor/Templates
  * @version   2.3.0
  */

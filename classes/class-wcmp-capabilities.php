@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @class 		WCMp_Capabilities
  * @version		1.0.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */ 
 class WCMp_Capabilities {
 	

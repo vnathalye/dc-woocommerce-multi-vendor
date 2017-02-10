@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/vendor_dashboard_menu.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	dc-product-vendor/Templates
  * @version   2.3.0
  */
@@ -115,4 +115,15 @@ if(in_array('wcmp-vendor_shop_seo/wcmp_vendor_shop_seo.php',$active_plugins)){
 			<?php }?>
 		</ul>
 	</div>
+</div>
+<div class="popup-overlay"></div>
+<div id="show_addons_msg" class="popup">
+    <div class="popup-body"> 
+        <span class="popup-exit"></span>    
+        <div class="popup-content">
+            <div class="" style="color: green;"></div>
+            <div>This feature is not available for you. Please contact your admin. </div>
+            <div class="clear"></div>
+        </div>
+    </div>
 </div>

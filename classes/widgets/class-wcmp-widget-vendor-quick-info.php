@@ -2,7 +2,7 @@
 /**
  * WCMp Vendor Quick Info Widget
  *
- * @author    Dualcube
+ * @author    WC Marketplace
  * @category  Widgets
  * @package   WCMp/Widgets
  * @version   2.2.0
@@ -190,7 +190,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
 	 *
 	 * @since 1.0
 	 * @return void
-	 * @author dualcube
+	 * @author WC Marketplace
 	 */
 	function send_mail() {
 		if ( $this->check_form() ) {

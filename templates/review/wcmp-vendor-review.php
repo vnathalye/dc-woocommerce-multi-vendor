@@ -6,7 +6,7 @@
  * This template can be overridden by copying it to yourtheme/dc-product-vendor/review/wcmp-vendor-review.php.
  *
  * 
- * @author  Dualcube
+ * @author  WC Marketplace
  * @package dc-woocommerce-multi-vendor/Templates
  * @version 3.3.5
  */

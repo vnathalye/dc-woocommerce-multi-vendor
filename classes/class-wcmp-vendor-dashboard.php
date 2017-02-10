@@ -4,7 +4,7 @@
  * 
  * @version	2.2.0
  * @package WCMp
- * @author  Dualcube
+ * @author  WC Marketplace
  */
 
 Class WCMp_Admin_Dashboard { 

@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/taxonomy-dc_vendor_shop.php
  *
- * @author 		Dualcube
+ * @author 		WC Marketplace
  * @package 	WCMp/Templates
  * @version   2.2.0
  */

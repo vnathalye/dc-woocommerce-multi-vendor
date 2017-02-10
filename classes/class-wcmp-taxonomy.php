@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 class WCMp_Taxonomy {
   
@@ -26,7 +26,7 @@ class WCMp_Taxonomy {
   /**
   * Register WCMp taxonomy
   *
-	* @author DualCube
+	* @author WC Marketplace
 	* @access private
 	* @package WCMp
   */

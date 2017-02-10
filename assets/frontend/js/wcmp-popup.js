@@ -4,8 +4,13 @@ jQuery(window).load(function(){
         $('[data-popup-target]').click(function () {
             $('html').addClass('overlay');
             var activePopup = $(this).attr('data-popup-target');
+            var timeOut = $(this).data('time_out');
             $(activePopup).addClass('visible');
-
+            if(timeOut !== undefined){
+                setTimeout(function (){
+                    clearPopup();
+                },timeOut*60);
+            }
         });
 
         $(document).keyup(function (e) {

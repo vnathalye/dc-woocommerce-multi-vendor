@@ -173,21 +173,28 @@ class WCMp_WP_Fields {
     
     // Custom attribute handling
     $custom_attributes = array();
+    $custom_tags = array();
     
     if ( ! empty( $field['custom_attributes'] ) && is_array( $field['custom_attributes'] ) )
       foreach ( $field['custom_attributes'] as $attribute => $value )
         $custom_attributes[] = 'data-' . esc_attr( $attribute ) . '="' . esc_attr( $value ) . '"';
     
+    if ( ! empty( $field['custom_tags'] ) && is_array( $field['custom_tags'] ) ){
+      foreach ( $field['custom_tags'] as $tag => $value ){
+        $custom_tags[] = esc_attr( $tag ) . '="' . esc_attr( $value ) . '"';
+      }
+    }
     $field = $this->field_wrapper_start($field);
     
     printf(
-        '<input type="checkbox" id="%s" name="%s" class="%s" value="%s" %s %s />',
+        '<input type="checkbox" id="%s" name="%s" class="%s" value="%s" %s %s %s />',
         esc_attr($field['id']),
         esc_attr($field['name']),
         esc_attr($field['class']),
         esc_attr($field['value']),
         checked( $field['value'], $field['dfvalue'], false ),
-        implode( ' ', $custom_attributes )
+        implode( ' ', $custom_attributes ),
+        implode(' ', $custom_tags)
     );
     
     $this->field_wrapper_end($field);

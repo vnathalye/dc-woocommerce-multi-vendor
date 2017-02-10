@@ -7,7 +7,7 @@ if (!defined('ABSPATH'))
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 class WCMp_User {
 
@@ -210,7 +210,7 @@ class WCMp_User {
             if (isset($_POST['vendor_apply']) && $user) {
                 if (isset($_POST['pending_vendor']) && ( $_POST['pending_vendor'] == 'true' )) {
                     $this->vendor_registration($user->ID);
-                    $this->wcmp_woocommerce_created_customer_notification();
+                    $this->wcmp_customer_new_account($user->ID);
                     wp_redirect(get_permalink(get_option('woocommerce_myaccount_page_id')));
                     exit;
                 }
@@ -244,9 +244,9 @@ class WCMp_User {
             do_action('add_vendor_extra_information_my_account');
         }
         if (is_user_wcmp_vendor($current_user)) {
-            $admin_url = admin_url();
-            $dashboard_page_id = get_option('wcmp_product_vendor_vendor_dashboard_page_id');
-            echo apply_filters('wcmp_vendor_goto_dashboard', '<a href="' . get_permalink($dashboard_page_id) . '">' . __('Dashboard - manage your account here', $WCMp->text_domain) . '</a>');
+            $pages = get_option('wcmp_pages_settings_name');
+            $dashboard_page_link = isset($pages['vendor_dashboard']) ? get_permalink($pages['vendor_dashboard']) : '#';
+            echo apply_filters('wcmp_vendor_goto_dashboard', '<a href="' . $dashboard_page_link . '">' . __('Dashboard - manage your account here', $WCMp->text_domain) . '</a>');
         }
     }
 

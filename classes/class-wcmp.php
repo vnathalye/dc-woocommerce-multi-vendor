@@ -5,7 +5,7 @@
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 if (!defined('ABSPATH'))
     exit;
@@ -77,7 +77,7 @@ final class WCMp {
     function init() {
 
         if (is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id()) || is_user_wcmp_vendor(get_current_user_id()))
-            show_admin_bar(false);
+            show_admin_bar(apply_filters('wcmp_show_admin_bar',false));
 
         // Init Text Domain
         $this->load_plugin_textdomain();

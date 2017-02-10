@@ -5,7 +5,7 @@
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 class WCMp_Admin {
 
@@ -345,7 +345,7 @@ class WCMp_Admin {
         ?>
         <div style="clear: both"></div>
         <div id="dc_admin_footer">
-        <?php _e('Powered by', $WCMp->text_domain); ?> <a href="http://dualcube.com" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('Dualcube', $WCMp->text_domain); ?> &copy; <?php echo date('Y'); ?>
+        <?php _e('Powered by', $WCMp->text_domain); ?> <a href="https://wc-marketplace.com/" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('WC Marketplace', $WCMp->text_domain); ?> &copy; <?php echo date('Y'); ?>
         </div>
         <?php
     }

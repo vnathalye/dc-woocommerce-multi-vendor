@@ -4,7 +4,7 @@
  *
  * @version		2.2.0
  * @package		WCMp/shortcode
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
  
 class WCMp_Vendor_Pollicy_Settings_Shortcode {

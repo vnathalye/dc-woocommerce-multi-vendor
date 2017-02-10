@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/shortcode/vendor_lists.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	WCMm/Templates
  * @version   2.2.0
  */

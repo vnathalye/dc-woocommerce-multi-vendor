@@ -7,7 +7,7 @@ if (!defined('ABSPATH'))
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 class WCMp_Vendor {
 

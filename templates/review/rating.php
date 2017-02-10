@@ -12,7 +12,7 @@
  * be bumped and the readme will list any important changes.
  *
  * 
- * @author  Dualcube
+ * @author  WC Marketplace
  * @package dc-woocommerce-multi-vendor/Templates
  * @version 3.3.5
  */

@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
 */
 class WCMp_Product {
 	public $loop;
@@ -148,7 +148,7 @@ class WCMp_Product {
 	*/
 	function product_single_product_multivendor_tab( $tabs ) {
 		global $product, $WCMp;		
-		$title = __( 'More Offers', $WCMp->text_domain );
+		$title = apply_filters('wcmp_more_vendors_tab', __( 'More Offers', $WCMp->text_domain ));
 		$tabs['singleproductmultivendor'] = array(
 					'title' => $title,
 					'priority' => 80,

@@ -2,7 +2,7 @@
 /**
  * WCmp Vendor Order Page 
  * 
- * @author Dualcube
+ * @author WC Marketplace
  * @package WCMp 
  * @extends WP_List_Table
  */

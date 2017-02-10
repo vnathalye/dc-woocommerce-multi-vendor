@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/emails/vendor-commissions-paid.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	dc-product-vendor/Templates
  * @version   0.0.1
  */

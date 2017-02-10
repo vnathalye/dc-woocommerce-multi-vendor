@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/shortcode/vendor_billing.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	WCMp/Templates
  * @version   2.3.0
  */
@@ -67,7 +67,7 @@ global $WCMp;
 				</select>
 			</div>
 		</div>
-		<input class="long no_input" readonly type="text" id="vendor_bank_account_number" name="vendor_bank_account_number" class="user-profile-fields" value="<?php echo isset($vendor_bank_account_number['value']) ? $vendor_bank_account_number['value'] : ''; ?>" placeholder="<?php _e( 'Account Holder Name', $WCMp->text_domain );?>">
+		<input class="long no_input" readonly type="text" id="vendor_bank_account_number" name="vendor_bank_account_number" class="user-profile-fields" value="<?php echo isset($vendor_bank_account_number['value']) ? $vendor_bank_account_number['value'] : ''; ?>" placeholder="<?php _e( 'Account Number', $WCMp->text_domain );?>">
 		<div class="half_part">
 			<input class="long no_input" readonly type="text" id="vendor_bank_name" name="vendor_bank_name" class="user-profile-fields" value="<?php echo isset($vendor_bank_name['value']) ? $vendor_bank_name['value'] : ''; ?>" placeholder="<?php _e( 'Bank Name', $WCMp->text_domain );?>">
 		</div>

@@ -2,7 +2,7 @@
 /**
  * WCMp Store Location Widget
  *
- * @author    Dualcube
+ * @author    WC Marketplace
  * @category  Widgets
  * @package   WCMp/Widgets
  * @version   2.2.0

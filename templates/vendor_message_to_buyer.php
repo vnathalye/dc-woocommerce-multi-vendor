@@ -4,7 +4,7 @@
  *
  * Override this template by copying it to yourtheme/dc-product-vendor/vendor_message_to_buyer.php
  *
- * @author 		dualcube
+ * @author 		WC Marketplace
  * @package 	WCMp/Templates
  * @version   2.3.0
  */

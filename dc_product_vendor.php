@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WC Marketplace
-Plugin URI: http://dualcube.com
+Plugin URI: https://wc-marketplace.com/
 Description: A Free Extension That Transforms Your WooCommerce Site into a Marketplace.
-Author: Team DualCube
-Version: 2.5.0
-Author URI: http://dualcube.com
+Author: WC Marketplace, The Grey Parrots
+Version: 2.5.2
+Author URI: https://wc-marketplace.com/
 */
 
 if ( ! class_exists( 'WC_Dependencies_Product_Vendor' ) ) require_once 'includes/class-wcmp-dependencies.php';

@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *
  * @version		2.2.0
  * @package		WCMp
- * @author 		DualCube
+ * @author 		WC Marketplace
  */
 class WCMp_Commission {
   

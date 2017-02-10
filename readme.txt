@@ -1,10 +1,10 @@
 === WC Marketplace ===
-Contributors: Dualcube, arimghosh, arka422, dualcube_subrata, rimpadualcube
+Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
-Donate link: https://dualcube.com/
+Donate link: https://wc-marketplace.com/
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.5.0
+Stable tag: 2.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ WC Marketplace is the fastest growing multi-store marketplace plugin for WooComm
 == Description ==
 Transform your site into a marketplace and allow people to sell products from your site - just like Themeforest, Etsy or Amazon.
 
-<strong>Checkout [Bundled add-ons](http://wc-marketplace.com/wcmp-bundle/)</strong>
+<strong>Checkout [Bundled add-ons](https://wc-marketplace.com/wcmp-bundle/)</strong>
 
 Check out the plugin site here: [WC Marketplace](http://wc-marketplace.com)
 
@@ -32,33 +32,33 @@ Wondering why 3000+ marketplaces love and use WCMp? Here you go:
 
 > <strong>Lightening quick support</strong>
 >
-> 85+ reviews here in WordPress.org, and everyone loves WCMp. Here is why: [http://wc-marketplace.com/support-forum/]( http://wc-marketplace.com/support-forum )
+> 85+ reviews here in WordPress.org, and everyone loves WCMp. Here is why: [https://wc-marketplace.com/support-forum/]( https://wc-marketplace.com/support-forum )
 >
 >
 >
 > <strong>Boatload of Features</strong>
-> - [Vendor Registration]( http://wc-marketplace.com/knowledgebase/setting-vendor-registration-wcmp/ )
-> - [Admin Capabilities]( http://wc-marketplace.com/admin-capabilities )
-> - [Vendor Capabilities]( http://wc-marketplace.com/vendors-capabilities )
-> - [User Capabilities]( http://wc-marketplace.com/users-capabilities )
-> - [Commissions]( http://wc-marketplace.com/commissions )
-> - [Short Codes]( http://wc-marketplace.com/shortcodes )
-> - [Translations]( http://wc-marketplace.com/translations )
+> - [Vendor Registration]( https://wc-marketplace.com/knowledgebase/setting-vendor-registration-wcmp/ )
+> - [Admin Capabilities]( https://wc-marketplace.com/admin-capabilities )
+> - [Vendor Capabilities]( https://wc-marketplace.com/vendors-capabilities )
+> - [User Capabilities]( https://wc-marketplace.com/users-capabilities )
+> - [Commissions]( https://wc-marketplace.com/commissions )
+> - [Short Codes]( https://wc-marketplace.com/shortcodes )
+> - [Translations]( https://wc-marketplace.com/translations )
 >
 >
 >
 > <strong>Compatible plugins addons</strong>
 >
-> - [Frontend Manager](http://wc-marketplace.com/product/wcmp-frontend-product-manager)
-> - [Vedor Categorization](http://wc-marketplace.com/product/wcmp-vedor-categorization/)
-> - [Addons](http://wc-marketplace.com/addons)
-> - [Compatible plugins and themes](http://wc-marketplace.com/themes)
+> - [Frontend Manager](https://wc-marketplace.com/product/wcmp-frontend-product-manager)
+> - [Vedor Categorization](https://wc-marketplace.com/product/wcmp-vedor-categorization/)
+> - [Addons](https://wc-marketplace.com/addons)
+> - [Compatible plugins and themes](https://wc-marketplace.com/themes)
 >
 >
 >
 > <strong>Still not convinced?</strong>
 >
-> - [Shut Up And Take My Money](http://wc-marketplace.com/shut-up-and-take-my-money)
+> - [Shut Up And Take My Money](https://wc-marketplace.com/shut-up-and-take-my-money)
 
 
 
@@ -67,9 +67,9 @@ Wondering why 3000+ marketplaces love and use WCMp? Here you go:
 = Demo =
 
 
-[Admin Dashboard](http://demo.dualcube.com/wordpress/plugins/dc_woocommerce_multi_vendor/wp-admin "Link for WP-Admin")
+[Admin Dashboard](http://demo.wc-marketplace.com/addon/WCMp/wp-admin "Link for WP-Admin")
 ( Administrator Access=> Username: "demo" Password: "demo" )
-[Vendor Dashboard](http://demo.dualcube.com/wordpress/plugins/dc_woocommerce_multi_vendor/my-account "Link for Vendor Dashboard")
+[Vendor Dashboard](http://demo.wc-marketplace.com/addon/WCMp/my-account "Link for Vendor Dashboard")
 ( Vendor Access=> Username: "demo_vendor" Password: "demo_vendor" )
 
 
@@ -182,6 +182,18 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.5.2 =
+* Added: Restrict backend access from vendor
+* Added: Shortcode for display vendor recent products
+* Added: Extension page in setting panel
+* Added: Filter for display admin bar in frontend
+* Fixed: Email notification logic after apply for vendor 
+
+= 2.5.1 =
+* Fixed: Vendor products shortcode
+* Added: Filter in more vendor tab
+* Updated: Language file
+
 = 2.5.0 =
 * Fixed: Plugin deactivation hook
 
@@ -468,6 +480,18 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.5.2 =
+* Added: Restrict backend access from vendor
+* Added: Shortcode for display vendor recent products
+* Added: Extension page in setting panel
+* Added: Filter for display admin bar in frontend
+* Fixed: Email notification logic after apply for vendor
+
+= 2.5.1 =
+* Fixed: Vendor products shortcode
+* Added: Filter in more vendor tab
+* Updated: Language file
+
 = 2.5.0 =
 * Fixed: Plugin deactivation hook
 

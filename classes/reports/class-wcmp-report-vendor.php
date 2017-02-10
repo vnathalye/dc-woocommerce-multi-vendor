@@ -2,7 +2,7 @@
 /**
  * WCMp Report Sales By Vendor
  *
- * @author      Dualcube
+ * @author      WC Marketplace
  * @category    Vendor
  * @package     WCMp/Reports
  * @version     2.2.0

@@ -222,11 +222,14 @@ class WCMp_User {
      * Vendor login template redirect
      */
     function vendor_login_redirect($redirect_to) {
-        $user = get_user_by('email', $_POST['email']);
-        if (is_user_wcmp_vendor($user->ID)) {
-            $pages = get_option("wcmp_pages_settings_name");
-            $redirect_to = get_permalink($pages['vendor_dashboard']);
-            return $redirect_to;
+        if(isset($_POST['email'])) {
+            $user = get_user_by('email', $_POST['email']);
+            if (is_object($user) && isset($user->ID) && is_user_wcmp_vendor($user->ID)) {
+                $pages = get_option("wcmp_pages_settings_name");
+                $redirect_to = get_permalink($pages['vendor_dashboard']);
+                return $redirect_to;
+            }
+            return apply_filters('wcmp_vendor_login_redirect', $redirect_to, $user);
         }
         return apply_filters('wcmp_vendor_login_redirect', $redirect_to, $user);
     }
@@ -691,7 +694,7 @@ class WCMp_User {
                 'class' => "user-profile-fields"
             ), // Text
                 ), $user_id);
-        
+
         $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
         if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') || !$is_vendor_add_external_url_field) {
             unset($fields['vendor_external_store_url']);
@@ -1103,7 +1106,7 @@ class WCMp_User {
             return false;
         $errors = new WP_Error();
 
-        if ((!is_user_wcmp_vendor($user_id) && $_POST['role'] == 'dc_vendor') || (isset($_REQUEST['new_role']) && $_REQUEST['new_role'] == 'dc_vendor') || (isset($_REQUEST['new_role2']) && $_REQUEST['new_role2'] == 'dc_vendor')) {
+        if ((!is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] == 'dc_vendor') || (isset($_REQUEST['new_role']) && $_REQUEST['new_role'] == 'dc_vendor') || (isset($_REQUEST['new_role2']) && $_REQUEST['new_role2'] == 'dc_vendor')) {
             $user->add_role('dc_vendor');
             $this->update_vendor_meta($user_id);
             $this->add_vendor_caps($user_id);

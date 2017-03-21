@@ -21,8 +21,8 @@ $university_args = array(
 $university_posts = get_posts($university_args);
 $count_university = count($university_posts);
 ?>
-<link href = "http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-<script src = "http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<link href = "//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+<script src = "//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <div class="wcmp_main_holder toside_fix"<?php if($count_university == 0) { ?> style="width:77%;"  <?php }?>>
 	<div class="wcmp_headding1">
 		<ul>
@@ -48,7 +48,7 @@ $count_university = count($university_posts);
 		echo '<div style="width:100%; text-align:center;">'.__('Sorry no university found',$WCMp->text_domain)."</div>";
 		
 	}?>
-
+</div>
 
 <script type="text/javascript"> 
 	jQuery(document).ready(function($){	 

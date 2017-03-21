@@ -714,7 +714,7 @@ if( ! function_exists( 'wcmp_seller_review_enable' ) ) {
 				}
 			}
 		}
-		return $is_enable;
+		return apply_filters('wcmp_seller_review_enable', $is_enable) ;
 	}
 }
 

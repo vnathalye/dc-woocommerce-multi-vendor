@@ -142,7 +142,7 @@ class WCMp_Transaction {
 	 * Get transaction item total for vendor
 	 * 
 	 * @param int $transaction_id
-	 * @param $vender
+	 * @param $vendor
 	 * @return $item_total
 	 */
 	function get_transaction_item_totals($transaction_id, $vendor) {

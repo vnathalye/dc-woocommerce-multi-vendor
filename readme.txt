@@ -1,121 +1,69 @@
 === WC Marketplace ===
 Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata
 Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
-Donate link: https://wc-marketplace.com/
+Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.5.2
+Stable tag: 2.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 
 
-WC Marketplace is the fastest growing multi-store marketplace plugin for WooCommerce.
+WC Marketplace is the complete multi-store marketplace plugin for WooCommerce.
 
 
 == Description ==
-Transform your site into a marketplace and allow people to sell products from your site - just like Themeforest, Etsy or Amazon.
+<strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I’m here to help you know better about our plugin and [us](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based marketplace solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it’s that simple ☺
 
-<strong>Checkout [Bundled add-ons](https://wc-marketplace.com/wcmp-bundle/)</strong>
+<strong>You:</strong> [In your mind - “Ahem. Really?”] All plugin makers say that. What makes you different from others?
 
-Check out the plugin site here: [WC Marketplace](http://wc-marketplace.com)
+<strong>Riley:</strong> I can understand your doubt, but [users’ reviews](https://wordpress.org/support/plugin/dc-woocommerce-multi-vendor/reviews/) are here to back our statement. If you go with the stat, 95.96% users rated us 5/5.
 
+<strong>You:</strong> Now that’s an impressive figure!
 
+<strong>Riley:</strong> Thanks. WCMp is not just “another plugin”. It’s a rock-solid product backed with super-duper support. And the best part, its Free!
 
+<strong>You:</strong> So that’s what everybody says initially. And then they offer “Pro” or “Premium” version when you look for <strong>obvious features</strong>. Riley, I have seen enough of these free traps before!
 
-= Why use WC Marketplace: =
+<strong>Riley:</strong> Well, we don’t have any “pro” or “premium” versions of this plugin. WCMp is free and always will be.
 
+<strong>You:</strong> [ In disbelief ] It is free and yet “useful”, that’s what you are selling me!
 
-Wondering why 3000+ marketplaces love and use WCMp? Here you go:
+<strong>Riley:</strong>  Don’t take my word for it, checkout our exhaustive, have-it-all [feature list](https://wc-marketplace.com/features/). You will be surprised to find out what others offer in pro or premium, our free plugin has all of them covered.
 
+> Take a step forward and try our demos -
+> [Admin demo](http://demo.wc-marketplace.com/addon/WCMp/wp-admin/) | 
+> [Vendor demo](http://demo.wc-marketplace.com/addon/WCMp/my-account/)
 
-> <strong>Lightening quick support</strong>
+<strong>You:</strong> [In your mind- “There should be a catch or a hidden cost. Let me dig more.” ] Well your plugin looks promising. But, I wonder, why this charity?
+
+<strong>Riley:</strong> No question of charity. We provide [paid customization](https://wc-marketplace.com/contact-us/) services for marketplace owners to meet their specific business goals. Also, we have categorized our bouquet of features under necessity and extras. So if marketplaces need these nice-to-have extras, we have add-ons for them. But you will always have your functional marketplace with or without them. [Check out our add-ons](https://wc-marketplace.com/addons).
+
+<strong>You:</strong> [Got ya!] So, you have just tweaked the game in your favor. Others offer “pro” and you have your own bagful of paid “add-ons”. Right?
+
+<strong>Riley:</strong> Nope. These add-ons are completely optional and some of them are even free. We keep these features outside of core plugin to make marketplace owner’s life simple, without overloading them with unnecessary features/settings. If you don’t need them why bother.
+
+> <strong>Advertisement -</strong>
 >
-> 85+ reviews here in WordPress.org, and everyone loves WCMp. Here is why: [https://wc-marketplace.com/support-forum/]( https://wc-marketplace.com/support-forum )
->
->
->
-> <strong>Boatload of Features</strong>
-> - [Vendor Registration]( https://wc-marketplace.com/knowledgebase/setting-vendor-registration-wcmp/ )
-> - [Admin Capabilities]( https://wc-marketplace.com/admin-capabilities )
-> - [Vendor Capabilities]( https://wc-marketplace.com/vendors-capabilities )
-> - [User Capabilities]( https://wc-marketplace.com/users-capabilities )
-> - [Commissions]( https://wc-marketplace.com/commissions )
-> - [Short Codes]( https://wc-marketplace.com/shortcodes )
-> - [Translations]( https://wc-marketplace.com/translations )
->
->
->
-> <strong>Compatible plugins addons</strong>
+> Our most popular addons
 >
 > - [Frontend Manager](https://wc-marketplace.com/product/wcmp-frontend-product-manager)
-> - [Vedor Categorization](https://wc-marketplace.com/product/wcmp-vedor-categorization/)
-> - [Addons](https://wc-marketplace.com/addons)
-> - [Compatible plugins and themes](https://wc-marketplace.com/themes)
->
->
->
-> <strong>Still not convinced?</strong>
->
-> - [Shut Up And Take My Money](https://wc-marketplace.com/shut-up-and-take-my-money)
+> - [Vendor Categorization](https://wc-marketplace.com/product/wcmp-vedor-categorization/)
+> - [Bundle add-on](https://wc-marketplace.com/wcmp-bundle/)
 
+<strong>You:</strong> [Still sceptical] But, pro version is not just about features. They also include friendly support, prompt reply, and quick resolution. What about that?
 
+<strong>Riley:</strong> On business days, we provide 12 hour turnaround time to reply every query, even in our busiest schedule. All you need to do is to reach us either via our [support forum](https://wc-marketplace.com/support-forum/), [WordPress.org](https://wordpress.org/support/plugin/dc-woocommerce-multi-vendor) or [Github](https://github.com/dualcube/dc-woocommerce-multi-vendor/issues).
 
+<strong>You:</strong> Bravo!!! My expectations are reaching new heights. Are you sure you can meet them?
 
+<strong>Riley:</strong> Be assured, we will be there for you. A smile, a few kind words that’s what keep us going.
 
-= Demo =
+<strong>You:</strong> Riley, it was a great conversation. Thanks for your time! 
 
-
-[Admin Dashboard](http://demo.wc-marketplace.com/addon/WCMp/wp-admin "Link for WP-Admin")
-( Administrator Access=> Username: "demo" Password: "demo" )
-[Vendor Dashboard](http://demo.wc-marketplace.com/addon/WCMp/my-account "Link for Vendor Dashboard")
-( Vendor Access=> Username: "demo_vendor" Password: "demo_vendor" )
-
-
-
-= Feedback =
-
-
-All we want is love. We are extremely responsive to support requests - so if you face a problem or find any bugs, shoot us a mail or post it in the support forum, and we will respond within 12 hours (during business days). If you get the impulse to rate the plugin low because it is not working as it should, please do wait for our response because the root cause of the problem may be something else. It is extremely disheartening when trigger-happy users downrate a plugin for no fault of the plugin.
-
-
-= Credits =
-
-
-WC Marketplace has been heavily inspired by the ideas and concepts of numerous WordPress plugins and other open source projects, without which WC Marketplace in its present form would not have been possible.
-
-
-* Pippin Williamson and his team, Easy Digital Downloads
-
-
-* Mike Jolley and the WooThemes development Team, WooCommerce
-
-
-* Joost De Valk and the Yoast team, WordPress SEO
-
-
-* Tareq Hasan and team, Dokan Lite
-
-
-* Ben and Jamie, WC Vendors
-
-
-* The entire development team at Your Inspiration Themes, YITH WooCommerce Multi Vendor
-
-
-
-
-== A few points about us and this plugin ==
-
-
-* The core plugin is free, and will always remain so. 
-* Support is free and fast, and will always remain so. 
-* We will keep adding more features to the core plugin.  
-* If you want any new feature(s), have noticed a bug or need help in setting up this plugin - just open a new thread here. We have a team of 4 developers working full time on this plugin, so chances are we will be able to help you sooner than you think.
-
-
-
+<strong>Riley:</strong> Same here. Have a nice day.
 
 == Installation ==
 NOTE: WC Marketplace plugin is an extension of WooCommerce, so the WooCommerce plugin must be installed and activated in your WordPress site for this plugin to work properly.
@@ -182,6 +130,19 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.5.4 =
+* Fixed: Dequeue Google Recaptcha js
+* Fixed: Vendor registration migration error
+* Fixed: Widget display in vendor order page
+* Fixed: Scheduled payment date in vendor Withdrawal page
+
+= 2.5.3 =
+* Fixed: Vendor Withdrawal tab display
+* Updated: Language file
+* Added: Filters in admin settings pages
+* Fixed: Typos
+* Fixed: Discount amount calculation in vendor dashboard page
+ 
 = 2.5.2 =
 * Added: Restrict backend access from vendor
 * Added: Shortcode for display vendor recent products
@@ -480,6 +441,19 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
+= 2.5.4 =
+* Fixed: Dequeue Google Recaptcha js
+* Fixed: Vendor registration migration error
+* Fixed: Widget display in vendor order page
+* Fixed: Scheduled payment date in vendor Withdrawal page
+
+= 2.5.3 =
+* Fixed: Vendor Withdrawal tab display
+* Updated: Language file
+* Added: Filters in admin settings pages
+* Fixed: Typos
+* Fixed: Discount amount calculation in vendor dashboard page
+
 = 2.5.2 =
 * Added: Restrict backend access from vendor
 * Added: Shortcode for display vendor recent products

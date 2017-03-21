@@ -85,8 +85,8 @@ if($vendor) {
 					<span><?php _e( ' Hide from user', $WCMp->text_domain );?></span> </span> 
 				<?php }?>	
 				</p>
-				<input class="no_input" readonly type="text" placeholder="Addressl line 1" name="vendor_address_1"  value="<?php echo isset($vendor_address_1['value']) ? $vendor_address_1['value']:''; ?>">
-				<input class="no_input" readonly type="text" placeholder="Addressl line 2" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value']:''; ?>">
+				<input class="no_input" readonly type="text" placeholder="Address line 1" name="vendor_address_1"  value="<?php echo isset($vendor_address_1['value']) ? $vendor_address_1['value']:''; ?>">
+				<input class="no_input" readonly type="text" placeholder="Address line 2" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value']:''; ?>">
 				<div class="one_third_part">
 					<input class="no_input" readonly type="text" placeholder="Country" name="vendor_country" value="<?php echo isset($vendor_country['value']) ? $vendor_country['value']:''; ?>">
 				</div>

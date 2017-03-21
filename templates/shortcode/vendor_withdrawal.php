@@ -77,7 +77,7 @@ global $woocommerce, $WCMp;	?>
 	</form>
 	<?php
 		$vendor_payment_mode = get_user_meta($vendor->id, '_vendor_payment_mode', true);
-		if($vendor_payment_mode == 'paypal_masspay') { ?>
+		if($vendor_payment_mode == 'paypal_masspay' && wp_next_scheduled( 'masspay_cron_start' )) { ?>
 			<div class="wcmp_admin_massege">
 				<div class="wcmp_mixed_msg"><?php _e( 'Your next scheduled payment date is on:', $WCMp->text_domain ); ?>	<span><?php echo  date('d/m/Y g:i:s A', wp_next_scheduled( 'masspay_cron_start' )); ?></span> </div>
 			</div>

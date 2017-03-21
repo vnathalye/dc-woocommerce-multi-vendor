@@ -1,11 +1,16 @@
 <?php
-/*
-Plugin Name: WC Marketplace
-Plugin URI: https://wc-marketplace.com/
-Description: A Free Extension That Transforms Your WooCommerce Site into a Marketplace.
-Author: WC Marketplace, The Grey Parrots
-Version: 2.5.2
-Author URI: https://wc-marketplace.com/
+/**
+* Plugin Name: WC Marketplace
+* Plugin URI: https://wc-marketplace.com/
+* Description: A Free Extension That Transforms Your WooCommerce Site into a Marketplace.
+* Author: WC Marketplace, The Grey Parrots
+* Version: 2.5.4
+* Author URI: https://wc-marketplace.com/
+* Requires at least: 4.0
+* Tested up to: 4.7
+*
+* Text Domain: dc-woocommerce-multi-vendor
+* Domain Path: /languages/
 */
 
 if ( ! class_exists( 'WC_Dependencies_Product_Vendor' ) ) require_once 'includes/class-wcmp-dependencies.php';

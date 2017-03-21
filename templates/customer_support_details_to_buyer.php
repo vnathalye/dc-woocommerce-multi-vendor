@@ -37,7 +37,7 @@ global $WCMp;
 				<?php } ?>
 				<tr>
 					<td style="padding:10px 10px; background:none; border-right: 1px solid #e4e4e4; border-bottom: 1px solid #e4e4e4; width:100%;" align="left" valign="top">
-						<p><strong><?php echo __('Vender Name', $WCMp->text_domain);?> </strong><br>
+						<p><strong><?php echo __('Vendor Name', $WCMp->text_domain);?> </strong><br>
 						<?php echo $vendor_meta['nickname'][0] ?> </p>
 						<p><strong><?php echo __('Product Name', $WCMp->text_domain);?> </strong> <br>
 							 <?php echo $products; ?>

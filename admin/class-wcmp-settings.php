@@ -35,6 +35,8 @@ class WCMp_Settings {
         add_action('settings_page_vendor_general_tab_init', array(&$this, 'vendor_general_tab_init'), 10, 2);
         add_action('settings_page_vendor_registration_tab_init', array(&$this, 'vendor_registration_tab_init'), 10, 2);
         add_action('settings_page_wcmp-addons_tab_init', array(&$this, 'wcmp_addons_tab_init'), 10, 2);
+        
+        add_filter('wcmp_tabs', array(&$this,'add_addon_tab'),50,1);
     }
 
     public function delete_dc_product_vendor_plugin_db_version() {
@@ -107,9 +109,13 @@ class WCMp_Settings {
             'payment' => __('Payment', $WCMp->text_domain),
             'capabilities' => __('Capabilities', $WCMp->text_domain),
             'to_do_list' => __('To-do List', $WCMp->text_domain),
-            'pages' => __('Pages', $WCMp->text_domain),
-            'wcmp-addons' => __('Extensions', $WCMp->text_domain)
+            'pages' => __('Pages', $WCMp->text_domain)
         ));
+        return $tabs;
+    }
+    function add_addon_tab($tabs){
+        global $WCMp;
+        $tabs['wcmp-addons'] = __('Extensions', $WCMp->text_domain);
         return $tabs;
     }
 
@@ -167,13 +173,13 @@ class WCMp_Settings {
         else:
             $current = 'general';
         endif;
+        $sublinks = array();
         if ($current == 'general') {
             if (isset($_GET['tab_section'])) {
                 $current_section = $_GET['tab_section'];
             } else {
                 $current_section = 'general';
             }
-            $sublinks = array();
             foreach ($this->tabsection_general as $tabsection => $sectionname) :
                 if ($tabsection == 'university' || $tabsection == 'vendor_notices' || $tabsection == 'commission') {
                     $admin_url = trailingslashit(get_admin_url());
@@ -240,9 +246,14 @@ class WCMp_Settings {
                 printf(__("<h2>%s Settings</h2>", $WCMp->text_domain), $name);
             endif;
         endforeach;
-
-
-        if ($current == 'general' || $current == 'payment' || $current == 'vendor') {
+        
+        $display_sublink = false;
+        if($current == 'general' || $current == 'payment' || $current == 'vendor'){
+            $display_sublink = true;
+        }
+        $display_sublink = apply_filters('display_wcmp_sublink',$display_sublink, $current);
+        $sublinks = apply_filters('wcmp_subtab',$sublinks, $current);
+        if ($display_sublink) {
             echo '<ul class="subsubsub wcmpsubtabadmin">';
             foreach ($sublinks as $sublink) {
                 echo $sublink;
@@ -269,6 +280,7 @@ class WCMp_Settings {
             <?php $this->wcmp_settings_tabs(); ?>
             <?php
             $tab = ( isset($_GET['tab']) ? $_GET['tab'] : 'general' );
+            
             if ($tab == 'general' && isset($_GET['tab_section']) && $_GET['tab_section'] != 'general') {
                 $tab_section = $_GET['tab_section'];
                 $this->options = get_option("wcmp_{$tab}_{$tab_section}_settings_name");
@@ -282,6 +294,9 @@ class WCMp_Settings {
                     $tab_section = 'general';
                 }
                 $this->options = get_option("wcmp_{$tab}_{$tab_section}_settings_name");
+            } else if(isset($_GET['tab_section']) && $tab != 'general' && $tab != 'payment'){
+                $tab_section = $_GET['tab_section'];
+                $this->options = get_option("wcmp_{$tab}_{$tab_section}_settings_name");
             } else {
                 $this->options = get_option("wcmp_{$tab}_settings_name");
             }
@@ -294,7 +309,11 @@ class WCMp_Settings {
                 settings_errors("wcmp_{$tab}_{$tab_section}_settings_name");
             } else if ($tab == 'vendor') {
                 settings_errors("wcmp_{$tab}_{$tab_section}_settings_name");
-            } else {
+            } else if(isset ($_GET['tab_section']) && $tab != 'general' && $tab != 'payment'){
+                $tab_section = $_GET['tab_section'];
+                settings_errors("wcmp_{$tab}_{$tab_section}_settings_name");
+            }
+            else {
                 settings_errors("wcmp_{$tab}_settings_name");
             }
             ?>
@@ -328,6 +347,12 @@ class WCMp_Settings {
                     }
                 } else if ($tab == 'wcmp-addons') {
                     do_action("settings_page_{$tab}_tab_init", $tab);
+                } else if (isset($_GET['tab_section']) && $_GET['tab_section'] && $tab != 'general' && $tab != 'payment' ){
+                    $tab_section = $_GET['tab_section'];
+                    settings_fields("wcmp_{$tab}_{$tab_section}_settings_group");
+                    do_action("wcmp_{$tab}_{$tab_section}_settings_before_submit");
+                    do_settings_sections("wcmp-{$tab}-{$tab_section}-settings-admin");
+                    submit_button();
                 } else {
                     settings_fields("wcmp_{$tab}_settings_group");
                     do_action("wcmp_{$tab}_settings_before_submit");
@@ -393,6 +418,7 @@ class WCMp_Settings {
                     }
                 }
             }
+            do_action('after_setup_wcmp_settings_page',$tab);
         endforeach;
         do_action('after_settings_page_init');
     }

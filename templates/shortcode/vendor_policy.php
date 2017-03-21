@@ -60,8 +60,8 @@ $can_vendor_edit_shipping_policy_field = apply_filters('can_vendor_edit_shipping
 			</div>
 			<div class="clear"></div>
 			<p><?php _e( 'Address*', $WCMp->text_domain );?></p>
-			<input  class="no_input" readonly type="text" placeholder="Addressl line 1" name="vendor_csd_return_address1"  value="<?php echo isset($vendor_csd_return_address1['value']) ? $vendor_csd_return_address1['value'] : ''; ?>">
-			<input  class="no_input" readonly type="text" placeholder="Addressl line 2" name="vendor_csd_return_address2"  value="<?php echo isset($vendor_csd_return_address2['value']) ? $vendor_csd_return_address2['value'] : ''; ?>">
+			<input  class="no_input" readonly type="text" placeholder="Address line 1" name="vendor_csd_return_address1"  value="<?php echo isset($vendor_csd_return_address1['value']) ? $vendor_csd_return_address1['value'] : ''; ?>">
+			<input  class="no_input" readonly type="text" placeholder="Address line 2" name="vendor_csd_return_address2"  value="<?php echo isset($vendor_csd_return_address2['value']) ? $vendor_csd_return_address2['value'] : ''; ?>">
 			<div class="one_third_part">
 				<input  class="no_input" readonly type="text" placeholder="Country" name="vendor_csd_return_country" value="<?php echo isset($vendor_csd_return_country['value']) ? $vendor_csd_return_country['value'] : ''; ?>">
 			</div>

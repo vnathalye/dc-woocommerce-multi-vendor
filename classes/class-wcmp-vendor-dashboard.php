@@ -134,7 +134,7 @@ Class WCMp_Admin_Dashboard {
 								
 							}
                                                         if($commission_payment_mode == 'paypal_masspay') {
-                                                            $result = $WCMp->paypal_masspay->call_masspay_api($commissions_data);							
+                                                            $result = $WCMp->paypal_masspay->call_masspay_api($commissions_data);
                                                             if($result) {
                                                                     // create a new transaction by vendor
                                                                     if(!empty($transaction_data))	$transaction_id = $WCMp->transaction->insert_new_transaction($transaction_data, 'wcmp_completed', 'paypal_masspay', $result);

@@ -10,6 +10,9 @@ var app = angular.module("vendor_registration", ['ui.sortable']);
 app.service('vendor_registration_service', function () {
     var formJson = [];
     if(vendor_registration_param.form_data !== ''){
+        angular.forEach(vendor_registration_param.form_data,function (data, key){
+            vendor_registration_param.form_data[key].partial = data.partial.split('/')[(data.partial.split('/').length - 1)];
+        });
         var formJson = vendor_registration_param.form_data;
     } 
     return {
@@ -38,7 +41,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     selecttype: 'radio',
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     required: false,
                     options: [
                         {
@@ -66,7 +69,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     placeholder: '',
                     required: false,
 //                    emailValidation: false,
@@ -79,7 +82,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     defaultValue: '',
                     limit : '',
                     required: false,
@@ -92,7 +95,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     defaultValue: 'unchecked',
                     required: false,
                     cssClass: ''
@@ -104,7 +107,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     script: '',
                     required: false
                 });
@@ -115,7 +118,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     fileSize: '',
                     fileType: [
                         {
@@ -155,7 +158,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     cssClass: ''
                 });
                 break;
@@ -165,7 +168,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     type: type,
                     label: label,
                     hidden: false,
-                    partial: vendor_registration_param.partials + type + '.html',
+                    partial: type + '.html',
                     placeholder: '',
                     required: false,
                     cssClass: ''
@@ -189,6 +192,7 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
 app.controller('postbox_content',['$scope', '$http', 'vendor_registration_service', function ($scope, $http, vendor_registration_service) {
     var formJson = vendor_registration_service.getField();
     $scope.fields = formJson;
+    $scope.partialUrl = vendor_registration_param.partials;
     $scope.showSaveSpinner = false;
     $scope.togglePostboxField = function (index) {
         if ($scope.fields[index].hidden) {

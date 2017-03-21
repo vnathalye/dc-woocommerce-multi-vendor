@@ -25,7 +25,7 @@ class WCMp_Settings_Capabilities {
 
         $settings_tab_options = array("tab" => "{$this->tab}",
             "ref" => &$this,
-            "sections" => array(
+            "sections" => apply_filters('wcmp_capabilities', array(
                 "products_settings_section" => array("title" => __('Uploading Product Data ', $WCMp->text_domain), // Section one
                     "fields" => array(
                         "is_submit_product" => array('title' => __('Submit Products', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_submit_product', 'label_for' => 'is_submit_product', 'desc' => __('Allow vendors to submit products for approval/publishing.', $WCMp->text_domain), 'name' => 'is_submit_product', 'value' => 'Enable'), // Checkbox
@@ -77,8 +77,8 @@ class WCMp_Settings_Capabilities {
                         "can_vendor_edit_refund_policy" => array('title' => __('Can Vendor Edit Refund Policy', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'can_vendor_edit_refund_policy', 'label_for' => 'can_vendor_edit_refund_policy', 'name' => 'can_vendor_edit_refund_policy', 'value' => 'Enable', 'desc' => __('Allow vendors to edit the Refund Policy.', $WCMp->text_domain)), // Checkbox
                         "can_vendor_edit_shipping_policy" => array('title' => __('Can Vendor Edit Shipping Policy', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'can_vendor_edit_shipping_policy', 'label_for' => 'can_vendor_edit_shipping_policy', 'name' => 'can_vendor_edit_shipping_policy', 'value' => 'Enable', 'desc' => __('Allow vendors to edit the Shipping Policy.', $WCMp->text_domain)), // Checkbox
                     )
-                ),
-            ),
+                ),)
+            )
         );
 
         $WCMp->admin->settings->settings_field_init(apply_filters("settings_{$this->tab}_tab_options", $settings_tab_options));

@@ -135,6 +135,7 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                 <?php
                 break;
             case 'recaptcha':
+                wp_enqueue_script('google-recaptcha', 'https://www.google.com/recaptcha/api.js');
                 ?>
                 <div class="<?php if(!empty($value['cssClass'])){ echo $value['cssClass']; } else {  echo 'wcmp-regi-12'; } ?>">
                     <label><?php echo __($value['label'],$WCMp->text_domain); ?><?php if($value['required']){ echo ' <span class="required">*</span>'; }?></label>

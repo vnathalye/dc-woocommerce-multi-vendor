@@ -269,6 +269,7 @@ class WCMp_Calculate_Commission {
 			}
 			if( $vendor ) {
 				$commission = $this->get_commission_amount( $product_id, $vendor->term_id, $variation_id, $item_id, $order );
+                                $commission = apply_filters('wcmp_get_commission_amount',$commission, $product_id, $vendor->term_id, $variation_id, $item_id, $order);
 				if( !empty($commission) ) {
 					if($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage' ) {
 						$amount = (float) $line_total * ( (float) $commission['commission_val'] / 100 ) + (float) $commission['commission_fixed'];

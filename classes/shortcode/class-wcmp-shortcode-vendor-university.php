@@ -33,9 +33,12 @@ class WCMp_Vendor_University_Shortcode {
 		$pluginURL = str_replace( array( 'http:', 'https:' ), '', $WCMp->plugin_url );
 		$suffix 				= defined( 'WCMP_SCRIPT_DEBUG' ) && WCMP_SCRIPT_DEBUG ? '' : '.min';
 		wp_enqueue_script('wcmp_new_vandor_dashboard_js', $frontend_script_path.'/vendor_dashboard'.$suffix.'.js', array('jquery'), $WCMp->version, true);
-		
+		echo '<div class="wcmp_remove_div">';
+                echo '<div class="wcmp_main_page">';
 		$WCMp->template->get_template( 'vendor_dashboard_menu.php', array('selected_item' => 'university') );
 		$WCMp->template->get_template( 'shortcode/vendor_university.php' );
+                echo '</div>';
+                echo '</div>';
 	}
 	
 }

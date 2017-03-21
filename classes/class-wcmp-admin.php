@@ -81,7 +81,6 @@ class WCMp_Admin {
         unset($actions['edit']);
         return $actions;
     }
-
     function modify_wcmp_vendorrequest_row_actions($actions, $post) {
         global $WCMp;
         if ($post->post_type == "wcmp_vendorrequest") {
@@ -97,7 +96,7 @@ class WCMp_Admin {
                 $actions['aprove'] = '<a class="activate_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Approve', $WCMp->text_domain) . '</a>';
                 $actions['reject'] = '<a class="reject_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Reject', $WCMp->text_domain) . '</a>';
             }
-        }
+        } 
         return $actions;
     }
 
@@ -361,7 +360,7 @@ class WCMp_Admin {
         $screen = get_current_screen();
         if (is_user_logged_in()) {
 
-            if (in_array($screen->id, array('edit-dc_commission', 'edit-wcmp_university', 'edit-wcmp_vendor_notice'))) {
+            if (isset($screen->id) && in_array($screen->id, array('edit-dc_commission', 'edit-wcmp_university', 'edit-wcmp_vendor_notice'))) {
                 ?>
                 <script>
                     jQuery(document).ready(function ($) {

@@ -252,7 +252,7 @@ class WCMp_Report {
 						$author_id = $coupon_post->post_author;
 						if($vendor->id == $author_id) {
 							$total_coupon_used++ ;
-							$total_coupon_discuont_value += (float)wc_add_order_item_meta( $coupon_item_id, 'discount_amount', true);
+							$total_coupon_discuont_value += (float)wc_get_order_item_meta( $coupon_item_id, 'discount_amount', true);
 						} 
 					}
 					++$total_order_count;

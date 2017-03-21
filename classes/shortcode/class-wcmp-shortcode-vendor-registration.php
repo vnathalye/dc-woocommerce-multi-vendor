@@ -22,11 +22,14 @@ class WCMp_Vendor_Registration_Shortcode {
      */
     public static function output($attr) {
         global $WCMp;
+        $enable_registration = get_wcmp_vendor_settings('enable_registration', 'general');
+        if (empty($enable_registration)) {
+            return;
+        }
         $frontend_style_path = $WCMp->plugin_url . 'assets/frontend/css/';
         $frontend_style_path = str_replace(array('http:', 'https:'), '', $frontend_style_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_style('wcmp_vandor_registration_css', $frontend_style_path . 'vendor-registration' . $suffix . '.css', array(), $WCMp->version);
-        wp_enqueue_script('google-recaptcha','https://www.google.com/recaptcha/api.js');
         $WCMp->template->get_template('shortcode/vendor_registration.php');
     }
 

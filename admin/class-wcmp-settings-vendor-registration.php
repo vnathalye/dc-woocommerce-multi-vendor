@@ -82,7 +82,7 @@ class WCMp_Settings_Vendor_Registration {
                                         <h2 class="hndle ui-sortable-handle" ng-dblclick="togglePostboxField($index)"><span>{{field.label}}</span></h2>
                                         <div class="inside">
                                             <div id="post-formats-select">
-                                                <div ng-include src="field.partial"></div>
+                                                <div ng-include src="partialUrl+field.partial"></div>
                                             </div>
                                         </div>
                                     </div>

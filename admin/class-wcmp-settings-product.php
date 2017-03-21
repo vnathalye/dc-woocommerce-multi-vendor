@@ -35,12 +35,13 @@ class WCMp_Settings_Product {
                                                                                                            )
                                                                                          ), 
                                                       "default_settings_section_types" => array("title" =>  __('Product Types ' , $WCMp->text_domain), // Section one
-                                                                                         "fields" => array(
+                                                                                         "fields" => apply_filters("wcmp_vendor_product_types",array(
                                                                                                            "is_simple" => array('title' => __('Simple', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_simple', 'label_for' => 'is_simple', 'name' => 'simple', 'value' => 'Enable'), // Checkbox
                                                                                                            "is_variable" => array('title' => __('Variable', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_variable', 'label_for' => 'is_variable', 'name' => 'variable', 'value' => 'Enable'), // Checkbox
                                                                                                            "is_grouped" => array('title' => __('Grouped', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_grouped', 'label_for' => 'is_grouped', 'name' => 'grouped', 'value' => 'Enable'), // Checkbox
                                                                                                            "is_external" => array('title' => __('External / Affiliate', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_external', 'label_for' => 'is_external', 'name' => 'external', 'value' => 'Enable'), // Checkbox
                                                                                                            )
+                                                                                                 )
                                                                                          ), 
                                                       "default_settings_section_type_option" => array("title" =>  __('Type Options ', $WCMp->text_domain), // Section one
                                                                                          "fields" => array(

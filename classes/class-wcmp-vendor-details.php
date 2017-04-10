@@ -359,7 +359,7 @@ class WCMp_Vendor {
             $items = $order->get_items('line_item');
             if ($items) {
                 foreach ($items as $item_id => $item) {
-                    $product_id = $order->get_item_meta($item_id, '_product_id', true);
+                    $product_id = wc_get_order_item_meta($item_id, '_product_id', true);
 
                     if ($product_id) {
                         if ($term_id > 0) {
@@ -388,7 +388,7 @@ class WCMp_Vendor {
             $items = $order->get_items('shipping');
             /* if( $items ) {
               foreach( $items as $item_id => $item ) {
-              $product_id = $order->get_item_meta( $item_id, '_product_id', true );
+              $product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
 
               if( $product_id ) {
               if( $term_id > 0 ) {
@@ -574,7 +574,7 @@ class WCMp_Vendor {
         global $WCMp;
         require_once ( 'class-wcmp-calculate-commission.php' );
         $commission_obj = new WCMp_Calculate_Commission();
-        $vendor_items = $this->get_vendor_items_from_order($order->id, $vendor_term_id);
+        $vendor_items = $this->get_vendor_items_from_order($order->get_id(), $vendor_term_id);
         $vendor = get_wcmp_vendor_by_term($vendor_term_id);
         $commission_amt = 0;
         $vendor_due = array();
@@ -586,25 +586,25 @@ class WCMp_Vendor {
         $shipping_amount_per_vendor = 0;
         if (!empty($line_items)) {
             foreach ($line_items as $item_id => $item) {
-                $give_tax_to_vendor = $order->get_item_meta($item_id, '_give_tax_to_vendor', true);
+                $give_tax_to_vendor = wc_get_order_item_meta($item_id, '_give_tax_to_vendor', true);
                 if (!empty($give_tax_to_vendor)) {
                     $flag = true;
                 }
 //                if ($give_tax_to_vendor == 1) {
-//                    $line_tax += $order->get_item_meta($item_id, '_line_tax', true);
+//                    $line_tax += wc_get_order_item_meta($item_id, '_line_tax', true);
 //                }
             }
         }
         if (!empty($shipping)) {
             foreach ($shipping as $shipping_id => $value) {
-                $give_shipping_to_vendor = $order->get_item_meta($shipping_id, '_give_shipping_to_vendor', true);
+                $give_shipping_to_vendor = wc_get_order_item_meta($shipping_id, '_give_shipping_to_vendor', true);
                 if (!empty($give_shipping_to_vendor)) {
                     $flag = true;
                 }
                 if ($give_shipping_to_vendor) {
                     $flat_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_cost_' . $vendor->id, true);
                     $shipping_amount_per_vendor += $flat_shipping_per_vendor;
-                    $vendor_shipping_tax_array = $order->get_item_meta($shipping_id,'vendor_tax_'.$vendor->id,true);
+                    $vendor_shipping_tax_array = wc_get_order_item_meta($shipping_id,'vendor_tax_'.$vendor->id,true);
                     if(!empty($vendor_shipping_tax_array) && is_array($vendor_shipping_tax_array)){
                         foreach ($vendor_shipping_tax_array as $shipping_tax){
                             $line_tax += (float)$shipping_tax;
@@ -630,7 +630,7 @@ class WCMp_Vendor {
                 $product_value = 0;
             }
             $product_value_total += ($product_value * $item['qty']);
-            $commission_amt = (float) $commission_amt + (float) $commission_obj->get_item_commission($product_id, $variation_id, $item, $order->id, $item_id);
+            $commission_amt = (float) $commission_amt + (float) $commission_obj->get_item_commission($product_id, $variation_id, $item, $order->get_id(), $item_id);
 
             $vendor_due['commission'] = $commission_amt;
             if ($vendor_due['commission'] > $product_value_total) {
@@ -640,9 +640,9 @@ class WCMp_Vendor {
             if ($flag) {
                 $vendor_due['tax'] = 0;
                 if ($WCMp->vendor_caps->vendor_payment_settings('give_tax')) {
-                    $give_tax_to_vendor = $order->get_item_meta($item_id, '_give_tax_to_vendor', true);
+                    $give_tax_to_vendor = wc_get_order_item_meta($item_id, '_give_tax_to_vendor', true);
                     if ($give_tax_to_vendor == 1) {
-                        $line_tax += $order->get_item_meta($item_id, '_line_tax', true);
+                        $line_tax += wc_get_order_item_meta($item_id, '_line_tax', true);
                     }
                     $vendor_due['tax'] += $line_tax;
                 } else {
@@ -777,19 +777,19 @@ class WCMp_Vendor {
         if (!isset($vendor_totals['shipping']))
             $vendor_totals['shipping'] = 0;
 
-        $return['commission_subtotal'] = array('label' => __('Commission Subtotal:', $WCMp->text_domain), 'value' => woocommerce_price($vendor_totals['commission']));
+        $return['commission_subtotal'] = array('label' => __('Commission Subtotal:', $WCMp->text_domain), 'value' => wc_price($vendor_totals['commission']));
         if ($WCMp->vendor_caps->vendor_payment_settings('give_tax')) {
             $return['tax_subtotal'] = array('label' => '', 'value' => '');
             $return['tax_subtotal']['label'] = __('Tax Subtotal:', $WCMp->text_domain);
-            $return['tax_subtotal']['value'] = woocommerce_price($vendor_totals['tax']);
+            $return['tax_subtotal']['value'] = wc_price($vendor_totals['tax']);
         }
         if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping')) {
             $return['shipping_subtotal'] = array('label' => '', 'value' => '');
             $return['shipping_subtotal']['label'] = __('Shipping Subtotal:', $WCMp->text_domain);
-            $return['shipping_subtotal']['value'] = woocommerce_price($vendor_totals['shipping']);
+            $return['shipping_subtotal']['value'] = wc_price($vendor_totals['shipping']);
         }
         $return['total']['label'] = __('Total:', $WCMp->text_domain);
-        $return['total']['value'] = woocommerce_price($vendor_totals['commission'] + $vendor_totals['shipping'] + $vendor_totals['tax']);
+        $return['total']['value'] = wc_price($vendor_totals['commission'] + $vendor_totals['shipping'] + $vendor_totals['tax']);
         return $return;
     }
 
@@ -797,7 +797,7 @@ class WCMp_Vendor {
         $tax_amt = 0;
         $give_tax = false;
         $give_shipping = false;
-        $vendor_items = $this->get_vendor_items_from_order($order->id, $vendor_id);
+        $vendor_items = $this->get_vendor_items_from_order($order->get_id(), $vendor_id);
         $shipping_given = 0;
         $tax_given = 0;
         if (!empty($product)) {
@@ -812,7 +812,7 @@ class WCMp_Vendor {
                 $shipping = 0;
                 $shipping_tax = 0;
             } else {
-                $shipping_costs = $this->get_wcmp_vendor_shipping_total($order->id, $product);
+                $shipping_costs = $this->get_wcmp_vendor_shipping_total($order->get_id(), $product);
                 $shipping = $shipping_costs['shipping_amount'];
                 $shipping_tax = $shipping_costs['shipping_tax'];
             }
@@ -848,7 +848,7 @@ class WCMp_Vendor {
 
         $vendor_shipping_costs = array('shipping_amount' => 0, 'shipping_tax' => 0);
         $method = '';
-        $_product = get_product($product['product_id']);
+        $_product = wc_get_product($product['product_id']);
         $order = wc_get_order($order_id);
 
         if ($_product && $_product->needs_shipping() && !$_product->is_downloadable()) {
@@ -867,7 +867,7 @@ class WCMp_Vendor {
                     $instance_id = $methodArr[1];
                     if ($method_id == 'flat_rate') {
                         $woocommerce_shipping_method_settings = get_option('woocommerce_' . $method_id . '_' . $instance_id . '_settings');
-                        if ($woocommerce_shipping_method_settings['type'] == 'class') {
+                        if (isset($woocommerce_shipping_method_settings['type']) && $woocommerce_shipping_method_settings['type'] == 'class') {
                             $vendor_shipping_costs['shipping_amount'] = isset($product['flat_shipping_per_item']) ? $product['flat_shipping_per_item'] : '';
                         }
                     } else {
@@ -1015,7 +1015,7 @@ class WCMp_Vendor {
      */
     public function format_order_details($orders, $product_id) {
         $body = $items = array();
-        $product = get_product($product_id)->get_title();
+        $product = wc_get_product($product_id)->get_title();
         foreach (array_unique($orders) as $order) {
             $i = $order;
             $order = new WC_Order($i);
@@ -1028,7 +1028,7 @@ class WCMp_Vendor {
                 'state' => $order->shipping_state,
                 'zip' => $order->shipping_postcode,
                 'email' => $order->billing_email,
-                'date' => $order->order_date,
+                'date' => $order->get_date_created(),
                 'comments' => wptexturize($order->customer_note),
             );
 

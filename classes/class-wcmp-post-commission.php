@@ -54,20 +54,20 @@ class WCMp_Commission {
         if (post_type_exists($this->post_type))
             return;
         $labels = array(
-            'name' => _x('WCMp Commissions', 'post type general name', $WCMp->text_domain),
-            'singular_name' => _x('WCMp Commission', 'post type singular name', $WCMp->text_domain),
+            'name' => _x('Commissions', 'post type general name', $WCMp->text_domain),
+            'singular_name' => _x('Commission', 'post type singular name', $WCMp->text_domain),
             'add_new' => _x('Add New', $this->post_type, $WCMp->text_domain),
-            'add_new_item' => sprintf(__('Add New %s', $WCMp->text_domain), __('WCMp Commission', $WCMp->text_domain)),
-            'edit_item' => sprintf(__('Edit %s', $WCMp->text_domain), __('WCMp Commission', $WCMp->text_domain)),
-            'new_item' => sprintf(__('New %s', $WCMp->text_domain), __('WCMp Commission', $WCMp->text_domain)),
-            'all_items' => sprintf(__('All %s', $WCMp->text_domain), __('WCMp Commissions', $WCMp->text_domain)),
-            'view_item' => sprintf(__('View %s', $WCMp->text_domain), __('WCMp Commission', $WCMp->text_domain)),
-            'search_items' => sprintf(__('Search %a', $WCMp->text_domain), __('WCMp Commissions', $WCMp->text_domain)),
-            'not_found' => sprintf(__('No %s found', $WCMp->text_domain), __('WCMp Commissions', $WCMp->text_domain)),
-            'not_found_in_trash' => sprintf(__('No %s found in trash', $WCMp->text_domain), __('WCMp Commissions', $WCMp->text_domain)),
+            'add_new_item' => sprintf(__('Add New %s', $WCMp->text_domain), __('Commission', $WCMp->text_domain)),
+            'edit_item' => sprintf(__('Edit %s', $WCMp->text_domain), __('Commission', $WCMp->text_domain)),
+            'new_item' => sprintf(__('New %s', $WCMp->text_domain), __('Commission', $WCMp->text_domain)),
+            'all_items' => sprintf(__('All %s', $WCMp->text_domain), __('Commissions', $WCMp->text_domain)),
+            'view_item' => sprintf(__('View %s', $WCMp->text_domain), __('Commission', $WCMp->text_domain)),
+            'search_items' => sprintf(__('Search %a', $WCMp->text_domain), __('Commissions', $WCMp->text_domain)),
+            'not_found' => sprintf(__('No %s found', $WCMp->text_domain), __('Commissions', $WCMp->text_domain)),
+            'not_found_in_trash' => sprintf(__('No %s found in trash', $WCMp->text_domain), __('Commissions', $WCMp->text_domain)),
             'parent_item_colon' => '',
-            'all_items' => __('WCMp Commissions', $WCMp->text_domain),
-            'menu_name' => __('WCMp Commissions', $WCMp->text_domain)
+            'all_items' => __('Commissions', $WCMp->text_domain),
+            'menu_name' => __('Commissions', $WCMp->text_domain)
         );
 
         $args = array(
@@ -76,7 +76,7 @@ class WCMp_Commission {
             'publicly_queryable' => false,
             'exclude_from_search' => true,
             'show_ui' => true,
-            'show_in_menu' => current_user_can('manage_woocommerce') ? 'woocommerce' : true,
+            'show_in_menu' => current_user_can('manage_woocommerce') ? 'wcmp' : false,
             'show_in_nav_menus' => false,
             'query_var' => false,
             'rewrite' => true,
@@ -86,7 +86,7 @@ class WCMp_Commission {
             'has_archive' => true,
             'hierarchical' => true,
             'supports' => array('title'),
-            'menu_position' => 57,
+            'menu_position' => 5,
             'menu_icon' => $WCMp->plugin_url . '/assets/images/dualcube.png'
         );
 
@@ -137,8 +137,8 @@ class WCMp_Commission {
                     if (!empty($fields[$k])) {
                         foreach ($fields[$k] as $dat) {
 
-                            if (function_exists('get_product')) {
-                                $product = get_product($dat);
+                            if (function_exists('wc_get_product')) {
+                                $product = wc_get_product($dat);
                             } else {
                                 $product = new WC_Product($dat);
                             }
@@ -156,7 +156,7 @@ class WCMp_Commission {
                 } elseif ($k == '_commission_vendor') {
                     $vendor = get_wcmp_vendor_by_term($data);
                     $option = '<option value=""></option>';
-                    if ($data && strlen($data) > 0) {
+                    if ($data && strlen($data) > 0 && !empty($vendor)) {
                         $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->user_data->user_login . '</option>';
                     }
 
@@ -383,25 +383,25 @@ class WCMp_Commission {
             case '_commission_product':
                 if (is_array($data)) {
                     foreach ($data as $dat) {
-                        if (function_exists('get_product')) {
-                            $product = get_product($dat);
+                        if (function_exists('wc_get_product')) {
+                            $product = wc_get_product($dat);
                         } else {
                             $product = new WC_Product($dat);
                         }
                         if (is_object($product) && $product->get_formatted_name()) {
-                            echo ' &nbsp;[&nbsp;<a href="' . esc_url(get_edit_post_link($product->id)) . '">' . $product->get_formatted_name() . '</a>&nbsp;]&nbsp;';
+                            echo ' &nbsp;[&nbsp;<a href="' . esc_url(get_edit_post_link($product->get_id())) . '">' . $product->get_formatted_name() . '</a>&nbsp;]&nbsp;';
                         }
                     }
                 } else {
                     // support for previous versions
                     if ($data && strlen($data) > 0) {
-                        if (function_exists('get_product')) {
-                            $product = get_product($data);
+                        if (function_exists('wc_get_product')) {
+                            $product = wc_get_product($data);
                         } else {
                             $product = new WC_Product($data);
                         }
                         if (is_object($product) && $product->get_formatted_name()) {
-                            echo ' <a href="' . esc_url(get_edit_post_link($product->id)) . '">' . $product->get_formatted_name() . '</a>';
+                            echo ' <a href="' . esc_url(get_edit_post_link($product->get_id())) . '">' . $product->get_formatted_name() . '</a>';
                         }
                     }
                 }

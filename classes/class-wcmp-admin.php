@@ -23,7 +23,7 @@ class WCMp_Admin {
         add_action('trashed_post', array($this, 'remove_commission_from_sales_report'), 10);
         add_action('untrashed_post', array($this, 'restore_commission_from_sales_report'), 10);
         add_action('woocommerce_order_status_changed', array($this, 'change_commission_status'), 20, 3);
-        if (isset($general_singleproductmultisellersettings['is_singleproductmultiseller'])) {
+        if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
             add_action('admin_enqueue_scripts', array($this, 'wcmp_kill_auto_save'));
         }
         $this->load_class('settings');
@@ -35,14 +35,15 @@ class WCMp_Admin {
         add_filter('post_row_actions', array(&$this, 'modify_wcmp_vendorrequest_row_actions'), 10, 2);
         add_filter('bulk_actions-edit-wcmp_vendorrequest', array(&$this, 'wcmp_vendorrequest_bulk_actions'));
         add_action('admin_menu', array(&$this, 'remove_wcmp_vendorrequest_meta_boxes'));
-        add_action('add_meta_boxes', array(&$this, 'adding_vendor_application_meta_boxes'), 10, 2);      
+        add_action('add_meta_boxes', array(&$this, 'adding_vendor_application_meta_boxes'), 10, 2);
         
+        add_action('admin_menu', array(&$this,'wcmp_admin_menu'));
     }
-    
+
     function adding_vendor_application_meta_boxes($post_type, $post) {
         global $WCMp;
         add_meta_box(
-                'vendor-form-data', __('Vendor Form Data', $WCMp->text_domain), array(&$this,'render_vendor_meta_box'), 'wcmp_vendorrequest', 'normal', 'default'
+                'vendor-form-data', __('Vendor Form Data', $WCMp->text_domain), array(&$this, 'render_vendor_meta_box'), 'wcmp_vendorrequest', 'normal', 'default'
         );
     }
 
@@ -54,15 +55,15 @@ class WCMp_Admin {
                 echo '<div class="wcmp-form-field">';
                 echo '<label>' . html_entity_decode($value['label']) . ':</label>';
                 if ($value['type'] == 'file') {
-                    if(!empty($value['value']) && is_array($value['value'])){
+                    if (!empty($value['value']) && is_array($value['value'])) {
                         foreach ($value['value'] as $attacment_id) {
                             echo '<span> <a href="' . wp_get_attachment_url($attacment_id) . '" download>' . get_the_title($attacment_id) . '</a> </span>';
                         }
                     }
                 } else {
-                    if(is_array($value['value'])){
+                    if (is_array($value['value'])) {
                         echo '<span> ' . implode(', ', $value['value']) . '</span>';
-                    } else{
+                    } else {
                         echo '<span> ' . $value['value'] . '</span>';
                     }
                 }
@@ -81,6 +82,7 @@ class WCMp_Admin {
         unset($actions['edit']);
         return $actions;
     }
+
     function modify_wcmp_vendorrequest_row_actions($actions, $post) {
         global $WCMp;
         if ($post->post_type == "wcmp_vendorrequest") {
@@ -91,12 +93,12 @@ class WCMp_Admin {
             $user_id = get_post_meta($post->ID, 'user_id', true);
             $user = new WP_User($user_id);
             $user_data = get_userdata($user_id);
-            $actions['view'] = '<a href="' . get_edit_post_link($post->ID,'display') . '" title="" rel="permalink">' . __('View', $WCMp->text_domain) . '</a>';
+            $actions['view'] = '<a href="' . get_edit_post_link($post->ID, 'display') . '" title="" rel="permalink">' . __('View', $WCMp->text_domain) . '</a>';
             if (!in_array('dc_vendor', $user->roles) && !in_array('dc_rejected_vendor', $user->roles) && $user_data != false) {
                 $actions['aprove'] = '<a class="activate_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Approve', $WCMp->text_domain) . '</a>';
                 $actions['reject'] = '<a class="reject_vendor" href="#" data-id="' . $user_id . '" title="" rel="permalink">' . __('Reject', $WCMp->text_domain) . '</a>';
             }
-        } 
+        }
         return $actions;
     }
 
@@ -292,15 +294,13 @@ class WCMp_Admin {
      */
     function add_toolbar_items($admin_bar) {
         global $WCMp;
-
-        $plugin_pages = get_option('wcmp_pages_settings_name');
         $user = wp_get_current_user();
         if (is_user_wcmp_vendor($user)) {
             $admin_bar->add_menu(
                     array(
                         'id' => 'vendor_dashboard',
                         'title' => __('Frontend  Dashboard', $WCMp->text_domain),
-                        'href' => get_permalink($plugin_pages['vendor_dashboard']),
+                        'href' => get_permalink(wcmp_vendor_dashboard_page_id()),
                         'meta' => array(
                             'title' => __('Frontend Dashboard', $WCMp->text_domain),
                             'target' => '_blank',
@@ -312,7 +312,7 @@ class WCMp_Admin {
                     array(
                         'id' => 'shop_settings',
                         'title' => __('Shop Settings', $WCMp->text_domain),
-                        'href' => get_permalink($plugin_pages['shop_settings']),
+                        'href' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_store_settings_endpoint', 'vendor', 'general', 'shop-front')),
                         'meta' => array(
                             'title' => __('Shop Settings', $WCMp->text_domain),
                             'target' => '_blank',
@@ -344,7 +344,7 @@ class WCMp_Admin {
         ?>
         <div style="clear: both"></div>
         <div id="dc_admin_footer">
-        <?php _e('Powered by', $WCMp->text_domain); ?> <a href="https://wc-marketplace.com/" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('WC Marketplace', $WCMp->text_domain); ?> &copy; <?php echo date('Y'); ?>
+            <?php _e('Powered by', $WCMp->text_domain); ?> <a href="https://wc-marketplace.com/" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('WC Marketplace', $WCMp->text_domain); ?> &copy; <?php echo date('Y'); ?>
         </div>
         <?php
     }
@@ -359,15 +359,14 @@ class WCMp_Admin {
         global $WCMp;
         $screen = get_current_screen();
         if (is_user_logged_in()) {
-
             if (isset($screen->id) && in_array($screen->id, array('edit-dc_commission', 'edit-wcmp_university', 'edit-wcmp_vendor_notice'))) {
                 ?>
                 <script>
                     jQuery(document).ready(function ($) {
                         var target_ele = $(".wrap>h1");
                         var targethtml = target_ele.html();
-                        targethtml = targethtml + '<a href="<?php echo trailingslashit(get_admin_url()) . 'admin.php?page=wcmp-setting-admin'; ?>" class="page-title-action">Back To WCMp Settings</a>';
-                        target_ele.html(targethtml);
+                        //targethtml = targethtml + '<a href="<?php echo trailingslashit(get_admin_url()) . 'admin.php?page=wcmp-setting-admin'; ?>" class="page-title-action">Back To WCMp Settings</a>';
+                        //target_ele.html(targethtml);
                 <?php if (in_array($screen->id, array('edit-wcmp_university'))) { ?>
                             target_ele.append('<p><b><?php echo __('"University" section is visible only to vendors through the vendor dashboard. You may use this section to onboard your vendors. Share tutorials, best practices, "how to" guides or whatever you feel is appropriate with your vendors.', $WCMp->text_domain); ?></b></p>');
                 <?php } ?>
@@ -379,35 +378,15 @@ class WCMp_Admin {
                 </script>
                 <?php
             }
-            $user_id = get_current_user_id();
-            $user = new WP_User($user_id);
-            if (!empty($user->roles) && is_array($user->roles) && in_array('dc_vendor', $user->roles)) {
-                echo '<style type="text/css">';
-                echo '#menu-posts-dc_commission { display : none;}';
-                echo '</style>';
-                $vendor_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon') && $vendor_submit_coupon) {
-                    echo '<style type="text/css">';
-                    echo '#toplevel_page_woocommerce ul li, #menu-posts, #menu-posts-dc_commission, #menu-tools, #menu-comments, #menu-appearance{ 
-									display : none;
-								}';
-                    echo '#toplevel_page_woocommerce ul li.wp-first-item {
-									display : block;
-								}';
-                    echo '</style>';
-                } else {
-                    echo '<style type="text/css">';
-                    echo '#menu-tools, #menu-comments, #menu-appearance, #menu-posts{ 
-										display : none;
-									}';
-                    echo '</style>';
-                    echo '<style type="text/css">';
-                    echo '#toplevel_page_woocommerce { 
-										display : none;
-									}';
-                    echo '</style>';
-                }
-            }
+        }
+    }
+    
+    public function wcmp_admin_menu(){
+        $user = new WP_User(get_current_user_id());
+        if (!empty($user->roles) && is_array($user->roles) && in_array('dc_vendor', $user->roles)) {
+            remove_menu_page( 'edit.php' );      
+            remove_menu_page( 'edit-comments.php' );
+            remove_menu_page( 'tools.php' );
         }
     }
 
@@ -421,14 +400,20 @@ class WCMp_Admin {
         $general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
         //echo $screen->id;
         // Enqueue admin script and stylesheet from here
-        if (in_array($screen->id, array('woocommerce_page_wcmp-setting-admin'))) :
+        if (in_array($screen->id, array('wcmp_page_wcmp-setting-admin', 'wcmp_page_wcmp-to-do'))) :
             $WCMp->library->load_qtip_lib();
             $WCMp->library->load_upload_lib();
             $WCMp->library->load_colorpicker_lib();
             $WCMp->library->load_datepicker_lib();
             wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
+
         endif;
+
+        if (in_array($screen->id, array('wcmp_page_wcmp-to-do'))) {
+            wp_enqueue_script('dc_to_do_list_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_enqueue_style('wcmp_admin_todo_list', $WCMp->plugin_url . 'assets/admin/css/admin-to_do_list' . $suffix . '.css', array(), $WCMp->version);
+        }
 
         if (in_array($screen->id, array('dc_commission'))) :
             $WCMp->library->load_qtip_lib();
@@ -464,7 +449,7 @@ class WCMp_Admin {
             wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
             wp_enqueue_script('commission_js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_localize_script('commission_js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
-            if (isset($general_singleproductmultisellersettings['is_singleproductmultiseller'])) {
+            if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
                 wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             }
         endif;
@@ -489,9 +474,6 @@ class WCMp_Admin {
             wp_enqueue_script('product_js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_localize_script('product_js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
         endif;
-        if (in_array($screen->id, array('woocommerce_page_wcmp-setting-admin', 'edit-wcmp_vendorrequest'))) :
-            wp_enqueue_script('dc_to_do_list_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        endif;
         if (in_array($screen->id, array('wcmp_vendorrequest'))) :
             wp_enqueue_style('admin-vendor_registration-css', $WCMp->plugin_url . 'assets/admin/css/admin-vendor_registration' . $suffix . '.css', array(), $WCMp->version);
         endif;
@@ -500,6 +482,9 @@ class WCMp_Admin {
             wp_enqueue_script('wcmp_report_js', $WCMp->plugin_url . 'assets/admin/js/report' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_enqueue_style('wcmp_report_css', $WCMp->plugin_url . 'assets/admin/css/report' . $suffix . '.css', array(), $WCMp->version);
             $WCMp->library->font_awesome_lib();
+        endif;
+        if (in_array($screen->id, array('wcmp_page_wcmp-extensions'))) :
+            wp_enqueue_style('admin-extensions', $WCMp->plugin_url . 'assets/admin/css/admin-extensions' . $suffix . '.css', array(), $WCMp->version);
         endif;
     }
 

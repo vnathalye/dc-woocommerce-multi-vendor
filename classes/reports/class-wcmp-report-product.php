@@ -39,7 +39,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
 			$is_variation = false;
 			$product_id = $_POST['search_product'];
 		
-			$_product = get_product($product_id);
+			$_product = wc_get_product($product_id);
 		
 			if( $_product->is_type( 'variation' ) ) {
 				$title = $_product->get_formatted_name();
@@ -94,7 +94,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
 				$_product = array();
 				$vendor = false;
 				
-				$_product = get_product($product_id);
+				$_product = wc_get_product($product_id);
 				
 				if( $_product->is_type( 'variation' ) ) {
 					$title = $_product->get_formatted_name();
@@ -142,7 +142,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
 										$order_items_product_id = $line_item['product_id'];
 										$order_items_variation_id = $line_item['variation_id'];
 									}
-									$order_date_str = strtotime($order->order_date);
+									$order_date_str = strtotime($order->get_date_created());
 									if( $order_date_str > $start_date && $order_date_str < $end_date ) {
 										$order_items[$i] = array(
 											'order_id' => $order_id,
@@ -150,7 +150,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
 											'variation_id' => $order_items_variation_id,
 											'line_total' => $line_item['line_total'],
 											'item_quantity' => $line_item['qty'],
-											'post_date' => $order->order_date,
+											'post_date' => $order->get_date_created(),
 											'multiple_product' => 0
 										);
 										if( count($order_line_items) > 1 ) {
@@ -306,7 +306,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
 					$product_url = admin_url('post.php?post='. $product_id .'&action=edit');
 					
 					$report_chart .= '<tr><th><a href="' . $product_url . '">' . $product->get_title() . '</a></th>
-						<td width="1%"><span>' . woocommerce_price( $sales_report['total_sales'] ) . '</span><span class="alt">' . woocommerce_price( $sales_report['admin_earning'] ) . '</span></td>
+						<td width="1%"><span>' . wc_price( $sales_report['total_sales'] ) . '</span><span class="alt">' . wc_price( $sales_report['admin_earning'] ) . '</span></td>
 						<td class="bars">
 							<span style="width:' . esc_attr( $width ) . '%">&nbsp;</span>
 							<span class="alt" style="width:' . esc_attr( $width2 ) . '%">&nbsp;</span>

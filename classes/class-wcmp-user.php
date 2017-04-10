@@ -70,13 +70,12 @@ class WCMp_User {
 
     function wp_wcmp_vendor_login($redirect_to, $request, $user) {
         global $WCMp;
-        $pages = get_wcmp_vendor_settings('wcmp_pages_settings_name');
         //is there a user to check?
         if (isset($user->roles) && is_array($user->roles)) {
             //check for admins
             if (in_array('dc_vendor', $user->roles)) {
                 // redirect them to the default place
-                $redirect_to = get_permalink($pages['vendor_dashboard']);
+                $redirect_to = get_permalink(wcmp_vendor_dashboard_page_id());
                 return $redirect_to;
             } else {
                 return $redirect_to;
@@ -87,14 +86,12 @@ class WCMp_User {
     }
 
     function wcmp_vendor_login($redirect, $user) {
-        global $WCMp;
-        $pages = get_wcmp_vendor_settings('wcmp_pages_settings_name');
         if (is_array($user->roles)) {
             if (in_array('dc_vendor', $user->roles)) {
-                $redirect = get_permalink($pages['vendor_dashboard']);
+                $redirect = get_permalink(wcmp_vendor_dashboard_page_id());
             }
         } else if ($user->roles == 'dc_vendor') {
-            $redirect = get_permalink($pages['vendor_dashboard']);
+            $redirect = get_permalink(wcmp_vendor_dashboard_page_id());
         }
         return $redirect;
     }
@@ -222,11 +219,10 @@ class WCMp_User {
      * Vendor login template redirect
      */
     function vendor_login_redirect($redirect_to) {
-        if(isset($_POST['email'])) {
+        if (isset($_POST['email'])) {
             $user = get_user_by('email', $_POST['email']);
             if (is_object($user) && isset($user->ID) && is_user_wcmp_vendor($user->ID)) {
-                $pages = get_option("wcmp_pages_settings_name");
-                $redirect_to = get_permalink($pages['vendor_dashboard']);
+                $redirect_to = get_permalink(wcmp_vendor_dashboard_page_id());
                 return $redirect_to;
             }
             return apply_filters('wcmp_vendor_login_redirect', $redirect_to, $user);
@@ -247,8 +243,7 @@ class WCMp_User {
             do_action('add_vendor_extra_information_my_account');
         }
         if (is_user_wcmp_vendor($current_user)) {
-            $pages = get_option('wcmp_pages_settings_name');
-            $dashboard_page_link = isset($pages['vendor_dashboard']) ? get_permalink($pages['vendor_dashboard']) : '#';
+            $dashboard_page_link = !empty(wcmp_vendor_dashboard_page_id()) ? get_permalink(wcmp_vendor_dashboard_page_id()) : '#';
             echo apply_filters('wcmp_vendor_goto_dashboard', '<a href="' . $dashboard_page_link . '">' . __('Dashboard - manage your account here', $WCMp->text_domain) . '</a>');
         }
     }
@@ -370,18 +365,13 @@ class WCMp_User {
             if (!isset($wp_roles))
                 $wp_roles = new WP_Roles();
         if (is_object($wp_roles)) {
-
-            //$wordpress_default_role = get_option('default_role');
-//            remove_role('dc_vendor');
-//            remove_role('dc_pending_vendor');
-//            remove_role('dc_rejected_vendor');
             if (get_role('dc_vendor') == null) {
                 // Vendor role
                 add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', $WCMp->text_domain)), array(
                     'read' => true,
+                    'manage_product' => true,
                     'edit_posts' => true,
                     'delete_posts' => false,
-                    'manage_product' => true,
                     'view_woocommerce_reports' => true,
                 ));
             }
@@ -426,34 +416,36 @@ class WCMp_User {
                 $caps[] = "edit_product";
                 $caps[] = "delete_product";
                 $caps[] = "edit_products";
-                $caps[] = "edit_others_products";
-                $caps[] = "delete_published_products";
                 $caps[] = "delete_products";
-                $caps[] = "delete_others_products";
-                $caps[] = "edit_published_products";
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
+                    $caps[] = "publish_products";
+                }
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
+                    $caps[] = "edit_published_products";
+                    $caps[] = 'delete_published_products';
+                }
             }
         }
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-            $caps[] = "publish_products";
-        }
+
         $caps[] = "read_product";
         $caps[] = "read_shop_coupon";
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-            $caps[] = "publish_shop_coupons";
-        }
+
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
             $vendor_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
             if ($vendor_submit_coupon) {
                 $caps[] = 'edit_shop_coupons';
                 $caps[] = 'read_shop_coupons';
                 $caps[] = 'delete_shop_coupons';
-                $caps[] = 'edit_published_shop_coupons';
-                $caps[] = 'delete_published_shop_coupons';
-                $caps[] = 'edit_others_shop_coupons';
-                $caps[] = 'delete_others_shop_coupons';
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
+                    $caps[] = "publish_shop_coupons";
+                }
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
+                    $caps[] = "edit_published_shop_coupons";
+                    $caps[] = "delete_published_shop_coupons";
+                }
             }
         }
-        return apply_filters('vednor_capabilities', $caps, $user_id);
+        return apply_filters('vendor_capabilities', $caps, $user_id);
     }
 
     /**
@@ -786,7 +778,7 @@ class WCMp_User {
             'class' => "user-profile-fields"
         ); // Text
 
-        if (isset($policies_settings['is_policy_on']) && isset($settings_capabilities['can_vendor_edit_policy_tab_label'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_policy_tab_label'])) {
 
             $fields['vendor_policy_tab_title'] = array(
                 'label' => __('Enter the title of Policies Tab', $WCMp->text_domain),
@@ -795,7 +787,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (isset($policies_settings['is_policy_on']) && isset($settings_capabilities['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
             $fields['vendor_cancellation_policy'] = array(
                 'label' => __('Cancellation/Return/Exchange Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -803,7 +795,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (isset($policies_settings['is_policy_on']) && isset($settings_capabilities['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
             $fields['vendor_refund_policy'] = array(
                 'label' => __('Refund Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -811,7 +803,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (isset($policies_settings['is_policy_on']) && isset($settings_capabilities['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
             $fields['vendor_shipping_policy'] = array(
                 'label' => __('Shipping Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -1198,7 +1190,10 @@ class WCMp_User {
      */
     function delete_vendor($user_id) {
         global $WCMp;
-
+        $wcmp_vendor_registration_form_id = get_user_meta($user_id, 'wcmp_vendor_registration_form_id', true);
+        if ($wcmp_vendor_registration_form_id) {
+            wp_delete_post($wcmp_vendor_registration_form_id);
+        }
         if (is_user_wcmp_vendor($user_id)) {
 
             $vendor = get_wcmp_vendor($user_id);

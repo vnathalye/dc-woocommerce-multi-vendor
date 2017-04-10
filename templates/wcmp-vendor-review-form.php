@@ -20,7 +20,7 @@ if(isset($queried_object->term_id) && !empty($queried_object)) {
 	$shop_name = $vendor->user_data->data->display_name;
 	$vendor_id =  $vendor->id;
 	$count = $vendor->get_review_count();
-	$is_enable = wcmp_seller_review_enable(	$vendor_id,  $queried_object->term_id);
+	$is_enable = wcmp_seller_review_enable($queried_object->term_id);
 	$current_user = wp_get_current_user();
 	$reviews_lists = $vendor->get_reviews_and_rating( 0 );	
 }

@@ -178,7 +178,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 //						$com_pro_id = $product_id;
 //					}
 					
-					$update_query = $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` 	SET shipping_status = 1	WHERE order_id =".$order_id." AND vendor_id = ".$vendor->id);
+					$update_query = $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` 	SET shipping_status = 1	WHERE order_id =".$order_id." AND vendor_id = ".$vendor->get_id());
 				}
 				$order = new WC_Order( $order_id );
 				$order->add_order_note('Vendor '.$vendor->user_data->display_name .' has shipped his part of order to customer.');
@@ -210,12 +210,12 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 			foreach ( $_orders as $order_id ) {
 				$order = new WC_Order( $order_id );
 				$new_shipping = false;
-				$valid_items = $vendor->get_vendor_items_from_order( $order->id, $vendor->term_id );
-				$valid_shipping = $vendor->get_vendor_shipping_from_order( $order->id, $vendor->term_id );
+				$valid_items = $vendor->get_vendor_items_from_order( $order->get_id(), $vendor->term_id );
+				$valid_shipping = $vendor->get_vendor_shipping_from_order( $order->get_id(), $vendor->term_id );
 				foreach ($valid_shipping as $key => $value) {
 					// Fetch the new vendor shipping calculation :: version > 2.4
 					if(isset($value[ 'vendor_cost_7' ])) {
-						$product_shipping = __('Shipping Charges',$WCMp->text_domain).' : ' . woocommerce_price( $value[ 'vendor_cost_7' ] ). '<br />';
+						$product_shipping = __('Shipping Charges',$WCMp->text_domain).' : ' . wc_price( $value[ 'vendor_cost_7' ] ). '<br />';
 						$new_shipping = true;
 					}
 				}
@@ -231,10 +231,10 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 							// Remove the sold by meta key for display
 							if (strtolower($meta['key']) != 'sold by' ){
 								if($meta[ 'label' ] == 'flat_shipping_per_item') {
-									$products .= __('Flat Shipping Charges',$WCMp->text_domain).' : ' . woocommerce_price( $meta[ 'value' ] ). '<br />';
+									$products .= __('Flat Shipping Charges',$WCMp->text_domain).' : ' . wc_price( $meta[ 'value' ] ). '<br />';
 								}
 								else {
-									//$products .= $meta[ 'label' ] .' : ' . woocommerce_price( $meta[ 'value' ] ). '<br />';
+									//$products .= $meta[ 'label' ] .' : ' . wc_price( $meta[ 'value' ] ). '<br />';
 								}
 							}
 						}
@@ -244,10 +244,10 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 					$products .= $product_shipping;
 				}
 
-				$shippers = (array) get_post_meta( $order->id, 'dc_pv_shipped', true );
+				$shippers = (array) get_post_meta( $order->get_id(), 'dc_pv_shipped', true );
 				$shipped = in_array($user_id, $shippers) ? 'Yes' : 'No' ; 
 				
-				if( $order->id && $vendor->term_id) {
+				if( $order->get_id() && $vendor->term_id) {
 					$commission_total = 0;
 					$commissions = false;
 					$args = array(
@@ -262,7 +262,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 							),
 							array(
 								'key' => '_commission_order_id',
-								'value' => absint($order->id),
+								'value' => absint($order->get_id()),
 								'compare' => '='
 							),
 						),
@@ -319,13 +319,13 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 					}
 				}
 				
-				$customer_user_name = get_post_meta($order->id, '_shipping_first_name', true).' '.get_post_meta($order->id, '_shipping_last_name', true);
+				$customer_user_name = get_post_meta($order->get_id(), '_shipping_first_name', true).' '.get_post_meta($order->get_id(), '_shipping_last_name', true);
 				$order_items = array(); 
-				$order_items[ 'order_id' ] 	= $order->id;
+				$order_items[ 'order_id' ] 	= $order->get_id();
 				$order_items[ 'customer' ] 	= $customer_user_name.'<br>'.apply_filters( 'wcmp_dashboard_google_maps_link', '<a target="_blank" href="' . esc_url( 'http://maps.google.com/maps?&q=' . urlencode( esc_html( preg_replace( '#<br\s*/?>#i', ', ', $order->get_formatted_shipping_address() ) ) ) . '&z=16' ) . '">'. esc_html( preg_replace( '#<br\s*/?>#i', ', ', $order->get_formatted_shipping_address() ) ) .'</a><br />'.$extra_checkout_fields_for_brazil_active_datas); 
 				$order_items[ 'products' ] 	= $products; 
-				$order_items[ 'total' ] 	= woocommerce_price( $commission_total );
-				$order_items[ 'date' ] 		= date_i18n( wc_date_format(), strtotime( $order->order_date ) ); 
+				$order_items[ 'total' ] 	= wc_price( $commission_total );
+				$order_items[ 'date' ] 		= date_i18n( wc_date_format(), strtotime( $order->get_date_created() ) ); 
 				$order_items[ 'status' ] 	= $shipped;
 
 				$orders[] = (object) $order_items; 
@@ -333,7 +333,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 		}
 		return $orders; 
 
-	}
+            }
 
 
 

@@ -21,9 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $WCMp;
 if(isset($more_product_array) && is_array($more_product_array) && count($more_product_array) > 0) {
 	if(isset($sorting) && !empty($sorting)) {	
-		function wcmp_sort_by_price($a, $b) {
+		/*function wcmp_sort_by_price($a, $b) {
 			return $a['price_val'] - $b['price_val'];
-		}		
+		}*/		
 		if($sorting == 'price') {		
 			usort($more_product_array, function($a, $b){return $a['price_val'] - $b['price_val'];});
 		}

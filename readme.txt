@@ -1,17 +1,17 @@
 === WC Marketplace ===
 Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata
-Tags: wc marketplace, wc market place, woocommerce product vendors, WooCommerce vendors, ebay, etsy, amazon, woocommerce marketplace, vendor, vendors, vendor system, woocommerce market place, WooCommerce multivendor, WooCommerce multi vendor, woocommerce vendors, woo vendors, WooCommerce vendors, multistore, multi store, multivendor, multi vendor, multi vendors, dokan, product vendor, product vendors, vendor system, wc vendors, commission rate, multi seller, One Product Multi Seller
+Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.5.4
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 
 
 
-WC Marketplace is the complete multi-store marketplace plugin for WooCommerce.
+WC Marketplace - The most user recommended multivendor marketplace plugin for WooCommerce.
 
 
 == Description ==
@@ -72,10 +72,10 @@ NOTE: WC Marketplace plugin is an extension of WooCommerce, so the WooCommerce p
 1. Download and install WC Marketplace plugin using the built-in WordPress plugin installer.
 If you download WC Marketplace plugin manually, make sure it is uploaded to `/wp-content/plugins/` and activate the plugin through the `Plugins` menu in WordPress. Or follow the steps below:
 Plugins > Add new > Upload plugin > Upload dc-woocommerce-multi-vendor.zip > Install Now > Activate Plugin.
-2. Configure as you see fit, under WooCommerce / DC Vendors.
+2. Configure as you see fit, under WCMp / Settings.
 3. Configure email notifications from WooCommerce / Settings.
-4. View Commissions under WooCommerce / Commissions.
-5. View reports WooCommerce / Reports / DC Vendors.
+4. View Commissions under WCMp / Commissions.
+5. View reports WCMp / Reports.
 
 
 
@@ -130,6 +130,13 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.6.0 =
+* Added: Endpoint in vendor dashboard
+* Removed: Menu under Woocommerce
+* Added: New WCMp menu
+* Added: Woocommerce 3.0 support 
+
+
 = 2.5.4 =
 * Fixed: Dequeue Google Recaptcha js
 * Fixed: Vendor registration migration error
@@ -441,315 +448,5 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
-= 2.5.4 =
-* Fixed: Dequeue Google Recaptcha js
-* Fixed: Vendor registration migration error
-* Fixed: Widget display in vendor order page
-* Fixed: Scheduled payment date in vendor Withdrawal page
-
-= 2.5.3 =
-* Fixed: Vendor Withdrawal tab display
-* Updated: Language file
-* Added: Filters in admin settings pages
-* Fixed: Typos
-* Fixed: Discount amount calculation in vendor dashboard page
-
-= 2.5.2 =
-* Added: Restrict backend access from vendor
-* Added: Shortcode for display vendor recent products
-* Added: Extension page in setting panel
-* Added: Filter for display admin bar in frontend
-* Fixed: Email notification logic after apply for vendor
-
-= 2.5.1 =
-* Fixed: Vendor products shortcode
-* Added: Filter in more vendor tab
-* Updated: Language file
-
-= 2.5.0 =
-* Fixed: Plugin deactivation hook
-
-= 2.4.9 =
-* Added: Support Wordpress 4.7
-* Fixed: CSS issue in Dashboard
-* Fixed: Email Notification on new vendor registration
-
-= 2.4.8 =
-* Added: Filters & hook.
-* Fixed: Vendor dashboard menu.
-
-= 2.4.7 =
-* Fixed: Shipping tracking url and tracking id display in email template
-* Added: More hook & filters
-* Fixed: Vendor commission payment via paypal masspay
-
-= 2.4.6 =
-* Fixed: Payment method dropdown in backend Issue#9.
-* Fixed: Vendor registration form error.
-
-= 2.4.5 =
-* Fixed: Database error in product name Issue#4.
-* Fixed: User role capabilities Issue#5.
-* Fixed: WCMp speed optimization Issue#7.   
-* Fixed: Vendor registration javascript error fixed.
-
-= 2.4.4 =
-* Added: Vendor Registration
-* Removed: Apply Become a vendor checkbox from my-account page.
-* Fixed: Vendor description formatting
-* Fixed: WPML support
-
-= 2.4.3 =
-* Removed: fancyBox - jQuery Plugin.
-* Removed: jquery-2.1.3.js.
-
-
-= 2.4.2 =
-* Added: Shipment tracking.
-
-
-= 2.4.1 =
-* Added: Add Paypal Payout Payment Gateway.
-* Added: Chinese translations.
-* Modified: Russian translations updated.
-
-
-= 2.4.0 =
-* Added: Support WooCommerce 2.6.
-* Added: Vendor can manage zone wise shipping methods.
-
-
-
-= 2.3.9 =
-* Added: Instagram in the vendor Social Media profile.
-* Modified: Arabic translations updated.
-
-
-
-= 2.3.8 =
-* Added: One product multiple sellers.
-* Modified: Choose vendor on the edit product page shown vendor fullname.
-* Fixed: Vendor Shipping class dropdown issue.
-
-
-
-= 2.3.7 =
-* Fixed: SQL syntax error on the shop page has been fixed.
-* Fixed: Unassigning vendor from the product has been fixed.
-* Fixed: Issue with the "Download CSV" under Stats & Report has been fixed.
-* Fixed: Notification issue on the "To-do-list" has been fixed.
-* Fixed: "More Products from vendor_name" has been fixed
-* Changed: Vendor payment settings panel
-
-
-
-= 2.3.6 =
-* Added: Beta version for one product multiple sellers available over [GitHub repository](https://github.com/dualcube/WC-Marketplace-2.3.7-Beta)
-* Added: [wcmp_vendorslist] : List of vendors in your site shows vendor rating too.
-* Added: Updated french language files have been added.
-* Fixed: Commission status issue for bank transfer has been fixed.
-* Fixed: Shop-front social icon issue has been fixed.
-* Fixed: Payment history showing garbage data issue has been fixed.
-* Fixed: Commission in To-do list issue has been fixed.
-* Fixed: Show more under order session issue has been fixed.
-
-
-
-
-= 2.3.5 =
-* Added: Vendor review and rating functionality.
-* Added: French language files have been added.
-* Added: Spanish language files have been added.
-* Added: Persian language files have been added.
-* Fixed: Vendor email issue on ordering product.
-* Fixed: Commission Status - Bank transfer issue.
-* Fixed: Stats/Reports issue in vendor-dashboard.
-* Compatibility: WCMp is now compatible with WooCommerce Table Rate extension via WCMp Advanced Shipping extension.
-
-
-= 2.3.4 =
-* Added: Admin can allow vendors to hide/show their information(phone, email, address, description) from the customers.
-* Added: Admin can view "Rejected Vendors" under "User" tab.
-* Fixed: Shipping class issue for variable products has been fixed.
-* Fixed: Vendors can't mark products as featured.
-* Fixed: Overriding email template issue has been fixed.
-* Fixed: The "Add Commission" tab has been removed from the Admin's back-end.
-* Fixed: Shortcode - [wcmp_products vendor="VENDOR LOGIN NAME"] has been fixed.
-* Fixed: Product variation type is now available on the "Cart" page.
-* Fixed: Responsive issues in Vendor Dashboard fixed.
-* Fixed: Commission payment via PayPal MassPay issue has been fixed.
-* Modify: Description editor on the vendor's profile page has been modified.
-
-
-= 2.3.3 =
-* Fixed: Hide Promote Tab from Vendor Dashboard when coupon creation capability is disabled.
-* Fixed: Commission issue has been fixed now.
-* Fixed: Publish product capability issue has been fixed.
-* Fixed: Duplicate SKU alert added.
-* Fixed: Publish coupon capability issue has been fixed.
-
-
-= 2.3.2 =
-* Added:  Compatible with WooCommerce 2.5X.
-* Added: Policy Section is added in WCMp General tab.
-* Feature: Vendor messages  shortcode has been replaced with the vendor announcement.
-* Fixed: Shipping address in email issue has been fixed.
-* Fixed: Front-end Vendor Dashboard, pending Shipping report issue has been fixed.
-* Fixed: Vendor product listing issue has been fixed.
-* Fixed: shipping  issue has been fixed.
-* Fixed: Multiple CSS issues have been fixed.
-
-
-= 2.3.1 =
-* Fix: Multiple shortcodes in vendor dashboard issue has been fixed.
-* Fix: Some CSS tweaks in the shop settings page.
-
-
-= 2.3.0 =
-* Added: An all new vendor dashboard, with a revamped Information Architecture.
-* Added: Restructured WCMp admin settings panel.
-* Added: University module - admin can now publish posts visible only to vendors. May be used to publishing tutorials, how-to guides, best practices etc.  
-* Added: Announcement module – admin can now broadcast announcements to vendors.   
-* Added: Admin can now optionally add the following fields in Vendors’ Order export (in CSV ) - customer name, billing and shipping address.
-* Added: Admin can now allow Vendors to set message/notifications for buyers that would be shown in Thank You page, Order Details page as well as order email.
-* Added: Admin can now allow Vendors to add customer support details and return address in Thank You page, Order Details page as well as order email.
-* Added: New fields added in Vendor Sales report – order id, date and time of purchase, vendor name, coupons used, payment gateway, customer name, email, customer contact, billing address, order status, tax, shipping cost. 
-* Added: Vendors can now download Vendor Sales Report in CSV format.   
-* Added: Admin can now sort product listing from the back-end by vendor username.
-* Added: New shortcode - Vendor Listing page[wcmp_vendorslist] – customers can now sort vendors by product category.
-* Added: Admin can now allow Vendors to add external store URL, with the label.  
-* Fixed: Tax was added to vendor commission despite being set up otherwise. This issue is now fixed.  
-* Fixed: Vendor quick info sidebar issue is fixed.
-* Fixed: Linked product option was not working. The issue is fixed now. 
-
-
-= 2.2.5 =
-* Feature: Admin can filter products in product listing page by the vendor.
-* Fixed: Open a different vendor's product and coupon by changing post id in URL - the issue has been fixed.
-* Fixed: Shop settings page issue is fixed.
-* Fixed: Commission amount for two products from same vendor issue has been fixed.
-
-
-= 2.2.4 =
-* Fix: When an order is deleted, commissions are also deleted for that order.
-* Modify: New hook added for "successful commission creation"  => hook name-> "wcmp_vendor_commission_created"
-* Modify: In WCMp Settings>Product tab -> "Add Comment" label renamed to "View Reviews"
-* Feature: Vendors can now hide email, phone, address from the profile and shop settings page.
-* Feature: Admin can un-assign a vendor from a product
-* Feature: Vendors can set shipping from front end
-* Support: WCMp now supports WooCommerce Product Enquiry Form - inquiry mail will be sent to the vendor of that product if this plugin is activated in site.
-* Support: WCMp now supports WooCommerce Extra Checkout Fields for Brazil.
-
-
-= 2.2.3 =
-* Fix - is_vendor_dashboard() function issue fixed.
-* Feature - [wcmp_products id="VENDOR ID"] : New attribute for the shortcode that shows products of the vendor.
-
-
-= 2.2.3 =
-* Fix - is_vendor_dashboard() function will work now.
-* Feature - [wcmp_products id="VENDOR ID"] : Products of the vendor.
-
-
-= 2.2.2 =
-* Fixed: "Report Abuse" link text can be changed.
-* Fixed:  "Choose a Vendor" dropdown is fixed for bulk edit products.
-* Fixed:  Fixed coupons issue, now coupon created for a product by a vendor could not be used for other vendors' product.
-* Fixed: Fixed commission field in variation issue, now in the case of variation, vendors could not edit the commission fields.
-* Fixed:  Fixed shipping in variation issue, now in the case of variable product, vendors could not use others' shipping classes.
-* Fixed:  Minor bug fixed when showing related products.
-* Modified - Language files are modified to include more text strings.
-
-
-= 2.2.1 =
-* Added: Filter is added to add new payment mode for his/her store.
-* Added: Filter is added to add new disbursal mode for admin
-* Fixed:  Bulk edit to assign shipping to multiple products by a vendor has been removed.
-* Modified: Min file is generated for all CSS and js.
-
-
-
-
-= 2.2.0 =
-* Feature:  Admin can do bulk edit and assign multiple products to vendors in one click.
-* Feature:  Shortcode: [vendor_shipping_settings] -> vendor can set shipping from front end.
-* Feature:  Translated files for Norwegian, Russian, Italian and Portuguese(Brazilian).
-* Feature:  Vendor frontend dashboard now contains a link to the backend dashboard.
-* Fixed:   Small UI issues in Reports tab.
-* Fixed:  Fixed product commission security issue.
-* Fixed:  Fixed notification issue in "Disbursal by Request Withdrawal" mode.
-* Fixed:  Code optimization and improved inline documentation.
-
-
-
-
-= 2.1.2 =
-* Feature:  Enhanced report capabilitites.
-
-
-
-
-= 2.1.1 =
-* Feature: A revenue sharing mode - Admin fees.
-* Fixed:  International flat rate shipping support is added.
-* Fixed:  Minor bug fixed with latest WooCommerce.
-
-
-= 2.1.0 =
-* Feature: WCMp now supports WooCommerce 2.4+ shipping module.
-* Feature: Admin can set a threshold amount before commissions are disbursed.
-* Feature: Admin can set the number of free withdrawals
-* Feature: Admin can add commission withdrawal charge.
-* Feature: Admin To-Do list.
-* Feature: New payment module - Vendors can withdraw commission(as opposed to automatic disbursement).
-* Feature: Vendors can now withdraw to Paypal as well as request for direct Bank transfer
-* Feature: New features added in the report module 
-* Feature: Vendor can see backend report
-* Feature: WCMp now supports WooCommerce Frontend Shop Manager - Free version.
-* Feature: New shortcode added - [transaction_details]
-
-
-
-
-= 2.0.1 =
-* Feature: Admin can moderate(approve/edit/disapprove) coupons created by Vendors.
-* Feature: Admin can set commission as percentage plus fixed amount.
-* Feature: Added hooks and filters.
-* Fixed: - Vendor can see only their attachments.
-* Fixed: Globally publishes product bugs are fixed.
-* Fixed: Template override and text domain issues are fixed.
-
-
-= 2.0.0 =
-* The name of the plugin is changed to better represent it's functionality
-* Contains a completely redesigned settings panel with a more intuitive categorization of features.
-
-
-= 1.1.2 =
-* Fixed: Fixed the report for fixed commission amount.
-* Fixed: Fixed some issue with adding shipping class from vendor dashboard.
-* Features: Admin can block a vendor with all their items.
-
-
-= 1.1.1 =
-* Fixed:  Duplicate Commission Entry per order.
-
-
-= 1.1.0 =
-* Fixed:  New order email template to Vendor has been fixed. Now order calculation is Vendor specific.
-* Features: Split shipping amount to Vendors. Following shipping methods are supported: "Flat rate per item: Vendor can add flat rate class from their dashboard", "International delivery per item", "Local delivery per product".
-* Features:  Commission can also be calculated in fixed rate.
-* Features: Vendor list can be sorted using "[dc_vendorslist]" shortcode.
-
-
-= 1.0.2 =
-* New Shortcode is added  as [vendor_coupons] to show vendor's coupon and the usage counted. Also added coupon information in vendor order details page.
-* Admin can edit vendor shop page URL base from WordPress permalink settings page.
-
-
-= 1.0.1 =
-* Provided "Powerful Shortcodes" with more editable vendor shop page.
-
-
-= 1.0.0 =
-* Initial version release.
+= 2.6.0 =
+2.6 is a major update. It is important that you make backups and ensure themes and extensions are 2.6 compatible before upgrading.

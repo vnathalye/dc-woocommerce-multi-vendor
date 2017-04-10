@@ -88,7 +88,7 @@ class WCMp_Notices {
 			'publicly_queryable' => true,
 			'exclude_from_search' => true,
 			'show_ui' => true,
-			'show_in_menu' => current_user_can( 'manage_woocommerce' ) ? 'woocommerce' : false,
+			'show_in_menu' => current_user_can( 'manage_woocommerce' ) ? 'wcmp' : false,
 			'show_in_nav_menus' => false,
 			'query_var' => false,
 			'rewrite' => true,
@@ -96,7 +96,7 @@ class WCMp_Notices {
 			'has_archive' => false,
 			'hierarchical' => true,
 			'supports' => array( 'title', 'editor', 'excerpt' ),
-			'menu_position' => 59,
+			'menu_position' => 10,
 			'menu_icon' => $WCMp->plugin_url.'/assets/images/dualcube.png'
 		);		
 		register_post_type( $this->post_type, $args );

@@ -53,7 +53,7 @@ class WCMp_Settings_To_Do_List {
 		<?php }
 		$vendor_ids = array();
 		$vendors = get_wcmp_vendors();
-		if($vendors) {			
+		if(!empty($vendors) && is_array($vendors) ) {			
 			foreach($vendors as $vendor){
 				$vendor_ids[] = $vendor->id;
 			}

@@ -15,57 +15,15 @@ class WCMp_Shortcode {
     public $list_product;
 
     public function __construct() {
-        // Vendor Dashboard
-        add_shortcode('vendor_dashboard', array(&$this, 'vendor_dashboard_shortcode'));
-        // Shop Settings
-        add_shortcode('shop_settings', array(&$this, 'shop_settings_shortcode'));
-        // Shop Settings
-        add_shortcode('vendor_policies', array(&$this, 'vendor_policies_shortcode'));
-        // Shop Settings
-        add_shortcode('vendor_billing', array(&$this, 'vendor_billing_shortcode'));
-        // Shop Settings
-        add_shortcode('vendor_widthdrawals', array(&$this, 'vendor_widthdrawals_shortcode'));
-        // Shop Settings
-        add_shortcode('vendor_university', array(&$this, 'vendor_university_shortcode'));
-
-        // Shop Settings
-        add_shortcode('vendor_announcements', array(&$this, 'vendor_announcements_shortcode'));
-
-        // Vendor Report
-        add_shortcode('vendor_report', array(&$this, 'vendor_report_shortcode'));
-        // Vendor Orders
-        add_shortcode('vendor_orders', array(&$this, 'vendor_orders_shortcode'));
+        //new vendor dashboard
+        add_shortcode('wcmp_vendor', array(&$this,'wcmp_vendor_shortcode'));
         // Vendor Order Detail
-        add_shortcode('vendor_order_detail', array(&$this, 'vendor_order_detail_shortcode'));
+        //add_shortcode('vendor_order_detail', array(&$this, 'vendor_order_detail_shortcode'));
 
         // Vendor Coupons
         add_shortcode('vendor_coupons', array(&$this, 'vendor_coupons_shortcode'));
-        // Vendor Shiopping
-        add_shortcode('vendor_shipping_settings', array(&$this, 'vendor_shipping_settings_shortcode'));
 
-        add_shortcode('transaction_thankyou', array(&$this, 'vendor_transaction_thankyou'));
-        add_shortcode('transaction_details', array(&$this, 'vendor_transaction_details'));
-
-
-        // Recent Products 
-        add_shortcode('dc_recent_products', array(&$this, 'wcmp_show_recent_products'));
-        // Products by vendor
-        add_shortcode('dc_products', array(&$this, 'wcmp_show_products'));
-        // Featured products by vendor
-        add_shortcode('dc_featured_products', array(&$this, 'wcmp_show_featured_products'));
-        // Sale products by vendor
-        add_shortcode('dc_sale_products', array(&$this, 'wcmp_show_sale_products'));
-        // Top Rated products by vendor 
-        add_shortcode('dc_top_rated_products', array(&$this, 'wcmp_show_top_rated_products'));
-        // Best Selling product 
-        add_shortcode('dc_best_selling_products', array(&$this, 'wcmp_show_best_selling_products'));
-        // List products in a category shortcode
-        add_shortcode('dc_product_category', array(&$this, 'wcmp_show_product_category'));
-        // List of paginated vendors 
-        add_shortcode('dc_vendorslist', array(&$this, 'wcmp_show_vendorslist'));
-
-
-
+//        add_shortcode('transaction_thankyou', array(&$this, 'vendor_transaction_thankyou'));
         // Recent Products 
         add_shortcode('wcmp_recent_products', array(&$this, 'wcmp_show_recent_products'));
         // Products by vendor
@@ -87,6 +45,11 @@ class WCMp_Shortcode {
         //Vendor Registration
         add_shortcode('vendor_registration', array(&$this, 'vendor_registration_shortcode'));
     }
+    
+    function wcmp_vendor_shortcode($attr){
+        $this->load_class('vendor-dashboard');
+        return $this->shortcode_wrapper(array('WCMp_Vendor_Dashboard_Shortcode', 'output'));
+    }
 
     /*
      * Vendor Registration shortcode
@@ -106,61 +69,6 @@ class WCMp_Shortcode {
      *
      * @return void
      */
-    function vendor_announcements_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-announcements');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Announcements_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Shipping Settings
-     *
-     * @return void
-     */
-    function vendor_university_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-university');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_University_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Shipping Settings
-     *
-     * @return void
-     */
-    function vendor_widthdrawals_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-widthdrawal-settings');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Widthdrawal_Settings_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Shipping Settings
-     *
-     * @return void
-     */
-    public function vendor_policies_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-policy-settings');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Pollicy_Settings_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Shipping Settings
-     *
-     * @return void
-     */
-    public function vendor_billing_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-billing-settings');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Billing_Settings_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Shipping Settings
-     *
-     * @return void
-     */
     public function vendor_shipping_settings_shortcode($attr) {
         global $WCMp;
         $this->load_class('vendor-shipping-settings');
@@ -168,59 +76,15 @@ class WCMp_Shortcode {
     }
 
     /**
-     * Vendor Dashboard
-     *
-     * @return void
-     */
-    public function vendor_dashboard_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-dashboard');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Dashboard_Shortcode', 'output'));
-    }
-
-    /**
-     * vendor shop settings
-     *
-     * @return void
-     */
-    public function shop_settings_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-shop-settings');
-        return $this->shortcode_wrapper(array('WCMp_Shop_Setting_Shortcode', 'output'));
-    }
-
-    /**
-     * vendor report
-     *
-     * @return void
-     */
-    public function vendor_report_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-report');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Report_Shortcode', 'output'));
-    }
-
-    /**
-     * vendor orders
-     *
-     * @return void
-     */
-    public function vendor_orders_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-orders');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Orders_Shortcode', 'output'));
-    }
-
-    /**
      * vendor orer detail
      *
      * @return void
      */
-    public function vendor_order_detail_shortcode($attr) {
-        global $WCMp;
-        $this->load_class('vendor-view-order-dtl');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Order_Detail_Shortcode', 'output'));
-    }
+//    public function vendor_order_detail_shortcode($attr) {
+//        global $WCMp;
+//        $this->load_class('vendor-view-order-dtl');
+//        return $this->shortcode_wrapper(array('WCMp_Vendor_Order_Detail_Shortcode', 'output'));
+//    }
 
     /**
      * vendor orer detail
@@ -238,22 +102,11 @@ class WCMp_Shortcode {
      *
      * @return void
      */
-    public function vendor_transaction_thankyou($attr) {
-        global $WCMp;
-        $this->load_class('vendor-withdrawal-request');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Withdrawal_Request_Shortcode', 'output'));
-    }
-
-    /**
-     * Vendor Transaction Details
-     *
-     * @return void
-     */
-    public function vendor_transaction_details($attr) {
-        global $WCMp;
-        $this->load_class('vendor-transaction');
-        return $this->shortcode_wrapper(array('WCMp_Vendor_Transaction_Detail_Shortcode', 'output'));
-    }
+//    public function vendor_transaction_thankyou($attr) {
+//        global $WCMp;
+//        $this->load_class('vendor-withdrawal-request');
+//        return $this->shortcode_wrapper(array('WCMp_Vendor_Withdrawal_Request_Shortcode', 'output'));
+//    }
 
     /**
      * Helper Functions
@@ -1055,7 +908,7 @@ class WCMp_Shortcode {
                 $get_block_array[] = (int) $get_block->id;
             }
         }
-        if (isset($get_all_vendors) && !empty($get_all_vendors)) {
+        if (!empty($get_all_vendors) && is_array($get_all_vendors)) {
             $i = 0;
             foreach ($get_all_vendors as $get_vendor) {
                 if (in_array($get_vendor->id, $get_block_array))

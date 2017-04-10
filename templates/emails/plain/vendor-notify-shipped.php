@@ -21,7 +21,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 
 echo sprintf( __( 'Order Number: %s',  $WCMp->text_domain), $order->get_order_number() ) . "\n";
 echo sprintf( __( 'Order Link: %s',  $WCMp->text_domain), admin_url( 'post.php?post=' . $order->id . '&action=edit' ) ) . "\n";
-echo sprintf( __( 'Order Date: %s',  $WCMp->text_domain), date_i18n( __( 'jS F Y',  $WCMp->text_domain ), strtotime( $order->order_date ) ) ) . "\n";
+echo sprintf( __( 'Order Date: %s',  $WCMp->text_domain), date_i18n( __( 'jS F Y',  $WCMp->text_domain ), strtotime( $order->get_date_created() ) ) ) . "\n";
 
 do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text );
 

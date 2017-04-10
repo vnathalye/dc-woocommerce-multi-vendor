@@ -136,25 +136,23 @@ class WCMp_Frontend {
                         }
                     }
                     foreach ($attacment_files['type'][$key] as $file_key => $file_value) {
-                        if(!empty($attacment_files['name'][$key][$file_key])){
+                        if (!empty($attacment_files['name'][$key][$file_key])) {
                             if (!in_array($file_value, $file_type)) {
                                 $validation_errors->add('file type error', __('Please Upload valid file', 'woocommerce'));
                             }
                         }
                     }
                     foreach ($attacment_files['size'][$key] as $file_size_key => $file_size_value) {
-                        if(!empty($wcmp_vendor_registration_form_data[$key]['fileSize'])){
+                        if (!empty($wcmp_vendor_registration_form_data[$key]['fileSize'])) {
                             if ($file_size_value > $wcmp_vendor_registration_form_data[$key]['fileSize']) {
                                 $validation_errors->add('file size error', __('File upload limit exceeded', 'woocommerce'));
                             }
-                        } 
+                        }
                     }
                 }
             }
         }
     }
-
-    
 
     function wcmp_vendor_register_form_callback() {
         global $WCMp;
@@ -172,9 +170,9 @@ class WCMp_Frontend {
         $customer_support_details_settings = get_option('wcmp_general_customer_support_details_settings_name');
         $is_csd_by_admin = '';
         foreach ($items as $item_id => $item) {
-            $product_id = $order->get_item_meta($item_id, '_product_id', true);
+            $product_id = wc_get_order_item_meta($item_id, '_product_id', true);
             if ($product_id) {
-                $author_id = $order->get_item_meta($item_id, '_vendor_id', true);
+                $author_id = wc_get_order_item_meta($item_id, '_vendor_id', true);
                 if (empty($author_id)) {
                     $product_vendors = get_wcmp_product_vendors($product_id);
                     if (isset($product_vendors) && (!empty($product_vendors))) {
@@ -196,7 +194,7 @@ class WCMp_Frontend {
             $is_customer_support_details = apply_filters('is_customer_support_details', true);
             if (isset($capability_settings['can_vendor_add_message_on_email_and_thankyou_page']) && $can_vendor_add_message_on_email_and_thankyou_page) {
                 $WCMp->template->get_template('vendor_message_to_buyer.php', array('vendor_array' => $vendor_array, 'capability_settings' => $capability_settings, 'customer_support_details_settings' => $customer_support_details_settings));
-            } elseif (isset($customer_support_details_settings['is_customer_support_details']) && $is_customer_support_details) {
+            } elseif (get_wcmp_vendor_settings ('is_customer_support_details', 'general') == 'Enable') {
                 $WCMp->template->get_template('customer_support_details_to_buyer.php', array('vendor_array' => $vendor_array, 'capability_settings' => $capability_settings, 'customer_support_details_settings' => $customer_support_details_settings));
             }
             echo "</div>";
@@ -862,14 +860,11 @@ class WCMp_Frontend {
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
         $pluginURL = str_replace(array('http:', 'https:'), '', $WCMp->plugin_url);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-
+        if (is_vendor_dashboard()) {
+            wp_enqueue_script('wcmp_frontend_vdashboard_js', $frontend_script_path . 'wcmp_vendor_dashboard' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        }
         // Enqueue your frontend javascript from here
         wp_enqueue_script('frontend_js', $frontend_script_path . 'frontend' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-
-        if (is_shop_settings()) {
-            $WCMp->library->load_upload_lib();
-            wp_enqueue_script('edit_user_js', $WCMp->plugin_url . 'assets/admin/js/edit_user' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        }
 
         if (is_vendor_order_by_product_page()) {
             wp_enqueue_script('vendor_order_by_product_js', $frontend_script_path . 'vendor_order_by_product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
@@ -925,6 +920,8 @@ class WCMp_Frontend {
         $frontend_style_path = str_replace(array('http:', 'https:'), '', $frontend_style_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
 
+
+
         if (is_tax('dc_vendor_shop')) {
             wp_enqueue_style('frontend_css', $frontend_style_path . 'frontend' . $suffix . '.css', array(), $WCMp->version);
         }
@@ -947,9 +944,10 @@ class WCMp_Frontend {
                 }";
         wp_add_inline_style('product_css', $custom_css);
         if (is_vendor_page()) {
-            wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+            wp_enqueue_style('dashicons');
+            wp_enqueue_style('jquery-style', '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
             wp_enqueue_style('wcmp_new_vandor_dashboard_css', $frontend_style_path . 'vendor_dashboard' . $suffix . '.css', array(), $WCMp->version);
-            wp_enqueue_style('font-awesome', 'http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', array(), $WCMp->version);
+            wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', array(), $WCMp->version);
         }
         if (is_tax('dc_vendor_shop')) {
             $current_theme = get_option('template');
@@ -1026,53 +1024,14 @@ class WCMp_Frontend {
      * @return void
      */
     function template_redirect() {
-        $pages = get_option("wcmp_pages_settings_name");
-
-        if (!empty($pages)) {
-
-            //rediect to shop page when a non vendor loggedin user is on vendor pages but not in vendor dashboard page
-            if (is_user_logged_in() && is_vendor_page() && !is_user_wcmp_vendor(get_current_user_id())) {
-                if (is_page($pages['vendor_transaction_detail']) && !current_user_can('administrator')) {
-                    wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
-                    exit();
-                }
-
-                if (!is_page($pages['vendor_dashboard']) && !is_page($pages['vendor_transaction_detail'])) {
-                    wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
-                    exit();
-                }
+        //redirect to my account or vendor dashbord page if user loggedin
+        if (is_user_logged_in() && is_page_vendor_registration()) {
+            if (is_user_wcmp_vendor(get_current_user_id())) {
+                wp_safe_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
+            } else {
+                wp_safe_redirect(get_permalink(wc_get_page_id('myaccount')));
             }
-
-            //rediect to myaccount page when a non loggedin user is on vendor pages
-            if (!is_user_logged_in() && is_vendor_page() && !is_page(woocommerce_get_page_id('myaccount'))) {
-                wp_safe_redirect(get_permalink(woocommerce_get_page_id('myaccount')));
-                exit();
-            }
-
-            //rediect to vendor dashboard page when a  loggedin user is on vendor_order_detail page but order id query argument is not sent in url
-            if (is_page(absint($pages['vendor_order_detail'])) && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())) {
-                if (!isset($_GET['order_id']) && empty($_GET['order_id'])) {
-                    wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
-                    exit();
-                }
-            }
-
-
-            //rediect to myaccount page when a non logged in user is on vendor_order_detail
-            if (!is_user_logged_in() && is_page(absint($pages['vendor_order_detail'])) && !is_page(woocommerce_get_page_id('myaccount'))) {
-                wp_safe_redirect(get_permalink(woocommerce_get_page_id('myaccount')));
-                exit();
-            }
-            
-            //redirect to my account or vendor dashbord page if user loggedin
-            if(isset($pages['vendor_registration']) && is_user_logged_in() && is_page($pages['vendor_registration'])){
-                if(is_user_wcmp_vendor(get_current_user_id())){
-                    wp_safe_redirect(get_permalink($pages['vendor_dashboard']));
-                } else{
-                    wp_safe_redirect(get_permalink(woocommerce_get_page_id('myaccount')));
-                }
-                exit();
-            }
+            exit();
         }
     }
 

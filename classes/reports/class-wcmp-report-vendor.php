@@ -65,7 +65,7 @@ class WCMp_Report_Vendor extends WC_Admin_Report {
 		$total_sales = $admin_earning = $vendor_report = $report_bk = array();
 		$max_total_sales = $i = 0;
 		
-		if( isset($all_vendors) && !empty($all_vendors) ) {
+		if(!empty($all_vendors) && is_array($all_vendors) ) {
 			foreach( $all_vendors as $all_vendor ) {
 				$chosen_product_ids = array();
 				$vendor_id = $all_vendor->id;
@@ -222,7 +222,7 @@ class WCMp_Report_Vendor extends WC_Admin_Report {
 					$user_name = $user->data->display_name;
 					
 					$chart_arr .= '<tr><th><a href="user-edit.php?user_id='.$vendor_id.'">' . $user_name . '</a></th>
-					<td width="1%"><span>' . woocommerce_price( $sales_report['total_sales'] ) . '</span><span class="alt">' . woocommerce_price($sales_report['admin_earning']) . '</span></td>
+					<td width="1%"><span>' . wc_price( $sales_report['total_sales'] ) . '</span><span class="alt">' . wc_price($sales_report['admin_earning']) . '</span></td>
 					<td class="bars">
 						<span style="width:' . esc_attr( $total_sales_width ) . '%">&nbsp;</span>
 						<span class="alt" style="width:' . esc_attr( $admin_earning_width ) . '%">&nbsp;</span>

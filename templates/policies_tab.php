@@ -26,7 +26,7 @@ $shipping_policy = isset($wcmp_policy_settings['shipping_policy']) ? $wcmp_polic
 $cancellation_policy_label = isset($wcmp_policy_settings['cancellation_policy_label']) ? $wcmp_policy_settings['cancellation_policy_label'] :  __('Cancellation/Return/Exchange Policy',$WCMp->text_domain);
 $refund_policy_label = isset($wcmp_policy_settings['refund_policy_label']) ? $wcmp_policy_settings['refund_policy_label'] :  __('Refund Policy',$WCMp->text_domain);
 $shipping_policy_label = isset($wcmp_policy_settings['shipping_policy_label']) ? $wcmp_policy_settings['shipping_policy_label'] :  __('Shipping Policy',$WCMp->text_domain);
-$product_id = $product->id;
+$product_id = $product->get_id();
 
 $author_id = $post->post_author;
 

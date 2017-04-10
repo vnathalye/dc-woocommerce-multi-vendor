@@ -36,7 +36,7 @@ global $WCMp;
 						 <?php echo $products; ?>
 					</p>
 					<?php
-					if( isset( $customer_support_details_settings['is_customer_support_details'] ) ) {
+					if( get_wcmp_vendor_settings ('is_customer_support_details', 'general') == 'Enable' ) {
 						if( isset( $capability_settings['can_vendor_add_customer_support_details'] ) ) { ?>
 					<p style="border-bottom:1px solid #eeeeee; padding-bottom:10px"> <strong><?php echo __('Customer Support Details', $WCMp->text_domain);?></strong></p>
 					<?php if(isset($vendor_meta['_vendor_customer_email'][0])) { ?>

@@ -29,8 +29,8 @@ class WCMp_Report {
 			$order_obj = new WC_Order( $order->ID );
 			$items = $order_obj->get_items( 'line_item' );
 			foreach( $items as $item_id => $item ) {
-				$product_id = $order_obj->get_item_meta( $item_id, '_product_id', true );
-				$vendor_id = $order_obj->get_item_meta( $item_id, '_vendor_id', true );
+				$product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
+				$vendor_id = wc_get_order_item_meta( $item_id, '_vendor_id', true );
 				$current_user = get_current_user_id();
 				if( $vendor_id ) {
 					if( $vendor_id == $current_user ) {
@@ -182,9 +182,9 @@ class WCMp_Report {
 					
 					foreach( $items as $item_id => $item ) {
 						if(!isset($item['item_meta']['_vendor_id'][0])) continue;
-						$comm_pro_id = $product_id = $order->get_item_meta( $item_id, '_product_id', true );
-						$line_total = $order->get_item_meta( $item_id, '_line_total', true );
-						$variation_id = $order->get_item_meta( $item_id, '_variation_id', true );
+						$comm_pro_id = $product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
+						$line_total = wc_get_order_item_meta( $item_id, '_line_total', true );
+						$variation_id = wc_get_order_item_meta( $item_id, '_variation_id', true );
 						
 						if($variation_id) $comm_pro_id = $variation_id;
 						
@@ -258,7 +258,7 @@ class WCMp_Report {
 					++$total_order_count;
 					
 					//user count
-					if( $order->customer_user != 0 && $order->customer_user != 1) array_push($total_customers, $order->customer_user);
+					if( $order->get_customer_id() != 0 && $order->get_customer_id() != 1) array_push($total_customers, $order->get_customer_id());
 				}
 			}			
 		}

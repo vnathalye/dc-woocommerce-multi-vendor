@@ -26,9 +26,9 @@ class WCMp_Email {
 		$is_csd_by_admin = '';
 		
 		foreach( $items as $item_id => $item ) {			
-			$product_id = $order->get_item_meta( $item_id, '_product_id', true );
+			$product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
 			if( $product_id ) {				
-				$author_id = $order->get_item_meta( $item_id, '_vendor_id', true );
+				$author_id = wc_get_order_item_meta( $item_id, '_vendor_id', true );
 				if( empty($author_id) ) {
 					$product_vendors = get_wcmp_product_vendors($product_id);
 					if(isset($product_vendors) && (!empty($product_vendors))) {
@@ -54,7 +54,7 @@ class WCMp_Email {
 			if( isset( $capability_settings['can_vendor_add_message_on_email_and_thankyou_page'] ) && $can_vendor_add_message_on_email_and_thankyou_page ) {
 				$WCMp->template->get_template( 'vendor_message_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
-			elseif(isset($customer_support_details_settings['is_customer_support_details']) && $is_customer_support_details) {
+			elseif(get_wcmp_vendor_settings ('is_customer_support_details', 'general') == 'Enable' && $is_customer_support_details) {
 				$WCMp->template->get_template( 'customer_support_details_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
 		}		

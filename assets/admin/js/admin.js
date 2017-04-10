@@ -122,10 +122,8 @@ jQuery(document).ready(function($) {
 
   if($('#wcmp_disbursal_mode_admin').is(':checked')) {
         $('#payment_schedule').closest( "tr" ).show();
-        $('.automatic_payment_method').closest( "tr" ).show();
     } else {
         $('#payment_schedule').closest( "tr" ).css( "display", "none" );
-        $('.automatic_payment_method').closest( "tr" ).css( "display", "none" );
     }
     
     if($('#wcmp_disbursal_mode_vendor').is(':checked')) {
@@ -139,10 +137,8 @@ jQuery(document).ready(function($) {
   $('#wcmp_disbursal_mode_admin').change(function () {
       if($(this).is(':checked')) {
           $('#payment_schedule').closest( "tr" ).show();
-          $('.automatic_payment_method').closest( "tr" ).show();
       } else {
           $('#payment_schedule').closest( "tr" ).css( "display", "none" );
-          $('.automatic_payment_method').closest( "tr" ).css( "display", "none" );
       }
   });
   
@@ -156,20 +152,20 @@ jQuery(document).ready(function($) {
       }
   });
   
-  if($('#is_policy_on').is(':checked')) {   	
-  	$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).show();  	
-  }
-  else {
-  	$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).hide();  	
-  }
-  $('#is_policy_on').change(function () {
-		if($(this).is(':checked')) {   	
-			$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).show(1000);  	
-		}
-		else {
-			$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).hide(1000);  	
-		}  		
-  });
+//  if($('#is_policy_on').is(':checked')) {   	
+//  	$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).show();  	
+//  }
+//  else {
+//  	$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).hide();  	
+//  }
+//  $('#is_policy_on').change(function () {
+//		if($(this).is(':checked')) {   	
+//			$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).show(1000);  	
+//		}
+//		else {
+//			$("#is_cancellation_on, #is_cancellation_product_level_on, #is_refund_on, #is_refund_product_level_on, #is_shipping_on, #is_shipping_product_level_on").closest( "tr" ).hide(1000);  	
+//		}  		
+//  });
   
  
    		

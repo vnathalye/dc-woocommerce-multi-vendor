@@ -49,7 +49,7 @@ class WCMp_University {
 			'publicly_queryable' => true,
 			'exclude_from_search' => true,
 			'show_ui' => true,
-			'show_in_menu' => current_user_can( 'manage_woocommerce' ) ? 'woocommerce' : false,
+			'show_in_menu' => current_user_can( 'manage_woocommerce' ) ? 'wcmp' : false,
 			'show_in_nav_menus' => false,
 			'query_var' => false,
 			'rewrite' => true,
@@ -57,7 +57,7 @@ class WCMp_University {
 			'has_archive' => false,
 			'hierarchical' => true,
 			'supports' => array( 'title', 'editor',  'comments' ),
-			'menu_position' => 500,
+			'menu_position' => 15,
 			'menu_icon' => $WCMp->plugin_url.'/assets/images/dualcube.png'
 		);		
 		register_post_type( $this->post_type, $args );

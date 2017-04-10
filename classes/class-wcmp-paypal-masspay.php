@@ -87,7 +87,7 @@ class WCMp_Paypal_Masspay {
 				$recipient = $vendor_paypal_email;
 				$vendors_data[] = array( 
 					'recipient' => $recipient,
-					'total' => $commission_data['total'],
+					'total' => round($commission_data['total'], 2),
 					'currency' => $commission_data['currency'],
 					'vendor_id' =>$commission_data['vendor_id'],
 					'payout_note' =>$commission_data['payout_note']

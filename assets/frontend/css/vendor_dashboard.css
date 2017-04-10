@@ -137,10 +137,10 @@ input:focus, button:focus, select:focus, textarea:focus, a:focus{
 
 .wcmp_main_menu ul li .icon_stand {
     display: inherit;
-    font-size: 20px;
+/*    font-size: 20px;
     height: 38px;
-    line-height: 55px;
-    margin-top: 10px;
+    line-height: 55px;*/
+    margin-top: 18px;
     text-align: center;
     width: 60px;
 }
@@ -1161,6 +1161,9 @@ display:block;
 	font-size:15px;
 	color:#474646;
 }
+.wcmp_headding4{
+    padding:15px 2%;
+}
 
 
 .wcmp_orange_btn.small{
@@ -1210,7 +1213,7 @@ display:block;
 	width: auto;
 	line-height:25px;
 }
-.wcmp_main_menu ul li ul li a.selected_menu {
+.wcmp_main_menu ul li.hasmenu ul.submenu li.active a {
 	background: none repeat scroll 0 0 #fc482f;
 	color: #fff;
 	transition: all 1s ease 0s;

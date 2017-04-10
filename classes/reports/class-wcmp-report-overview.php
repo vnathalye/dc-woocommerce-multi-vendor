@@ -92,27 +92,27 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                                         $give_tax_to_vendor = $give_shipping_to_vendor = false;
                                         if(!empty($shipping_items)){
                                             foreach ($shipping_items as $item_id => $shipping){
-                                                $shipping_to_vendor = $order->get_item_meta($item_id, '_give_shipping_to_vendor',true);
-                                                $shipping_cost += (float) $order->get_item_meta($item_id, 'cost', true);
+                                                $shipping_to_vendor = wc_get_order_item_meta($item_id, '_give_shipping_to_vendor',true);
+                                                $shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
                                                 if(!empty($shipping_to_vendor) && $shipping_to_vendor == 1){
-                                                    $vendor_shipping_cost += (float) $order->get_item_meta($item_id, 'cost', true);
+                                                    $vendor_shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
                                                 } else if($WCMp->vendor_caps->vendor_payment_settings('give_shipping')){
-                                                    $vendor_shipping_cost = $order->get_item_meta($item_id, 'cost',true);
+                                                    $vendor_shipping_cost = wc_get_order_item_meta($item_id, 'cost',true);
                                                 } else{
-                                                    $admin_shipping_cost += (float) $order->get_item_meta($item_id, 'cost', true);
+                                                    $admin_shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
                                                 }
                                             }
                                         }
                                         if(!empty($tax_items)){
                                             foreach($tax_items as $item_id => $tax){
-                                                $tax_amount += (float) $order->get_item_meta($item_id, 'tax_amount', true);
-                                                $shipping_tax_amount += (float) $order->get_item_meta($item_id, 'shipping_tax_amount', true);
+                                                $tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
+                                                $shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true);
                                                 if($WCMp->vendor_caps->vendor_payment_settings('give_tax')){
-                                                    $vendor_tax_amount += (float) $order->get_item_meta($item_id, 'tax_amount', true);
-                                                    $vendor_shipping_tax_amount += (float) $order->get_item_meta($item_id, 'shipping_tax_amount', true);
+                                                    $vendor_tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
+                                                    $vendor_shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true);
                                                 } else{
-                                                   $admin_tax_amount += (float) $order->get_item_meta($item_id, 'tax_amount', true);
-                                                   $admin_shipping_tax_amount += (float) $order->get_item_meta($item_id, 'shipping_tax_amount', true); 
+                                                   $admin_tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
+                                                   $admin_shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true); 
                                                 }
                                             }
                                         }
@@ -120,15 +120,15 @@ class WCMp_Report_Overview extends WC_Admin_Report {
 					
 					foreach( $items as $item_id => $item ) {
 						
-						$comm_pro_id = $product_id = $order->get_item_meta( $item_id, '_product_id', true );
-						$line_total = $order->get_item_meta( $item_id, '_line_total', true );
-						$variation_id = $order->get_item_meta( $item_id, '_variation_id', true );
+						$comm_pro_id = $product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
+						$line_total = wc_get_order_item_meta( $item_id, '_line_total', true );
+						$variation_id = wc_get_order_item_meta( $item_id, '_variation_id', true );
 						
 						if($variation_id) $comm_pro_id = $variation_id;
 						
 						if( $product_id && $line_total ) {
 							
-							$vendor_id = $order->get_item_meta( $item_id, '_vendor_id', true );
+							$vendor_id = wc_get_order_item_meta( $item_id, '_vendor_id', true );
 							if( $vendor_id ) {
 								$product_vendors = get_wcmp_vendor( $vendor_id );
 							} else {

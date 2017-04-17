@@ -461,7 +461,7 @@ class WCMp_Commission {
                     jQuery('<option>').val('mark_selected_reverse').text('<?php _e('Mark selected commissions as reverse', $WCMp->text_domain); ?>').appendTo("select[name='action2']");
                 });
             </script>
-        <?php
+            <?php
         }
     }
 
@@ -697,10 +697,12 @@ class WCMp_Commission {
     function commission_post_types_admin_order($wp_query) {
         if (is_admin()) {
             // Get the post type from the query
-            $post_type = $wp_query->query['post_type'];
-            if ($post_type == $this->post_type) {
-                $wp_query->set('orderby', 'ID');
-                $wp_query->set('order', 'DESC');
+            if (isset($wp_query->query['post_type'])) {
+                $post_type = $wp_query->query['post_type'];
+                if ($post_type == $this->post_type) {
+                    $wp_query->set('orderby', 'ID');
+                    $wp_query->set('order', 'DESC');
+                }
             }
         }
     }

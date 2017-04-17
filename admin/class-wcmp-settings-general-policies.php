@@ -74,14 +74,22 @@ class WCMp_Settings_Gneral_Policies {
             $new_input['is_cancellation_on'] = sanitize_text_field($input['is_cancellation_on']);
         if (isset($input['is_cancellation_product_level_on']))
             $new_input['is_cancellation_product_level_on'] = sanitize_text_field($input['is_cancellation_product_level_on']);
+        if (isset($input['can_vendor_edit_cancellation_policy']))
+            $new_input['can_vendor_edit_cancellation_policy'] = sanitize_text_field($input['can_vendor_edit_cancellation_policy']);
         if (isset($input['is_refund_on']))
             $new_input['is_refund_on'] = sanitize_text_field($input['is_refund_on']);
         if (isset($input['is_refund_product_level_on']))
             $new_input['is_refund_product_level_on'] = sanitize_text_field($input['is_refund_product_level_on']);
+        if (isset($input['can_vendor_edit_refund_policy']))
+            $new_input['can_vendor_edit_refund_policy'] = sanitize_text_field($input['can_vendor_edit_refund_policy']);
         if (isset($input['is_shipping_on']))
             $new_input['is_shipping_on'] = sanitize_text_field($input['is_shipping_on']);
-        if (isset($input['is_policy_on']))
+        if (isset($input['is_shipping_product_level_on']))
             $new_input['is_shipping_product_level_on'] = sanitize_text_field($input['is_shipping_product_level_on']);
+        if (isset($input['can_vendor_edit_shipping_policy']))
+            $new_input['can_vendor_edit_shipping_policy'] = sanitize_text_field($input['can_vendor_edit_shipping_policy']);
+        if (isset($input['can_vendor_edit_policy_tab_label']))
+            $new_input['can_vendor_edit_policy_tab_label'] = sanitize_text_field($input['can_vendor_edit_policy_tab_label']);
         if (isset($input['cancellation_policy']))
             $new_input['cancellation_policy'] = $input['cancellation_policy'];
         if (isset($input['refund_policy']))

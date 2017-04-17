@@ -17,7 +17,7 @@ wc_print_notices();
 ?>
 <div class="wcmp_remove_div">
     <div class="wcmp_main_page"> 
-        <?php do_action('wcmp_vendor_dashboard_navigation'); ?>
+        <?php do_action('wcmp_vendor_dashboard_navigation', array()); ?>
         <div class="popup-overlay"></div>
         <div class="wcmp_main_holder toside_fix">
             <div class="wcmp_headding1">

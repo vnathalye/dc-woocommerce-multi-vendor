@@ -135,57 +135,7 @@ if ($vendor_data) :
                                 </div></td></tr>
                         <?php
                     }
-                } else if (version_compare(WC_VERSION, '2.4.0', '>')) {
-                    ?>
-                    <tr>
-                        <td><label><?php _e('Enter Shipping Amount for "Flat Rate" :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input name="vendor_shipping_data[shipping_amount]" class="no_input" readonly type="text" step="0.01" value='<?php echo isset($vendor_shipping_data['shipping_amount']) ? $vendor_shipping_data['shipping_amount'] : ''; ?>' /></td>
-                    </tr>
-                    <tr><td class="hints">
-                            <div>
-                                <div class="aar"></div>
-                                <?php _e('Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain); ?> <br><br>
-                            </div>
-                        </td></tr>
-                    <tr>
-                        <td><label><?php _e('Enter Shipping Amount for "International Flat Rate" :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input class="no_input" readonly name="vendor_shipping_data[international_shipping_amount]" type="text" step="0.01" value='<?php echo isset($vendor_shipping_data['international_shipping_amount']) ? $vendor_shipping_data['international_shipping_amount'] : ''; ?>' /></td>
-                    </tr>
-                    <tr><td class="hints">
-                            <div>
-                                <div class="aar"></div>
-                                <?php _e('Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain); ?> <br><br>
-                            </div></td></tr>
-                    <tr>
-                        <td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] : ''; ?>' /></td>
-                    </tr>
-                <?php } else { ?>
-                    <tr>
-                        <td><label><?php _e('Enter Shipping Amount :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input class="no_input" readonly name="vendor_shipping_data[shipping_amount]" type="text" step="0.01" value='<?php echo isset($vendor_shipping_data['shipping_amount']) ? $vendor_shipping_data['shipping_amount'] : ''; ?>' /></td>
-                    </tr>
-                    <tr>
-                        <td><label><?php _e('Enter Handling Fee :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input class="no_input" name="vendor_shipping_data[handling_amount]" readonly type="number" step="0.01" value='<?php echo isset($vendor_shipping_data['handling_amount']) ? $vendor_shipping_data['handling_amount'] : ''; ?>' /></td>
-                    </tr>
-                    <tr>
-                        <td><label><?php _e('Ship from :', $WCMp->text_domain); ?></label></td>
-                    </tr>
-                    <tr>
-                        <td><input class="no_input" readonly name="vendor_shipping_data[ship_from]" type="text" value='<?php echo isset($vendor_shipping_data['ship_from']) ? $vendor_shipping_data['ship_from'] : ''; ?>' /></td>
-                    </tr>
-                <?php } ?>					
+                } ?>					
                 <?php do_action('wcmp_before_shipping_form_end_vendor_dashboard'); ?>
 
             </tbody>

@@ -62,12 +62,10 @@ class WCMp_Template {
         if (!$default_path) {
             $default_path = $WCMp->plugin_path . 'templates/';
         }
-        $template = '';
-        // Add support of third perty plugin
-        $template = apply_filters('wcmp_locate_template', $template, $template_name, $template_path, $default_path);
         // Look within passed path within the theme - this is priority
         $template = locate_template(array(trailingslashit($template_path) . $template_name, $template_name));
-
+        // Add support of third perty plugin
+        $template = apply_filters('wcmp_locate_template', $template, $template_name, $template_path, $default_path);
         // Get default template
         if (!$template) {
             $template = $default_path . $template_name;

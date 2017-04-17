@@ -68,10 +68,10 @@ if(!empty($orders)) {
 							<?php if ($key == 'view') { ?> 
 								<a title="<?php echo $action['title']; ?>" href="<?php echo $action['url']; ?>"><i><img src="<?php echo $action['img']; ?>" alt=""></i></a>&nbsp; 
 							<?php } elseif ($key == 'mark_ship') { ?>
-								<a id="popup-window" data-popup-target="#inline<?php echo $order; ?>" href="javascript:void(0);" data-id="<?php echo $order; ?>" data-user="<?php echo $user_id; ?>" class="fancybox mark_ship_<?php echo $order; ?>" <?php if($mark_ship) { ?> title="Shipped" style="pointer-events: none; cursor: default;" <?php } else { ?> title="mark as shipped" <?php } ?> ><i><img src="<?php if(!$mark_ship) echo $WCMp->plugin_url.'assets/images/roket_deep.png'; else echo $WCMp->plugin_url.'assets/images/roket-green.png'; ?>"  alt=""></i></a>                                                                                                                                
+								<a id="popup-window" data-popup-target="#inline-<?php echo $order_status; ?>-<?php echo $order; ?>" href="javascript:void(0);" data-id="<?php echo $order; ?>" data-user="<?php echo $user_id; ?>" class="fancybox mark_ship_<?php echo $order; ?>" <?php if($mark_ship) { ?> title="Shipped" style="pointer-events: none; cursor: default;" <?php } else { ?> title="mark as shipped" <?php } ?> ><i><img src="<?php if(!$mark_ship) echo $WCMp->plugin_url.'assets/images/roket_deep.png'; else echo $WCMp->plugin_url.'assets/images/roket-green.png'; ?>"  alt=""></i></a>                                                                                                                                
                                                                 <input type="hidden" name="shipping_tracking_url" id="shipping_tracking_url_<?php echo $order; ?>" >
                                                                 <input type="hidden" name="shipping_tracking_id" id="shipping_tracking_id_<?php echo $order; ?>" >
-                                                                <div id="inline<?php echo $order; ?>" class="popup">
+                                                                <div id="inline-<?php echo $order_status; ?>-<?php echo $order; ?>" class="popup">
                                                                     <div class="popup-body"> 
                                                                         <span class="popup-exit"></span>    
                                                                         <div class="popup-content">

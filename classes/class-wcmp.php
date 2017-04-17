@@ -65,7 +65,7 @@ final class WCMp {
         // Intialize WCMp Emails
         add_filter('woocommerce_email_classes', array(&$this, 'wcmp_email_classes'));
         // WCMp Update Notice
-        add_action('in_plugin_update_message-wc-marketplace/dc_product_vendor.php', array(&$this, 'wcmp_plugin_update_message')); 
+        add_action('in_plugin_update_message-dc-woocommerce-multi-vendor/dc_product_vendor.php', array(&$this, 'wcmp_plugin_update_message')); 
     }
 
     /**

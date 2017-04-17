@@ -363,15 +363,15 @@ class WCMp_Admin {
                 ?>
                 <script>
                     jQuery(document).ready(function ($) {
-                        var target_ele = $(".wrap>h1");
+                        var target_ele = $(".wrap .wp-header-end");
                         var targethtml = target_ele.html();
                         //targethtml = targethtml + '<a href="<?php echo trailingslashit(get_admin_url()) . 'admin.php?page=wcmp-setting-admin'; ?>" class="page-title-action">Back To WCMp Settings</a>';
                         //target_ele.html(targethtml);
                 <?php if (in_array($screen->id, array('edit-wcmp_university'))) { ?>
-                            target_ele.append('<p><b><?php echo __('"University" section is visible only to vendors through the vendor dashboard. You may use this section to onboard your vendors. Share tutorials, best practices, "how to" guides or whatever you feel is appropriate with your vendors.', $WCMp->text_domain); ?></b></p>');
+                            target_ele.before('<p><b><?php echo __('"University" section is visible only to vendors through the vendor dashboard. You may use this section to onboard your vendors. Share tutorials, best practices, "how to" guides or whatever you feel is appropriate with your vendors.', $WCMp->text_domain); ?></b></p>');
                 <?php } ?>
                 <?php if (in_array($screen->id, array('edit-wcmp_vendor_notice'))) { ?>
-                            target_ele.append('<p><b><?php echo __('Announcements are visible only to vendors through the vendor dashboard(message section). You may use this section to broadcast your announcements.', $WCMp->text_domain); ?></b></p>');
+                            target_ele.before('<p><b><?php echo __('Announcements are visible only to vendors through the vendor dashboard(message section). You may use this section to broadcast your announcements.', $WCMp->text_domain); ?></b></p>');
                 <?php } ?>
                     });
 

@@ -250,7 +250,7 @@ if (!function_exists('is_vendor_dashboard')) {
      * @return boolean
      */
     function is_vendor_dashboard() {
-        if (!empty(get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general'))) {
+        if (get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general')) {
             return is_page(get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general')) ? true : false;
         }
         return false;
@@ -265,7 +265,7 @@ if (!function_exists('wcmp_vendor_dashboard_page_id')) {
      * @return int
      */
     function wcmp_vendor_dashboard_page_id() {
-        if (!empty(get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general'))) {
+        if (get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general')) {
             return (int) get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general');
         }
     }
@@ -279,7 +279,7 @@ if (!function_exists('is_page_vendor_registration')) {
      * @return boolean
      */
     function is_page_vendor_registration() {
-        if (!empty(get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general'))) {
+        if (get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general')) {
             return is_page(get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general')) ? true : false;
         }
         return false;
@@ -294,7 +294,7 @@ if (!function_exists('wcmp_vendor_registration_page_id')) {
      * @return type
      */
     function wcmp_vendor_registration_page_id() {
-        if (!empty(get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general'))) {
+        if (get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general')) {
             return (int) get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general');
         }
     }
@@ -452,7 +452,7 @@ if (!function_exists('is_vendor_page')) {
     function is_vendor_page() {
 
         $return = false;
-        if (!empty(wcmp_vendor_dashboard_page_id())) {
+        if (wcmp_vendor_dashboard_page_id()) {
             if (function_exists('icl_object_id')) {
                 if (is_page(icl_object_id(wcmp_vendor_dashboard_page_id(), 'page', false, ICL_LANGUAGE_CODE))) {
                     $return = true;
@@ -778,7 +778,7 @@ if (!function_exists('wcmp_get_vendor_dashboard_nav_item_css_class')) {
             $cssClass[] = 'active';
         }
         $cssClass = apply_filters('wcmp_vendor_dashboard_nav_item_css_class', $cssClass, $endpoint);
-        return implode(' ', array_map('sanitize_html_class', $cssClass));
+        return $cssClass;
     }
 
 }
@@ -996,8 +996,15 @@ if (!function_exists('do_wcmp_data_migrate')) {
      * @param string $previous_plugin_version
      */
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
-        global $WCMp;
-        if (!empty($previous_plugin_version) && $previous_plugin_version <= '2.6.0' && empty(get_option('wcmp_database_upgrade'))) {
+        global $WCMp, $wpdb;
+        if ($previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
+            $old_pages = get_option('wcmp_pages_settings_name');
+            if (isset($old_pages['vendor_dashboard'])) {
+                wp_update_post(array('ID' => $old_pages['vendor_dashboard'], 'post_content' => '[wcmp_vendor]'));
+                update_option('wcmp_product_vendor_vendor_page_id', get_option('wcmp_product_vendor_vendor_dashboard_page_id'));
+                $wcmp_product_vendor_vendor_page_id = get_option('wcmp_product_vendor_vendor_page_id');
+                update_wcmp_vendor_settings('wcmp_vendor', $wcmp_product_vendor_vendor_page_id, 'vendor', 'general');
+            }
             /* remove unwanted vendor caps */
             $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
             $user_query = new WP_User_Query($args);
@@ -1021,28 +1028,27 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 }
             }
             #region settings tab general data migrate
-            if (!empty(get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller')) && get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') == 'Enable') {
+            if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') && get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') == 'Enable') {
                 update_wcmp_vendor_settings('is_singleproductmultiseller', 'Enable', 'general');
             }
             delete_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller');
-            if (!empty(get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview')) && get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') == 'Enable') {
+            if (get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') && get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') == 'Enable') {
                 update_wcmp_vendor_settings('is_sellerreview', 'Enable', 'general');
             }
             delete_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview');
-            if (!empty(get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview')) == 'Enable' && get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview')) {
+            if (get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview') == 'Enable' && get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview')) {
                 update_wcmp_vendor_settings('is_sellerreview_varified', 'Enable', 'general');
             }
             delete_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview');
-            if (!empty(get_wcmp_vendor_settings('is_policy_on', 'general', 'policies')) && get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') == 'Enable') {
+            if (get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') && get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') == 'Enable') {
                 update_wcmp_vendor_settings('is_policy_on', 'Enable', 'general');
             }
             delete_wcmp_vendor_settings('is_policy_on', 'general', 'policies');
-            if (!empty(get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details')) && get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') == 'Enable') {
+            if (get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') && get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') == 'Enable') {
                 update_wcmp_vendor_settings('is_customer_support_details', 'Enable', 'general');
             }
             delete_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details');
             #endregion
-            
             #region migrate other data
             if (get_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'capabilities') == 'Enable') {
                 update_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'Enable', 'general', 'policies');
@@ -1154,10 +1160,6 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 update_wcmp_vendor_settings('is_edit_published_product', 'Enable', 'capabilities', 'product');
             }
             delete_wcmp_vendor_settings('is_edit_published_product', 'capabilities');
-            if (get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_edit_delete_published_coupon', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities');
             /* order tab */
             if (get_wcmp_vendor_settings('is_order_csv_export', 'capabilities') == 'Enable') {
                 update_wcmp_vendor_settings('is_order_csv_export', 'Enable', 'capabilities', 'order');
@@ -1218,10 +1220,17 @@ if (!function_exists('do_wcmp_data_migrate')) {
             delete_wcmp_vendor_settings('is_hide_option_show', 'capabilities');
             #endregion
 
+            if (!get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product')) {
+                update_wcmp_vendor_settings('is_edit_delete_published_product', 'Enable', 'capabilities', 'product');
+            }
+            if (!get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product')) {
+                update_wcmp_vendor_settings('is_edit_delete_published_coupon', 'Enable', 'capabilities', 'product');
+            }
+
             $wcmp_pages = get_option('wcmp_pages_settings_name');
             $wcmp_old_pages = array(
-                'vendor_dashboard' => 'wcmp_product_vendor_vendor_dashboard_page_id'
-                , 'shop_settings' => 'wcmp_product_vendor_shop_settings_page_id'
+//                'vendor_dashboard' => 'wcmp_product_vendor_vendor_dashboard_page_id'
+                'shop_settings' => 'wcmp_product_vendor_shop_settings_page_id'
                 , 'view_order' => 'wcmp_product_vendor_vendor_orders_page_id'
                 , 'vendor_order_detail' => 'wcmp_product_vendor_vendor_order_detail_page_id'
                 , 'vendor_transaction_thankyou' => 'wcmp_product_vendor_transaction_widthdrawal_page_id'
@@ -1244,10 +1253,10 @@ if (!function_exists('do_wcmp_data_migrate')) {
             update_option('wcmp_pages_settings_name', $wcmp_pages);
 
             #region update page option
-            if (!empty(get_wcmp_vendor_settings('wcmp_vendor', 'pages'))) {
+            if (get_wcmp_vendor_settings('wcmp_vendor', 'pages')) {
                 update_wcmp_vendor_settings('wcmp_vendor', get_wcmp_vendor_settings('wcmp_vendor', 'pages'), 'vendor', 'general');
             }
-            if (!empty(get_wcmp_vendor_settings('vendor_registration', 'pages'))) {
+            if (get_wcmp_vendor_settings('vendor_registration', 'pages')) {
                 update_wcmp_vendor_settings('vendor_registration', get_wcmp_vendor_settings('vendor_registration', 'pages'), 'vendor', 'general');
             }
             $WCMp->load_class('endpoints');
@@ -1257,241 +1266,6 @@ if (!function_exists('do_wcmp_data_migrate')) {
             delete_option('wcmp_pages_settings_name');
             update_option('wcmp_database_upgrade', 'done');
             #endregion
-        }
-
-        if (!empty($previous_plugin_version) && $previous_plugin_version <= '2.4.1') {
-            $vendor_role = get_role('dc_vendor');
-            $vendor_role->remove_cap('manage_woocommerce');
-            /* Update WCMp Options from previous version */
-            $prev_general = get_option('dc_general_settings_name');
-            $prev_product = get_option('dc_product_settings_name');
-            $prev_capability = get_option('dc_capabilities_settings_name');
-            $prev_pages = get_option('dc_pages_settings_name');
-            $prev_payment = get_option('dc_payment_settings_name');
-            $new_general = $new_product = $new_capability = $new_pages = $new_payment = $new_frontend = array();
-            $new_payment = $prev_payment;
-            if (!empty($prev_general)) {
-                if (isset($prev_general['enable_registration'])) {
-                    $new_general['enable_registration'] = 'Enable';
-                }
-                if (isset($prev_general['approve_vendor_manually'])) {
-                    $new_general['approve_vendor_manually'] = 'Enable';
-                }
-                if (isset($prev_general['notify_configure_vendor_store'])) {
-                    $new_general['notify_configure_vendor_store'] = $prev_general['notify_configure_vendor_store'];
-                }
-                if (isset($prev_general['default_commission'])) {
-                    $new_payment['default_commission'] = $prev_general['default_commission'];
-                }
-                if (isset($prev_general['commission_type'])) {
-                    $new_payment['commission_type'] = $prev_general['commission_type'];
-                }
-                if (isset($prev_general['commission_include_coupon'])) {
-                    $new_payment['commission_include_coupon'] = $prev_general['commission_include_coupon'];
-                }
-                if (isset($prev_general['sold_by_catalog'])) {
-                    $new_frontend['sold_by_catalog'] = $prev_general['sold_by_catalog'];
-                }
-                if (isset($prev_general['catalog_colorpicker'])) {
-                    $new_frontend['catalog_colorpicker'] = $prev_general['catalog_colorpicker'];
-                }
-                if (isset($prev_general['catalog_hover_colorpicker'])) {
-                    $new_frontend['catalog_hover_colorpicker'] = $prev_general['catalog_hover_colorpicker'];
-                }
-                if (isset($prev_general['sold_by_cart_and_checkout'])) {
-                    $new_frontend['sold_by_cart_and_checkout'] = $prev_general['sold_by_cart_and_checkout'];
-                }
-                if (isset($prev_general['sold_by_text'])) {
-                    $new_frontend['sold_by_text'] = $prev_general['sold_by_text'];
-                }
-                if (isset($prev_general['block_vendor_desc'])) {
-                    $new_frontend['block_vendor_desc'] = $prev_general['block_vendor_desc'];
-                }
-            }
-            if (!empty($prev_capability)) {
-                $new_capability = $prev_capability;
-                if (isset($new_capability['give_tax'])) {
-                    $new_payment['give_tax'] = $new_capability['give_tax'];
-                    unset($new_capability['give_tax']);
-                }
-                if (isset($new_capability['give_shipping'])) {
-                    $new_payment['give_shipping'] = $new_capability['give_shipping'];
-                    unset($new_capability['give_shipping']);
-                }
-                if ($previous_plugin_version <= '2.3.3') {
-                    $new_capability['is_hide_option_show'] = 'Enable';
-                }
-            }
-            if (!empty($prev_product)) {
-                update_option('wcmp_product_settings_name', $prev_product);
-            }
-            if (!empty($prev_pages)) {
-                update_option('wcmp_pages_settings_name', $prev_pages);
-            }
-            if (!empty($new_general)) {
-                update_option('wcmp_general_settings_name', $new_general);
-            }
-            if (!empty($new_capability)) {
-                update_option('wcmp_capabilities_settings_name', $new_capability);
-            }
-            if (!empty($new_payment)) {
-                update_option('wcmp_payment_settings_name', $new_payment);
-            }
-            if (!empty($new_frontend)) {
-                update_option('wcmp_frontend_settings_name', $new_frontend);
-            }
-            /* delete all previous options */
-            delete_option('dc_general_settings_name');
-            delete_option('dc_product_settings_name');
-            delete_option('dc_capabilities_settings_name');
-            delete_option('dc_payment_settings_name');
-            delete_option('dc_pages_settings_name');
-
-            $wcmp_payment_settings = get_option('wcmp_payment_settings_name', true);
-            $wcmp_payment_paypal_masspay_settings_name = array();
-            $wcmp_payment_paypal_payout_settings_name = array();
-            /* Update paypal details from previous version */
-            if (!empty($wcmp_payment_settings) && is_array($wcmp_payment_settings)) {
-                foreach ($wcmp_payment_settings as $wcmp_payment_settings_key => $wcmp_payment_settings_value) {
-                    switch ($wcmp_payment_settings_key) {
-                        case 'api_username':
-                            $wcmp_payment_paypal_masspay_settings_name['api_username'] = $wcmp_payment_settings_value;
-                            break;
-                        case 'api_pass':
-                            $wcmp_payment_paypal_masspay_settings_name['api_pass'] = $wcmp_payment_settings_value;
-                            break;
-                        case 'api_signature':
-                            $wcmp_payment_paypal_masspay_settings_name['api_signature'] = $wcmp_payment_settings_value;
-                            break;
-                        case 'is_testmode':
-                            $wcmp_payment_paypal_masspay_settings_name['api_username'] = $wcmp_payment_settings_value;
-                            $wcmp_payment_paypal_payout_settings_name['is_testmode'] = $wcmp_payment_settings_value;
-                            break;
-                        case 'client_id':
-                            $wcmp_payment_paypal_payout_settings_name['client_id'] = $wcmp_payment_settings_value;
-                            break;
-                        case 'client_secret':
-                            $wcmp_payment_paypal_payout_settings_name['client_secret'] = $wcmp_payment_settings_value;
-                            break;
-                    }
-                }
-                update_option('wcmp_payment_paypal_masspay_settings_name', $wcmp_payment_paypal_masspay_settings_name);
-                update_option('wcmp_payment_paypal_payout_settings_name', $wcmp_payment_paypal_payout_settings_name);
-            }
-
-            $WCMp_Calculate_Commission_obj = new WCMp_Calculate_Commission();
-            $vendors = get_wcmp_vendors();
-            /* Set vendor as product author */
-            if (!empty($vendors) && is_array($vendors)) {
-                foreach ($vendors as $vendor) {
-                    $vendorusers = new WP_User($vendor->id);
-                    $vendorusers->remove_cap('manage_woocommerce');
-                    $vendor_products = $vendor->get_products();
-                    if (!empty($vendor_products)) {
-                        foreach ($vendor_products as $vendor_product) {
-                            wp_update_post(array('ID' => $vendor_product->ID, 'post_author' => $vendor->id));
-                            $product_obj = wc_get_product($vendor_product->ID);
-                            if ($product_obj->is_type('variable')) {
-                                $childrens = $product_obj->get_children();
-                                foreach ($childrens as $child_id) {
-                                    wp_update_post(array('ID' => $child_id, 'post_author' => $vendor->id));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            /* Migrate WCMp vendor Orders */
-            if (!empty($vendors) && is_array($vendors) && !get_option('wcmp_vendor_orders_update')) {
-                $vendor_orders_array = array();
-                foreach ($vendors as $vendor) {
-                    $vendor_orders = $vendor->get_orders();
-                    if (!empty($vendor_orders) && is_array($vendor_orders)) {
-                        foreach ($vendor_orders as $commission_id => $order_id) {
-                            $vendor_shipping_array = get_post_meta($order_id, 'dc_pv_shipped', true);
-                            $order = new WC_Order($order_id);
-                            $commission_array = array();
-                            $mark_ship = false;
-                            $items = $order->get_items('line_item');
-                            foreach ($items as $order_item_id => $item) {
-                                $comm_pro_id = $product_id = wc_get_order_item_meta($order_item_id, '_product_id', true);
-                                $variation_id = wc_get_order_item_meta($order_item_id, '_variation_id', true);
-                                if ($variation_id) {
-                                    $comm_pro_id = $variation_id;
-                                }
-                                if ($product_id) {
-                                    $product_vendors = get_wcmp_product_vendors($product_id);
-                                    if ($product_vendors) {
-                                        if (isset($product_vendors->id)) {
-                                            if (isset($vendor_shipping_array) && !empty($vendor_shipping_array)) {
-                                                if (in_array($product_vendors->id, $vendor_shipping_array)) {
-                                                    $mark_ship = true;
-                                                } else {
-                                                    $mark_ship = 0;
-                                                }
-                                            } else {
-                                                $mark_ship = 0;
-                                            }
-                                            $item_commission = $WCMp_Calculate_Commission_obj->get_item_commission($comm_pro_id, $comm_pro_id, $item, $order_id, $order_item_id);
-                                            $vendor_shipping_costs = $vendor->get_wcmp_vendor_shipping_total($order_id, $item);
-                                            $item_shipping = ($vendor_shipping_costs['shipping_amount'] + $vendor_shipping_costs['shipping_tax']);
-                                            $item_tax = get_metadata('order_item', $order_item_id, '_line_tax', true);
-                                            $commission_vendor_term_id = get_post_meta($commission_id, '_commission_vendor', true);
-                                            $vendor_term_id = get_user_meta($product_vendors->id, '_vendor_term_id', true);
-                                            if ($commission_vendor_term_id == $vendor_term_id) {
-                                                $vendor_orders_array[] = array($order_id, $commission_id, $product_vendors->id, $mark_ship, $order_item_id, $comm_pro_id, $order->get_date_created(), $item_commission, $item_shipping, $item_tax);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!empty($vendor_orders_array) && is_array($vendor_orders_array)) {
-                    usort($vendor_orders_array, 'vendor_orders_sort');
-                    foreach ($vendor_orders_array as $vendor_orders) {
-                        $wpdb->query(
-                                $wpdb->prepare(
-                                        "INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` 
-                                            ( order_id
-                                            , commission_id
-                                            , vendor_id
-                                            , shipping_status
-                                            , order_item_id
-                                            , product_id
-                                            , created
-                                            , commission_amount
-                                            , shipping
-                                            , tax 
-                                            ) VALUES 
-                                            ( %d
-                                            , %d
-                                            , %d
-                                            , %s
-                                            , %d
-                                            , %d
-                                            , %s
-                                            , %s
-                                            , %s
-                                            , %s 
-                                            )"
-                                        , $vendor_orders[0]
-                                        , $vendor_orders[1]
-                                        , $vendor_orders[2]
-                                        , $vendor_orders[3]
-                                        , $vendor_orders[4]
-                                        , $vendor_orders[5]
-                                        , $vendor_orders[6]
-                                        , $vendor_orders[7]
-                                        , $vendor_orders[8]
-                                        , $vendor_orders[9]
-                                )
-                        );
-                    }
-                    update_option('wcmp_vendor_orders_update', 1);
-                }
-            }
         }
 
         update_option('dc_product_vendor_plugin_db_version', $new_plugin_version);

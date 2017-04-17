@@ -26,7 +26,7 @@ class WCMp_Product {
             if ((isset($settings_policies['is_cancellation_on']) || isset($settings_policies['is_refund_on']) || isset($settings_policies['is_shipping_on'])) && (isset($settings_policies['is_cancellation_product_level_on']) || isset($settings_policies['is_refund_product_level_on']) || isset($settings_policies['is_shipping_product_level_on']))) {
                 $settings_capbilities = get_option('wcmp_capabilities_settings_name');
                 $current_user_id = get_current_user_id();
-                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_capbilities['can_vendor_edit_cancellation_policy']) || isset($settings_capbilities['can_vendor_edit_refund_policy']) || isset($settings_capbilities['can_vendor_edit_shipping_policy']) )) || current_user_can('manage_woocommerce')) {
+                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']) || isset($settings_policies['can_vendor_edit_refund_policy']) || isset($settings_policies['can_vendor_edit_shipping_policy']) )) || current_user_can('manage_woocommerce')) {
                     add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_policies_tab'), 30);
                     add_action('woocommerce_product_data_panels', array(&$this, 'output_policies_tab'), 30);
                     add_action('save_post', array(&$this, 'process_policies_data'));
@@ -831,7 +831,6 @@ class WCMp_Product {
         $_wcmp_refund_policy = get_post_meta($post->ID, '_wcmp_refund_policy', true) ? get_post_meta($post->ID, '_wcmp_refund_policy', true) : '';
         $_wcmp_shipping_policy = get_post_meta($post->ID, '_wcmp_shipping_policy', true) ? get_post_meta($post->ID, '_wcmp_shipping_policy', true) : '';
         $settings_policies = get_option('wcmp_general_policies_settings_name');
-        $settings_capbilities = get_option('wcmp_capabilities_settings_name');
         $current_user_id = get_current_user_id();
         ?>
         <div id="set_policies" class="panel woocommerce_options_panel">
@@ -841,7 +840,7 @@ class WCMp_Product {
                         <?php
                         if (isset($settings_policies['is_cancellation_on'])) {
                             if (isset($settings_policies['is_cancellation_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_capbilities['can_vendor_edit_cancellation_policy']))) || current_user_can('manage_woocommerce')) {
+                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']))) || current_user_can('manage_woocommerce')) {
                                     ?>
                                     <tr>
                                         <td>
@@ -857,7 +856,7 @@ class WCMp_Product {
                         <?php
                         if (isset($settings_policies['is_refund_on'])) {
                             if (isset($settings_policies['is_refund_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_capbilities['can_vendor_edit_refund_policy']))) || current_user_can('manage_woocommerce')) {
+                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_refund_policy']))) || current_user_can('manage_woocommerce')) {
                                     ?>
                                     <tr>
                                         <td>
@@ -873,7 +872,7 @@ class WCMp_Product {
                         <?php
                         if (isset($settings_policies['is_shipping_on'])) {
                             if (isset($settings_policies['is_shipping_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_capbilities['can_vendor_edit_shipping_policy']))) || current_user_can('manage_woocommerce')) {
+                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_shipping_policy']))) || current_user_can('manage_woocommerce')) {
                                     ?>
                                     <tr>
                                         <td>
@@ -1193,7 +1192,7 @@ class WCMp_Product {
     function product_policy_tab($tabs) {
         global $product, $WCMp;
         $policies_can_override_by_vendor = '';
-        $wcmp_capabilities_settings_name = get_option('wcmp_capabilities_settings_name');
+        $wcmp_capabilities_settings_name = get_option('wcmp_general_policies_settings_name');
         $can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
         $policies_settings = get_option('wcmp_general_policies_settings_name');
         if (isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && ( isset($policies_settings['is_cancellation_on']) || isset($policies_settings['is_refund_on']) || isset($policies_settings['is_shipping_on']) )) {

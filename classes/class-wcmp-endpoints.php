@@ -94,6 +94,7 @@ class WCMp_Endpoints {
      * Add endpoints for query vars.
      */
     public function add_wcmp_endpoints() {
+        $this->init_wcmp_query_vars();
         $mask = $this->get_wcmp_endpoints_mask();
         foreach ($this->wcmp_query_vars as $key => $var) {
             if (!empty($var['endpoint'])) {

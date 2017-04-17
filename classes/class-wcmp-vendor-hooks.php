@@ -33,7 +33,7 @@ class WCMp_Vendor_Hooks {
      * Create vendor dashboard menu
      * @global object $WCMp
      */
-    public function wcmp_create_vendor_dashboard_navigation() {
+    public function wcmp_create_vendor_dashboard_navigation($args = array()) {
         global $WCMp;
         $vendor_nav = array(
             'dashboard' => array(
@@ -169,7 +169,7 @@ class WCMp_Vendor_Hooks {
             'vendor-university' => array(
                 'label' => __('University', $WCMp->text_domain)
                 , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_university_endpoint', 'vendor', 'general', 'vendor-university'))
-                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_university_capability', !empty(get_wcmp_vendor_settings('is_university_on', 'general')) ? true : false)
+                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_university_capability', get_wcmp_vendor_settings('is_university_on', 'general') ? true : false)
                 , 'position' => 70
                 , 'submenu' => array()
                 , 'link_target' => '_self'
@@ -185,7 +185,7 @@ class WCMp_Vendor_Hooks {
                 , 'nav_icon' => 'dashicons-migrate'
             )
         );
-        $WCMp->template->get_template('vendor-dashboard/navigation.php', array('nav_items' => apply_filters('wcmp_vendor_dashboard_nav', $vendor_nav)));
+        $WCMp->template->get_template('vendor-dashboard/navigation.php', array('nav_items' => apply_filters('wcmp_vendor_dashboard_nav', $vendor_nav), 'args' => $args));
     }
 
     /**
@@ -532,14 +532,14 @@ class WCMp_Vendor_Hooks {
      * @return Boolean
      */
     public function wcmp_vendor_dashboard_menu_vendor_policies_capability($cap) {
-        if (!empty(get_wcmp_vendor_settings('is_policy_on', 'general')) && (!empty(get_wcmp_vendor_settings('is_cancellation_on', 'general', 'policies')) || !empty(get_wcmp_vendor_settings('is_refund_on', 'general', 'policies')) || !empty(get_wcmp_vendor_settings('is_shipping_on', 'general', 'policies'))) && (!empty(get_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'general', 'policies')) || !empty(get_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'general', 'policies')) || !empty(get_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'general', 'policies')) || !empty(get_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'general', 'policies')) ) || (!empty(get_wcmp_vendor_settings('is_customer_support_details', 'general')) && !empty(get_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'general', 'customer_support_details')))) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') && (get_wcmp_vendor_settings('is_cancellation_on', 'general', 'policies') || get_wcmp_vendor_settings('is_refund_on', 'general', 'policies') || get_wcmp_vendor_settings('is_shipping_on', 'general', 'policies')) && (get_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'general', 'policies') || get_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'general', 'policies') || get_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'general', 'policies') || get_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'general', 'policies') ) || (get_wcmp_vendor_settings('is_customer_support_details', 'general') && get_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'general', 'customer_support_details'))) {
             $cap = true;
         }
         return $cap;
     }
     
     public function wcmp_vendor_dashboard_menu_vendor_withdrawal_capability($cap){
-        if(!empty(get_wcmp_vendor_settings('wcmp_disbursal_mode_vendor', 'payment'))){
+        if(get_wcmp_vendor_settings('wcmp_disbursal_mode_vendor', 'payment')){
             $cap = true;
         }
         return $cap;

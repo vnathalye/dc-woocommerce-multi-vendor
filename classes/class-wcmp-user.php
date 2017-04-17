@@ -243,7 +243,7 @@ class WCMp_User {
             do_action('add_vendor_extra_information_my_account');
         }
         if (is_user_wcmp_vendor($current_user)) {
-            $dashboard_page_link = !empty(wcmp_vendor_dashboard_page_id()) ? get_permalink(wcmp_vendor_dashboard_page_id()) : '#';
+            $dashboard_page_link = wcmp_vendor_dashboard_page_id() ? get_permalink(wcmp_vendor_dashboard_page_id()) : '#';
             echo apply_filters('wcmp_vendor_goto_dashboard', '<a href="' . $dashboard_page_link . '">' . __('Dashboard - manage your account here', $WCMp->text_domain) . '</a>');
         }
     }
@@ -260,13 +260,8 @@ class WCMp_User {
         $user = new WP_User($user_id);
         switch ($new_role) {
             case 'dc_rejected_vendor':
-                if (in_array('dc_vendor', $old_role)) {
-                    $caps = $this->get_vendor_caps($user_id);
-                    foreach ($caps as $cap) {
-                        $user->remove_cap($cap);
-                    }
-                    $user->remove_cap('manage_woocommerce');
-                }
+                $user->remove_all_caps();
+                $user->add_role('dc_rejected_vendor');
                 $user_dtl = get_userdata(absint($user_id));
                 $email = WC()->mailer()->emails['WC_Email_Rejected_New_Vendor_Account'];
                 $email->trigger($user_id, $user_dtl->user_pass);
@@ -278,76 +273,28 @@ class WCMp_User {
                 }
                 break;
             case 'dc_pending_vendor':
-                if (in_array('dc_vendor', $old_role)) {
-                    $caps = $this->get_vendor_caps($user_id);
-                    foreach ($caps as $cap) {
-                        $user->remove_cap($cap);
-                    }
-                }
-                $user->remove_cap('manage_woocommerce');
+                $user->remove_all_caps();
+                $user->add_role('dc_pending_vendor');
                 break;
             case 'dc_vendor':
                 $this->update_vendor_meta($user_id);
 
-                $user->add_cap('assign_product_terms');
-                $user->add_cap('read_product');
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_upload_files')) {
-                    $user->add_cap('upload_files');
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-                    $vendor_submit_products = get_user_meta($user_id, '_vendor_submit_product', true);
-                    if ($vendor_submit_products) {
-                        $caps = array();
-                        $caps[] = "edit_product";
-                        $caps[] = "delete_product";
-                        $caps[] = "edit_products";
-                        $caps[] = "edit_others_products";
-                        $caps[] = "delete_published_products";
-                        $caps[] = "delete_products";
-                        $caps[] = "delete_others_products";
-                        $caps[] = "edit_published_products";
-                        foreach ($caps as $cap) {
-                            $user->add_cap($cap);
-                        }
-                    }
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-                    $user->add_cap('publish_products');
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-                    $vendor_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
-                    if ($vendor_submit_coupon) {
-                        $caps = array();
-                        $caps[] = 'edit_shop_coupons';
-                        $caps[] = 'read_shop_coupons';
-                        $caps[] = 'delete_shop_coupons';
-                        $caps[] = 'edit_published_shop_coupons';
-                        $caps[] = 'delete_published_shop_coupons';
-                        $caps[] = 'edit_others_shop_coupons';
-                        $caps[] = 'delete_others_shop_coupons';
-                        foreach ($caps as $cap) {
-                            $user->add_cap($cap);
-                        }
-                    }
+                $caps = $this->get_vendor_caps($user_id);
+                foreach ($caps as $cap) {
+                    $user->add_cap($cap);
                 }
                 $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
                 $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class', true);
                 if (empty($shipping_class_id) && $add_vendor_shipping_class) {
                     $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
-                    update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
-                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);
-                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-                    $user->add_cap('publish_shop_coupons');
+                    if (!is_wp_error($shipping_term)) {
+                        update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
+                        add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);
+                        add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
+                    }
                 }
                 break;
             default :
-                $caps = $this->get_vendor_caps($user_id);
-                foreach ($caps as $cap) {
-                    $user->remove_cap($cap);
-                }
-                $user->remove_cap('manage_woocommerce');
                 break;
         }
         do_action('wcmp_set_user_role', $user_id, $new_role, $old_role);
@@ -476,8 +423,12 @@ class WCMp_User {
         global $WCMp;
 
         $vendor = new WCMp_Vendor($user_id);
-        $settings_product = get_option('wcmp_product_settings_name');
-        $settings_capabilities = get_option('wcmp_capabilities_settings_name');
+        $settings_capabilities = array_merge(
+                (array) get_option('wcmp_general_settings_name', array())
+                , (array) get_option('wcmp_capabilities_product_settings_name', array())
+                , (array) get_option('wcmp_capabilities_order_settings_name', array())
+                , (array) get_option('wcmp_capabilities_miscellaneous_settings_name', array())
+        );
         $policies_settings = get_option('wcmp_general_policies_settings_name');
 
         $fields = apply_filters('wcmp_vendor_fields', array(
@@ -695,7 +646,7 @@ class WCMp_User {
 
         $payment_admin_settings = get_option('wcmp_payment_settings_name');
         $payment_mode = array();
-        if (isset($payment_admin_settings['wcmp_disbursal_mode_admin']) && $payment_admin_settings['wcmp_disbursal_mode_admin'] = 'Enable') {
+        if ((isset($payment_admin_settings['wcmp_disbursal_mode_admin']) || isset($payment_admin_settings['wcmp_disbursal_mode_vendor'])) && ($payment_admin_settings['wcmp_disbursal_mode_admin'] = 'Enable' || $payment_admin_settings['wcmp_disbursal_mode_vendor'] == 'Enable')) {
             if (isset($payment_admin_settings['payment_method_paypal_masspay']) && $payment_admin_settings['payment_method_paypal_masspay'] = 'Enable') {
                 $payment_mode['paypal_masspay'] = __('PayPal Masspay', $WCMp->text_domain);
             }
@@ -778,7 +729,7 @@ class WCMp_User {
             'class' => "user-profile-fields"
         ); // Text
 
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_policy_tab_label'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_policy_tab_label'])) {
 
             $fields['vendor_policy_tab_title'] = array(
                 'label' => __('Enter the title of Policies Tab', $WCMp->text_domain),
@@ -787,7 +738,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
             $fields['vendor_cancellation_policy'] = array(
                 'label' => __('Cancellation/Return/Exchange Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -795,7 +746,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
             $fields['vendor_refund_policy'] = array(
                 'label' => __('Refund Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -803,7 +754,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields'
             );
         }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($settings_capabilities['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
+        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
             $fields['vendor_shipping_policy'] = array(
                 'label' => __('Shipping Policy', $WCMp->text_domain),
                 'type' => 'textarea',
@@ -1228,7 +1179,7 @@ class WCMp_User {
 
         $user = new WP_User($user_id);
 
-        $product_caps = array("edit_product", "delete_product", "edit_products", "edit_others_products", "delete_published_products", "delete_products", "delete_others_products", "edit_published_products");
+        $product_caps = array("edit_product", "delete_product", "edit_products", "delete_published_products", "delete_products", "edit_published_products");
         $is_submit_product = get_user_meta($user_id, '_vendor_submit_product', true);
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
             if ($is_submit_product) {
@@ -1243,7 +1194,7 @@ class WCMp_User {
             }
         }
 
-        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "edit_others_shop_coupons", "delete_published_shop_coupons", "delete_shop_coupons", "delete_others_shop_coupons", "edit_published_shop_coupons");
+        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "delete_published_shop_coupons", "delete_shop_coupons", "edit_published_shop_coupons");
         $is_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
             if ($is_submit_coupon) {

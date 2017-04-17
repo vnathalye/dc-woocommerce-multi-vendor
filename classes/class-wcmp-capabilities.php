@@ -21,6 +21,7 @@ class WCMp_Capabilities {
     public function __construct() {
         $this->wcmp_capability = array_merge(
                 $this->wcmp_capability
+                , (array) get_option('wcmp_general_settings_name', array())
                 , (array) get_option('wcmp_capabilities_product_settings_name', array())
                 , (array) get_option('wcmp_capabilities_order_settings_name', array())
                 , (array) get_option('wcmp_capabilities_miscellaneous_settings_name', array())
@@ -184,13 +185,9 @@ class WCMp_Capabilities {
             if (!$vendor_can) {
                 unset($panels['shipping']);
             }
-            if (!isset($settings_product['linked_products'])) {
+            if (!$this->vendor_can('linked_products')) {
                 unset($panels['linked_product']);
             }
-            /* $vendor_can = $this->vendor_can('linked_product');
-              if(!$vendor_can) {
-              unset($panels['linked_product']);
-              } */
             $vendor_can = $this->vendor_can('attribute');
             if (!$vendor_can) {
                 unset($panels['attribute']);

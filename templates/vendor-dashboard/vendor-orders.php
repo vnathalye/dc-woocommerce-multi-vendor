@@ -77,7 +77,7 @@ global $woocommerce, $WCMp;
                 </div>
                 <div class="wcmp_table_loader">
                     <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_settings_name');
+                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
                     if (isset($capabilities_settings['is_order_csv_export'])) {
                         if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
                             ?>
@@ -131,7 +131,7 @@ global $woocommerce, $WCMp;
                 </div>
                 <div class="wcmp_table_loader">
                     <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_settings_name');
+                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
                     if (isset($capabilities_settings['is_order_csv_export'])) {
                         if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
                             ?>
@@ -184,7 +184,7 @@ global $woocommerce, $WCMp;
                 </div>
                 <div class="wcmp_table_loader">
                     <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_settings_name');
+                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
                     if (isset($capabilities_settings['is_order_csv_export'])) {
                         if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
                             ?>

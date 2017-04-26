@@ -648,7 +648,7 @@ class WCMp_Commission {
             // Get meta data
             $commission->product = get_post_meta($commission_id, '_commission_product', true);
             $commission->vendor = get_wcmp_vendor_by_term(get_post_meta($commission_id, '_commission_vendor', true));
-            $commission->amount = get_post_meta($commission_id, '_commission_amount', true);
+            $commission->amount = apply_filters('wcmp_post_commission_amount', get_post_meta($commission_id, '_commission_amount', true), $commission_id) ;
             $commission->paid_status = get_post_meta($commission_id, '_paid_status', true);
         }
 

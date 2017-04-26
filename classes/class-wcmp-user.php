@@ -54,6 +54,7 @@ class WCMp_User {
         add_action('woocommerce_created_customer_notification', array($this, 'wcmp_woocommerce_created_customer_notification'), 9, 3);
 
         add_action('set_user_role', array(&$this, 'set_user_role'), 30, 3);
+        add_action('add_user_role', array(&$this, 'add_user_role'), 30, 2);
 
         // Add message in my account page after vendore registrtaion
         add_action('woocommerce_before_my_account', array(&$this, 'woocommerce_before_my_account'));
@@ -298,6 +299,36 @@ class WCMp_User {
                 break;
         }
         do_action('wcmp_set_user_role', $user_id, $new_role, $old_role);
+    }
+
+    /**
+     * Add vendor user role and associate capabilities
+     *
+     * @access public
+     * @param user_id, new role, old role
+     * @return void
+     */
+    public function add_user_role($user_id, $new_role) {
+        global $WCMp;
+        $user = new WP_User($user_id);
+        if ($new_role == 'dc_vendor') {
+            $this->update_vendor_meta($user_id);
+
+            $caps = $this->get_vendor_caps($user_id);
+            foreach ($caps as $cap) {
+                $user->add_cap($cap);
+            }
+            $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
+            $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class', true);
+            if (empty($shipping_class_id) && $add_vendor_shipping_class) {
+                $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
+                if (!is_wp_error($shipping_term)) {
+                    update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
+                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);
+                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
+                }
+            }
+        }
     }
 
     /**
@@ -1002,7 +1033,7 @@ class WCMp_User {
                             <a class="button-primary" target="_blank" href=<?php echo $vendor->permalink; ?>>View</a>
                         </td>
                     </tr>
-                    <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
+            <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
                 </tbody>
             </table>
             <?php
@@ -1120,7 +1151,7 @@ class WCMp_User {
                 delete_user_meta($user_id, '_vendor_is_policy_off');
             }
         }
-        $this->user_change_cap($user_id);
+        //$this->user_change_cap($user_id);
 
         if (is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] != 'dc_vendor') {
             $vendor = get_wcmp_vendor($user_id);

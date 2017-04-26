@@ -24,7 +24,6 @@ class WCMp_Product {
         $settings_policies = get_option('wcmp_general_policies_settings_name');
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
             if ((isset($settings_policies['is_cancellation_on']) || isset($settings_policies['is_refund_on']) || isset($settings_policies['is_shipping_on'])) && (isset($settings_policies['is_cancellation_product_level_on']) || isset($settings_policies['is_refund_product_level_on']) || isset($settings_policies['is_shipping_product_level_on']))) {
-                $settings_capbilities = get_option('wcmp_capabilities_settings_name');
                 $current_user_id = get_current_user_id();
                 if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']) || isset($settings_policies['can_vendor_edit_refund_policy']) || isset($settings_policies['can_vendor_edit_shipping_policy']) )) || current_user_can('manage_woocommerce')) {
                     add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_policies_tab'), 30);

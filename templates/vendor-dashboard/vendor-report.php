@@ -49,7 +49,7 @@ global $WCMp;
         <h3><?php echo $total_coupon_used; ?></h3>
     </div>
     <div class="wcmp_displaybox3"><?php _e(' Total ', $WCMp->text_domain); ?><span><?php _e(' Coupon Discount ', $WCMp->text_domain); ?></span> <?php _e(' value ', $WCMp->text_domain); ?>
-        <h3><?php echo get_woocommerce_currency_symbol(); ?><?php echo $total_coupon_discuont_value; ?></h3>
+        <h3><?php echo get_woocommerce_currency_symbol(); ?><?php echo $total_coupon_discount_value; ?></h3>
     </div>
     <div class="wcmp_displaybox3"><?php _e('  Number of  ', $WCMp->text_domain); ?><span><?php _e('  Unique Customers  ', $WCMp->text_domain); ?></span>
         <h3><?php echo count($total_customers); ?></h3>
@@ -58,7 +58,7 @@ global $WCMp;
 </div>
 <?php
 $is_order_csv_export_button = apply_filters('is_order_csv_export_button', true);
-$capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_settings_name');
+$capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
 if (isset($capabilities_settings['is_order_csv_export'])) {
     if ($capabilities_settings['is_order_csv_export'] == 'Enable' && $is_order_csv_export_button) {
         ?>

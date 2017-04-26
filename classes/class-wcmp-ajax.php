@@ -262,7 +262,7 @@ class WCMp_Ajax {
     public function wcmp_msg_refresh_tab_data() {
         global $wpdb, $WCMp;
         $tab = $_POST['tabname'];
-        $WCMp->template->get_template('shortcode/vendor_announcements' . $tab . '.php');
+        $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements' . $tab . '.php');
         die;
     }
 
@@ -350,7 +350,7 @@ class WCMp_Ajax {
         if ($next_page <= $total_page) {
             if ($next_page > 1) {
                 $start = ($next_page - 1) * $perpagedata;
-                $WCMp->template->get_template('shortcode/vendor_dashboard_sales_item.php', array('vendor' => $vendor, 'today_or_weekly' => $today_or_weekly, 'start' => $start, 'to' => $perpagedata));
+                $WCMp->template->get_template('vendor-dashboard/dashboard/vendor-dashboard-sales-item.php', array('vendor' => $vendor, 'today_or_weekly' => $today_or_weekly, 'start' => $start, 'to' => $perpagedata));
             }
         } else {
             echo "<tr><td colspan='5'>" . __('no more data found', $WCMp->text_domain) . "</td></tr>";
@@ -370,7 +370,7 @@ class WCMp_Ajax {
         if ($next_page <= $total_page) {
             if ($next_page > 1) {
                 $start = ($next_page - 1) * $perpagedata;
-                $WCMp->template->get_template('shortcode/vendor_dasboard_pending_shipping_items.php', array('vendor' => $vendor, 'today_or_weekly' => $today_or_weekly, 'start' => $start, 'to' => $perpagedata));
+                $WCMp->template->get_template('vendor-dashboard/dashboard/vendor-dasboard-pending-shipping-items.php', array('vendor' => $vendor, 'today_or_weekly' => $today_or_weekly, 'start' => $start, 'to' => $perpagedata));
             }
         } else {
             echo "<tr><td colspan='5'>" . __('no more data found', $WCMp->text_domain) . "</td></tr>";
@@ -381,7 +381,7 @@ class WCMp_Ajax {
     function show_more_transaction() {
         global $WCMp;
         $data_to_show = $_POST['data_to_show'];
-        $WCMp->template->get_template('shortcode/vendor_transaction_items.php', array('transactions' => $data_to_show));
+        $WCMp->template->get_template('vendor-dashboard/vendor-transaction/vendor-transaction-items.php', array('transactions' => $data_to_show));
         die;
     }
 
@@ -403,7 +403,7 @@ class WCMp_Ajax {
             )
         );
         $customer_orders = $vendor->get_orders(6, $offset, $meta_query);
-        $WCMp->template->get_template('shortcode/vendor_withdrawal_items.php', array('vendor' => $vendor, 'commissions' => $customer_orders));
+        $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-items.php', array('vendor' => $vendor, 'commissions' => $customer_orders));
         die;
     }
 
@@ -461,7 +461,7 @@ class WCMp_Ajax {
             $order = new WC_Order($order_id);
             $items = $order->get_items('line_item');
             foreach ($items as $item_id => $item) {
-                woocommerce_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
+                wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
             }
         }
 
@@ -1160,7 +1160,7 @@ class WCMp_Ajax {
         $data_to_show = isset($_POST['data_to_show']) ? $_POST['data_to_show'] : '';
         $order_status = isset($_POST['order_status']) ? $_POST['order_status'] : '';
         $vendor = get_wcmp_vendor(get_current_user_id());
-        $WCMp->template->get_template('shortcode/vendor_orders_item.php', array('vendor' => $vendor, 'orders' => $data_to_show, 'order_status' => $order_status));
+        $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-orders-item.php', array('vendor' => $vendor, 'orders' => $data_to_show, 'order_status' => $order_status));
         die;
     }
 

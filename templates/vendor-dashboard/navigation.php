@@ -20,7 +20,7 @@ do_action('wcmp_before_vendor_dashboard_navigation');
 <div class="wcmp_side_menu">
     <div class="wcmp_top_logo_div"> <img src="<?php echo $vendor->image; ?>" alt="vendordavatar">
         <h3>
-            <?php echo !empty(get_user_meta(get_current_user_id(), '_vendor_page_title', true)) ? get_user_meta(get_current_user_id(), '_vendor_page_title', true) : __('Shop Name', $WCMp->text_domain); ?>
+            <?php echo get_user_meta(get_current_user_id(), '_vendor_page_title', true) ? get_user_meta(get_current_user_id(), '_vendor_page_title', true) : __('Shop Name', $WCMp->text_domain); ?>
         </h3>
         <ul>
             <li><a target="_blank" href="<?php echo apply_filters('wcmp_vendor_shop_permalink', $vendor->permalink); ?>"><?php _e('Shop', $WCMp->text_domain); ?></a> </li>

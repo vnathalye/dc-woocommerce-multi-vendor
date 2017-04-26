@@ -9,9 +9,7 @@
  * @version   2.3.0
  */
 global $product, $WCMp, $post;
-
 $wcmp_policy_settings = get_option("wcmp_general_policies_settings_name");
-$wcmp_capabilities_settings_name = get_option("wcmp_capabilities_settings_name");
 
 
 $cancellation_policy_product = '';
@@ -31,11 +29,11 @@ $product_id = $product->get_id();
 $author_id = $post->post_author;
 
 
-if(isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy'])){
+if(isset($wcmp_policy_settings['can_vendor_edit_cancellation_policy'])){
 	if(isset($wcmp_policy_settings['is_cancellation_product_level_on'])){		
 		$cancellation_policy_product = get_post_meta($product_id, '_wcmp_cancallation_policy', true);		
 	}	
-	$cancellation_policy_user = get_user_meta($author_id, '_wcmp_cancallation_policy', true);
+	$cancellation_policy_user = get_user_meta($author_id, '_vendor_cancellation_policy', true);
 	
 }
 else {
@@ -43,7 +41,7 @@ else {
 		$cancellation_policy_product = get_post_meta($product_id, '_wcmp_cancallation_policy', true);		
 	}	
 }
-if(isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy'])){
+if(isset($wcmp_policy_settings['can_vendor_edit_refund_policy'])){
 	if(isset($wcmp_policy_settings['is_refund_product_level_on'])){
 		$refund_policy_product = get_post_meta($product_id, '_wcmp_refund_policy', true);		
 	}	
@@ -56,7 +54,7 @@ else {
 	}	
 }
 
-if(isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy'])){
+if(isset($wcmp_policy_settings['can_vendor_edit_shipping_policy'])){
 	if(isset($wcmp_policy_settings['is_shipping_product_level_on'])){
 		$shipping_policy_product = get_post_meta($product_id, '_wcmp_shipping_policy', true);		
 	}

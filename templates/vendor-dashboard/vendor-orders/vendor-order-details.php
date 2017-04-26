@@ -33,8 +33,6 @@ if ($vendor && $order_id) {
             if (sizeof($order->get_items()) > 0) {
                 foreach ($vendor_items as $item) {
                     $_product = apply_filters('dc_woocommerce_order_item_product', $order->get_product_from_item($item), $item);
-                    //$item_meta    = new WC_Order_Item_Meta( $item['item_meta'], $_product );
-                    $item_meta = new WC_Order_Item_Meta($item);
                     ?>
                     <tr class="">
 
@@ -44,7 +42,7 @@ if ($vendor && $order_id) {
                                 echo apply_filters('wcmp_order_item_name', $item['name'], $item);
                             else
                                 echo apply_filters('wcmp_order_item_name', sprintf('<a href="%s">%s</a>', get_permalink($item['product_id']), $item['name']), $item);
-                            $item_meta->display();
+                            wc_display_item_meta($item);
                             ?>
                         </td>
                         <td>	

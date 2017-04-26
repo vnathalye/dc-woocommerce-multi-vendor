@@ -245,7 +245,7 @@ class WCMp_Calculate_Commission {
         $vendor_shipping_costs = $vendor->get_wcmp_vendor_shipping_total($order_id, $item);
         $item_shipping = ($vendor_shipping_costs['shipping_amount'] + $vendor_shipping_costs['shipping_tax']);
         $item_tax = get_metadata('order_item', $item_id, '_line_tax', true);
-        doProductVendorLOG("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` 	SET commission_id = " . $commission_id . ", commission_amount = '" . $item_commission . "', `shipping` = '" . $item_shipping . "', `tax` = '" . $item_tax . "'	WHERE order_id =" . $order_id . " AND order_item_id = " . $item_id . " AND product_id	=" . $com_pro_id);
+        //doProductVendorLOG("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` 	SET commission_id = " . $commission_id . ", commission_amount = '" . $item_commission . "', `shipping` = '" . $item_shipping . "', `tax` = '" . $item_tax . "'	WHERE order_id =" . $order_id . " AND order_item_id = " . $item_id . " AND product_id	=" . $com_pro_id);
         $update_query = $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` 	SET commission_id = " . $commission_id . ", commission_amount = '" . $item_commission . "', `shipping` = '" . $item_shipping . "', `tax` = '" . $item_tax . "'	WHERE order_id =" . $order_id . " AND order_item_id = " . $item_id . " AND product_id	=" . $com_pro_id);
 
         do_action('wcmp_vendor_commission_created', $commission_id);

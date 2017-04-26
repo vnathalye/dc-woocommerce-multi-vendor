@@ -110,6 +110,8 @@ Class WCMp_Admin_Dashboard {
                         }
                     }
                     $commission_payment_mode = get_user_meta($vendor->id, '_vendor_payment_mode', true);
+                    $commission_totals = apply_filters('wcmp_commission_for_disbursal_mode',$commission_totals);
+                    $transaction_data = apply_filters('wcmp_transaction_for_disbursal_mode',$transaction_data);
                     if ($commission_payment_mode == 'paypal_masspay' || $commission_payment_mode == 'paypal_payout') {
 
                         // Set info for all payouts
@@ -123,7 +125,7 @@ Class WCMp_Admin_Dashboard {
                                 if (!isset($total['amount']))
                                     $total['amount'] = 0;
                                 if (isset($total['transfer_charge']))
-                                    $total_payable = $total['amount'] + $total['transfer_charge'];
+                                    $total_payable = $total['amount'] - $total['transfer_charge'];
                                 else
                                     $total_payable = $total['amount'];
 
@@ -230,9 +232,9 @@ Class WCMp_Admin_Dashboard {
                         'fee' => __('Fee', $WCMp->text_domain),
                         'credit' => __('Credit', $WCMp->text_domain),
                     );
-                    $order_ids = '';
                     if (!empty($_POST['transaction_ids'])) {
                         foreach ($_POST['transaction_ids'] as $transaction_id) {
+                            $order_ids = '';
                             $commission_details = get_post_meta($transaction_id, 'commission_detail', true);
                             if (!empty($commission_details)) {
                                 $is_first = false;
@@ -381,28 +383,28 @@ Class WCMp_Admin_Dashboard {
 
                         // Formatted Addresses
                         $formatted_billing_address = apply_filters('woocommerce_order_formatted_billing_address', array(
-                            'address_1' => $order->billing_address_1,
-                            'address_2' => $order->billing_address_2,
-                            'city' => $order->billing_city,
-                            'state' => $order->billing_state,
-                            'postcode' => $order->billing_postcode,
-                            'country' => $order->billing_country
+                            'address_1' => $order->get_billing_address_1(),
+                            'address_2' => $order->get_billing_address_2(),
+                            'city' => $order->get_billing_city(),
+                            'state' => $order->get_billing_state(),
+                            'postcode' => $order->get_billing_postcode(),
+                            'country' => $order->get_billing_country()
                                 ), $order);
                         $formatted_billing_address = WC()->countries->get_formatted_address($formatted_billing_address);
 
                         $formatted_shipping_address = apply_filters('woocommerce_order_formatted_shipping_address', array(
-                            'address_1' => $order->shipping_address_1,
-                            'address_2' => $order->shipping_address_2,
-                            'city' => $order->shipping_city,
-                            'state' => $order->shipping_state,
-                            'postcode' => $order->shipping_postcode,
-                            'country' => $order->shipping_country
+                            'address_1' => $order->get_shipping_address_1(),
+                            'address_2' => $order->get_shipping_address_2(),
+                            'city' => $order->get_shipping_city(),
+                            'state' => $order->get_shipping_state(),
+                            'postcode' => $order->get_shipping_postcode(),
+                            'country' => $order->get_shipping_country()
                                 ), $order);
                         $formatted_shipping_address = WC()->countries->get_formatted_address($formatted_shipping_address);
 
-                        $customer_name = $order->billing_first_name . ' ' . $order->billing_last_name;
-                        $customer_email = $order->billing_email;
-                        $customer_phone = $order->billing_phone;
+                        $customer_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+                        $customer_email = $order->get_billing_email();
+                        $customer_phone = $order->get_billing_phone();
 
                         $order_datas[$index] = array(
                             'order' => '#' . $customer_order,
@@ -412,7 +414,7 @@ Class WCMp_Admin_Dashboard {
                             'product' => $item_names,
                             'qty' => $item_qty,
                             'discount_used' => apply_filters('wcmp_export_discount_used_in_order', $coupon_used),
-                            'payment_system' => $order->payment_method_title,
+                            'payment_system' => $order->get_payment_method_title(),
                             'buyer_name' => $customer_name,
                             'buyer_email' => $customer_email,
                             'buyer_contact' => $customer_phone,

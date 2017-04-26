@@ -4,7 +4,7 @@ Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi selle
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.6.4
+Stable tag: 2.6.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,7 +32,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 
 <strong>Riley:</strong>  Don't take my word for it, checkout our exhaustive, have-it-all [feature list](https://wc-marketplace.com/features/). You will be surprised to find out what other multivendor plugins offer in pro or premium, WC Marketplace has all of them covered.
 
-> Take a step forward and try our [demo](http://demo.wc-marketplace.com/addon/WCMp/my-account/ "Admin demo | Vendor demo").
+> Take a step forward and try our [demo](http://wcmpdemos.com/addon/WCMp/my-account/ "Admin demo | Vendor demo").
 
 <strong>You:</strong> [In your mind- "There should be a catch or a hidden cost. Let me dig more." ] Well your plugin looks promising. But, I wonder, why this charity?
 
@@ -110,6 +110,13 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+= 2.6.5 =
+* Fixed: Vendor capabilities 
+* Fixed: Vendor dashboard CSS
+* Fixed: Shipping tax calculation
+* Fixed: Vendor stats / reports
+* Updated: Language file
+
 = 2.6.4 =
 * Fixed: Vendor policies settings.
 * Fixed: Shipping calculation. 
@@ -213,5 +220,5 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
-= 2.6.4 =
+= 2.6.5 =
 2.6 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.

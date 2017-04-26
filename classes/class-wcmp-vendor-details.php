@@ -490,10 +490,9 @@ class WCMp_Vendor {
         global $WCMp;
         require_once ( 'class-wcmp-calculate-commission.php' );
         $commission_obj = new WCMp_Calculate_Commission();
-        $vendor_items = $this->get_vendor_items_from_order($order->id, $vendor_id);
+        $vendor_items = $this->get_vendor_items_from_order($order->get_id(), $vendor_id);
         foreach ($vendor_items as $item_id => $item) {
             $_product = apply_filters('wcmp_woocommerce_order_item_product', $order->get_product_from_item($item), $item);
-            $item_meta = new WC_Order_Item_Meta($item['item_meta'], $_product);
             ?>
             <tr class="">
                 <td scope="col" style="text-align:left; border: 1px solid #eee;" class="product-name">
@@ -502,7 +501,7 @@ class WCMp_Vendor {
                         echo apply_filters('wcmp_woocommerce_order_item_name', $item['name'], $item);
                     else
                         echo apply_filters('woocommerce_order_item_name', sprintf('<a href="%s">%s</a>', get_permalink($item['product_id']), $item['name']), $item);
-                    $item_meta->display();
+                    wc_display_item_meta($item);
                     ?>
                 </td>
                 <td scope="col" style="text-align:left; border: 1px solid #eee;">	
@@ -537,17 +536,16 @@ class WCMp_Vendor {
         global $WCMp;
         require_once ( 'class-wcmp-calculate-commission.php' );
         $commission_obj = new WCMp_Calculate_Commission();
-        $vendor_items = $this->get_vendor_items_from_order($order->id, $vendor_id);
+        $vendor_items = $this->get_vendor_items_from_order($order->get_id(), $vendor_id);
         foreach ($vendor_items as $item_id => $item) {
             $_product = apply_filters('woocommerce_order_item_product', $order->get_product_from_item($item), $item);
-            $item_meta = new WC_Order_Item_Meta($item['item_meta'], $_product);
 
             // Title
             echo apply_filters('woocommerce_order_item_name', $item['name'], $item);
 
 
             // Variation
-            echo $item_meta->meta ? "\n" . $item_meta->display(true, true) : '';
+            wc_display_item_meta($item);
 
             // Quantity
             echo "\n" . sprintf(__('Quantity: %s', $WCMp->text_domain), $item['qty']);
@@ -559,7 +557,7 @@ class WCMp_Vendor {
             if ($is_ship)
                 echo "\n" . sprintf(__('Total: %s', $WCMp->text_domain), $order->get_formatted_line_subtotal($item));
             else
-                echo "\n" . sprintf(__('Commission: %s', $WCMp->text_domain), $commission_obj->get_item_commission($product_id, $variation_id, $item, $order->id, $item_id));
+                echo "\n" . sprintf(__('Commission: %s', $WCMp->text_domain), $commission_obj->get_item_commission($product_id, $variation_id, $item, $order->get_id(), $item_id));
 
             echo "\n\n";
         }
@@ -930,15 +928,15 @@ class WCMp_Vendor {
             $postcode = '';
             $city = '';
         } elseif ('billing' === $tax_based_on) {
-            $country = $order->billing_country;
-            $state = $order->billing_state;
-            $postcode = $order->billing_postcode;
-            $city = $order->billing_city;
+            $country = $order->get_billing_country();
+            $state = $order->get_billing_state();
+            $postcode = $order->get_billing_postcode();
+            $city = $order->get_billing_country();
         } else {
-            $country = $order->shipping_country;
-            $state = $order->shipping_state;
-            $postcode = $order->shipping_postcode;
-            $city = $order->shipping_city;
+            $country = $order->get_shipping_country();
+            $state = $order->get_shipping_state();
+            $postcode = $order->get_shipping_postcode();
+            $city = $order->get_shipping_city();
         }
 
         $matched_tax_rates = array();
@@ -981,14 +979,14 @@ class WCMp_Vendor {
             $body[$i] = array(
                 'order_number' => $order->get_order_number(),
                 'product' => $product,
-                'name' => $order->shipping_first_name . ' ' . $order->shipping_last_name,
-                'address' => $order->shipping_address_1,
-                'city' => $order->shipping_city,
-                'state' => $order->shipping_state,
-                'zip' => $order->shipping_postcode,
-                'email' => $order->billing_email,
+                'name' => $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name(),
+                'address' => $order->get_shipping_address_1(),
+                'city' => $order->get_shipping_city(),
+                'state' => $order->get_shipping_state(),
+                'zip' => $order->get_shipping_postcode(),
+                'email' => $order->get_billing_email(),
                 'date' => $order->get_date_created(),
-                'comments' => wptexturize($order->customer_note),
+                'comments' => wptexturize($order->get_customer_note()),
             );
 
             $items[$i]['total_qty'] = 0;

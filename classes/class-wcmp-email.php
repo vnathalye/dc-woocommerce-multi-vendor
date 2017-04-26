@@ -21,7 +21,6 @@ class WCMp_Email {
 		$items = $order->get_items( 'line_item' );
 		$vendor_array = array();
 		$author_id = '';
-		$capability_settings = get_option('wcmp_capabilities_settings_name');
 		$customer_support_details_settings = get_option('wcmp_general_customer_support_details_settings_name');
 		$is_csd_by_admin = '';
 		
@@ -51,11 +50,11 @@ class WCMp_Email {
 		}
 		else {	$can_vendor_add_message_on_email_and_thankyou_page = apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true);
                         $is_customer_support_details = apply_filters('is_customer_support_details', true);
-			if( isset( $capability_settings['can_vendor_add_message_on_email_and_thankyou_page'] ) && $can_vendor_add_message_on_email_and_thankyou_page ) {
-				$WCMp->template->get_template( 'vendor_message_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
+			if( isset( $customer_support_details_settings['can_vendor_add_message_on_email_and_thankyou_page'] ) && $can_vendor_add_message_on_email_and_thankyou_page ) {
+				$WCMp->template->get_template( 'vendor_message_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$customer_support_details_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
 			elseif(get_wcmp_vendor_settings ('is_customer_support_details', 'general') == 'Enable' && $is_customer_support_details) {
-				$WCMp->template->get_template( 'customer_support_details_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$capability_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
+				$WCMp->template->get_template( 'customer_support_details_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$customer_support_details_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
 		}		
 	}
@@ -64,7 +63,7 @@ class WCMp_Email {
 		global $WCMp;
 		$html = '';
 		$user_meta = get_user_meta( $vendor_id );
-		$capability_settings = get_option('wcmp_capabilities_settings_name');
+		$capability_settings = get_option('wcmp_general_customer_support_details_settings_name');
 		ob_start();
 		echo '<td valign="top" align="left" style=" background:#f4f4f4; padding:0px 40px"><h3 style="color:#557da1;display:block;font-family:Arial,sans-serif; font-size:16px;font-weight:bold;line-height:130%;margin:16px 0 8px;text-align:left">';
 		echo __('Customer Support Details of : ',$WCMp->text_domain);
@@ -129,7 +128,7 @@ class WCMp_Email {
 	public function get_csd_admin_address() {
 		global $WCMp;
 		$html = '';
-		$capability_settings = get_option('wcmp_capabilities_settings_name');		
+		$capability_settings = get_option('wcmp_general_customer_support_details_settings_name');		
 		ob_start();
 		?>
 		<table>

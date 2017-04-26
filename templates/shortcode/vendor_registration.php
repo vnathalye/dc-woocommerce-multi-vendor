@@ -3,7 +3,7 @@
     <form class="register" role="form" method="post" enctype="multipart/form-data">
         <h2 class="reg_header1"><?php echo apply_filters('wcmp_vendor_registration_header_text',__('Vendor Registration Form','woocommerce')); ?></h2>
 
-        <div class="<?php if(!is_user_logged_in()){ echo 'wcmp_regi_form_box'; } ?>">
+        <div class="wcmp_regi_form_box">
             <?php if(!is_user_logged_in()) : 
                 $wcmp_vendor_general_settings_name = get_option('wcmp_vendor_general_settings_name');?>
             <h3 class="reg_header2"><?php if(isset($wcmp_vendor_general_settings_name['woo_reg_section_label']) && !empty($wcmp_vendor_general_settings_name['woo_reg_section_label'])) { echo $wcmp_vendor_general_settings_name['woo_reg_section_label']; } else { echo 'Account Details'; } ?></h3>

@@ -997,7 +997,7 @@ if (!function_exists('do_wcmp_data_migrate')) {
      */
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
         global $WCMp, $wpdb;
-        if ($previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
+        if ($previous_plugin_version && $previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
             $old_pages = get_option('wcmp_pages_settings_name');
             if (isset($old_pages['vendor_dashboard'])) {
                 wp_update_post(array('ID' => $old_pages['vendor_dashboard'], 'post_content' => '[wcmp_vendor]'));

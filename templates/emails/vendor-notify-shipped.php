@@ -58,11 +58,11 @@ global  $WCMp;
 
 <h2><?php _e( 'Customer Details',  $WCMp->text_domain ); ?></h2>
 
-<?php if ( $order->billing_email ) : ?>
-	<p><strong><?php _e( 'Email:',  $WCMp->text_domain ); ?></strong> <?php echo $order->billing_email; ?></p>
+<?php if ( $order->get_billing_email() ) : ?>
+	<p><strong><?php _e( 'Email:',  $WCMp->text_domain ); ?></strong> <?php echo $order->get_billing_email(); ?></p>
 <?php endif; ?>
-<?php if ( $order->billing_phone ) : ?>
-	<p><strong><?php _e( 'Telephone:',  $WCMp->text_domain ); ?></strong> <?php echo $order->billing_phone; ?></p>
+<?php if ( $order->get_billing_phone() ) : ?>
+	<p><strong><?php _e( 'Telephone:',  $WCMp->text_domain ); ?></strong> <?php echo $order->get_billing_phone(); ?></p>
 <?php endif; ?>
         
 <h2><?php _e( 'Shipment Tracking Details',  $WCMp->text_domain ); ?></h2>

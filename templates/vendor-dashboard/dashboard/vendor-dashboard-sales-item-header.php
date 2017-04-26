@@ -8,14 +8,14 @@
  * @package 	WCMp/Templates
  * @version   2.3.0
  */
- 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if (!defined('ABSPATH'))
+    exit; // Exit if accessed directly
 global $woocommerce, $WCMp;
 ?>
-<tr>
-	<td align="center" >ID</td>
-	<td  align="center" >SKU</td>
-	<td class="no_display"  align="center" >Sales</td>
-	<td class="no_display" align="center" >Discount</td>
-	<td align="center" >My Earnings</td>
+<tr>	
+    <td align="center" >ID</td>
+    <td align="center" ><?php _e('SKU', $WCMp->text_domain); ?></td>
+    <td class="no_display"  align="center" ><?php _e('Sales', $WCMp->text_domain); ?></td>
+    <td class="no_display" align="center" ><?php _e('Discount', $WCMp->text_domain); ?></td>
+    <td align="center" ><?php _e('My Earnings', $WCMp->text_domain); ?></td>
 </tr>

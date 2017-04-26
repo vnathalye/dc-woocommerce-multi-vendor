@@ -322,12 +322,13 @@ class WCMp_Capabilities {
         global $WCMp;
         if ($WCMp->vendor_caps->vendor_frontend_settings('sold_by_cart_and_checkout')) {
             $general_cap = isset($this->frontend_cap['sold_by_text']) ? $this->frontend_cap['sold_by_text'] : '';
-            if (!$general_cap)
+            if (!$general_cap) {
                 $general_cap = 'Sold By';
+            }
             $vendor = get_wcmp_product_vendors($cart_item['product_id']);
             if ($vendor) {
-                woocommerce_add_order_item_meta($item_id, $general_cap, $vendor->user_data->display_name);
-                woocommerce_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
+                wc_add_order_item_meta($item_id, $general_cap, $vendor->user_data->display_name);
+                wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
             }
         }
     }

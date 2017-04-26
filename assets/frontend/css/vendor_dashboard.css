@@ -142,7 +142,7 @@ input:focus, button:focus, select:focus, textarea:focus, a:focus{
     line-height: 55px;*/
     margin-top: 18px;
     text-align: center;
-    width: 60px;
+    width: 40px;
 }
 .wcmp_main_menu ul li .writtings{
 	   font-size: 15px;
@@ -267,7 +267,7 @@ background:url(../../images/ic10b.png) center center no-repeat;
    border-top:1px solid #a7a7a7;
    line-height:43px;
    height:43px;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
 }
 
@@ -280,7 +280,7 @@ background:url(../../images/ic10b.png) center center no-repeat;
 	background: -webkit-linear-gradient(top, #bbb 0%, #b5b5b5 100%, #b1b1b1 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(top, #bbb 0%, #b5b5b5 100%, #b1b1b1 100%);
 	transition:1s;
-	padding-left:80px;
+	padding-left: 35px;
 	 box-sizing: border-box;
 
 }

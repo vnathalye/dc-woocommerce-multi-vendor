@@ -222,23 +222,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 
 				$products = '';
 				foreach ($valid_items as $key => $item) {
-					$item_meta = new WC_Order_Item_Meta( $item );
-					//$item_meta = $item_meta->display( false, true );
-					$item_meta = $item_meta->get_formatted( );
 					$products .= '<strong>'. $item['qty'] . ' x ' . $item['name'] . '</strong><br />';
-					if( !$new_shipping ) { // Old vendor shipping calculation
-						foreach ($item_meta as $meta_id => $meta) {
-							// Remove the sold by meta key for display
-							if (strtolower($meta['key']) != 'sold by' ){
-								if($meta[ 'label' ] == 'flat_shipping_per_item') {
-									$products .= __('Flat Shipping Charges',$WCMp->text_domain).' : ' . wc_price( $meta[ 'value' ] ). '<br />';
-								}
-								else {
-									//$products .= $meta[ 'label' ] .' : ' . wc_price( $meta[ 'value' ] ). '<br />';
-								}
-							}
-						}
-					}
 				}
 				if( $new_shipping ) {
 					$products .= $product_shipping;
@@ -291,7 +275,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 						}
 			
 						if ( ( 2 == $order->billing_persontype && 1 == $settings['person_type'] ) || 3 == $settings['person_type'] ) {
-							$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Company Name', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->billing_company ) . '<br />';
+							$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Company Name', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->get_billing_company() ) . '<br />';
 							$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'CNPJ', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->billing_cnpj ) . '<br />';
 			
 							if ( isset( $settings['ie'] ) ) {
@@ -299,7 +283,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 							}
 						}
 					} else {
-						$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Company', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->billing_company ) . '<br />';
+						$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Company', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->get_billing_company() ) . '<br />';
 					}
 			
 					if ( isset( $settings['birthdate_sex'] ) ) {
@@ -311,7 +295,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 						$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Sex', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->billing_sex ) . '<br />';
 					}
 			
-					$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Phone', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->billing_phone ) . '<br />';
+					$extra_checkout_fields_for_brazil_active_datas .= '<strong>' . __( 'Phone', $WCMp->text_domain ) . ': </strong>' . esc_html( $order->get_billing_phone() ) . '<br />';
 			
 					// Cell Phone Information.
 					if ( ! empty( $order->billing_cellphone ) ) {

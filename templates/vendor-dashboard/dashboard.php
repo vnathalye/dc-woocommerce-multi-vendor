@@ -24,7 +24,7 @@ if (is_user_wcmp_vendor($user->ID)) :
                 <?php _e('<h4>You have not configured your store properly missing some required fields!</h4>', $WCMp->text_domain); ?>
             </div>
 
-        <?php
+            <?php
         }
     }
     $notice_data = get_option('wcmp_notices_settings_name');
@@ -128,7 +128,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             if ($total_comission == $int_comission) {
                 $precision_value_comission = '00';
             } else {
-                $precision_value_comission = ($total_comission - $int_comission) * 100;
+                $precision_value_comission = round(($total_comission - $int_comission), 2);
             }
             $item_total += ($shipping_total + $tax_total);
             $int_item_total = intval($item_total);
@@ -136,14 +136,14 @@ if (is_user_wcmp_vendor($user->ID)) :
             if ($item_total == $int_item_total) {
                 $precision_value_item = '00';
             } else {
-                $precision_value_item = ($item_total - $int_item_total) * 100;
+                $precision_value_item = round(($item_total - $int_item_total), 2);
             }
             $int_net_balance_today = intval($net_balance_today);
 
             if ($net_balance_today == $int_net_balance_today) {
                 $precision_net_balance = '00';
             } else {
-                $precision_net_balance = ($net_balance_today - $int_net_balance_today) * 100;
+                $precision_net_balance = round(($net_balance_today - $int_net_balance_today), 2);
             }
             ?>
             <input type = "hidden" name="today_sale_current_page" id="today_sale_current_page" value="1">
@@ -158,15 +158,15 @@ if (is_user_wcmp_vendor($user->ID)) :
 
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total, 0); ?><span>.<?php echo substr($precision_value_item, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total, 0); ?><span>.<?php echo isset(explode('.', $precision_value_item)[1]) ? explode('.', $precision_value_item)[1] : '0'; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission, 0); ?><span>.<?php echo substr($precision_value_comission, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission, 0); ?><span>.<?php echo isset(explode('.', $precision_value_comission)[1]) ? explode('.', $precision_value_comission)[1] : '0'; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Net Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_today, 0); ?><span>.<?php echo substr($precision_net_balance, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_today, 0); ?><span>.<?php echo isset(explode('.', $precision_net_balance)[1]) ? explode('.', $precision_net_balance)[1] : '0'; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>
@@ -186,10 +186,10 @@ if (is_user_wcmp_vendor($user->ID)) :
             <div class="wcmp_table_loader">
                 <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
                 <?php echo __('Showing Results', $WCMp->text_domain); ?><span> <span class="wcmp_front_count_first_num_today"><?php echo $displayed_row; ?></span> <?php
-                    echo __('  out of  ', $WCMp->text_domain);
-                    echo $whole_row_today;
-                    ?></span>
-    <?php if ($whole_row_today > 6) { ?><button class="wcmp_black_btn wcmp_frontend_sale_show_more_button" element-data="sale_today_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
+                echo __('  out of  ', $WCMp->text_domain);
+                echo $whole_row_today;
+                ?></span>
+                <?php if ($whole_row_today > 6) { ?><button class="wcmp_black_btn wcmp_frontend_sale_show_more_button" element-data="sale_today_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
             </div>
 
@@ -217,8 +217,8 @@ if (is_user_wcmp_vendor($user->ID)) :
             <input type = "hidden" name="today_pending_shipping_total_page" id="today_pending_shipping_total_page" value="<?php echo $total_page_pending_shipping_today; ?>">
             <div class="wcmp_table_loader">
                 <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
-    <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_today_ps"><?php echo $number_of_pending_shipping_show_today; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $number_of_pending_shipping_whole_today; ?></span>
-    <?php if ($number_of_pending_shipping_whole_today > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_today_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
+                <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_today_ps"><?php echo $number_of_pending_shipping_show_today; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $number_of_pending_shipping_whole_today; ?></span>
+                <?php if ($number_of_pending_shipping_whole_today > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_today_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
             </div>
         </div>
@@ -283,7 +283,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             if ($total_comission_week == $int_comission_week) {
                 $precision_value_comission_week = '00';
             } else {
-                $precision_value_comission_week = ($total_comission_week - $int_comission_week) * 100;
+                $precision_value_comission_week = round(($total_comission_week - $int_comission_week), 2);
             }
             $item_total_week += ($shipping_total_week + $tax_total_week);
             //$item_total = number_format($item_total,2);
@@ -292,7 +292,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             if ($item_total_week == $int_item_total_week) {
                 $precision_value_item_week = '00';
             } else {
-                $precision_value_item_week = ($item_total_week - $int_item_total_week) * 100;
+                $precision_value_item_week = round(($item_total_week - $int_item_total_week), 2);
             }
 
             //$net_balance_today = number_format($net_balance_today,2);
@@ -301,7 +301,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             if ($net_balance_week == $int_net_balance_week) {
                 $precision_net_balance_week = '00';
             } else {
-                $precision_net_balance_week = ($net_balance_week - $int_net_balance_week) * 100;
+                $precision_net_balance_week = round(($net_balance_week - $int_net_balance_week), 2);
             }
             ?>
             <input type = "hidden" name="week_sale_current_page" id="week_sale_current_page" value="1">
@@ -314,15 +314,15 @@ if (is_user_wcmp_vendor($user->ID)) :
 
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total_week, 0); ?><span>.<?php echo substr($precision_value_item_week, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total_week, 0); ?><span>.<?php echo isset(explode('.', $precision_value_item_week)[1]) ? explode('.', $precision_value_item_week)[1] : '0'; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission_week, 0); ?><span>.<?php echo substr($precision_value_comission_week, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission_week, 0); ?><span>.<?php echo isset(explode('.', $precision_value_comission_week)[1]) ? explode('.', $precision_value_comission_week)[1] : '0'; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_week, 0); ?><span>.<?php echo substr($precision_net_balance_week, 0, 2); ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_week, 0); ?><span>.<?php echo isset(explode('.', $precision_net_balance_week)[1]) ? explode('.', $precision_net_balance_week)[1] : '0'; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>
@@ -340,11 +340,11 @@ if (is_user_wcmp_vendor($user->ID)) :
             </div>
             <div class="wcmp_table_loader">
                 <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
-                    <?php echo __('Showing Results', $WCMp->text_domain); ?><span> <span class="wcmp_front_count_first_num_week"><?php echo $displayed_row_week; ?></span> <?php
+                <?php echo __('Showing Results', $WCMp->text_domain); ?><span> <span class="wcmp_front_count_first_num_week"><?php echo $displayed_row_week; ?></span> <?php
                 echo __('  out of  ', $WCMp->text_domain);
                 echo $whole_row_week;
                 ?></span>
-    <?php if ($whole_row_week > 6) { ?><button class="wcmp_black_btn wcmp_frontend_sale_show_more_button" element-data="sale_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
+                <?php if ($whole_row_week > 6) { ?><button class="wcmp_black_btn wcmp_frontend_sale_show_more_button" element-data="sale_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
             </div>
             <h3 class="wcmp_black_headding"><?php echo __('Pending Shipping', $WCMp->text_domain); ?></h3>
@@ -359,15 +359,15 @@ if (is_user_wcmp_vendor($user->ID)) :
             </div>
             <input type = "hidden" name="week_pending_shipping_current_page" id="week_pending_shipping_current_page" value="1">
             <input type = "hidden" name="week_pending_shipping_next_page" id="week_pending_shipping_next_page" value="<?php
-                   if ($total_page_pending_shipping_week > 1) {
-                       echo '2';
-                   }
-                   ?>">
+            if ($total_page_pending_shipping_week > 1) {
+                echo '2';
+            }
+            ?>">
             <input type = "hidden" name="week_pending_shipping_total_page" id="week_pending_shipping_total_page" value="<?php echo $total_page_pending_shipping_week; ?>">
             <div class="wcmp_table_loader">
                 <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
-    <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_week_ps"><?php echo $week_pending_shipping_show; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $week_pending_shipping_whole; ?></span>
-    <?php if ($week_pending_shipping_whole > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
+                <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_week_ps"><?php echo $week_pending_shipping_show; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $week_pending_shipping_whole; ?></span>
+                <?php if ($week_pending_shipping_whole > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
             </div>		
         </div>

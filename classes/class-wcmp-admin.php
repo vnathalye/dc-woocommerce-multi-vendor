@@ -409,9 +409,10 @@ class WCMp_Admin {
             wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
 
         endif;
-
-        if (in_array($screen->id, array('wcmp_page_wcmp-to-do'))) {
+        if (in_array($screen->id, array('wcmp_page_wcmp-to-do','edit-wcmp_vendorrequest'))) {
             wp_enqueue_script('dc_to_do_list_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        }
+        if (in_array($screen->id, array('wcmp_page_wcmp-to-do'))) {
             wp_enqueue_style('wcmp_admin_todo_list', $WCMp->plugin_url . 'assets/admin/css/admin-to_do_list' . $suffix . '.css', array(), $WCMp->version);
         }
 

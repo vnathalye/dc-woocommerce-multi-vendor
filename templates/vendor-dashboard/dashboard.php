@@ -3,8 +3,8 @@
  * The template for displaying vendor dashboard
  * Override this template by copying it to yourtheme/dc-product-vendor/vendor-dashboard/dashboard.php
  *
- * @author 	WC Marketplace
- * @package 	WCMp/Templates
+ * @author  WC Marketplace
+ * @package     WCMp/Templates
  * @version   2.4.5
  */
 if (!defined('ABSPATH')) {
@@ -62,7 +62,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             <a href="<?php echo wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements')) ?>"><button><?php echo __('DETAILS', $WCMp->text_domain); ?></button></a>
             <div class="clear"></div>
             <a href="#" id="cross-admin" data-element = "<?php echo $msg->ID; ?>"  class="wcmp_cross wcmp_delate_announcements_dashboard"><i class="fa fa-times-circle"></i></a> 
-        </div>		
+        </div>      
     <?php } ?>
     <div class="wcmp_tab">
         <ul>
@@ -155,18 +155,27 @@ if (is_user_wcmp_vendor($user->ID)) :
             }
             ?>">
             <input type = "hidden" name="today_sale_total_page" id="today_sale_total_page" value="<?php echo $total_page_sale_today; ?>">
-
+            <?php
+            if($precision_value_item){
+                $precision_value_array = explode('.', $precision_value_item);
+                if(is_array($precision_value_array)){
+                    $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
+                }
+            } else{
+                $precision_value = '00';
+            }
+            ?>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total, 0); ?><span>.<?php echo $precision_value_item && isset(explode('.', $precision_value_item)[1]) ? explode('.', $precision_value_item)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission, 0); ?><span>.<?php echo $precision_value_item && isset(explode('.', $precision_value_comission)[1]) ? explode('.', $precision_value_comission)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Net Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_today, 0); ?><span>.<?php echo $precision_value_item && isset(explode('.', $precision_net_balance)[1]) ? explode('.', $precision_net_balance)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_today, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>
@@ -311,18 +320,27 @@ if (is_user_wcmp_vendor($user->ID)) :
             }
             ?>">
             <input type = "hidden" name="week_sale_total_page" id="week_sale_total_page" value="<?php echo $total_page_sale_week; ?>">
-
+            <?php
+            if($precision_value_item_week){
+                $precision_value_array = explode('.', $precision_value_item_week);
+                if(is_array($precision_value_array)){
+                    $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
+                }
+            } else{
+                $precision_value = '00';
+            }
+            ?>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total_week, 0); ?><span>.<?php echo $precision_value_item_week && isset(explode('.', $precision_value_item_week)[1]) ? explode('.', $precision_value_item_week)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission_week, 0); ?><span>.<?php echo $precision_value_item_week && isset(explode('.', $precision_value_comission_week)[1]) ? explode('.', $precision_value_comission_week)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_week, 0); ?><span>.<?php echo $precision_value_item_week && isset(explode('.', $precision_net_balance_week)[1]) ? explode('.', $precision_net_balance_week)[1] : '0'; ?></span></h3>
+                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>
@@ -369,7 +387,7 @@ if (is_user_wcmp_vendor($user->ID)) :
                 <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_week_ps"><?php echo $week_pending_shipping_show; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $week_pending_shipping_whole; ?></span>
                 <?php if ($week_pending_shipping_whole > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
-            </div>		
+            </div>      
         </div>
     </div>
 <?php endif; ?>

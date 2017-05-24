@@ -160,6 +160,8 @@ if (is_user_wcmp_vendor($user->ID)) :
                 $precision_value_array = explode('.', $precision_value_item);
                 if(is_array($precision_value_array)){
                     $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
+                } else{
+                    $precision_value = '00';
                 }
             } else{
                 $precision_value = '00';
@@ -325,6 +327,8 @@ if (is_user_wcmp_vendor($user->ID)) :
                 $precision_value_array = explode('.', $precision_value_item_week);
                 if(is_array($precision_value_array)){
                     $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
+                } else{
+                    $precision_value = '00';
                 }
             } else{
                 $precision_value = '00';

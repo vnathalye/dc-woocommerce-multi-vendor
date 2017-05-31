@@ -4,7 +4,7 @@
  * Plugin URI: https://wc-marketplace.com/
  * Description: A Free Extension That Transforms Your WooCommerce Site into a Marketplace.
  * Author: WC Marketplace, The Grey Parrots
- * Version: 2.6.5
+ * Version: 2.7.0
  * Author URI: https://wc-marketplace.com/
  * Requires at least: 4.0
  * Tested up to: 4.7
@@ -41,6 +41,8 @@ register_activation_hook(__FILE__, 'flush_rewrite_rules');
 if (!class_exists('WCMp') && WC_Dependencies_Product_Vendor::is_woocommerce_active()) {
     global $WCMp;
     require_once( 'classes/class-wcmp.php' );
+    /* recheck plugin install */
+    add_action('plugins_loaded','activate_wcmp_plugin');
     /* Initiate plugin main class */
     $WCMp = new WCMp(__FILE__);
     $GLOBALS['WCMp'] = $WCMp;

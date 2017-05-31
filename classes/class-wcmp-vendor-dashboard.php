@@ -76,18 +76,20 @@ Class WCMp_Admin_Dashboard {
                         $vendor_tax = get_post_meta($commission, '_tax', true);
 
                         $order = new WC_Order($commission_order_id);
-                        $due_vendor = $vendor->wcmp_get_vendor_part_from_order($order, $vendor->term_id);
+                        $due_vendor = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()));
+                        $vendor_due = (float) $due_vendor['total'];
 
-                        if ($vendor_shipping)
-                            $vendor_shipping = $due_vendor['shipping'];
-                        if ($vendor_tax)
-                            $vendor_tax = $due_vendor['tax'];
-
-                        $vendor_due = 0;
-                        $vendor_due = (float) $commission_data->amount + (float) $vendor_shipping + (float) $vendor_tax;
-
-                        if ($commission_data->vendor->term_id != $vendor->term_id)
+                        if ($commission_data->vendor->term_id != $vendor->term_id) {
                             continue;
+                        }
+
+                        $commission_threshold_time = isset($WCMp->vendor_caps->payment_cap['commission_threshold_time']) && !empty($WCMp->vendor_caps->payment_cap['commission_threshold_time']) ? $WCMp->vendor_caps->payment_cap['commission_threshold_time'] : 0;
+                        $commission_create_date = get_the_date('U', $commission);
+                        $current_date = date('U');
+                        $diff = intval(($current_date - $commission_create_date) / (3600 * 24));
+                        if ($diff < $commission_threshold_time) {
+                            continue;
+                        }
 
                         if (array_key_exists($commission_data->vendor->term_id, $transaction_data)) {
                             $commission_totals[$commission_data->vendor->term_id]['amount'] += apply_filters('paypal_masspay_amount', $vendor_due, $commission_order_id, $commission_data->vendor->term_id);
@@ -104,14 +106,14 @@ Class WCMp_Admin_Dashboard {
                         if (!$no_of_thresold_orders)
                             $no_of_thresold_orders = 0;
                         $no_of_paid_transaction = $no_of_paid_transaction = count($WCMp->transaction->get_transactions($vendor->term_id)); //20;//count($vendor->wcmp_vendor_transaction());
-                        if ((int) $no_of_paid_transaction > (int) $no_of_thresold_orders) {
+                        if (((int) $no_of_paid_transaction >= (int) $no_of_thresold_orders)) {
                             $commission_totals[$vendor->term_id]['transfer_charge'] = $transfer_charge;
                             $transaction_data[$vendor->term_id]['transfer_charge'] = $transfer_charge;
                         }
                     }
                     $commission_payment_mode = get_user_meta($vendor->id, '_vendor_payment_mode', true);
-                    $commission_totals = apply_filters('wcmp_commission_for_disbursal_mode',$commission_totals);
-                    $transaction_data = apply_filters('wcmp_transaction_for_disbursal_mode',$transaction_data);
+                    $commission_totals = apply_filters('wcmp_commission_for_disbursal_mode', $commission_totals);
+                    $transaction_data = apply_filters('wcmp_transaction_for_disbursal_mode', $transaction_data);
                     if ($commission_payment_mode == 'paypal_masspay' || $commission_payment_mode == 'paypal_payout') {
 
                         // Set info for all payouts
@@ -136,7 +138,7 @@ Class WCMp_Admin_Dashboard {
                                     $recipient = $vendor_paypal_email;
                                     $commissions_data[] = array(
                                         'recipient' => $recipient,
-                                        'total' => $total_payable,
+                                        'total' => round($total_payable, 2),
                                         'currency' => $currency,
                                         'vendor_id' => $vendor_id,
                                         'payout_note' => $payout_note
@@ -488,7 +490,8 @@ Class WCMp_Admin_Dashboard {
                 // Only submit if the order has the product belonging to this vendor
                 $order = new WC_Order($_POST['order_id']);
                 $comment = esc_textarea($_POST['comment_text']);
-                $order->add_order_note($comment, 1);
+                $comment_id = $order->add_order_note($comment, 1);
+                add_comment_meta($comment_id, '_vendor_id', get_current_user_id());
             }
         }
     }
@@ -523,225 +526,94 @@ Class WCMp_Admin_Dashboard {
 
         $vendor_user_id = get_current_user_id();
         $vendor_user_id = apply_filters('wcmp_dashboard_shipping_vendor', $vendor_user_id);
+
         $vendor_data = get_wcmp_vendor($vendor_user_id);
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['vendor_shipping_data'])) {
-                if (version_compare(WC_VERSION, '2.6.0', '>=')) {
-                    $shipping_updt = true;
-                    $dc_flat_rates = array();
-                    $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-                    if (!empty($shipping_class_id)) {
-                        $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-                    }
-                    if (!(isset($term_shipping_obj) && isset($term_shipping_obj->term_id) && !empty($term_shipping_obj))) {
-                        $shipping_term = wp_insert_term($vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                        if (!is_wp_error($shipping_term)) {
-                            $shipping_term_id = $shipping_term['term_id'];
-                            update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_term['term_id']);
-                            add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $vendor_user_id);
-                            add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', $_POST['vendor_shipping_data']['ship_from']);
-                        } else {
-                            $shipping_updt = false;
-                        }
-                    } else {
+        $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
+        if (!$shipping_class_id) {
+            $shipping_term = get_term_by('slug', $vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class', ARRAY_A);
+            if (!$shipping_term) {
+                $shipping_term = wp_insert_term($vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
+            }
+            if (!is_wp_error($shipping_term)) {
+                $shipping_term_id = $shipping_term['term_id'];
+                update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_term['term_id']);
+                add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $vendor_user_id);
+                add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
+            }
+        }
+        ?>
+        <div class="wrap">
+            <div id="icon-woocommerce" class="icon32 icon32-woocommerce-reports"><br/></div>
+            <h2><?php _e('Shipping', $WCMp->text_domain); ?></h2>
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                if (isset($_POST['vendor_shipping_data'])) {
+                    if (version_compare(WC_VERSION, '2.6.0', '>=')) {
                         $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-                        if (empty($shipping_class_id)) {
-                            $sterm = get_term_by('slug', $vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                            if (isset($sterm->term_id) && !empty($sterm->term_id)) {
-                                $shipping_class_id = $sterm->term_id;
-                                update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_class_id);
-                            }
-                        }
-                        update_woocommerce_term_meta($shipping_class_id, 'vendor_id', $vendor_user_id);
-                        update_woocommerce_term_meta($shipping_class_id, 'vendor_shipping_origin', isset($_POST['vendor_shipping_data']['ship_from']) ? $_POST['vendor_shipping_data']['ship_from'] : '');
-                        $shipping_term_id = $shipping_class_id;
-                    }
-                    $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-
-
-                    $raw_zones = $wpdb->get_results("SELECT zone_id, zone_name, zone_order FROM {$wpdb->prefix}woocommerce_shipping_zones order by zone_order ASC;");
-                    $rest_world = new stdClass();
-                    $rest_world->zone_id = '0';
-                    $rest_world->zone_name = 'Rest of the World';
-                    $rest_world->zone_order = '';
-                    $raw_zones = array_merge($raw_zones, array($rest_world));
-                    $methods = array();
-                    foreach ($raw_zones as $raw_zone) {
-                        $zone = new WC_Shipping_Zone($raw_zone);
-                        //$zones[ $zone->get_zone_id() ]                            = $zone->get_data();
-                        //$zones[ $zone->get_zone_id() ]['formatted_zone_location'] = $zone->get_formatted_location();
-                        //$zones[ $zone->get_zone_id() ]['shipping_methods']        = $zone->get_shipping_methods();
-                        $raw_methods_sql = "SELECT method_id, method_order, instance_id, is_enabled FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE zone_id = %d AND is_enabled = 1 order by method_order ASC;";
-                        $raw_methods = $wpdb->get_results($wpdb->prepare($raw_methods_sql, $zone->get_id()));
-                        //print_r($raw_methods);
-                        foreach ($raw_methods as $raw_method) {
-                            if ($raw_method->method_id == 'flat_rate') {
-
-                                $option_name = "woocommerce_" . $raw_method->method_id . "_" . $raw_method->instance_id . "_settings";
-                                $shipping_details = get_option($option_name);
-                                //$woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-                                //$woocommerce_flat_rate_settings['class_cost_' . $shipping_term_id] = stripslashes($cost);
-                                //update_option('woocommerce_flat_rate_settings', $woocommerce_flat_rate_settings);
-
-                                $shipping_classes = WC()->shipping->get_shipping_classes();
-                                foreach ($shipping_classes as $shipping_class) {
-                                    if (!isset($shipping_class->term_id)) {
-                                        continue;
-                                    }
-                                    if ($shipping_class->term_id != $shipping_term_id) {
-                                        continue;
-                                    }
-                                    $class = "class_cost_" . $shipping_term_id;
-                                    $shipping_details[$class] = $_POST['vendor_shipping_data'][$option_name . '_' . $class];
+                        $raw_zones = WC_Shipping_Zones::get_zones();
+                        $raw_zones[] = array('id' => 0);
+                        foreach ($raw_zones as $raw_zone) {
+                            $zone = new WC_Shipping_Zone($raw_zone['id']);
+                            $raw_methods = $zone->get_shipping_methods();
+                            foreach ($raw_methods as $raw_method) {
+                                if ($raw_method->id == 'flat_rate') {
+                                    $option_name = "woocommerce_" . $raw_method->id . "_" . $raw_method->instance_id . "_settings";
+                                    $shipping_details = get_option($option_name);
+                                    $class = "class_cost_" . $shipping_class_id;
+                                    $shipping_details[$class] = stripslashes($_POST['vendor_shipping_data'][$option_name . '_' . $class]);
+                                    update_option($option_name, $shipping_details);
                                 }
-                                update_option($option_name, $shipping_details);
                             }
                         }
-                    }
-
-                    // DEPRECATED SHIPPING METHOD
-                    $fee = 0;
-                    $vendor_shipping_data = get_user_meta($vendor_user_id, 'vendor_shipping_data', true);
-                    $cost = isset($_POST['vendor_shipping_data']['shipping_amount']) ? stripslashes($_POST['vendor_shipping_data']['shipping_amount']) : 0;
-                    $international_cost = isset($_POST['vendor_shipping_data']['international_shipping_amount']) ? stripslashes($_POST['vendor_shipping_data']['international_shipping_amount']) : 0;
-                    $fee = isset($_POST['vendor_shipping_data']['handling_amount']) ? $_POST['vendor_shipping_data']['handling_amount'] : 0;
-                    if (!empty($cost)) {
-                        $woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-                        if ($woocommerce_flat_rate_settings['enabled'] == 'yes') {
-                            $woocommerce_flat_rate_settings['class_cost_' . $shipping_term_id] = stripslashes($cost);
-                            update_option('woocommerce_flat_rate_settings', $woocommerce_flat_rate_settings);
+                        if (update_user_meta($vendor_user_id, 'vendor_shipping_data', $_POST['vendor_shipping_data'])) {
+                            echo '<div class="updated settings-error notice is-dismissible"><p><strong>' . __("Shipping Data Updated.", $WCMp->text_domain) . '</strong></p></div>';
                         }
-                        $woocommerce_international_delivery_settings = get_option('woocommerce_international_delivery_settings');
-                        if ($woocommerce_international_delivery_settings['enabled'] == 'yes') {
-                            $woocommerce_international_delivery_settings['class_cost_' . $shipping_term_id] = stripslashes($international_cost);
-                            update_option('woocommerce_international_delivery_settings', $woocommerce_international_delivery_settings);
-                        }
-                    }
-                    update_user_meta($vendor_user_id, 'vendor_shipping_data', $_POST['vendor_shipping_data']);
-                    if ($shipping_updt) {
-                        echo '<div class="updated">' . __("Shipping Data Updated.", $WCMp->text_domain) . '</div>';
-                    } else {
-                        echo '<div class="error">' . __("Shipping Data Not Updated.", $WCMp->text_domain) . '</div>';
-                        delete_user_meta($vendor_user_id, 'vendor_shipping_data');
                     }
                 }
             }
-        }
-
-        $vendor_shipping_data = get_user_meta($vendor_user_id, 'vendor_shipping_data', true);
-        ?>
-        <div class="wrap">
-
-            <div id="icon-woocommerce" class="icon32 icon32-woocommerce-reports"><br/></div>
-            <h2><?php _e('Shipping', $WCMp->text_domain); ?></h2>
+            ?>
 
             <form name="vendor_shipping_form" method="post">
                 <table>
                     <tbody>
                         <?php
                         if (version_compare(WC_VERSION, '2.6.0', '>=')) {
-                            $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-                            if (!empty($shipping_class_id)) {
-                                $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-                            }
-                            if (!(isset($term_shipping_obj) && isset($term_shipping_obj->term_id) && !empty($term_shipping_obj))) {
-                                $shipping_term = wp_insert_term($vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                                if (!is_wp_error($shipping_term)) {
-                                    $shipping_term_id = $shipping_term['term_id'];
-                                    update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_term['term_id']);
-                                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $vendor_user_id);
-                                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
-                                }
-                            } else {
-                                $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-                                if (empty($shipping_class_id)) {
-                                    $sterm = get_term_by('slug', $vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                                    if (isset($sterm->term_id) && !empty($sterm->term_id)) {
-                                        $shipping_class_id = $sterm->term_id;
-                                        update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_class_id);
-                                    }
-                                }
-                                update_woocommerce_term_meta($shipping_class_id, 'vendor_id', $vendor_user_id);
-                                update_woocommerce_term_meta($shipping_class_id, 'vendor_shipping_origin', get_option('woocommerce_default_country'));
-                                $shipping_term_id = $shipping_class_id;
-                            }
-                            $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-
-                            $raw_zones = $wpdb->get_results("SELECT zone_id, zone_name, zone_order FROM {$wpdb->prefix}woocommerce_shipping_zones order by zone_order ASC;");
-
-                            $rest_world = new stdClass();
-                            $rest_world->zone_id = '0';
-                            $rest_world->zone_name = 'Rest of the World';
-                            $rest_world->zone_order = '';
-                            $raw_zones = array_merge($raw_zones, array($rest_world));
-                            //print_r($raw_zones);die;		
-                            $methods = array();
+                            $shipping_class_id = $shipping_term_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
+                            $raw_zones = WC_Shipping_Zones::get_zones();
+                            $raw_zones[] = array('id' => 0);
                             foreach ($raw_zones as $raw_zone) {
-                                $zone = new WC_Shipping_Zone($raw_zone);
-                                //$zones[ $zone->get_zone_id() ]                            = $zone->get_data();
-                                //$zones[ $zone->get_zone_id() ]['formatted_zone_location'] = $zone->get_formatted_location();
-                                //$zones[ $zone->get_zone_id() ]['shipping_methods']        = $zone->get_shipping_methods();
-                                $raw_methods_sql = "SELECT method_id, method_order, instance_id, is_enabled FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE zone_id = %d AND is_enabled = 1 order by method_order ASC;";
-                                $raw_methods = $wpdb->get_results($wpdb->prepare($raw_methods_sql, $zone->get_id()));
-                                //print_r($raw_methods);
+                                $zone = new WC_Shipping_Zone($raw_zone['id']);
+                                $raw_methods = $zone->get_shipping_methods();
                                 foreach ($raw_methods as $raw_method) {
-                                    if ($raw_method->method_id == 'flat_rate') {
+                                    if ($raw_method->id == 'flat_rate' && isset($raw_method->instance_form_fields["class_cost_" . $shipping_class_id])) {
+                                        $instance_field = $raw_method->instance_form_fields["class_cost_" . $shipping_class_id];
+                                        $instance_settings = $raw_method->instance_settings["class_cost_" . $shipping_class_id];
+                                        $option_name = 'woocommerce_' . $raw_method->id . "_" . $raw_method->instance_id . "_settings_class_cost_" . $shipping_class_id;
                                         echo '<tr><td><h2>Shipping Zone : ' . $zone->get_zone_name() . '</h2></td></tr>';
-                                        $shipping_classes = WC()->shipping->get_shipping_classes();
-                                        //print_r($shipping_class);die;
-                                        foreach ($shipping_classes as $shipping_class) {
-                                            if (!isset($shipping_class->term_id)) {
-                                                continue;
-                                            }
-                                            if ($shipping_class->term_id != $shipping_term_id) {
-                                                continue;
-                                            }
-                                            //print_r($shipping_class);die;
-                                            $class = "class_cost_" . $shipping_term_id;
-                                            $option_name = "woocommerce_" . $raw_method->method_id . "_" . $raw_method->instance_id . "_settings";
-                                            $shipping_details = get_option($option_name);
-                                            // print_r($shipping_details[$class]);
-                                            ?>
-                                            <tr>
-                                                <td><label><?php echo sprintf(__('"%s" Shipping Class Cost', 'woocommerce'), esc_html($shipping_class->name)); ?></label></td>
-                                                <td>
-                                                    <input name="vendor_shipping_data[<?php echo $option_name . '_' . $class; ?>]" type="text" value='<?php echo $shipping_details[$class]; ?>' />
-
-                                                </td>
-                                            </tr>
-                                            <tr><td></td><td><?php _e('Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain); ?> <br><br></td></tr>
-                                            <?php
-                                        }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <label><?php echo $instance_field['title']; ?></label>
+                                            </td>
+                                            <td>
+                                                <input name="vendor_shipping_data[<?php echo $option_name; ?>]" type="text" value='<?php echo $instance_settings; ?>' placeholder="<?php echo $instance_field['placeholder']; ?>" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <?php echo strip_tags($instance_field['description'], '<code>'); ?> <br><br>
+                                            </td>
+                                        </tr>
+                                        <?php
                                     }
                                 }
                             }
-                            $class = "class_cost_" . $shipping_term_id;
-                            $woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-                            if (isset($woocommerce_flat_rate_settings['enabled']) && $woocommerce_flat_rate_settings['enabled'] == 'yes') {
-                                ?>
-                                <tr><td colspan="2"><strong><?php _e('"Flat Rate (Legacy)" is deprecated in woocommerce 2.6.0 and will be removed in future versions - we recommend disabling it and instead setting up a new rate within your Shipping Zones.', $WCMp->text_domain); ?></strong></td></tr>
-                                <tr>
-                                    <td><label><?php _e('Enter Shipping Amount for "Flat Rate (Legacy)" :', $WCMp->text_domain); ?></label></td>
-                                    <td><input name="vendor_shipping_data[shipping_amount]" type="text" step="0.01" value='<?php echo isset($woocommerce_flat_rate_settings[$class]) ? $woocommerce_flat_rate_settings[$class] : ''; ?>' /></td>
-                                </tr>
-                                <tr><td></td><td><?php _e('Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain); ?> <br><br></td></tr>
-                                <?php
-                            }
-                            $woocommerce_international_delivery_settings = get_option('woocommerce_international_delivery_settings');
-                            if (isset($woocommerce_international_delivery_settings['enabled']) && $woocommerce_international_delivery_settings['enabled'] == 'yes') {
-                                ?>
-                                <tr><td colspan="2"><strong><?php _e('"International Flat Rate (Legacy)" is deprecated in woocommerce 2.6.0 and will be removed in future versions - we recommend disabling it and instead setting up a new rate within your Shipping Zones.', $WCMp->text_domain); ?></strong></td></tr>
-                                <tr>
-                                    <td><label><?php _e('Enter Shipping Amount for "International Flat Rate (Legacy)" :', $WCMp->text_domain); ?></label></td>
-                                    <td><input name="vendor_shipping_data[international_shipping_amount]" type="text" step="0.01" value='<?php echo isset($woocommerce_international_delivery_settings[$class]) ? $woocommerce_international_delivery_settings[$class] : ''; ?>' /></td>
-                                </tr>
-                                <tr><td></td><td><?php _e('Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>. Supports the following placeholders: <code>[qty]</code> = number of items, <code>[cost]</code> = cost of items,<br><code>[fee percent="10" min_fee="20"]</code> = Percentage based fee.', $WCMp->text_domain); ?> <br><br></td></tr>
-                            <?php
-                            }
-                        } ?>						
+                        }
+                        ?>						
                     </tbody>
                 </table>
-        <?php submit_button(); ?>
+                <?php submit_button(); ?>
             </form>
             <br class="clear"/>
         </div>
@@ -751,8 +623,9 @@ Class WCMp_Admin_Dashboard {
     function process_vendor_data($post_id) {
         $post = get_post($post_id);
         if ($post->post_type == 'product') {
-            if (isset($_POST['dc_product_shipping_class']))
+            if (isset($_POST['dc_product_shipping_class'])) {
                 wp_set_object_terms($post_id, (int) wc_clean($_POST['dc_product_shipping_class']), 'product_shipping_class', false);
+            }
         }
     }
 
@@ -804,7 +677,7 @@ Class WCMp_Admin_Dashboard {
             <form id="posts-filter" method="get">
 
                 <input type="hidden" name="page" value="dc-vendor-orders"/>
-        <?php $this->wcmp_vendor_order_page->display(); ?>
+                <?php $this->wcmp_vendor_order_page->display(); ?>
 
             </form>
             <div id="ajax-response"></div>
@@ -865,7 +738,7 @@ Class WCMp_Admin_Dashboard {
 
             <label for="product_shipping_class">Shipping class</label> 
             <select class="select short" id="dc_product_shipping_class" name="dc_product_shipping_class">
-        <?php echo $option; ?>
+                <?php echo $option; ?>
             </select>
             <img class="help_tip" src="<?php echo $WCMp->plugin_url . 'assets/images/help.png'; ?>" height="16" width="16">
         </p>
@@ -981,6 +854,7 @@ Class WCMp_Admin_Dashboard {
             }
         }
     }
+
     /**
      * Save Vendor Shipping data
      * @global type $WCMp
@@ -988,96 +862,25 @@ Class WCMp_Admin_Dashboard {
      * @param type $post
      */
     function save_vendor_shipping($vendor_user_id, $post) {
-        global $WCMp, $wpdb;
+        global $WCMp;
         if (version_compare(WC_VERSION, '2.6.0', '>=')) {
-            $shipping_updt = true;
-            $dc_flat_rates = array();
             $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-            if (!empty($shipping_class_id)) {
-                $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-            }
-            if (!(isset($term_shipping_obj) && isset($term_shipping_obj->term_id) && !empty($term_shipping_obj))) {
-                $shipping_term = wp_insert_term($vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                if (!is_wp_error($shipping_term)) {
-                    $shipping_term_id = $shipping_term['term_id'];
-                    update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_term['term_id']);
-                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $vendor_user_id);
-                    if (isset($post['vendor_shipping_data']['ship_from'])) {
-                        add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', $post['vendor_shipping_data']['ship_from']);
-                    }
-                } else {
-                    $shipping_updt = false;
-                }
-            } else {
-                $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
-                if (empty($shipping_class_id)) {
-                    $sterm = get_term_by('slug', $vendor_data->user_data->user_login . '-' . $vendor_user_id, 'product_shipping_class');
-                    if (isset($sterm->term_id) && !empty($sterm->term_id)) {
-                        $shipping_class_id = $sterm->term_id;
-                        update_user_meta($vendor_user_id, 'shipping_class_id', $shipping_class_id);
-                    }
-                }
-                update_woocommerce_term_meta($shipping_class_id, 'vendor_id', $vendor_user_id);
-                if (isset($post['vendor_shipping_data']['ship_from'])) {
-                    update_woocommerce_term_meta($shipping_class_id, 'vendor_shipping_origin', $post['vendor_shipping_data']['ship_from']);
-                }
-                $shipping_term_id = $shipping_class_id;
-            }
-            $term_shipping_obj = get_term_by('id', $shipping_class_id, 'product_shipping_class');
-
-
-            $raw_zones = $wpdb->get_results("SELECT zone_id, zone_name, zone_order FROM {$wpdb->prefix}woocommerce_shipping_zones order by zone_order ASC;");
-            $rest_world = new stdClass();
-            $rest_world->zone_id = '0';
-            $rest_world->zone_name = 'Rest of the World';
-            $rest_world->zone_order = '';
-            $raw_zones = array_merge($raw_zones, array($rest_world));
+            $raw_zones = WC_Shipping_Zones::get_zones();
+            $raw_zones[] = array('id' => 0);
             foreach ($raw_zones as $raw_zone) {
-                $zone = new WC_Shipping_Zone($raw_zone);
-                $raw_methods_sql = "SELECT method_id, method_order, instance_id, is_enabled FROM {$wpdb->prefix}woocommerce_shipping_zone_methods WHERE zone_id = %d AND is_enabled = 1 order by method_order ASC;";
-                $raw_methods = $wpdb->get_results($wpdb->prepare($raw_methods_sql, $zone->get_id()));
-                //print_r($raw_methods);
+                $zone = new WC_Shipping_Zone($raw_zone['id']);
+                $raw_methods = $zone->get_shipping_methods();
                 foreach ($raw_methods as $raw_method) {
-                    if ($raw_method->method_id == 'flat_rate') {
-
-                        $option_name = "woocommerce_" . $raw_method->method_id . "_" . $raw_method->instance_id . "_settings";
+                    if ($raw_method->id == 'flat_rate') {
+                        $option_name = "woocommerce_" . $raw_method->id . "_" . $raw_method->instance_id . "_settings";
                         $shipping_details = get_option($option_name);
-
-                        $shipping_classes = WC()->shipping->get_shipping_classes();
-                        foreach ($shipping_classes as $shipping_class) {
-                            if (!isset($shipping_class->term_id)) {
-                                continue;
-                            }
-                            if ($shipping_class->term_id != $shipping_term_id) {
-                                continue;
-                            }
-                            $class = "class_cost_" . $shipping_term_id;
-                            $shipping_details[$class] = $post['vendor_shipping_data'][$option_name . '_' . $class];
-                        }
+                        $class = "class_cost_" . $shipping_class_id;
+                        $shipping_details[$class] = stripslashes($_POST['vendor_shipping_data'][$option_name . '_' . $class]);
                         update_option($option_name, $shipping_details);
                     }
                 }
             }
-
-            // DEPRECATED SHIPPING METHOD
-            $fee = 0;
-            $vendor_shipping_data = get_user_meta($vendor_user_id, 'vendor_shipping_data', true);
-            $cost = isset($post['vendor_shipping_data']['shipping_amount']) ? stripslashes($post['vendor_shipping_data']['shipping_amount']) : 0;
-            $international_cost = isset($post['vendor_shipping_data']['international_shipping_amount']) ? stripslashes($post['vendor_shipping_data']['international_shipping_amount']) : 0;
-            $fee = isset($post['vendor_shipping_data']['handling_amount']) ? $post['vendor_shipping_data']['handling_amount'] : 0;
-            if (!empty($cost)) {
-                $woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-                if ($woocommerce_flat_rate_settings['enabled'] == 'yes') {
-                    $woocommerce_flat_rate_settings['class_cost_' . $shipping_term_id] = stripslashes($cost);
-                    update_option('woocommerce_flat_rate_settings', $woocommerce_flat_rate_settings);
-                }
-                $woocommerce_international_delivery_settings = get_option('woocommerce_international_delivery_settings');
-                if ($woocommerce_international_delivery_settings['enabled'] == 'yes') {
-                    $woocommerce_international_delivery_settings['class_cost_' . $shipping_term_id] = stripslashes($international_cost);
-                    update_option('woocommerce_international_delivery_settings', $woocommerce_international_delivery_settings);
-                }
-            }
-            update_user_meta($vendor_user_id, 'vendor_shipping_data', $post['vendor_shipping_data']);
+            $shipping_updt = update_user_meta($vendor_user_id, 'vendor_shipping_data', $_POST['vendor_shipping_data']);
             if ($shipping_updt) {
                 wc_add_notice(__('Shipping Data Updated', $WCMp->text_domain), 'success');
             } else {

@@ -73,11 +73,10 @@ class WCMp_Report_Overview extends WC_Admin_Report {
 
             $qry = new WP_Query($args);
 
-
             $orders = apply_filters('wcmp_filter_orders_report_overview', $qry->get_posts());
 
             if (!empty($orders)) {
-                foreach ($orders as $order_obj) {
+                foreach ($orders as $order_obj) { 
 
                     $order = new WC_Order($order_obj->ID);
                     $items = $order->get_items('line_item');
@@ -87,128 +86,50 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                             continue;
                         }
                     }
-                    $shipping_items = $order->get_items('shipping');
-                    $tax_items = $order->get_items('tax');
-                    $shipping_cost = $tax_amount = $shipping_tax_amount = 0;
-                    $admin_shipping_cost = $admin_tax_amount = $admin_shipping_tax_amount = 0;
-                    $vendor_shipping_cost = $vendor_tax_amount = $vendor_shipping_tax_amount = 0;
-                    $vendor_commision_amount = 0;
-                    $give_tax_to_vendor = $give_shipping_to_vendor = false;
-                    if (!empty($shipping_items)) {
-                        foreach ($shipping_items as $item_id => $shipping) {
-                            $shipping_to_vendor = wc_get_order_item_meta($item_id, '_give_shipping_to_vendor', true);
-                            $shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
-                            if (!empty($shipping_to_vendor) && $shipping_to_vendor == 1) {
-                                $vendor_shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
-                            } else {
-                                $admin_shipping_cost += (float) wc_get_order_item_meta($item_id, 'cost', true);
-                            }
+
+                    $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
+                    if(is_user_wcmp_vendor(get_current_user_id()))
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_user_id());
+                    else
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()));
+                    
+                    if(is_user_wcmp_vendor(get_current_user_id())){
+                       
+                        $sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
+                        $total_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
+                        $vendor_earnings += $vendors_orders_amount['total'];
+                        $total_vendor_earnings += $vendors_orders_amount['total'];
+                        $total_earnings += $vendors_orders_amount['total'];
+                        $earnings += $vendors_orders_amount['total'];
+                        $vendor_id = get_current_user_id();
+                        $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>$vendor_id));
+
+                        foreach ($current_vendor_orders as $key => $vendor_order) { 
+                            $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                            $total_sales += $item->get_subtotal();
+                            $sales += $item->get_subtotal();
                         }
+                        
+                    }else{
+                        $total_sales += $order->get_total();
+                        $sales += $order->get_total();
+                        $vendor_earnings += $vendors_orders_amount['commission_amount'];
+                        $total_vendor_earnings += $vendors_orders_amount['commission_amount'];
+                        $earnings += $order->get_total() - $vendors_orders_amount['total'];
+                        $total_earnings += $order->get_total() - $vendors_orders_amount['total'];
+
                     }
-                    if (!empty($tax_items)) {
-                        foreach ($tax_items as $item_id => $tax) {
-                            $tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
-                            $shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true);
-                            if ($WCMp->vendor_caps->vendor_payment_settings('give_tax')) {
-                                $vendor_tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
-                                $vendor_shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true);
-                            } else {
-                                $admin_tax_amount += (float) wc_get_order_item_meta($item_id, 'tax_amount', true);
-                                $admin_shipping_tax_amount += (float) wc_get_order_item_meta($item_id, 'shipping_tax_amount', true);
-                            }
-                        }
-                    }
-                    $commission_array = array();
 
-                    foreach ($items as $item_id => $item) {
-
-                        $comm_pro_id = $product_id = wc_get_order_item_meta($item_id, '_product_id', true);
-                        $line_total = wc_get_order_item_meta($item_id, '_line_total', true);
-                        $variation_id = wc_get_order_item_meta($item_id, '_variation_id', true);
-
-                        if ($variation_id)
-                            $comm_pro_id = $variation_id;
-
-                        if ($product_id && $line_total) {
-
-                            $vendor_id = wc_get_order_item_meta($item_id, '_vendor_id', true);
-                            if ($vendor_id) {
-                                $product_vendors = get_wcmp_vendor($vendor_id);
-                            } else {
-                                $product_vendors = get_wcmp_product_vendors($product_id);
-                            }
-
-                            if ($product_vendors) {
-
-                                $sales += $line_total;
-                                $total_sales += $line_total;
-
-                                $args = array(
-                                    'post_type' => 'dc_commission',
-                                    'post_status' => array('publish', 'private'),
-                                    'posts_per_page' => -1,
-                                    'meta_query' => array(
-                                        array(
-                                            'key' => '_commission_vendor',
-                                            'value' => absint($product_vendors->term_id),
-                                            'compare' => '='
-                                        ),
-                                        array(
-                                            'key' => '_commission_order_id',
-                                            'value' => absint($order_obj->ID),
-                                            'compare' => '='
-                                        ),
-                                        array(
-                                            'key' => '_commission_product',
-                                            'value' => absint($comm_pro_id),
-                                            'compare' => 'LIKE'
-                                        ),
-                                    ),
-                                );
-                                $commissions = get_posts($args);
-                                $comm_amount = 0;
-                                if (!empty($commissions)) {
-                                    foreach ($commissions as $commission) {
-
-
-                                        if (in_array($commission->ID, $commission_array))
-                                            continue;
-
-                                        $comm_amount += (float) get_post_meta($commission->ID, '_commission_amount', true);
-
-                                        $commission_array[] = $commission->ID;
-                                    }
-                                }
-
-                                $vendor_earnings += $comm_amount;
-                                $vendor_commision_amount += $comm_amount;
-                                $total_vendor_earnings += $comm_amount;
-                                if (is_user_wcmp_vendor(get_current_user_id())) {
-                                    $earnings += $comm_amount;
-                                    $total_earnings += $comm_amount;
-                                } else {
-                                    $earnings += ( $line_total - $comm_amount );
-                                    $total_earnings += ( $line_total - $comm_amount );
-                                }
-                            }
-                        }
-                    }
-                    $sales += ($shipping_cost + $tax_amount + $shipping_tax_amount);
-                    $total_sales += ($shipping_cost + $tax_amount + $shipping_tax_amount);
-                    if (is_user_wcmp_vendor(get_current_user_id())) {
-                        $earnings += ($vendor_shipping_cost + $vendor_tax_amount);
-                        $total_earnings += ($vendor_shipping_cost + $vendor_tax_amount + $vendor_shipping_tax_amount);
-                    } else {
-                        $earnings += ($admin_shipping_cost + $admin_tax_amount + $admin_shipping_tax_amount);
-                        $total_earnings += ($admin_shipping_cost + $admin_tax_amount + $admin_shipping_tax_amount);
-                    }
                     ++$order_count;
-                    ++$total_order_count;
+                    ++$total_order_count; 
                 }
+                
+
             }
 
+            //print_r($vendor_earnings);
             if ($order_count > 0)
-                $avg_sales = $sales / $order_count;
+                $avg_sales = $sales / ($this->chart_interval + 1);
             else
                 $avg_sales = 0;
 
@@ -240,6 +161,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
         $this->report_data->total_earned = wc_format_decimal($total_earnings);
 
         $this->report_data->vendor_total_earned = wc_format_decimal($total_vendor_earnings);
+
     }
 
     /**
@@ -443,6 +365,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                     shadowSize: 0,
                     prepend_tooltip: "<?php echo get_woocommerce_currency_symbol(); ?>"
             },
+        <?php if(!is_user_wcmp_vendor(get_current_user_id())){ ?>
             {
             label: "<?php echo esc_js(__('Total Earnings by Vendor', $WCMp->text_domain)) ?>",
                     data: order_data.vendor_total_earned,
@@ -453,6 +376,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                     shadowSize: 0,
         <?php echo $this->get_currency_tooltip(); ?>
             },
+        <?php } ?>
             ];
             if (highlight !== 'undefined' && series[ highlight ]) {
             highlight_series = series[ highlight ];

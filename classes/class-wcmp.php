@@ -83,6 +83,8 @@ final class WCMp {
         //Init endpoints
         $this->load_class('endpoints');
         $this->endpoints = new WCMp_Endpoints();
+        // Init custom capabilities
+        $this->init_custom_capabilities();
         // Init main admin action class 
         $this->load_class('seller-review-rating');
         $this->review_rating = new WCMp_Seller_Review_Rating();
@@ -126,8 +128,7 @@ final class WCMp {
         $this->email = new WCMp_Email();
         // WCMp Fields Lib
         $this->wcmp_wp_fields = $this->library->load_wp_fields();
-        // Init custom capabilities
-        $this->init_custom_capabilities();
+        
         // Init user roles
         $this->init_user_roles();
         // Init product vendor custom post types
@@ -411,7 +412,7 @@ final class WCMp {
                 set_transient($transient_name, $upgrade_notice, DAY_IN_SECONDS);
             }
         }
-
+        echo '<style type="text/css">.wcmp_plugin_upgrade_notice{background-color:#ec4e2a;padding:10px;color:#fff;}.wcmp_plugin_upgrade_notice:before{content: "\f534";padding-right:5px;}</style>';
         echo wp_kses_post($upgrade_notice);
     }
 
@@ -435,8 +436,8 @@ final class WCMp {
 
             // Check the latest stable version and ignore trunk.
             if ($version === $new_version && version_compare(WCMp_PLUGIN_VERSION, $version, '<')) {
-
-                $upgrade_notice .= '<div class="wc_plugin_upgrade_notice">';
+                
+                $upgrade_notice .= '<div class="wcmp_plugin_upgrade_notice dashicons-before">';
 
                 foreach ($notices as $index => $line) {
                     $upgrade_notice .= wp_kses_post(preg_replace('~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $line));

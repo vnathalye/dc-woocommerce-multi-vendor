@@ -316,8 +316,10 @@ display:block;
    box-sizing:border-box;
 }
 .wcmp_headding1 ul{
-	width:auto;
-	float:left;
+    width:auto;
+    float:left;
+    padding:0;
+    margin: 0; 
 }
 .wcmp_headding1 ul li{
   color:#3f3f3f;
@@ -394,7 +396,7 @@ display:block;
 	margin:15px 0 0 0px;
 }
 
-.wcmp_form1 input{
+.wcmp_form1 input[type=email], .wcmp_form1 input[type=password], .wcmp_form1 input[type=search], .wcmp_form1 input[type=text], .wcmp_form1 input[type=url], .wcmp_form1 textarea{
 	height:43px;
 	border:1px solid #dedede;
 	line-height:43px;
@@ -599,8 +601,9 @@ display:block;
     box-shadow:   0 3px 0px 0px rgba(0,0,0,0.05) inset;
 }
 .wcmp_media_block input.long{
-	/* width: 70%;*/  /*till 1.8.16*/
-	width:91%;
+    /* width: 70%;*/  /*till 1.8.16*/
+    width:91%;
+    height: 35px;
 }
 
 .wcmp_media_block .social_icon{
@@ -1258,24 +1261,24 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
-form[name="shop_settings_form"] .wcmp_form1 input.no_input {    
+form[name="shop_settings_form"] .wcmp_form1 input {    
 	box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0) inset;
 	background: none;
 }
 
-form[name="shop_settings_form"] .wcmp_form1 textarea.no_input{
+form[name="shop_settings_form"] .wcmp_form1 textarea{
    overflow:visible;
    box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0) inset;
    background: none;
    height: 130px;
 }
 
-form[name="shop_settings_form"] .wcmp_form1 .select_box.no_input{
+form[name="shop_settings_form"] .wcmp_form1 .select_box{
 	border: 1px solid #dedede;
 	box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0) inset;
 	background: none;
 }
-form[name="shop_settings_form"] .wcmp_form1 .select_box.no_input::before{
+form[name="shop_settings_form"] .wcmp_form1 .select_box::before{
 	background: #fff;
 	border: none;
 	border-bottom: 1px solid #e8e8e8;
@@ -1289,13 +1292,12 @@ p.error_wcmp {
     color: #f94c34;
     font-size: 12px;
     font-weight: 400;
-    padding: 0 6%;
+    padding: 0 6% 7px;
     text-align:right;
 }
 .wcmp_form1 p {
     margin: 15px 0 0;
 }
-
 
 /* mousumi end */
 
@@ -1311,10 +1313,10 @@ p.error_wcmp {
 /** ------------------------ Message and unversity section css start ----------------------  **/
 
 
-.ui-widget{
+.wcmp_main_page .ui-widget{
  font-family: "Lato",sans-serif !important;
 }
-#tabs-1.ui-tabs.ui-widget.ui-widget-content.ui-corner-all{
+.wcmp_main_page #tabs-1.ui-tabs.ui-widget.ui-widget-content.ui-corner-all{
     background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
     border: 0 solid #dddddd;
     color: #333333;
@@ -1322,7 +1324,7 @@ p.error_wcmp {
 	border-radius:0px !important;
 }
 
-#tabs-1 .ui-widget-header {
+.wcmp_main_page #tabs-1 .ui-widget-header {
     background: #bfbfbf none repeat scroll 0 0 !important;
     border: 0 solid #e78f08 !important;
     border-radius: 0 !important;
@@ -1333,10 +1335,10 @@ p.error_wcmp {
 	width:100%;
 }
 
-.ui-tabs .ui-tabs-panel {
+.wcmp_main_page .ui-tabs .ui-tabs-panel {
     padding: 0 !important;
 }
-#tabs-1.ui-tabs .ui-tabs-nav li {
+.wcmp_main_page #tabs-1.ui-tabs .ui-tabs-nav li {
     border-bottom-width: 0;
 	border-radius:0px;
     display: inline-block !important;
@@ -1351,51 +1353,51 @@ p.error_wcmp {
 }
 
 
-.ui-state-default, 
-.ui-widget-content .ui-state-default, 
-.ui-widget-header .ui-state-default {
-	  background: #f4f4f4 none repeat scroll 0 0;
-	  background-image:none !important;
+.wcmp_main_page .ui-state-default, 
+.wcmp_main_page .ui-widget-content .ui-state-default, 
+.wcmp_main_page .ui-widget-header .ui-state-default {
+    background: #f4f4f4 none repeat scroll 0 0;
+    background-image:none !important;
     border: 0 solid #fbd850 !important;
     border-radius: 0;
     font-size: 15px;
     font-weight: bold;
 }
-.ui-state-default:hover, 
-.ui-widget-content .ui-state-default:hover, 
-.ui-widget-header .ui-state-default:hover {
+.wcmp_main_page .ui-state-default:hover, 
+.wcmp_main_page .ui-widget-content .ui-state-default:hover, 
+.wcmp_main_page .ui-widget-header .ui-state-default:hover {
 	background:#fff;
 }
 
-.ui-state-default a, 
-.ui-state-default a:link, 
-.ui-state-default a:visited  {
+.wcmp_main_page .ui-state-default a, 
+.wcmp_main_page .ui-state-default a:link, 
+.wcmp_main_page .ui-state-default a:visited  {
 	color:#a0a0a0 !important;
 }
 
-.ui-state-active, 
-.ui-widget-content .ui-state-active, 
-.ui-widget-header .ui-state-active {
+.wcmp_main_page .ui-state-active, 
+.wcmp_main_page .ui-widget-content .ui-state-active, 
+.wcmp_main_page .ui-widget-header .ui-state-active {
     background: #ffffff none repeat scroll 0 0;
     border: 0 solid #fbd850 !important;
     border-radius: 0;
     font-size: 15px;
     font-weight: bold;
 }
-.ui-state-active a, 
-.ui-state-active a:link, 
-.ui-state-active a:visited {
+.wcmp_main_page .ui-state-active a, 
+.wcmp_main_page .ui-state-active a:link, 
+.wcmp_main_page .ui-state-active a:visited {
 	color:#3e3e3e !important;
 }
 
 
 
-.ui-state-hover,
-.ui-widget-content .ui-state-hover,
-.ui-widget-header .ui-state-hover,
-.ui-state-focus,
-.ui-widget-content .ui-state-focus,
-.ui-widget-header .ui-state-focus {
+.wcmp_main_page .ui-state-hover,
+.wcmp_main_page .ui-widget-content .ui-state-hover,
+.wcmp_main_page .ui-widget-header .ui-state-hover,
+.wcmp_main_page .ui-state-focus,
+.wcmp_main_page .ui-widget-content .ui-state-focus,
+.wcmp_main_page .ui-widget-header .ui-state-focus {
 	border: 0px solid #fbcb09;
 	background: none;
 	font-weight: bold;
@@ -1407,35 +1409,39 @@ p.error_wcmp {
 
 
 
-.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-    background:#f4f4f4!important;
+.wcmp_main_page .ui-state-default, 
+.wcmp_main_page .ui-widget-content .ui-state-default, 
+.wcmp_main_page .ui-widget-header .ui-state-default {
+        background:#f4f4f4!important;
 	background-image:none!important;
 	border:0px!important;
 	border-bottom:1px solid #e9e9e9 !important;
-    color:#868686!important;
+        color:#868686!important;
 	font-weight:700!important;
 }
 
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+.wcmp_main_page .ui-state-active, 
+.wcmp_main_page .ui-widget-content .ui-state-active, 
+.wcmp_main_page .ui-widget-header .ui-state-active {
     background: #ffffff !important;
 	border:0px !important;
     border-bottom:1px solid #e9e9e9 !important;
     color: #222222 !important;
     font-weight: 700;
 }
-.ui-accordion .ui-accordion-header .ui-accordion-header-icon {
+.wcmp_main_page .ui-accordion .ui-accordion-header .ui-accordion-header-icon {
 	display:none;
 }
-.ui-accordion .ui-accordion-icons {
+.wcmp_main_page .ui-accordion .ui-accordion-icons {
   padding:0px !important;
 }
 
 
 
-.ui-accordion .ui-accordion-header {
+.wcmp_main_page .ui-accordion .ui-accordion-header {
 	margin-top:0px !important;
 }
-.msg_date_box{
+.wcmp_main_page .msg_date_box{
 	width:15%;
 	min-height:75px;
 	border-right:1px solid #dcdcdc;
@@ -1446,11 +1452,11 @@ p.error_wcmp {
 	text-align:center;
 	padding-top:12px;
 }
-.msg_date_box span{
+.wcmp_main_page .msg_date_box span{
 	font-size:23px;
 }
 
-.msg_title_box{
+.wcmp_main_page .msg_title_box{
 	min-height:75px;
 	font-size:15px;
 	float:left;
@@ -1458,19 +1464,19 @@ p.error_wcmp {
 	padding:14px 10px;
 	/*color:#222;*/
 }
-.msg_title_box span.title{
+.wcmp_main_page .msg_title_box span.title{
 	font-weight:700;
 }
 
-.msg_title_box span.title.after_show{
+.wcmp_main_page .msg_title_box span.title.after_show{
 	padding-top:10px;
 }
-.msg_title_box span.mormaltext{
+.wcmp_main_page .msg_title_box span.mormaltext{
    font-weight:300;
 }
 
 
-.msg_arrow_box{
+.wcmp_main_page .msg_arrow_box{
 	min-height:75px;
 	padding:10px;
 	width:8%;
@@ -1482,24 +1488,24 @@ p.error_wcmp {
 }
 
 
-.ui-state-default .msg_date_box, 
-.ui-widget-content .ui-state-default .msg_date_box, 
-.ui-widget-header .ui-state-default .msg_date_box,
-.ui-state-default .msg_title_box,
-.ui-widget-content .ui-state-default .msg_title_box, 
-.ui-widget-header .ui-state-default .msg_title_box
+.wcmp_main_page .ui-state-default .msg_date_box, 
+.wcmp_main_page .ui-widget-content .ui-state-default .msg_date_box, 
+.wcmp_main_page .ui-widget-header .ui-state-default .msg_date_box,
+.wcmp_main_page .ui-state-default .msg_title_box,
+.wcmp_main_page .ui-widget-content .ui-state-default .msg_title_box, 
+.wcmp_main_page .ui-widget-header .ui-state-default .msg_title_box
 {
 	color: #868686 !important;
 }
 
 
-.ui-widget-content {
+.wcmp_main_page .ui-widget-content {
     background: #fff none repeat scroll 0 0 !important;
     border: medium none !important;
     color: #333333 !important;
 }
 
-.ui-accordion .ui-accordion-content {
+.wcmp_main_page .ui-accordion .ui-accordion-content {
    /* padding: 10px !important;*/
 	color:#222;
 	font-weight:300;
@@ -1509,7 +1515,7 @@ p.error_wcmp {
 	   padding:30px 5% !important;
 }
 
-.msg_stat{
+.wcmp_main_page .msg_stat{
 	 width:160px;
 	 border:1px solid #dcdcdc;
 	 background:#f4f4f4;
@@ -1519,12 +1525,12 @@ p.error_wcmp {
 	 top:70%;
 }
 
-.msg_stat ul{
+.wcmp_main_page .msg_stat ul{
 	list-style:none;
 	padding:0px;
 	margin:0px;
 }
-.msg_stat ul li{
+.wcmp_main_page .msg_stat ul li{
   border-bottom: 1px solid #dcdcdc;
     color: #3e3e3e !important;
     font-size: 15px;
@@ -1532,7 +1538,7 @@ p.error_wcmp {
     padding: 8px 16px;
     text-align: left;
 }
-.msg_stat ul li a{
+.wcmp_main_page .msg_stat ul li a{
 	color:#3e3e3e !important;
 	display:inline-block;
 	width:100%;	
@@ -1540,16 +1546,18 @@ p.error_wcmp {
 }
 
 
-.ui-state-default .msg_stat ul li a,
- .ui-state-default .msg_stat ul li a:link, .ui-state-default .msg_stat ul li a:visited {
+.wcmp_main_page .ui-state-default .msg_stat ul li a,
+.wcmp_main_page .ui-state-default .msg_stat ul li a:link,
+.wcmp_main_page .ui-state-default .msg_stat ul li a:visited {
     color: #3e3e3e !important;
 }
 
-.ui-state-default .msg_stat ul li a:hover, .ui-state-default .msg_stat ul li a.active {
+.wcmp_main_page .ui-state-default .msg_stat ul li a:hover, 
+.wcmp_main_page .ui-state-default .msg_stat ul li a.active {
 	color:#fc482f !important;
 }
 
-.msg_title_box2{
+.wcmp_main_page .msg_title_box2{
 	min-height:60px;
 	font-size:19px;
 	float:left;
@@ -1558,7 +1566,7 @@ p.error_wcmp {
 	color:#000;
 }
 
-.msg_arrow_box2{
+.wcmp_main_page .msg_arrow_box2{
 	min-height:60px;
 	padding:20px 10px;
 	width:8%;
@@ -1568,20 +1576,20 @@ p.error_wcmp {
 	color:#868686;
 	font-size:16px;
 }
-.university_text{
+.wcmp_main_page .university_text{
 	color:#000;
 	padding:0px 3px !important;
 	font-size:15px;
 	font-weight:500;
 }
 
-.university_text h3{
+.wcmp_main_page .university_text h3{
 	color:#000;
 	font-weight:700;
 	font-size:15px !important;
 }
 
-.university_text a{
+.wcmp_main_page .university_text a{
 	color:#ff4141 !important;
     font-size:15px;
 }
@@ -1595,30 +1603,30 @@ p.error_wcmp {
 
 
 @media (max-width:767px){
-	.msg_arrow_box{
+	.wcmp_main_page .msg_arrow_box{
 	min-height:100px;
 		
 	}
-	.msg_title_box{
+	.wcmp_main_page .msg_title_box{
 		min-height:110px;
 	}
-	.msg_date_box{
+	.wcmp_main_page .msg_date_box{
 		min-height:110px;
 	}
-	.msg_arrow_box2{
+	.wcmp_main_page .msg_arrow_box2{
 	min-height:auto;
 		
 	}
-	.msg_title_box2{
+	.wcmp_main_page .msg_title_box2{
 		min-height:auto;
 	}
-	.msg_date_box2{
+	.wcmp_main_page .msg_date_box2{
 		min-height:auto;
 	}
 }
 .wcmp_hide_message, .wcmp_hide_message2, .wcmp_hide_message3, .wcmp_hide_message4 {display:none !important;}
 
-.ajax_loader_class_msg {
+.wcmp_main_page .ajax_loader_class_msg {
 	width:100%;
 	position:absolute;
 	z-index:8888;
@@ -1629,7 +1637,7 @@ p.error_wcmp {
 	display:none;
 	
 }
-.ajax_loader_class_msg img{	
+.wcmp_main_page .ajax_loader_class_msg img{	
 	margin:20% auto;	
 }
 
@@ -1639,11 +1647,11 @@ p.error_wcmp {
 
 
 /*....................... shipping page .....................*/
-.shipping_table tr td,
-.shipping_table tr th{
+.wcmp_main_page .shipping_table tr td,
+.wcmp_main_page .shipping_table tr th{
 	padding:6px 2%;
 }
-.shipping_table tr td label{ 
+.wcmp_main_page .shipping_table tr td label{ 
     color: #4d4d4d;
     font-size: 15px;
     font-weight: 700;
@@ -1651,8 +1659,8 @@ p.error_wcmp {
     padding: 15px 4% 0;
 }
 
-.shipping_table tr td input[type="text"],
-.shipping_table tr td input[type="number"]{
+.wcmp_main_page .shipping_table tr td input[type="text"],
+.wcmp_main_page .shipping_table tr td input[type="number"]{
 	  border: 1px solid #dedede;
     box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.05) inset;
     color: #7e7e7e;
@@ -1665,10 +1673,10 @@ p.error_wcmp {
 }
 
 
-.shipping_table tr td.hints{
+.wcmp_main_page .shipping_table tr td.hints{
     padding: 10px 10%;
 }
-.shipping_table tr td.hints div{
+.wcmp_main_page .shipping_table tr td.hints div{
    background: #f6f6f6 none repeat scroll 0 0;
     border: 1px solid #e5e6e5;
     border-radius: 3px;
@@ -1678,7 +1686,7 @@ p.error_wcmp {
 	position:relative;
 }
 
-.shipping_table tr td input[type="submit"] {
+.wcmp_main_page .shipping_table tr td input[type="submit"] {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
@@ -1699,7 +1707,7 @@ p.error_wcmp {
 }
 
 
-.shipping_table tr td.hints div .aar {
+.wcmp_main_page .shipping_table tr td.hints div .aar {
 	border:none;
 	background:none;
 	   border-bottom: 7px solid  #e5e6e5;
@@ -1714,7 +1722,7 @@ p.error_wcmp {
 }
 
 
-.vendor_non_configuration_msg {
+.wcmp_main_page .vendor_non_configuration_msg {
 	margin:28px;
 	color: #fc482f;
 }
@@ -1722,7 +1730,7 @@ p.error_wcmp {
 
 
 /*....................... fixing .....................*/
-.ui-accordion .ui-accordion-content {
+.wcmp_main_page .ui-accordion .ui-accordion-content {
     width: 100%;
 }
 @media (max-width:640px) {
@@ -1767,9 +1775,7 @@ background:url(../../images/ic9b.png) center center no-repeat;
 }
 
 /*.................... new css fixing date - 22-02-2016.................................*/
-.wcmp_main_holder .wcmp_form1 span.txt {
-	display: table-cell !important;
-}
+
 @media (max-width:990px) {
 	.wcmp_main_holder .wcmp_form1 span.txt {
 		display: inline-block !important;
@@ -1807,8 +1813,12 @@ background:url(../../images/ic9b.png) center center no-repeat;
 		word-wrap: break-word;
 	}
 }
-.input-group-addon.beautiful .fa.fa-check-square-o, .input-group-addon.beautiful .fa.fa-square-o {
+.wcmp_main_page .input-group-addon.beautiful .fa.fa-check-square-o, 
+.wcmp_main_page .input-group-addon.beautiful .fa.fa-square-o {
 	margin-top: 3px;
+}
+.input-group-addon.beautiful{
+	width: auto;
 }
 
 /*..............................*/
@@ -1823,7 +1833,9 @@ margin:0px !important;
 
 
 @media (max-width:640px){
-.half_part, .one_third_part, .two_third_part{
+.wcmp_main_page .half_part, 
+.wcmp_main_page .one_third_part, 
+.wcmp_main_page .two_third_part{
 padding: 0 ;
    width: 100%;
 float:none;

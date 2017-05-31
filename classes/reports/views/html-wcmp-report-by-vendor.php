@@ -48,7 +48,7 @@ global $WCMp;
 		<div class="left_align pad_left" style="float: left">
 			<form method="post" action="">
 				<p>
-					<select id="vendor" name="vendor" class="ajax_chosen_select_vendor vendor_info" data-placeholder="<?php _e( 'Search for a Vendor', $WCMp->text_domain ); ?>" style="width: 400px;">
+					<select id="vendor" name="vendor" class="ajax_chosen_select_vendor vendor_info" data-placeholder="<?php _e( 'Search for a vendor...', $WCMp->text_domain ); ?>" style="min-width:210px;">
 						<?php echo $option; ?>
 					</select>
 					<input type="button" style="vertical-align: top;" class="vendor_report_search" value="<?php _e( 'Show', $WCMp->text_domain ); ?>" />

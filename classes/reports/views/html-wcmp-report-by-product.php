@@ -48,7 +48,7 @@ global $WCMp;
 		<div class="left_align pad_left">
 			<form name="search_product_form" method="post" action="">
 				<p>
-					<select id="search_product" name="search_product" class="ajax_chosen_select_products_and_variations" data-placeholder=<?php _e('Search for a Product', $WCMp->text_domain) ?> style="min-width:400px;">
+					<select id="search_product" name="search_product" class="ajax_chosen_select_products_and_variations" data-placeholder="<?php _e('Search for a product...', $WCMp->text_domain) ?>" style="min-width:210px;">
 						<?php echo $option; ?>
 					</select> 
 					<input type="button" style="vertical-align: top;" class="product_report_search" value="<?php _e( 'Show', $WCMp->text_domain ); ?>" />

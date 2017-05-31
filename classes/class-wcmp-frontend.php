@@ -22,14 +22,21 @@ class WCMp_Frontend {
         add_action('woocommerce_archive_description', array(&$this, 'product_archive_vendor_info'), 10);
         add_filter('body_class', array(&$this, 'set_product_archive_class'));
         add_action('template_redirect', array(&$this, 'template_redirect'));
-        add_action('woocommerce_checkout_order_processed', array(&$this, 'wcmp_checkout_order_processed'), 30, 3);
+
         add_action('woocommerce_order_details_after_order_table', array($this, 'display_vendor_msg_in_thank_you_page'), 100);
         $this->give_tax_to_vendor = get_wcmp_vendor_settings('give_tax', 'payment');
         $this->give_shipping_to_vendor = get_wcmp_vendor_settings('give_shipping', 'payment');
-        //add_action( 'woocommerce_flat_rate_shipping_add_rate', array($this, 'add_vendor_shipping_rate'), 10, 2 );
         add_action('wcmp_vendor_register_form', array(&$this, 'wcmp_vendor_register_form_callback'));
         add_action('woocommerce_register_post', array(&$this, 'wcmp_validate_extra_register_fields'), 10, 3);
         add_action('woocommerce_created_customer', array(&$this, 'wcmp_save_extra_register_fields'), 10, 3);
+        // split woocommerce shipping packages
+        add_filter('woocommerce_cart_shipping_packages', array(&$this, 'wcmp_split_shipping_packages'), 10);
+        // Rename woocommerce shipping packages
+        add_filter('woocommerce_shipping_package_name', array(&$this, 'woocommerce_shipping_package_name'), 10, 3);
+        // Add extra vendor_id to shipping packages
+        add_action('woocommerce_checkout_create_order_shipping_item', array(&$this, 'add_meta_date_in_shipping_package'), 10, 4);
+        // processed woocomerce checkout order data
+        add_action('woocommerce_checkout_order_processed', array(&$this, 'wcmp_checkout_order_processed'), 30, 3);
     }
 
     /**
@@ -153,13 +160,21 @@ class WCMp_Frontend {
             }
         }
     }
-
+    /**
+     * Populate vendor registration form
+     * @global object $WCMp
+     */
     function wcmp_vendor_register_form_callback() {
         global $WCMp;
         $wcmp_vendor_registration_form_data = get_option('wcmp_vendor_registration_form_data');
         $WCMp->template->get_template('vendor_registration_form.php', array('wcmp_vendor_registration_form_data' => $wcmp_vendor_registration_form_data));
     }
-
+    /**
+     * Display custom message in woocommerce thank you page
+     * @global object $wpdb
+     * @global object $WCMp
+     * @param int $order_id
+     */
     public function display_vendor_msg_in_thank_you_page($order_id) {
         global $wpdb, $WCMp;
         $order = wc_get_order($order_id);
@@ -201,37 +216,78 @@ class WCMp_Frontend {
     }
 
     /**
-     *
-     * 
+     * split woocommerce shipping packages 
+     * @since 2.6.6
+     * @param array $packages
+     * @return array
      */
-    function add_vendor_shipping_rate($method, $rate) {
-        $found_shipping_classes = $method->find_shipping_classes($package);
-        $highest_class_cost = 0;
-
-        foreach ($found_shipping_classes as $shipping_class => $products) {
-            // Also handles BW compatibility when slugs were used instead of ids
-            $shipping_class_term = get_term_by('slug', $shipping_class, 'product_shipping_class');
-            $class_cost_string = $shipping_class_term && $shipping_class_term->term_id ? $method->get_option('class_cost_' . $shipping_class_term->term_id, $method->get_option('class_cost_' . $shipping_class, '')) : '0';
-
-            if ($class_cost_string === '') {
-                continue;
-            }
-            $vendor_id = get_woocommerce_term_meta($shipping_class_term->term_id, 'vendor_id', true);
-            $has_costs = true;
-            $class_cost = $method->evaluate_cost($class_cost_string, array(
-                'qty' => array_sum(wp_list_pluck($products, 'quantity')),
-                'cost' => array_sum(wp_list_pluck($products, 'line_total'))
-            ));
-
-            if ($method->type === 'class') {
-                $new_rate = $rate;
-                $new_rate['id'] = 'flat_shipping_' . $vendor_id; // Append a custom ID.
-                $new_rate['label'] = 'Vendor Shipping'; // Rename to 'Rushed Shipping'.
-                $new_rate['cost'] = $class_cost; // Add $2 to the cost.
-                // Add it to WC.
-                $method->add_rate($new_rate);
+    public function wcmp_split_shipping_packages($packages) {
+        // Reset all packages
+        $packages = array();
+        $split_packages = array();
+        foreach (WC()->cart->get_cart() as $item) {
+            if ($item['data']->needs_shipping()) {
+                $product_id = $item['product_id'];
+                $vendor = get_wcmp_product_vendors($product_id);
+                if ($vendor) {
+                    $split_packages[$vendor->id][] = $item;
+                } else {
+                    $split_packages[0][] = $item;
+                }
             }
         }
+
+        foreach ($split_packages as $vendor_id => $split_package) {
+            $packages[$vendor_id] = array(
+                'contents' => $split_package,
+                'contents_cost' => array_sum(wp_list_pluck($split_package, 'line_total')),
+                'applied_coupons' => WC()->cart->get_applied_coupons(),
+                'user' => array(
+                    'ID' => get_current_user_id(),
+                ),
+                'destination' => array(
+                    'country' => WC()->customer->get_shipping_country(),
+                    'state' => WC()->customer->get_shipping_state(),
+                    'postcode' => WC()->customer->get_shipping_postcode(),
+                    'city' => WC()->customer->get_shipping_city(),
+                    'address' => WC()->customer->get_shipping_address(),
+                    'address_2' => WC()->customer->get_shipping_address_2()
+                )
+            );
+        }
+        return apply_filters('wcmp_split_shipping_packages', $packages);
+    }
+
+    /**
+     * 
+     * @param object $item
+     * @param sting $package_key as $vendor_id
+     */
+    public function add_meta_date_in_shipping_package($item, $package_key, $package, $order) {
+        $item->add_meta_data('vendor_id', $package_key, true);
+        $package_qty = array_sum(wp_list_pluck($package['contents'], 'quantity'));
+        $item->add_meta_data('package_qty', $package_qty, true);
+        do_action('wcmp_add_shipping_package_meta_data');
+    }
+
+    /**
+     * Rename shipping packages 
+     * @since 2.6.6
+     * @param string $package_name
+     * @param string $vendor_id
+     * @param array $package
+     * @return string
+     */
+    public function woocommerce_shipping_package_name($package_name, $vendor_id, $package) {
+        global $WCMp;
+        if ($vendor_id && $vendor_id != 0) {
+            $vendor = get_wcmp_vendor($vendor_id);
+            if ($vendor) {
+                return $vendor->user_data->display_name . __(' Shipping', $WCMp->text_domain);
+            }
+            return $package_name;
+        }
+        return $package_name;
     }
 
     /**
@@ -244,247 +300,25 @@ class WCMp_Frontend {
      */
     function wcmp_checkout_order_processed($order_id, $order_posted, $order) {
         global $wpdb, $WCMp;
-        $shipping_method = $order->get_shipping_methods();
-        if (version_compare(WC_VERSION, '2.6.0', '>=') && !empty($shipping_method)) {
-            foreach ($shipping_method as $key => $method) {
-                $method_id = $method['method_id'];
-                break;
-            }
-            $method_arr = explode(':', $method_id);
-
-            if (count($method_arr) >= 2) {
-                $method_name = $method_arr[0];
-                $method_instance = $method_arr[1];
-
-                if (!empty($method_name) && $method_name == 'flat_rate') {
-
-                    $woocommerce_shipping_method_settings = get_option('woocommerce_' . $method_name . '_' . $method_instance . '_settings');
-                    $line_items = $order->get_items('line_item');
-                    if ($woocommerce_shipping_method_settings['type'] == 'class') {
-                        if (!empty($line_items)) {
-                            foreach ($line_items as $item_id => $item) {
-                                $shipping_item_qty = 0;
-                                $product = $order->get_product_from_item($item);
-                                $shipping_class = $product->get_shipping_class_id();
-                                if (empty($shipping_class) || !isset($item['vendor_id']))
-                                    continue;
-                                $vendor_id = $item['vendor_id'];
-                                if ($this->give_tax_to_vendor == 'Enable') {
-                                    wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 1);
-                                } else {
-                                    wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 0);
-                                }
-
-                                $class_cost_string = $woocommerce_shipping_method_settings['class_cost_' . $shipping_class]; //$shipping_class ? $wc_flat_rate->get_option( 'class_cost_' . $shipping_class, '' ) : $wc_flat_rate->get_option( 'no_class_cost', '' );								
-                                if (isset($shipping_classes[$vendor_id])) {
-                                    $shipping_classes[$vendor_id] = array(
-                                        'string' => $class_cost_string,
-                                        'qty' => $item['qty'] + $shipping_classes[$vendor_id]['qty'],
-                                        'cost' => $order->get_line_subtotal($item) + $shipping_classes[$vendor_id]['cost']
-                                    );
-                                } else {
-                                    $shipping_classes[$vendor_id] = array(
-                                        'string' => $class_cost_string,
-                                        'qty' => $item['qty'],
-                                        'cost' => $order->get_line_subtotal($item)
-                                    );
-                                }
-                            }
-                            $shipping = $order->get_items('shipping');
-                            if (!empty($shipping)) {
-                                foreach ($shipping as $shipping_id => $value) {
-                                    $order_item_shipping = new WC_Order_Item_Shipping($shipping_id);
-                                    $shipping_taxes = $order_item_shipping->get_taxes();
-                                    $tax_rates = array();
-                                    foreach ($shipping_taxes['total'] as $tax_class_id => $tax_amount) {
-                                        $tax_rates[$tax_class_id] = $tax_amount;
-                                    }
-                                    foreach ($shipping_classes as $key => $shipping_class) {
-                                        $cost_item_id = $this->calculate_flat_rate_shipping_cost($shipping_class['string'], array(
-                                            'qty' => $shipping_class['qty'],
-                                            'cost' => $shipping_class['cost']
-                                        ));
-                                        $flat_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_cost_' . $key, true);
-                                        if (!$flat_shipping_per_vendor) {
-                                            wc_add_order_item_meta($shipping_id, 'vendor_cost_' . $key, round($cost_item_id, 2));
-                                            $flat_shipping_per_vendor = $cost_item_id;
-                                        }
-                                        $shipping_vendor_taxes = array();
-                                        foreach ($tax_rates as $tax_class_id => $tax_rate) {
-                                            $shipping_vendor_taxes[$tax_class_id] = round($tax_rate, 2);
-                                        }
-                                        $tax_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_tax_' . $key, true);
-                                        if (!$tax_shipping_per_vendor) {
-                                            wc_add_order_item_meta($shipping_id, 'vendor_tax_' . $key, $shipping_vendor_taxes);
-                                        }
-                                    }
-                                    if ($this->give_shipping_to_vendor == 'Enable') {
-                                        wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 1);
-                                    } else {
-                                        wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else { // Deprecated shipping method
-                if ($order->has_shipping_method('legacy_flat_rate')) {
-                    $woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-                    $line_items = $order->get_items('line_item');
-                    if ($woocommerce_flat_rate_settings['enabled'] == 'yes') {
-                        if ($woocommerce_flat_rate_settings['type'] == 'class') {
-                            if (!empty($line_items)) {
-                                foreach ($line_items as $item_id => $item) {
-                                    $shipping_item_qty = 0;
-                                    //$wc_flat_rate = new WC_Shipping_Flat_Rate();
-                                    $product = $order->get_product_from_item($item);
-                                    $shipping_class = $product->get_shipping_class_id();
-                                    if (empty($shipping_class) || !isset($item['vendor_id']))
-                                        continue;
-                                    if ($this->give_tax_to_vendor == 'Enable') {
-                                        wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 1);
-                                    } else {
-                                        wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 0);
-                                    }
-                                    $vendor_id = $item['vendor_id'];
-                                    $class_cost_string = $woocommerce_flat_rate_settings['class_cost_' . $shipping_class];
-                                    if (isset($shipping_classes[$vendor_id])) {
-                                        $shipping_classes[$vendor_id] = array(
-                                            'string' => $class_cost_string,
-                                            'qty' => $item['qty'] + $shipping_classes[$vendor_id]['qty'],
-                                            'cost' => $order->get_line_subtotal($item) + $shipping_classes[$vendor_id]['cost']
-                                        );
-                                    } else {
-                                        $shipping_classes[$vendor_id] = array(
-                                            'string' => $class_cost_string,
-                                            'qty' => $item['qty'],
-                                            'cost' => $order->get_line_subtotal($item)
-                                        );
-                                    }
-                                }
-                                $shipping = $order->get_items('shipping');
-                                foreach ($shipping as $shipping_id => $value) {
-                                    $order_item_shipping = new WC_Order_Item_Shipping($shipping_id);
-                                    $shipping_taxes = $order_item_shipping->get_taxes();
-                                    $tax_rates = array();
-                                    foreach ($shipping_taxes['total'] as $tax_class_id => $tax_amount) {
-                                        $tax_rates[$tax_class_id] = $tax_amount;
-                                    }
-                                    foreach ($shipping_classes as $key => $shipping_class) {
-                                        $cost_item_id = $this->calculate_flat_rate_shipping_cost($shipping_class['string'], array(
-                                            'qty' => $shipping_class['qty'],
-                                            'cost' => $shipping_class['cost']
-                                        ));
-                                        $flat_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_cost_' . $key, true);
-                                        if (!$flat_shipping_per_vendor) {
-                                            wc_add_order_item_meta($shipping_id, 'vendor_cost_' . $key, round($cost_item_id, 2));
-                                            $flat_shipping_per_vendor = $cost_item_id;
-                                        }
-                                        $shipping_vendor_taxes = array();
-                                        foreach ($tax_rates as $tax_class_id => $tax_rate) {
-                                            $shipping_vendor_taxes[$tax_class_id] = round($tax_rate, 2);
-                                        }
-                                        $tax_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_tax_' . $key, true);
-                                        if (!$tax_shipping_per_vendor) {
-                                            wc_add_order_item_meta($shipping_id, 'vendor_tax_' . $key, $shipping_vendor_taxes);
-                                        }
-                                    }
-                                    if ($this->give_shipping_to_vendor == 'Enable') {
-                                        wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 1);
-                                    } else {
-                                        wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if ($order->has_shipping_method('legacy_international_delivery')) {
-                $woocommerce_international_delivery_settings = get_option('woocommerce_international_delivery_settings');
-                $line_items = $order->get_items('line_item');
-
-                if ($woocommerce_international_delivery_settings['enabled'] == 'yes') {
-                    if ($woocommerce_international_delivery_settings['type'] == 'class') {
-                        if (!empty($line_items)) {
-                            $item_id = false;
-                            foreach ($line_items as $item_id => $item) {
-                                //$wc_international_flat_rate = new WC_Shipping_International_Delivery();
-                                $product = $order->get_product_from_item($item);
-                                $shipping_class = $product->get_shipping_class_id();
-                                if (empty($shipping_class) || !isset($item['vendor_id']))
-                                    continue;
-                                if ($this->give_tax_to_vendor == 'Enable') {
-                                    wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 1);
-                                } else {
-                                    wc_add_order_item_meta($item_id, '_give_tax_to_vendor', 0);
-                                }
-                                $vendor_id = $item['vendor_id'];
-                                $class_cost_string = $woocommerce_international_delivery_settings['class_cost_' . $shipping_class]; //$shipping_class ? $wc_flat_rate->get_option( 'class_cost_' . $shipping_class, '' ) : $wc_flat_rate->get_option( 'no_class_cost', '' );								
-                                if (isset($shipping_classes[$vendor_id])) {
-                                    $shipping_classes[$vendor_id] = array(
-                                        'string' => $class_cost_string,
-                                        'qty' => $item['qty'] + $shipping_classes[$vendor_id]['qty'],
-                                        'cost' => $order->get_line_subtotal($item) + $shipping_classes[$vendor_id]['cost']
-                                    );
-                                } else {
-                                    $shipping_classes[$vendor_id] = array(
-                                        'string' => $class_cost_string,
-                                        'qty' => $item['qty'],
-                                        'cost' => $order->get_line_subtotal($item)
-                                    );
-                                }
-                            }
-                            $shipping = $order->get_items('shipping');
-                            foreach ($shipping as $shipping_id => $value) {
-                                $order_item_shipping = new WC_Order_Item_Shipping($shipping_id);
-                                $shipping_taxes = $order_item_shipping->get_taxes();
-                                $tax_rates = array();
-                                foreach ($shipping_taxes['total'] as $tax_class_id => $tax_amount) {
-                                    $tax_rates[$tax_class_id] = $tax_amount;
-                                }
-                                foreach ($shipping_classes as $key => $shipping_class) {
-                                    $cost_item_id = $this->calculate_flat_rate_shipping_cost($shipping_class['string'], array(
-                                        'qty' => $shipping_class['qty'],
-                                        'cost' => $shipping_class['cost']
-                                    ));
-                                    $flat_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_cost_' . $key, true);
-                                    if (!$flat_shipping_per_vendor) {
-                                        wc_add_order_item_meta($shipping_id, 'vendor_cost_' . $key, round($cost_item_id, 2));
-                                        $flat_shipping_per_vendor = $cost_item_id;
-                                    }
-                                    $shipping_vendor_taxes = array();
-                                    foreach ($tax_rates as $tax_class_id => $tax_rate) {
-                                        $shipping_vendor_taxes[$tax_class_id] = round($tax_rate, 2);
-                                    }
-                                    $tax_shipping_per_vendor = wc_get_order_item_meta($shipping_id, 'vendor_tax_' . $key, true);
-                                    if (!$tax_shipping_per_vendor) {
-                                        wc_add_order_item_meta($shipping_id, 'vendor_tax_' . $key, $shipping_vendor_taxes);
-                                    }
-                                }
-                                if ($this->give_shipping_to_vendor == 'Enable') {
-                                    wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 1);
-                                } else {
-                                    wc_add_order_item_meta($shipping_id, '_give_shipping_to_vendor', 0);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         $vendor_shipping_array = get_post_meta($order_id, 'dc_pv_shipped', true);
         $mark_ship = 0;
         $items = $order->get_items('line_item');
+        $shipping_items = $order->get_items('shipping');
+        $vendor_shipping = array();
+        foreach ($shipping_items as $shipping_item_id => $shipping_item) {
+            $order_item_shipping = new WC_Order_Item_Shipping($shipping_item_id);
+            $shipping_vendor_id = $order_item_shipping->get_meta('vendor_id', true);
+            $vendor_shipping[$shipping_vendor_id] = array(
+                'shipping' => $order_item_shipping->get_total()
+                , 'shipping_tax' => $order_item_shipping->get_total_tax()
+                , 'package_qty' => $order_item_shipping->get_meta('package_qty', true)
+            );
+        }
 
         foreach ($items as $order_item_id => $item) {
-            $comm_pro_id = $product_id = $item['product_id'];
-            $variation_id = $item['variation_id'];
-            if ($variation_id) {
-                $comm_pro_id = $variation_id;
-            }
+            $line_item = new WC_Order_Item_Product($item);
+            $product_id = $item['product_id'];
+            $variation_id = isset($item['variation_id']) ? $item['variation_id'] : 0;
             if ($product_id) {
                 $product_vendors = get_wcmp_product_vendors($product_id);
                 if ($product_vendors) {
@@ -493,10 +327,53 @@ class WCMp_Frontend {
                             $mark_ship = 1;
                         }
                     }
-
-                    $insert_query = $wpdb->query($wpdb->prepare("INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` ( order_id, commission_id, vendor_id, shipping_status, order_item_id, product_id )
-													 VALUES
-													 ( %d, %d, %d, %s, %d, %d ) ON DUPLICATE KEY UPDATE `created` = now()", $order_id, 0, $product_vendors->id, $mark_ship, $order_item_id, $comm_pro_id));
+                    $shipping_amount = round(($vendor_shipping[$product_vendors->id]['shipping'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
+                    $shipping_tax_amount = round(($vendor_shipping[$product_vendors->id]['shipping_tax'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
+                    $wpdb->query(
+                            $wpdb->prepare(
+                                    "INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` 
+                                        ( order_id
+                                        , commission_id
+                                        , vendor_id
+                                        , shipping_status
+                                        , order_item_id
+                                        , product_id
+                                        , variation_id
+                                        , tax
+                                        , line_item_type
+                                        , quantity
+                                        , commission_status
+                                        , shipping
+                                        , shipping_tax_amount
+                                        ) VALUES ( %d
+                                        , %d
+                                        , %d
+                                        , %s
+                                        , %d
+                                        , %d 
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %s
+                                        ) ON DUPLICATE KEY UPDATE `created` = now()"
+                                    , $order_id
+                                    , 0
+                                    , $product_vendors->id
+                                    , $mark_ship
+                                    , $order_item_id
+                                    , $product_id
+                                    , $variation_id
+                                    , $line_item->get_total_tax()
+                                    , 'product'
+                                    , $line_item->get_quantity()
+                                    , 'unpaid'
+                                    , $shipping_amount
+                                    , $shipping_tax_amount
+                            )
+                    );
                 }
             }
         }
@@ -504,7 +381,7 @@ class WCMp_Frontend {
 
     /**
      * Get shipping fee
-     *
+     * @deprecated since version 2.6.6
      * Now deprecated
      */
     function get_fee($fee, $total) {
@@ -533,7 +410,7 @@ class WCMp_Frontend {
         }
         // Enqueue your frontend javascript from here
         wp_enqueue_script('frontend_js', $frontend_script_path . 'frontend' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-
+        wp_localize_script('frontend_js', 'front_end_param', array('report_abuse_msg' => __('Report has been sent', $WCMp->text_domain)));
         if (is_vendor_order_by_product_page()) {
             wp_enqueue_script('vendor_order_by_product_js', $frontend_script_path . 'vendor_order_by_product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         }
@@ -600,17 +477,17 @@ class WCMp_Frontend {
             wp_enqueue_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         }
 
-        $link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_colorpicker'] : '#000000';
-        $hover_link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker'] : '#000000';
-
-        $custom_css = "
-                .by-vendor-name-link:hover{
-                        color: {$hover_link_color} !important;
-                }
-                .by-vendor-name-link{
-                        color: {$link_color} !important;
-                }";
-        wp_add_inline_style('product_css', $custom_css);
+//        $link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_colorpicker'] : '#000000';
+//        $hover_link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker'] : '#000000';
+//
+//        $custom_css = "
+//                .by-vendor-name-link:hover{
+//                        color: {$hover_link_color} !important;
+//                }
+//                .by-vendor-name-link{
+//                        color: {$link_color} !important;
+//                }";
+//        wp_add_inline_style('product_css', $custom_css);
         if (is_vendor_page()) {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('jquery-style', '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
@@ -705,7 +582,7 @@ class WCMp_Frontend {
 
     /**
      * Calculate order falt rate shipping
-     *
+     * @deprecated since version 2.6.6
      * @support WC 2.4
      */
     public function evaluate_flat_shipping_cost($sum, $args = array()) {
@@ -731,7 +608,7 @@ class WCMp_Frontend {
 
     /**
      * Calculate order flat rate shipping
-     *
+     * @deprecated since version 2.6.6
      * @support WC 2.6
      */
     public function calculate_flat_rate_shipping_cost($sum, $args = array()) {
@@ -773,7 +650,7 @@ class WCMp_Frontend {
 
     /**
      * Calculate flat rate shipping fee
-     *
+     * @deprecated since version 2.6.6
      * @support WC 2.4
      */
     public function wcmp_shipping_fee_calculation($atts) {

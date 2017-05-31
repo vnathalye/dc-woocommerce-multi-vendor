@@ -22,7 +22,7 @@ class WCMp_Vendor_Hooks {
         add_action('wcmp_vendor_dashboard_vendor-report_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_report_endpoint'));
         add_action('wcmp_vendor_dashboard_vendor-withdrawal_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_withdrawal_endpoint'));
         add_action('wcmp_vendor_dashboard_transaction-details_endpoint', array(&$this, 'wcmp_vendor_dashboard_transaction_details_endpoint'));
-        add_action('wcmp_vendor_dashboard_vendor-university_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_university_endpoint'));
+        add_action('wcmp_vendor_dashboard_vendor-knowledgebase_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_knowledgebase_endpoint'));
         
         add_filter('the_title', array(&$this, 'wcmp_vendor_dashboard_endpoint_title'));
         add_filter('wcmp_vendor_dashboard_menu_vendor_policies_capability', array(&$this, 'wcmp_vendor_dashboard_menu_vendor_policies_capability'));
@@ -75,7 +75,7 @@ class WCMp_Vendor_Hooks {
                     'vendor-shipping' => array(
                         'label' => __('Shipping', $WCMp->text_domain)
                         , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_shipping_endpoint', 'vendor', 'general', 'vendor-shipping'))
-                        , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_shipping_capability', true)
+                        , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_shipping_capability', wc_shipping_enabled())
                         , 'position' => 40
                         , 'link_target' => '_self'
                     )
@@ -166,10 +166,10 @@ class WCMp_Vendor_Hooks {
                 , 'link_target' => '_self'
                 , 'nav_icon' => 'dashicons-tickets-alt'
             ),
-            'vendor-university' => array(
-                'label' => __('University', $WCMp->text_domain)
-                , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_university_endpoint', 'vendor', 'general', 'vendor-university'))
-                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_university_capability', get_wcmp_vendor_settings('is_university_on', 'general') ? true : false)
+            'vendor-knowledgebase' => array(
+                'label' => __('Knowledgebase', $WCMp->text_domain)
+                , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_knowledgebase_endpoint', 'vendor', 'general', 'vendor-knowledgebase'))
+                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_knowledgebase_capability', get_wcmp_vendor_settings('is_university_on', 'general') ? true : false)
                 , 'position' => 70
                 , 'submenu' => array()
                 , 'link_target' => '_self'
@@ -473,7 +473,7 @@ class WCMp_Vendor_Hooks {
      * Display Vendor university content
      * @global object $WCMp
      */
-    public function wcmp_vendor_dashboard_vendor_university_endpoint() {
+    public function wcmp_vendor_dashboard_vendor_knowledgebase_endpoint() {
         global $WCMp;
         wp_enqueue_style('jquery-ui-css', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css');
         wp_enqueue_script('jquery-ui-accordion');
@@ -610,9 +610,9 @@ class WCMp_Vendor_Hooks {
                 echo '<li>' . __('History', $WCMp->text_domain) . '</li>';
                 echo '</ul>';
                 break;
-            case 'vendor-university':
+            case 'vendor-knowledgebase':
                 echo '<ul>';
-                echo '<li>' . __('University', $WCMp->text_domain) . '</li>';
+                echo '<li>' . __('Knowledgebase', $WCMp->text_domain) . '</li>';
                 echo '</ul>';
                 break;
             case 'vendor-announcements':

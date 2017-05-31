@@ -45,6 +45,11 @@ class WC_Email_Vendor_New_Product_Added extends WC_Email {
 		
 		// Call parent constuctor
 		parent::__construct();
+                // Other settings
+		$this->recipient = $this->get_option( 'recipient' );
+
+		if ( ! $this->recipient )
+			$this->recipient = get_option( 'admin_email' );
 	}
 
 	/**
@@ -79,12 +84,6 @@ class WC_Email_Vendor_New_Product_Added extends WC_Email {
 			$this->heading = __( 'New coupon submitted: {product_name}', $WCMp->text_domain );
 			$this->subject = __( '[{blogname}] New coupon submitted by {vendor_name} - {product_name}', $WCMp->text_domain );
 		}
-		
-		// Other settings
-		$this->recipient = $this->get_option( 'recipient' );
-
-		if ( !$this->recipient )
-			$this->recipient = get_option( 'admin_email' );
 		
 		$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
 	}

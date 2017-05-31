@@ -19,7 +19,7 @@ class WCMp_Vendor_Application {
     }
 
     /**
-     * Register university post type
+     * Register vendor-application post type
      *
      * @access public
      * @return void

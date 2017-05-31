@@ -278,7 +278,7 @@ class WCMp_User {
                 $user->add_role('dc_pending_vendor');
                 break;
             case 'dc_vendor':
-                $this->update_vendor_meta($user_id);
+                //$this->update_vendor_meta($user_id);
 
                 $caps = $this->get_vendor_caps($user_id);
                 foreach ($caps as $cap) {
@@ -312,7 +312,7 @@ class WCMp_User {
         global $WCMp;
         $user = new WP_User($user_id);
         if ($new_role == 'dc_vendor') {
-            $this->update_vendor_meta($user_id);
+            //$this->update_vendor_meta($user_id);
 
             $caps = $this->get_vendor_caps($user_id);
             foreach ($caps as $cap) {
@@ -940,11 +940,11 @@ class WCMp_User {
             $user->remove_role('customer');
             $user->remove_role('Subscriber');
             $user->add_role('dc_vendor');
-            $this->update_vendor_meta($user_id);
+            //$this->update_vendor_meta($user_id);
         }
 
         if (is_user_wcmp_vendor($user_id)) {
-            $this->update_vendor_meta($user_id);
+            //$this->update_vendor_meta($user_id);
             $this->add_vendor_caps($user_id);
             $vendor = get_wcmp_vendor($user_id);
             $vendor->generate_term();
@@ -1082,7 +1082,7 @@ class WCMp_User {
 
         if ((!is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] == 'dc_vendor') || (isset($_REQUEST['new_role']) && $_REQUEST['new_role'] == 'dc_vendor') || (isset($_REQUEST['new_role2']) && $_REQUEST['new_role2'] == 'dc_vendor')) {
             $user->add_role('dc_vendor');
-            $this->update_vendor_meta($user_id);
+            //$this->update_vendor_meta($user_id);
             $this->add_vendor_caps($user_id);
             $vendor = get_wcmp_vendor($user_id);
             $vendor->generate_term();
@@ -1354,17 +1354,17 @@ class WCMp_User {
      * @param  $user_id
      */
     public function update_vendor_meta($user_id) {
-        update_user_meta($user_id, '_vendor_submit_product', 'Enable');
-        update_user_meta($user_id, '_vendor_submit_coupon', 'Enable');
+//        update_user_meta($user_id, '_vendor_submit_product', 'Enable');
+//        update_user_meta($user_id, '_vendor_submit_coupon', 'Enable');
 
-        update_user_meta($user_id, '_vendor_image', '');
-        update_user_meta($user_id, '_vendor_banner', '');
-        update_user_meta($user_id, '_vendor_address_1', '');
-        update_user_meta($user_id, '_vendor_city', '');
-        update_user_meta($user_id, '_vendor_state', '');
-        update_user_meta($user_id, '_vendor_country', '');
-        update_user_meta($user_id, '_vendor_phone', '');
-        update_user_meta($user_id, '_vendor_postcode', '');
+//        update_user_meta($user_id, '_vendor_image', '');
+//        update_user_meta($user_id, '_vendor_banner', '');
+//        update_user_meta($user_id, '_vendor_address_1', '');
+//        update_user_meta($user_id, '_vendor_city', '');
+//        update_user_meta($user_id, '_vendor_state', '');
+//        update_user_meta($user_id, '_vendor_country', '');
+//        update_user_meta($user_id, '_vendor_phone', '');
+//        update_user_meta($user_id, '_vendor_postcode', '');
     }
 
 }

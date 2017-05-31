@@ -40,8 +40,8 @@ class WCMp_Settings_Payment_Paypal_Payout {
             "sections" => array(
                 "wcmp_payment_paypal_payout_settings_section" => array("title" => '', // Section one
                     "fields" => array(
-                        "client_id" => array('title' => __('Client Id', $WCMp->text_domain), 'type' => 'text', 'id' => 'client_id', 'label_for' => 'client_id', 'name' => 'client_id', 'dfvalue' => $this->paypal_client_id, 'desc' => __('Give your PayPal APP Client Id.', $WCMp->text_domain)),
-                        "client_secret" => array('title' => __('Client Secret', $WCMp->text_domain), 'type' => 'text', 'id' => 'client_secret', 'label_for' => 'client_secret', 'name' => 'client_secret', 'dfvalue' => $this->paypal_client_secret, 'desc' => __('Give your PayPal APP Client Secret.', $WCMp->text_domain)),
+                        "client_id" => array('title' => __('Client Id', $WCMp->text_domain), 'type' => 'text', 'id' => 'client_id', 'label_for' => 'client_id', 'name' => 'client_id', 'dfvalue' => $this->paypal_client_id),
+                        "client_secret" => array('title' => __('Client Secret', $WCMp->text_domain), 'type' => 'text', 'id' => 'client_secret', 'label_for' => 'client_secret', 'name' => 'client_secret', 'dfvalue' => $this->paypal_client_secret),
                         "is_testmode" => array('title' => __('Enable Test Mode', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_testmode', 'label_for' => 'is_testmode', 'name' => 'is_testmode', 'value' => 'Enable'), // Checkbox
                     ),
                 )

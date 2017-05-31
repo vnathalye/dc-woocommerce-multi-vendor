@@ -153,6 +153,7 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['value'] = isset($field['value']) ? $field['value'] : '';
             $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
             $field['dfvalue'] = isset($field['dfvalue']) ? $field['dfvalue'] : '';
+            $field['text'] = isset($field['text']) ? $field['text'] : '';
 
             // Custom attribute handling
             $custom_attributes = array();
@@ -168,11 +169,12 @@ if (!class_exists('WCMp_WP_Fields')) {
                 }
             }
             $field = $this->field_wrapper_start($field);
-
+            echo '<label>';
             printf(
                     '<input type="checkbox" id="%s" name="%s" class="%s" value="%s" %s %s %s />', esc_attr($field['id']), esc_attr($field['name']), esc_attr($field['class']), esc_attr($field['value']), checked($field['value'], $field['dfvalue'], false), implode(' ', $custom_attributes), implode(' ', $custom_tags)
             );
-
+            echo $field['text'];
+            echo '</label>';
             $this->field_wrapper_end($field);
         }
 
@@ -200,10 +202,10 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             printf(
                     '
-        <fieldset id="%s" class="%s_field %s">
+        <label id="%s" class="%s_field %s">
           <legend class="screen-reader-text"><span>%s</span></legend>
             %s
-        </fieldset>
+        </label>
         ', esc_attr($field['id']), esc_attr($field['id']), esc_attr($field['wrapper_class']), esc_attr($field['title']), $options
             );
 
@@ -507,7 +509,7 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['label_holder_class'] = isset($field['label_holder_class']) ? ($field['label_holder_class'] . ' ' . $field['id'] . '_label_holder') : ($field['id'] . '_label_holder');
             $field['label_for'] = isset($field['label_for']) ? ($field['label_for'] . ' ' . $field['id']) : $field['id'];
             $field['label_class'] = isset($field['label_class']) ? ($field['label_for'] . ' ' . $field['label_class']) : $field['label_for'];
-
+            echo '<fieldset>';
             do_action('before_field_wrapper');
             do_action('before_field_wrapper_' . $field['id']);
 
@@ -566,14 +568,9 @@ if (!class_exists('WCMp_WP_Fields')) {
                 $field['custom_attributes'] = array();
             $field['custom_attributes'] = apply_filters('manupulate_custom_attributes', $field['custom_attributes']);
             $field['custom_attributes'] = apply_filters('manupulate_custom_attributes_' . $field['id'], $field['custom_attributes']);
-
-            return $field;
-        }
-
-        public function field_wrapper_end($field) {
-
             // Help message
-            if (!isset($field['label']) && isset($field['hints'])) {
+            echo '<label class="hint-container">';
+            if (isset($field['hints'])) {
                 do_action('before_hints');
                 do_action('before_hints_' . $field['id']);
 
@@ -584,6 +581,24 @@ if (!class_exists('WCMp_WP_Fields')) {
                 do_action('after_hints_' . $field['id']);
                 do_action('after_hints');
             }
+            echo '</label>';
+            return $field;
+        }
+
+        public function field_wrapper_end($field) {
+
+//            // Help message
+//            if (!isset($field['label']) && isset($field['hints'])) {
+//                do_action('before_hints');
+//                do_action('before_hints_' . $field['id']);
+//
+//                printf(
+//                        '<span class="img_tip" data-desc="%s"></span>', wp_kses_post($field['hints'])
+//                );
+//
+//                do_action('after_hints_' . $field['id']);
+//                do_action('after_hints');
+//            }
 
             // Description
             if (isset($field['desc'])) {
@@ -615,6 +630,7 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             do_action('afet_field_wrapper_' . $field['id']);
             do_action('after_field_wrapper');
+            echo '</fieldset>';
         }
 
         public function dc_generate_form_field($fields, $common_attrs = array()) {

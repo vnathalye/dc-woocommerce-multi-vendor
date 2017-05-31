@@ -44,9 +44,9 @@ class WCMp_Settings_Payment_Paypal_Masspay {
             "sections" => array(
                 "wcmp_payment_paypal_masspay_settings_section" => array("title" => '', // Section one
                     "fields" => array(
-                        "api_username" => array('title' => __('API Username', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_username', 'label_for' => 'api_username', 'dfvalue' => $this->paypal_api_username, 'name' => 'api_username', 'desc' => __('Give your PayPal API Username.', $WCMp->text_domain)),
-                        "api_pass" => array('title' => __('API Password', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_pass', 'label_for' => 'api_pass', 'name' => 'api_pass', 'dfvalue' => $this->paypal_api_password, 'desc' => __('Give your PayPal API Password.', $WCMp->text_domain)),
-                        "api_signature" => array('title' => __('API Signature', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_signature', 'label_for' => 'api_signature', 'name' => 'api_signature', 'dfvalue' => $this->paypal_api_signature, 'desc' => __('Give your PayPal API Signature.', $WCMp->text_domain)),
+                        "api_username" => array('title' => __('API Username', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_username', 'label_for' => 'api_username', 'dfvalue' => $this->paypal_api_username, 'name' => 'api_username'),
+                        "api_pass" => array('title' => __('API Password', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_pass', 'label_for' => 'api_pass', 'name' => 'api_pass', 'dfvalue' => $this->paypal_api_password),
+                        "api_signature" => array('title' => __('API Signature', $WCMp->text_domain), 'type' => 'text', 'id' => 'api_signature', 'label_for' => 'api_signature', 'name' => 'api_signature', 'dfvalue' => $this->paypal_api_signature),
                         "is_testmode" => array('title' => __('Enable Test Mode', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_testmode', 'label_for' => 'is_testmode', 'name' => 'is_testmode', 'value' => 'Enable'), // Checkbox
                     ),
                 )

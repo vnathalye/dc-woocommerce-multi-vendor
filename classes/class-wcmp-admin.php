@@ -368,7 +368,7 @@ class WCMp_Admin {
                         //targethtml = targethtml + '<a href="<?php echo trailingslashit(get_admin_url()) . 'admin.php?page=wcmp-setting-admin'; ?>" class="page-title-action">Back To WCMp Settings</a>';
                         //target_ele.html(targethtml);
                 <?php if (in_array($screen->id, array('edit-wcmp_university'))) { ?>
-                            target_ele.before('<p><b><?php echo __('"University" section is visible only to vendors through the vendor dashboard. You may use this section to onboard your vendors. Share tutorials, best practices, "how to" guides or whatever you feel is appropriate with your vendors.', $WCMp->text_domain); ?></b></p>');
+                            target_ele.before('<p><b><?php echo __('"Knowledgebase" section is visible only to vendors through the vendor dashboard. You may use this section to onboard your vendors. Share tutorials, best practices, "how to" guides or whatever you feel is appropriate with your vendors.', $WCMp->text_domain); ?></b></p>');
                 <?php } ?>
                 <?php if (in_array($screen->id, array('edit-wcmp_vendor_notice'))) { ?>
                             target_ele.before('<p><b><?php echo __('Announcements are visible only to vendors through the vendor dashboard(message section). You may use this section to broadcast your announcements.', $WCMp->text_domain); ?></b></p>');
@@ -416,7 +416,7 @@ class WCMp_Admin {
             wp_enqueue_style('wcmp_admin_todo_list', $WCMp->plugin_url . 'assets/admin/css/admin-to_do_list' . $suffix . '.css', array(), $WCMp->version);
         }
 
-        if (in_array($screen->id, array('dc_commission'))) :
+        if (in_array($screen->id, array('dc_commission','woocommerce_page_wc-reports', 'toplevel_page_wc-reports'))) :
             $WCMp->library->load_qtip_lib();
             wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);

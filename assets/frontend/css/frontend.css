@@ -33,6 +33,7 @@
 
 .vendor_address p {
 	margin: 0 0 10px;
+        text-align: left;
 }
 .img_div img{
 	height: 100px;

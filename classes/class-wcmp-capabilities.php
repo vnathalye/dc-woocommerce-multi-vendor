@@ -42,6 +42,8 @@ class WCMp_Capabilities {
         add_action('woocommerce_order_status_processing', array(&$this, 'payment_complete_vendor_mail'), 10, 1);
         add_action('woocommerce_add_order_item_meta', array(&$this, 'order_item_meta_2'), 20, 2);
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'wcmp_after_add_to_cart_form'), 30);
+        /* for single product */
+        add_action('woocommerce_product_meta_start', array($this, 'wcmp_after_add_to_cart_form'), 25);
         add_action('woocommerce_order_status_changed', array($this, 'wcmp_order_hold_to_completed'), 10, 3);
     }
 

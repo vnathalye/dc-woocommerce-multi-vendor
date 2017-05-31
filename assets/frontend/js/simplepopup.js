@@ -86,8 +86,7 @@
 		
 		object.css({
 		    "position": "absolute",
-		    "top": topPos,
-		    "left": leftPos
+		    "top": topPos
 		});
 	    },			
 

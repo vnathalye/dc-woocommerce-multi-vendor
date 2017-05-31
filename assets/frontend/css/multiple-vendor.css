@@ -11,17 +11,18 @@ div.rowhead div.rowsub{
 	padding-bottom:15px;	
 }
 div.rowbody div.rowsub{
-	width:23%;
-	padding:1%;
-	float:left;
-	padding-top:5px;
-	padding-bottom:5px;	
+    width:23%;
+    padding:1%;
+    float:left;
+    padding-top:5px;
+    padding-bottom:5px;	
 }
 
 div.rowbody{
-	width:100%;	
-	border:1px solid #eee;
-	padding:5px;
+    width:100%;	
+    border:1px solid #eee;
+    padding:5px;
+    margin: 0;
 	
 }
 div.rowbody:nth-child(odd){	
@@ -166,38 +167,44 @@ div.rowhead div.rowsub{
 	
 }
 .ajax_loader_class_msg {
-	width:100%;
-	position:absolute;
-	z-index:8888;
-	background-color:#ddd;
-	opacity:0.5;
-	height:auto;
-	text-align:center;
-	display:none;
-	
-	
+    width:100%;
+    position:absolute;
+    z-index:8888;
+    background-color:#ddd;
+    opacity:0.5;
+    height:auto;
+    text-align:center;
+    display:none;
+    height: 100%;
 }
 .ajax_loader_class_msg img{	
-	margin:20% auto;	
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;	
+}
+.goto_more_offer_tab.button{
+    margin: 15px 0 0;
 }
 @media screen and (max-width: 400px) {
 	
-div.rowhead div.rowsub{
-	width:98%;
-	padding:1%;
-	float:left;
-	padding-top:15px;
-	padding-bottom:15px;	
-	text-align : center;
-}
-	div.rowbody div.rowsub{
-		width:98%;
-		padding:1%;
-		float:left;
-		padding-top:5px;
-		padding-bottom:5px;	
-		text-align : center;
-	}
-	
+    div.rowhead div.rowsub{
+        width:98%;
+        padding:1%;
+        float:left;
+        padding-top:15px;
+        padding-bottom:15px;	
+        text-align : center;
+    }
+    div.rowbody div.rowsub{
+        width:98%;
+        padding:1%;
+        float:left;
+        padding-top:5px;
+        padding-bottom:5px;	
+        text-align : center;
+    }
 	
 }

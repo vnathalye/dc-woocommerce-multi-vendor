@@ -110,6 +110,10 @@ if ($vendor && $order_id) {
                 <div class="wcmp_headding3">
                     <?php
                     foreach ($vendor_comments as $comment) {
+                        $comment_vendor = get_comment_meta($comment->comment_ID,'_vendor_id',true);
+                        if($comment_vendor && $comment_vendor != $vendor->id){
+                            continue;
+                        }
                         $last_added = human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1));
                         ?>
                         <p>

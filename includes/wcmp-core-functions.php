@@ -315,32 +315,37 @@ if (!function_exists('change_cap_existing_users')) {
             foreach ($wcmp_vendors as $wcmp_vendor) {
                 $user = new WP_User($wcmp_vendor->id);
                 if ($user) {
-                    if ($user_cap == 'is_upload_files') {
-                        $user->remove_cap('upload_files');
-                    }
-                    if ($user_cap == 'is_submit_product') {
-                        foreach ($product_caps as $product_cap) {
-                            $user->remove_cap($product_cap);
-                        }
-                    }
-                    if ($user_cap == 'edit_delete_published_product') {
-                        $user->remove_cap('edit_published_products');
-                        $user->remove_cap('delete_published_products');
-                    }
-                    if ($user_cap == 'is_submit_coupon') {
-                        foreach ($coupon_caps as $coupon_cap) {
-                            $user->remove_cap($coupon_cap);
-                        }
-                    }
-                    if ($user_cap == 'is_published_product') {
-                        $user->remove_cap('publish_products');
-                    }
-                    if ($user_cap == 'edit_delete_published_coupons') {
-                        $user->remove_cap('delete_published_shop_coupons');
-                        $user->remove_cap('edit_published_shop_coupons');
-                    }
-                    if ($user_cap == 'is_published_coupon') {
-                        $user->remove_cap('publish_shop_coupons');
+                    switch ($user_cap) {
+                        case 'is_upload_files':
+                            $user->remove_cap('upload_files');
+                            break;
+                        case 'is_submit_product':
+                            foreach ($product_caps as $product_cap) {
+                                $user->remove_cap($product_cap);
+                            }
+                            break;
+                        case 'edit_delete_published_product':
+                            $user->remove_cap('edit_published_products');
+                            $user->remove_cap('delete_published_products');
+                            break;
+                        case 'is_published_product':
+                            $user->remove_cap('publish_products');
+                            break;
+                        case 'is_submit_coupon':
+                            foreach ($coupon_caps as $coupon_cap) {
+                                $user->remove_cap($coupon_cap);
+                            }
+                            break;
+                        case 'edit_delete_published_coupons':
+                            $user->remove_cap('delete_published_shop_coupons');
+                            $user->remove_cap('edit_published_shop_coupons');
+                            break;
+                        case 'is_published_coupon':
+                            $user->remove_cap('publish_shop_coupons');
+                            break;
+                        default :
+                            $user->remove_cap($user_cap);
+                            break;
                     }
                 }
             }
@@ -481,12 +486,12 @@ if (!function_exists('is_vendor_order_by_product_page')) {
 }
 
 /* unused function */
-if (!function_exists('get_vendor_coupon_amount')) {
+//if (!function_exists('get_vendor_coupon_amount')) {
 
-    /**
-     * get vendor coupon from order.
-     * @return boolean
-     */
+/**
+ * get vendor coupon from order.
+ * @return boolean
+ */
 //    function get_vendor_coupon_amount($item_product_id, $order_id, $vendor) {
 //        $order = new WC_Order($order_id);
 //        $coupons = $order->get_used_coupons();
@@ -524,7 +529,7 @@ if (!function_exists('get_vendor_coupon_amount')) {
 //            }
 //        }
 //    }
-}
+//}
 
 if (!function_exists('wcmp_action_links')) {
 
@@ -594,6 +599,146 @@ if (!function_exists('wcmp_get_vendors_due_from_order')) {
     }
 
 }
+
+if (!function_exists('get_wcmp_vendor_orders')) {
+
+    function get_wcmp_vendor_orders($args = array()) {
+        global $wpdb;
+        $query = '';
+        if (isset($args['order_id'])) {
+            if (is_object($args['order_id'])) {
+                $args['order_id'] = $args['order_id']->get_id();
+            }
+        }
+        if (isset($args['product_id'])) {
+            if (is_object($args['product_id'])) {
+                $args['product_id'] = $args['product_id']->get_id();
+            }
+        }
+        if (isset($args['commission_id'])) {
+            if (is_object($args['commission_id'])) {
+                $args['commission_id'] = $args['commission_id']->ID;
+            }
+        }
+        if (isset($args['vendor_id'])) {
+            if (is_object($args['vendor_id'])) {
+                $args['vendor_id'] = $args['vendor_id']->id;
+            }
+        }
+        if (!empty($args)) {
+            foreach ($args as $key => $arg) {
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE '{$key}';")) {
+                    unset($args[$key]);
+                }
+            }
+            $query .= ' WHERE ';
+            $query .= implode(' AND ', array_map(
+                            function ($v, $k) {
+                        return sprintf("%s = '%s'", $k, $v);
+                    }, $args, array_keys($args)
+            ));
+        }
+        return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders {$query}");
+    }
+
+}
+
+
+if (!function_exists('get_wcmp_vendor_order_amount')) {
+
+    /**
+     * @since 2.6.6
+     * @global object $WCMp
+     * @param int $vendor_id
+     * @param array $args
+     * @param bool $check_caps
+     * @return array
+     */
+    function get_wcmp_vendor_order_amount($args = array(), $vendor_id = false, $check_caps = true) {
+        global $WCMp;
+        if ($vendor_id) {
+            $args['vendor_id'] = $vendor_id;
+        }
+        if (isset($args['vendor_id'])) {
+            $vendor_id = $args['vendor_id'];
+        }
+        if (!isset($args['is_trashed'])) {
+            $args['is_trashed'] = '';
+        }
+        $vendor_orders_in_order = get_wcmp_vendor_orders($args);
+
+        if (!empty($vendor_orders_in_order)) {
+            $shipping_amount = array_sum(wp_list_pluck($vendor_orders_in_order, 'shipping'));
+            $tax_amount = array_sum(wp_list_pluck($vendor_orders_in_order, 'tax'));
+            $shipping_tax_amount = array_sum(wp_list_pluck($vendor_orders_in_order, 'shipping_tax_amount'));
+            $commission_amount = array_sum(wp_list_pluck($vendor_orders_in_order, 'commission_amount'));
+            $total = $commission_amount + $shipping_amount + $tax_amount + $shipping_tax_amount;
+        } else {
+            $shipping_amount = 0;
+            $tax_amount = 0;
+            $shipping_tax_amount = 0;
+            $commission_amount = 0;
+            $total = 0;
+        }
+        if ($check_caps && $WCMp) {
+            $amount = array(
+                'commission_amount' => $commission_amount,
+            );
+            if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($vendor_id, '_vendor_give_shipping', true)) {
+                $amount['shipping_amount'] = $shipping_amount;
+            } else {
+                $amount['shipping_amount'] = 0;
+            }
+            if ($WCMp->vendor_caps->vendor_payment_settings('give_tax') && $WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($vendor_id, '_vendor_give_shipping', true) && !get_user_meta($vendor_id, '_vendor_give_tax', true)) {
+                $amount['tax_amount'] = $tax_amount;
+                $amount['shipping_tax_amount'] = $shipping_tax_amount;
+            } else if ($WCMp->vendor_caps->vendor_payment_settings('give_tax') && !get_user_meta($vendor_id, '_vendor_give_tax', true)) {
+                $amount['tax_amount'] = $tax_amount;
+                $amount['shipping_tax_amount'] = 0;
+            } else {
+                $amount['tax_amount'] = 0;
+                $amount['shipping_tax_amount'] = 0;
+            }
+            $amount['total'] = $amount['commission_amount'] + $amount['shipping_amount'] + $amount['tax_amount'] + $amount['shipping_tax_amount'];
+            return $amount;
+        } else {
+            return array(
+                'commission_amount' => $commission_amount,
+                'shipping_amount' => $shipping_amount,
+                'tax_amount' => $tax_amount,
+                'shipping_tax_amount' => $shipping_tax_amount,
+                'total' => $total
+            );
+        }
+    }
+
+}
+
+if (!function_exists('wcmp_get_vendors_form_order')) {
+
+    function wcmp_get_vendors_form_order($order) {
+        if (!is_object($order)) {
+            $order = new WC_Order($order);
+        }
+        $items = $order->get_items('line_item');
+        $vendors_array = array();
+        if ($items) {
+            foreach ($items as $item_id => $item) {
+                $product_id = wc_get_order_item_meta($item_id, '_product_id', true);
+                if ($product_id) {
+                    $vendor = get_wcmp_product_vendors($product_id);
+                    if (!empty($vendor) && isset($vendor->term_id)) {
+                        $vendors_array[$vendor->term_id] = $vendor;
+                    }
+                }
+            }
+        }
+        return $vendors_array;
+    }
+
+}
+
+
 if (!function_exists('activate_wcmp_plugin')) {
 
     /**
@@ -603,9 +748,11 @@ if (!function_exists('activate_wcmp_plugin')) {
      * @return void
      */
     function activate_wcmp_plugin() {
-        require_once( 'class-wcmp-install.php' );
-        new WCMp_Install();
-        update_option('dc_product_vendor_plugin_installed', 1);
+        if (!get_option('dc_product_vendor_plugin_installed')) {
+            require_once( 'class-wcmp-install.php' );
+            new WCMp_Install();
+            update_option('dc_product_vendor_plugin_installed', 1);
+        }
     }
 
 }
@@ -676,8 +823,10 @@ if (!function_exists('wcmpArrayToObject')) {
 if (!function_exists('wcmp_paid_commission_status')) {
 
     function wcmp_paid_commission_status($commission_id) {
+        global $wpdb;
         update_post_meta($commission_id, '_paid_status', 'paid', 'unpaid');
         update_post_meta($commission_id, '_paid_date', time());
+        $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` SET commission_status = 'paid', commission_paid_date = now() WHERE commission_id = {$commission_id}");
     }
 
 }
@@ -975,11 +1124,12 @@ if (!function_exists('wcmp_remove_comments_section_from_vendor_dashboard')) {
      * Remove comments from vendor dashbord
      */
     function wcmp_remove_comments_section_from_vendor_dashboard() {
+
         if (is_vendor_dashboard()) {
             ?>
             <script type="text/javascript">
                 jQuery(document).ready(function ($) {
-                    $('div#comments').remove();
+                    $('div#comments,section#comments').remove();
                 });
             </script>
             <?php
@@ -997,6 +1147,31 @@ if (!function_exists('do_wcmp_data_migrate')) {
      */
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
         global $WCMp, $wpdb;
+        if ($previous_plugin_version && $previous_plugin_version <= '2.6.5') {
+            if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_status';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_status` varchar(100) NOT NULL DEFAULT 'unpaid';");
+                }
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'quantity';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `quantity` bigint(20) NOT NULL DEFAULT 1;");
+                }
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'variation_id';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `variation_id` bigint(20) NOT NULL DEFAULT 0;");
+                }
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'shipping_tax_amount';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `shipping_tax_amount` varchar(255) NOT NULL DEFAULT 0;");
+                }
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'line_item_type';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `line_item_type` longtext NULL;");
+                }
+                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_paid_date';")) {
+                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_paid_date` timestamp NULL;");
+                }
+            }
+            if (!get_wcmp_vendor_settings('enable_vendor_tab', 'frontend')) {
+                update_wcmp_vendor_settings('enable_vendor_tab', 'Enable', 'frontend');
+            }
+        }
         if ($previous_plugin_version && $previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
             $old_pages = get_option('wcmp_pages_settings_name');
             if (isset($old_pages['vendor_dashboard'])) {
@@ -1268,6 +1443,8 @@ if (!function_exists('do_wcmp_data_migrate')) {
             #endregion
         }
 
+        /* Migrate commission data into table */
+        do_wcmp_commission_data_migrate();
         update_option('dc_product_vendor_plugin_db_version', $new_plugin_version);
     }
 
@@ -1311,6 +1488,124 @@ if (!function_exists('do_wcmp_data_migrate')) {
             $array = array_reverse($temp_array);
         } else {
             $array = $temp_array;
+        }
+    }
+
+}
+
+if (!function_exists('do_wcmp_commission_data_migrate')) {
+
+    function do_wcmp_commission_data_migrate() {
+        global $wpdb;
+        /* Update Commission Order Table */
+        if (get_option('commission_data_migrated')) {
+            return;
+        }
+        $offset = get_option('dc_commission_offset_to_migrate') ? get_option('dc_commission_offset_to_migrate') : 0;
+        $args = array(
+            'post_type' => 'dc_commission',
+            'post_status' => array('private'),
+            'posts_per_page' => 50,
+            'order' => 'asc',
+            'offset' => $offset
+        );
+        
+        if (wp_count_posts('dc_commission')->private >= $offset * 50) {
+            $commissions = get_posts($args);
+            $commissions_to_migrate = array();
+            foreach ($commissions as $commission) {
+                $commissions_to_migrate[$commission->ID] = array(
+                    'order_id' => get_post_meta($commission->ID, '_commission_order_id', true),
+                    'products' => get_post_meta($commission->ID, '_commission_product', true),
+                    'vendor_id' => get_post_meta($commission->ID, '_commission_vendor', true),
+                    'commission_amount' => get_post_meta($commission->ID, '_commission_amount', true),
+                    'shipping_amount' => get_post_meta($commission->ID, '_shipping', true),
+                    'tax_amount' => get_post_meta($commission->ID, '_tax', true),
+                    'paid_status' => get_post_meta($commission->ID, '_paid_status', true)
+                );
+            }
+            $update_data = array();
+            foreach ($commissions_to_migrate as $commission_id => $data) {
+                $product_count = count($data['products']);
+                foreach ($data['products'] as $product_id) {
+                    if ($data['vendor_id']) {
+                        $vendor = get_wcmp_vendor_by_term($data['vendor_id']);
+                        $update_data[] = array(
+                            'order_id' => $data['order_id'],
+                            'commission_id' => $commission_id,
+                            'vendor_id' => $vendor->id,
+                            'shipping_status' => in_array($vendor->id, (array) get_post_meta($data['order_id'], 'dc_pv_shipped', true)) ? 1 : 0,
+                            'product_id' => $product_id,
+                            'commission_amount' => round(($data['commission_amount'] / $product_count), 2),
+                            'shipping' => round(($data['shipping_amount'] / $product_count), 2),
+                            'tax' => round(($data['tax_amount'] / $product_count), 2),
+                            'commission_status' => $data['paid_status'],
+                            'quantity' => 1,
+                            'shipping_tax_amount' => 0,
+                            'variation_id' => 0,
+                            'line_item_type' => 'product'
+                        );
+                    }
+                }
+            }
+            foreach ($update_data as $update) {
+                if ($wpdb->get_var("SELECT ID FROM `{$wpdb->prefix}wcmp_vendor_orders` WHERE order_id = '{$update['order_id']}' AND commission_id = '{$update['commission_id']}' AND vendor_id = '{$update['vendor_id']}' AND product_id = '{$update['product_id']}'")) {
+                    $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` SET shipping_status = '{$update['shipping_status']}', commission_amount = '{$update['commission_amount']}', shipping = '{$update['shipping']}', tax = '{$update['tax']}', commission_status = '{$update['commission_status']}', quantity = '{$update['quantity']}', variation_id = '{$update['variation_id']}', shipping_tax_amount = '{$update['shipping_tax_amount']}', line_item_type = '{$update['line_item_type']}' WHERE order_id = '{$update['order_id']}' AND commission_id = '{$update['commission_id']}' AND vendor_id = '{$update['vendor_id']}' AND product_id = '{$update['product_id']}'");
+                } else {
+                    $wpdb->query(
+                            $wpdb->prepare(
+                                    "INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` 
+                                        ( order_id
+                                        , commission_id
+                                        , commission_amount
+                                        , vendor_id
+                                        , shipping_status
+                                        , order_item_id
+                                        , product_id
+                                        , variation_id
+                                        , tax
+                                        , line_item_type
+                                        , quantity
+                                        , commission_status
+                                        , shipping
+                                        , shipping_tax_amount
+                                        ) VALUES ( %d
+                                        , %d
+                                        , %s
+                                        , %d
+                                        , %s
+                                        , %d
+                                        , %d 
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %s
+                                        ) ON DUPLICATE KEY UPDATE `created` = now()"
+                                    , $update['order_id']
+                                    , $update['commission_id']
+                                    , $update['commission_amount']
+                                    , $update['vendor_id']
+                                    , $update['shipping_status']
+                                    , 0
+                                    , $update['product_id']
+                                    , 0
+                                    , $update['tax']
+                                    , 'product'
+                                    , 1
+                                    , $update['commission_status']
+                                    , $update['shipping']
+                                    , $update['shipping_tax_amount']
+                            )
+                    );
+                }
+            }
+            $offset++;
+            update_option('dc_commission_offset_to_migrate', $offset);
+        } else {
+            update_option('commission_data_migrated', '1');
         }
     }
 

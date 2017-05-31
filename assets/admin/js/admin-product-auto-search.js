@@ -23,7 +23,7 @@ jQuery(document).ready(function($) {
 			
 	});
 	var title = $('#titlediv #titlewrap #title').val();
-	if(title != '') {
+	if(title != undefined && title != '') {
 		title = title.replace('(Copy)', '');
 		$('#titlediv #titlewrap #title').val(title);
 	}	

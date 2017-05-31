@@ -111,7 +111,7 @@ class WCMp_Commission {
     public function wcmp_meta_box_content() {
         global $post_id, $woocommerce, $WCMp;
         $fields = get_post_custom($post_id);
-        $field_data = $this->get_custom_fields_settings();
+        $field_data = $this->get_custom_fields_settings($post_id);
 
         $html = '';
 
@@ -125,32 +125,35 @@ class WCMp_Commission {
                 if (isset($fields[$k]) && isset($fields[$k][0])) {
                     $data = $fields[$k][0];
                 }
-                if ($k == '_commission_product') {
+                if ($k == '_commission_order_id') {
+                    $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><a href="' . get_edit_post_link($data) . '">#' . esc_attr($data) . ' </a>' . "\n";
+                    //$html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
+                    $html .= '</td><tr/>' . "\n";
+                } else if ($k == '_commission_product') {
                     $option = '<option value=""></option>';
                     $product_ids = get_post_meta($post_id, '_commission_product', true);
 
-                    if (!is_array($product_ids))
+                    if (!is_array($product_ids)) {
                         $fields[$k] = array($product_ids);
-                    else
+                    } else {
                         $fields[$k] = $product_ids;
-
+                    }
+                    $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td>';
                     if (!empty($fields[$k])) {
                         foreach ($fields[$k] as $dat) {
-
-                            if (function_exists('wc_get_product')) {
-                                $product = wc_get_product($dat);
-                            } else {
-                                $product = new WC_Product($dat);
-                            }
-                            if (is_object($product) && $product->get_formatted_name()) {
-                                $option .= '<option value="' . $dat . '" selected="selected">' . $product->get_formatted_name() . '</option>';
-                            } else {
-                                $option .= '<option value="' . $dat . '" selected="selected">' . $product->get_title() . '</option>';
-                            }
+                            $product = new WC_Product($dat);
+                            $html .= '<table>';
+                            $html .= '<tr>';
+                            $html .= '<td style="padding:0">';
+                            $html .= get_the_post_thumbnail($product->get_id(), array('50', '50'));
+                            $html .= '</td>';
+                            $html .= '<td>';
+                            $html .= '<a href="' . get_edit_post_link($product->get_id()) . '">' . $product->get_title() . '</a>';
+                            $html .= '</td>';
+                            $html .= '</tr>';
+                            $html .= '</table>';
                         }
                     }
-
-                    $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><select multiple name=_commission_product[] id="' . esc_attr($k) . '" class="ajax_chosen_select_products_and_variations" data-placeholder="Search for product&hellip;" style="min-width:300px;">' . $option . '</select>' . "\n";
                     $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
                     $html .= '</td><tr/>' . "\n";
                 } elseif ($k == '_commission_vendor') {
@@ -159,16 +162,28 @@ class WCMp_Commission {
                     if ($data && strlen($data) > 0 && !empty($vendor)) {
                         $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->user_data->user_login . '</option>';
                     }
-
-                    $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><select name="' . esc_attr($k) . '" id="' . esc_attr($k) . '" class="ajax_chosen_select_vendor" data-placeholder="' . __("Search for vendor", $WCMp->text_domain) . '" style="min-width:300px;">' . $option . '</select>' . "\n";
+                    $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td>';
+                    $html .= '<table>';
+                    $html .= '<tr>';
+                    $html .= '<td style="padding:0">';
+                    $html .= get_avatar($vendor->id, 50);//get_the_post_thumbnail($product->get_id(), array('50', '50'));
+                    $html .= '</td>';
+                    $html .= '<td>';
+                    $html .= '<a href="' . get_edit_user_link($vendor->id) . '">' . $vendor->user_data->display_name . '</a>';
+                    $html .= '</td>';
+                    $html .= '</tr>';
+                    $html .= '</table>';
                     $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
                     $html .= '</td><tr/>' . "\n";
                 } else {
                     if ($v['type'] == 'checkbox') {
                         $html .= '<tr valign="top"><th scope="row">' . $v['name'] . '</th><td><input name="' . esc_attr($k) . '" type="checkbox" id="' . esc_attr($k) . '" ' . checked('on', $data, false) . ' /> <label for="' . esc_attr($k) . '"><span class="description">' . $v['description'] . '</span></label>' . "\n";
                         $html .= '</td><tr/>' . "\n";
+                    } else if ($v['type'] == 'price') {
+                        $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td>' . wc_price($data) . '' . "\n";
+                        $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
+                        $html .= '</td><tr/>' . "\n";
                     } else {
-
                         $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><input name="' . esc_attr($k) . '" type="text" id="' . esc_attr($k) . '" class="regular-text" value="' . esc_attr($data) . '" />' . "\n";
                         $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
                         $html .= '</td><tr/>' . "\n";
@@ -188,7 +203,7 @@ class WCMp_Commission {
      *
      * @return arr Array of custom fields
      */
-    public function get_custom_fields_settings() {
+    public function get_custom_fields_settings($post_id) {
         global $WCMp;
         $fields = array();
 
@@ -223,19 +238,24 @@ class WCMp_Commission {
             'default' => 0.00,
             'section' => 'wcmp-commission-data'
         );
+        
+        if(get_post_meta($post_id, '_paid_status', true) == 'paid'){
+            $fields['_commission_amount']['type'] = 'price';
+            $fields['_commission_amount']['description'] = __('The total value of this commission.', $WCMp->text_domain);
+        }
 
         $fields['_shipping'] = array(
             'name' => __('Shipping Amount:', $WCMp->text_domain),
-            'description' => __('The total value of shipping (' . get_woocommerce_currency_symbol() . ').', $WCMp->text_domain),
-            'type' => 'text',
+            'description' => __('The total value of shipping.', $WCMp->text_domain),
+            'type' => 'price',
             'default' => 0.00,
             'section' => 'wcmp-commission-data'
         );
 
         $fields['_tax'] = array(
             'name' => __('Tax Amount:', $WCMp->text_domain),
-            'description' => __('The total value of this tax (' . get_woocommerce_currency_symbol() . ').', $WCMp->text_domain),
-            'type' => 'text',
+            'description' => __('The total value of this tax.', $WCMp->text_domain),
+            'type' => 'price',
             'default' => 0.00,
             'section' => 'wcmp-commission-data'
         );
@@ -250,7 +270,7 @@ class WCMp_Commission {
      * @return void
      */
     public function meta_box_save($post_id) {
-        global $post, $messages;
+        global $post, $messages,$wpdb;
 
         // Verify nonce
         if (( get_post_type() != $this->post_type ) || !wp_verify_nonce($_POST[$this->post_type . '_nonce'], plugin_basename($this->dir))) {
@@ -261,29 +281,24 @@ class WCMp_Commission {
         if (!current_user_can('edit_post', $post_id)) {
             return $post_id;
         }
-
-        // Handle custom fields
-        $field_data = $this->get_custom_fields_settings();
-        $fields = array_keys($field_data);
-
-        update_post_meta($post_id, '_commission_product', $_POST['_commission_product']);
-
-
-        foreach ($fields as $f) {
-
-            if ($f != '_commission_product') {
-                ${$f} = strip_tags(trim($_POST[$f]));
-                // Escape the URLs.
-                if ('url' == $field_data[$f]['type']) {
-                    ${$f} = esc_url(${$f});
-                }
-                if (${$f} == '') {
-                    delete_post_meta($post_id, $f, get_post_meta($post_id, $f, true));
-                } else {
-                    update_post_meta($post_id, $f, ${$f});
+        $is_updated = false;
+        $prev_commission_amount = get_post_meta($post_id, '_commission_amount', true);
+        if(isset($_POST['_commission_amount'])){
+            $is_updated = update_post_meta($post_id, '_commission_amount', $_POST['_commission_amount']);
+        }
+        if($is_updated){
+            $new_commission_amount = $_POST['_commission_amount'];
+            $commission_order = get_wcmp_vendor_orders(array('commission_id' => $post_id));
+            if($commission_order){
+                $total_line_quentity = array_sum(wp_list_pluck($commission_order, 'quantity'));
+                $line_commission_amount = (float)  round(($new_commission_amount / $total_line_quentity),2);
+                foreach ($commission_order as $commission){
+                    $item_commission = $line_commission_amount * $commission->quantity;
+                    $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` SET commission_amount = '" . $item_commission . "' WHERE commission_id =" . $commission->commission_id . " AND  product_id = " . $commission->product_id);
                 }
             }
         }
+        do_action('wcmp_save_vendor_commission', $post_id, $is_updated, $_POST);
     }
 
     /**
@@ -648,7 +663,7 @@ class WCMp_Commission {
             // Get meta data
             $commission->product = get_post_meta($commission_id, '_commission_product', true);
             $commission->vendor = get_wcmp_vendor_by_term(get_post_meta($commission_id, '_commission_vendor', true));
-            $commission->amount = apply_filters('wcmp_post_commission_amount', get_post_meta($commission_id, '_commission_amount', true), $commission_id) ;
+            $commission->amount = apply_filters('wcmp_post_commission_amount', get_post_meta($commission_id, '_commission_amount', true), $commission_id);
             $commission->paid_status = get_post_meta($commission_id, '_paid_status', true);
         }
 

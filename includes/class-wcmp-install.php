@@ -227,8 +227,9 @@ class WCMp_Install {
             $frontend_settings = array(
                 'sold_by_cart_and_checkout' => 'Enable',
                 'sold_by_catalog' => 'Enable',
-                'catalog_colorpicker' => '#000000',
-                'catalog_hover_colorpicker' => '#000000',
+                'enable_vendor_tab' => 'Enable',
+//                'catalog_colorpicker' => '#000000',
+//                'catalog_hover_colorpicker' => '#000000',
             );
             update_option('wcmp_frontend_settings_name', $frontend_settings);
         }
@@ -252,13 +253,19 @@ class WCMp_Install {
 		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
 		`order_id` bigint(20) NOT NULL,
 		`commission_id` bigint(20) NOT NULL,
+                `commission_status` varchar(100) NOT NULL DEFAULT 'unpaid',
+                `commission_paid_date` timestamp NULL,
 		`vendor_id` bigint(20) NOT NULL,
 		`shipping_status` varchar(255) NOT NULL,
 		`order_item_id` bigint(20) NOT NULL,
+                `line_item_type` longtext NULL,
 		`product_id` bigint(20) NOT NULL,
+                `variation_id` bigint(20) NOT NULL DEFAULT 0,
+                `quantity` bigint(20) NOT NULL DEFAULT 1,
 		`commission_amount` varchar(255) NOT NULL,
 		`shipping` varchar(255) NOT NULL,
 		`tax` varchar(255) NOT NULL,
+                `shipping_tax_amount` varchar(255) NOT NULL DEFAULT 0,
 		`is_trashed` varchar(10) NOT NULL,				
 		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
 		PRIMARY KEY (`ID`),

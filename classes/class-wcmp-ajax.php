@@ -610,169 +610,39 @@ class WCMp_Ajax {
         $report_chart = $report_html = '';
 
         if ($product_id) {
-            $is_variation = false;
-            $_product = array();
-            $vendor = false;
-
-            $_product = wc_get_product($product_id);
-
-            if ($_product->is_type('variation')) {
-                $title = $_product->get_formatted_name();
-                $is_variation = true;
-            } else {
-                $title = $_product->get_title();
-            }
-
-            if (isset($product_id) && !$is_variation) {
-                $vendor = get_wcmp_product_vendors($product_id);
-            } else if (isset($product_id) && $is_variation) {
-                $variatin_parent = wp_get_post_parent_id($product_id);
-                $vendor = get_wcmp_product_vendors($variatin_parent);
-            }
-            if ($vendor) {
-                $orders = array();
-                if ($_product->is_type('variable')) {
-                    $get_children = $_product->get_children();
-                    if (!empty($get_children)) {
-                        foreach ($get_children as $child) {
-                            $orders = array_merge($orders, $vendor->get_vendor_orders_by_product($vendor->term_id, $child));
-                        }
-                        $orders = array_unique($orders);
-                    }
-                } else {
-                    $orders = array_unique($vendor->get_vendor_orders_by_product($vendor->term_id, $product_id));
-                }
-            }
-
-            $order_items = array();
-            $i = 0;
-            if (!empty($orders)) {
-                foreach ($orders as $order_id) {
-                    $order = new WC_Order($order_id);
-                    $order_line_items = $order->get_items('line_item');
-
-                    if (!empty($order_line_items)) {
-                        foreach ($order_line_items as $line_item) {
-                            if ($line_item['product_id'] == $product_id || $line_item['variation_id'] == $product_id) {
-                                if ($_product->is_type('variation')) {
-                                    $order_items_product_id = $line_item['product_id'];
-                                    $order_items_variation_id = $line_item['variation_id'];
-                                } else {
-                                    $order_items_product_id = $line_item['product_id'];
-                                    $order_items_variation_id = $line_item['variation_id'];
-                                }
-                                $order_date_str = strtotime($order->get_date_created());
-                                if ($order_date_str > $start_date && $order_date_str < $end_date) {
-                                    $order_items[$i] = array(
-                                        'order_id' => $order_id,
-                                        'product_id' => $order_items_product_id,
-                                        'variation_id' => $order_items_variation_id,
-                                        'line_total' => $line_item['line_total'],
-                                        'item_quantity' => $line_item['qty'],
-                                        'post_date' => $order->get_date_created(),
-                                        'multiple_product' => 0
-                                    );
-                                    if (count($order_line_items) > 1) {
-                                        $order_items[$i]['multiple_product'] = 1;
-                                    }
-                                    $i++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
 
             $total_sales = $admin_earnings = array();
             $max_total_sales = 0;
-            if (isset($order_items) && !empty($order_items)) {
-                foreach ($order_items as $order_item) {
-                    if ($order_item['line_total'] == 0 && $order_item['item_quantity'] == 0)
-                        continue;
 
-                    // Get date
-                    $date = date('Ym', strtotime($order_item['post_date']));
+            $product_orders = get_wcmp_vendor_orders(array('product_id' => $product_id));
 
-                    if ($order_item['variation_id'] != 0) {
-                        $variation_id = $order_item['variation_id'];
-                        $product_id_1 = $order_item['variation_id'];
-                    } else {
-                        $variation_id = 0;
-                        $product_id_1 = $order_item['product_id'];
+            if (!empty($product_orders)) {
+
+                $gross_sales = $my_earning = $vendor_earning = 0;
+                foreach ($product_orders as $order_obj) { 
+                    $order = new WC_Order($order_obj->order_id);
+
+                    if (strtotime($order->get_date_created()) > $start_date && strtotime($order->get_date_created()) < $end_date) {
+                        // Get date
+                        $date = date('Ym', strtotime($order->get_date_created()));
+
+                        $item = new WC_Order_Item_Product($order_obj->order_item_id);
+                        $gross_sales += $item->get_subtotal();
+                        $total_sales[$date] = isset($total_sales[$date]) ? ( $total_sales[$date] + $item->get_subtotal() ) : $item->get_subtotal();
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id(),'product_id' => $order_obj->product_id));
+
+                        $vendor_earning = $vendors_orders_amount['commission_amount'];
+                        if($vendor = get_wcmp_vendor(get_current_user_id()))
+                            $admin_earnings[$date] = isset($admin_earnings[$date]) ? ( $admin_earnings[$date] +  $vendor_earning ) : $vendor_earning;
+                        else
+                            $admin_earnings[$date] = isset($admin_earnings[$date]) ? ( $admin_earnings[$date] + $item->get_subtotal() - $vendor_earning ) : $item->get_subtotal() - $vendor_earning;
+
+                        if ( $total_sales[ $date ] > $max_total_sales )
+                            $max_total_sales = $total_sales[ $date ];
                     }
-
-                    if (!$vendor) {
-                        break;
-                    }
-
-                    $vendor_earnings = 0;
-                    if ($order_item['multiple_product'] == 0) {
-                        $commissions = false;
-
-                        $args = array(
-                            'post_type' => 'dc_commission',
-                            'post_status' => array('publish', 'private'),
-                            'posts_per_page' => -1,
-                            'meta_query' => array(
-                                array(
-                                    'key' => '_commission_vendor',
-                                    'value' => absint($vendor->term_id),
-                                    'compare' => '='
-                                ),
-                                array(
-                                    'key' => '_commission_order_id',
-                                    'value' => absint($order_item['order_id']),
-                                    'compare' => '='
-                                ),
-                                array(
-                                    'key' => '_commission_product',
-                                    'value' => absint($product_id_1),
-                                    'compare' => 'LIKE'
-                                )
-                            )
-                        );
-
-                        $commissions = get_posts($args);
-
-                        if (!empty($commissions)) {
-                            foreach ($commissions as $commission) {
-                                $vendor_earnings = $vendor_earnings + get_post_meta($commission->ID, '_commission_amount', true);
-                            }
-                        }
-                    } else if ($order_item['multiple_product'] == 1) {
-
-                        $vendor_obj = new WCMp_Vendor();
-                        $vendor_items = $vendor_obj->get_vendor_items_from_order($order_item['order_id'], $vendor->term_id);
-
-                        foreach ($vendor_items as $vendor_item) {
-                            if ($variation_id == 0) {
-                                if ($vendor_item['product_id'] == $product_id) {
-                                    $item = $vendor_item;
-                                    break;
-                                }
-                            } else {
-                                if ($vendor_item['variation_id'] == $variation_id) {
-                                    $item = $vendor_item;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!$is_variation) {
-                            $commission_obj = new WCMp_Calculate_Commission();
-                            $vendor_earnings = $commission_obj->get_item_commission($product_id, $variation_id, $item, $order_item['order_id']);
-                        } else {
-                            $commission_obj = new WCMp_Calculate_Commission();
-                            $vendor_earnings = $commission_obj->get_item_commission($variatin_parent, $variation_id, $item, $order_item['order_id']);
-                        }
-                    }
-
-                    $total_sales[$date] = isset($total_sales[$date]) ? ( $total_sales[$date] + $order_item['line_total'] ) : $order_item['line_total'];
-                    $admin_earnings[$date] = isset($admin_earnings[$date]) ? ( $admin_earnings[$date] + $order_item['line_total'] - $vendor_earnings ) : $order_item['line_total'] - $vendor_earnings;
-
-                    if ($total_sales[$date] > $max_total_sales)
-                        $max_total_sales = $total_sales[$date];
                 }
             }
+
 
             if (sizeof($total_sales) > 0) {
                 foreach ($total_sales as $date => $sales) {
@@ -826,13 +696,14 @@ class WCMp_Ajax {
         global $WCMp, $wpdb;
 
         $chosen_product_ids = $vendor_id = $vendor = false;
-
-        $vendor_id = $_POST['vendor_id'];
+        $gross_sales = $my_earning = $vendor_earning = 0;
+        $vendor_term_id = $_POST['vendor_id'];
+        $vendor = get_wcmp_vendor_by_term($vendor_term_id);
+        $vendor_id = $vendor->id;
         $start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
 
         if ($vendor_id) {
-            $vendor = get_wcmp_vendor_by_term($vendor_id);
             if ($vendor)
                 $products = $vendor->get_products();
             if (!empty($products)) {
@@ -860,105 +731,64 @@ class WCMp_Ajax {
             die;
         }
 
-        if ($chosen_product_ids && is_array($chosen_product_ids)) {
+        $args = array(
+            'post_type' => 'shop_order',
+            'posts_per_page' => -1,
+            'post_status' => array('wc-pending', 'wc-processing', 'wc-on-hold', 'wc-completed', 'wc-cancelled', 'wc-refunded', 'wc-failed'),
+            'meta_query' => array(
+                array(
+                    'key' => '_commissions_processed',
+                    'value' => 'yes',
+                    'compare' => '='
+                )
+            ),
+            'date_query' => array(
+                'inclusive' => true,
+                'after' =>array(
+                    'year' => date('Y', $start_date),
+                    'month' => date('n', $start_date),
+                    'day' => date('j', $start_date),
+ 
+                ),
+                'before'=>array(
+                    'year' => date('Y', $end_date),
+                    'month' => date('n', $end_date),
+                    'day' => date('j', $end_date),
+  
+                ),
+            )
+        );
 
-            // Get titles and ID's related to product
-            $chosen_product_titles = array();
-            $children_ids = array();
+        $qry = new WP_Query($args);
+        
+        $orders = apply_filters('wcmp_filter_orders_report_vendor', $qry->get_posts());
 
-            foreach ($chosen_product_ids as $product_id) {
-                $children = (array) get_posts('post_parent=' . $product_id . '&fields=ids&post_status=any&numberposts=-1');
-                $children_ids = $children_ids + $children;
-                $chosen_product_titles[] = get_the_title($product_id);
-            }
-
-            // Get order items
-            $order_items = apply_filters('woocommerce_reports_product_sales_order_items', $wpdb->get_results("
-				SELECT posts.ID as order_id, order_item_meta_2.meta_value as product_id, order_item_meta_1.meta_value as variation_id, posts.post_date, SUM( order_item_meta.meta_value ) as item_quantity, SUM( order_item_meta_3.meta_value ) as line_total
-				FROM {$wpdb->prefix}woocommerce_order_items as order_items
-	
-				LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta ON order_items.order_item_id = order_item_meta.order_item_id
-				LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta_1 ON order_items.order_item_id = order_item_meta_1.order_item_id
-				LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta_2 ON order_items.order_item_id = order_item_meta_2.order_item_id
-				LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta as order_item_meta_3 ON order_items.order_item_id = order_item_meta_3.order_item_id
-				LEFT JOIN {$wpdb->posts} AS posts ON order_items.order_id = posts.ID
-	
-				WHERE posts.post_type 	= 'shop_order'
-				AND 	order_item_meta_2.meta_value IN ('" . implode("','", array_merge($chosen_product_ids, $children_ids)) . "')
-				AND posts.post_status IN ('wc-pending','wc-processing','wc-on-hold','wc-completed','wc-cancelled','wc-refunded','wc-failed')
-				AND 	order_items.order_item_type = 'line_item'
-				AND 	order_item_meta.meta_key = '_qty'
-				AND 	order_item_meta_2.meta_key = '_product_id'
-				AND 	order_item_meta_1.meta_key = '_variation_id'
-				AND 	order_item_meta_3.meta_key = '_line_total'
-				AND   posts.post_date BETWEEN '" . $start_date . "' AND '" . $end_date . "'
-				GROUP BY order_items.order_id
-				ORDER BY posts.post_date ASC
-			"), array_merge($chosen_product_ids, $children_ids));
+        if (!empty($orders)) {
 
             $total_sales = $admin_earning = array();
             $max_total_sales = 0;
-            if ($order_items) {
-                foreach ($order_items as $order_item) {
 
-                    if ($order_item->line_total == 0 && $order_item->item_quantity == 0)
-                        continue;
-
-                    // Get date
-                    $date = date('Ym', strtotime($order_item->post_date));
-
-                    if ($order_item->variation_id != '0') {
-                        $product_id = $order_item->variation_id;
-                        $variation_id = $order_item->variation_id;
-                    } else {
-                        $product_id = $order_item->product_id;
-                        $variation_id = 0;
-                    }
-
-                    $commissions = false;
-                    $vendor_earnings = 0;
-                    $args = array(
-                        'post_type' => 'dc_commission',
-                        'post_status' => array('publish', 'private'),
-                        'posts_per_page' => -1,
-                        'meta_query' => array(
-                            array(
-                                'key' => '_commission_vendor',
-                                'value' => absint($vendor->term_id),
-                                'compare' => '='
-                            ),
-                            array(
-                                'key' => '_commission_order_id',
-                                'value' => absint($order_item->order_id),
-                                'compare' => '='
-                            ),
-                            array(
-                                'key' => '_commission_product',
-                                'value' => absint($product_id),
-                                'compare' => 'LIKE'
-                            ),
-                        ),
-                    );
-
-                    $commissions = get_posts($args);
-
-                    if (!empty($commissions)) {
-                        foreach ($commissions as $commission) {
-                            $vendor_earnings = $vendor_earnings + get_post_meta($commission->ID, '_commission_amount', true);
-                        }
-                    }
-
-                    if ($vendor_earnings <= 0) {
-                        continue;
-                    }
-
-                    // Set values
-                    $total_sales[$date] = isset($total_sales[$date]) ? ( $total_sales[$date] + $order_item->line_total ) : $order_item->line_total;
-                    $admin_earning[$date] = isset($admin_earning[$date]) ? ( $admin_earning[$date] + $order_item->line_total - $vendor_earnings ) : $order_item->line_total - $vendor_earnings;
-
-                    if ($total_sales[$date] > $max_total_sales)
-                        $max_total_sales = $total_sales[$date];
+            foreach ($orders as $order_obj) { 
+                $order = new WC_Order($order_obj->ID);
+                $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
+                $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),$vendor_id);
+                $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>$vendor_id));
+                $gross_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
+                $vendor_earning += $vendors_orders_amount['total'];
+                
+                foreach ($current_vendor_orders as $key => $vendor_order) { 
+                    $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                    $gross_sales += $item->get_subtotal();
                 }
+                // Get date
+                $date = date('Ym', strtotime($order->get_date_created()));
+         
+                // Set values
+                $total_sales[$date] = $gross_sales;
+                $admin_earning[$date] = $gross_sales - $vendor_earning;
+
+                if ($total_sales[$date] > $max_total_sales)
+                    $max_total_sales = $total_sales[$date];
             }
 
             $report_chart = $report_html = '';
@@ -1129,8 +959,8 @@ class WCMp_Ajax {
         }
         $wpdb->query("UPDATE {$wpdb->prefix}wcmp_vendor_orders SET shipping_status = '1' WHERE order_id = $order_id and vendor_id = $user_id");
         $order = new WC_Order($order_id);
-        //$order->add_order_note('Vendor '.$vendor->user_data->display_name .' has shipped his part of order to customer. Tracking Url : <a href="'.$tracking_url.'">'.$tracking_url.'</a><br> Tracking Id: '.$tracking_id);
-        $order->add_order_note('Vendor ' . $vendor->user_data->display_name . ' has shipped his part of order to customer. <br>Tracking Url : <a target="_blank" href="' . $tracking_url . '">' . $tracking_url . '</a><br> Tracking Id: ' . $tracking_id, '1');
+        $comment_id = $order->add_order_note('Vendor ' . $vendor->user_data->display_name . ' has shipped his part of order to customer. <br>Tracking Url : <a target="_blank" href="' . $tracking_url . '">' . $tracking_url . '</a><br> Tracking Id: ' . $tracking_id, '1', true);
+        add_comment_meta($comment_id, '_vendor_id', $user_id);
         die;
     }
 
@@ -1242,7 +1072,7 @@ class WCMp_Ajax {
         $user = new WP_User(absint($user_id));
         $user->remove_role('dc_pending_vendor');
         $user->remove_role('dc_rejected_vendor');
-        $WCMp->user->update_vendor_meta($user_id);
+        //$WCMp->user->update_vendor_meta($user_id);
         $user->add_role('dc_vendor');
         $WCMp->user->add_vendor_caps($user_id);
         $vendor = get_wcmp_vendor($user_id);

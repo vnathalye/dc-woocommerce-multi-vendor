@@ -31,8 +31,8 @@ class WCMp_Settings_Capabilities_Order {
                 "vendor_order" => array(
                     "title" => __('Order Notes', $WCMp->text_domain),
                     "fields" => array(
-                        "is_vendor_view_comment" => array('title' => __('View Order Note', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_vendor_view_comment', 'label_for' => 'is_vendor_view_comment', 'name' => 'is_vendor_view_comment', 'desc' => __('Vendor can see order notes.', $WCMp->text_domain), 'value' => 'Enable'), // Checkbox
-                        "is_vendor_submit_comment" => array('title' => __('Add Order Note', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_vendor_submit_comment', 'label_for' => 'is_vendor_submit_comment', 'name' => 'is_vendor_submit_comment', 'desc' => __('Vendor can add order notes.', $WCMp->text_domain), 'value' => 'Enable'), // Checkbox
+                        "is_vendor_view_comment" => array('title' => __('View Order Note', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_vendor_view_comment', 'label_for' => 'is_vendor_view_comment', 'name' => 'is_vendor_view_comment', 'text' => __('Vendor can see order notes.', $WCMp->text_domain), 'value' => 'Enable'), // Checkbox
+                        "is_vendor_submit_comment" => array('title' => __('Add Order Note', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'is_vendor_submit_comment', 'label_for' => 'is_vendor_submit_comment', 'name' => 'is_vendor_submit_comment', 'text' => __('Vendor can add order notes.', $WCMp->text_domain), 'value' => 'Enable'), // Checkbox
                     )
                 ),
                 "vendor_order_export" => array("title" => __('Order Export Data / Report Export Data', $WCMp->text_domain), // Section one

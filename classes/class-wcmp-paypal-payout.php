@@ -34,7 +34,7 @@ class WCMp_Paypal_Payout {
                   {
                     "recipient_type": "EMAIL",
                     "amount": {
-                      "value": '.$receiver['total'].',
+                      "value": '.round($receiver['total'],2).',
                       "currency": "'.$receiver['currency'].'"
                     },
                     "receiver": "'.$receiver['recipient'].'",

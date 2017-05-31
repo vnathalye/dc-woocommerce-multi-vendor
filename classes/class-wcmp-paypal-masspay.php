@@ -48,7 +48,7 @@ class WCMp_Paypal_Masspay {
 			$j = 0;
 			foreach($receiver_information as $receiver) {				
 				$receiverEmail = urlencode($receiver['recipient']);
-				$amount = urlencode($receiver['total']);
+				$amount = urlencode(round($receiver['total'],2));
 				$uniqueID = urlencode($receiver['vendor_id']);
 				$note = urlencode($receiver['payout_note']);
 				$nvpstr.="&L_EMAIL$j=$receiverEmail&L_Amt$j=$amount&L_UNIQUEID$j=$uniqueID&L_NOTE$j=$note";

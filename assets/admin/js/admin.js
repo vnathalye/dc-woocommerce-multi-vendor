@@ -3,8 +3,8 @@ jQuery(document).ready(function($) {
 		$(this).qtip({
 			content: $(this).attr('data-desc'),
 			position: {
-				my: 'center left',
-				at: 'center right',
+				my: 'top center',
+				at: 'bottom center',
 				viewport: $(window)
 			},
 			show: {

@@ -66,9 +66,9 @@ class WCMp_Endpoints {
                 'label' => __('Transaction Details', $WCMp->text_domain),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_transaction_details_endpoint', 'vendor', 'general', 'transaction-details')
             )
-            , 'vendor-university' => array(
-                'label' => __('Vendor University', $WCMp->text_domain),
-                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_university_endpoint', 'vendor', 'general', 'vendor-university')
+            , 'vendor-knowledgebase' => array(
+                'label' => __('Vendor Knowledgebase', $WCMp->text_domain),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_knowledgebase_endpoint', 'vendor', 'general', 'vendor-knowledgebase')
             )
         ));
     }

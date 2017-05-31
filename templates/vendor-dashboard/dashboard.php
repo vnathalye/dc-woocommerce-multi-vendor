@@ -3,8 +3,8 @@
  * The template for displaying vendor dashboard
  * Override this template by copying it to yourtheme/dc-product-vendor/vendor-dashboard/dashboard.php
  *
- * @author  WC Marketplace
- * @package     WCMp/Templates
+ * @author 	WC Marketplace
+ * @package 	WCMp/Templates
  * @version   2.4.5
  */
 if (!defined('ABSPATH')) {
@@ -15,7 +15,7 @@ global $woocommerce, $WCMp;
 $user = wp_get_current_user();
 $vendor = get_wcmp_vendor($user->ID);
 if (is_user_wcmp_vendor($user->ID)) :
-    if (isset($WCMp->vendor_caps->wcmp_capability['notify_configure_vendor_store'])) {
+    //if (isset($WCMp->vendor_caps->wcmp_capability['notify_configure_vendor_store'])) {
         $user_meta_data = get_user_meta($user->ID);
         if (!isset($user_meta_data['_vendor_image']) || !isset($user_meta_data['_vendor_banner']) || !isset($user_meta_data['_vendor_address_1']) || !isset($user_meta_data['_vendor_city']) ||
                 !isset($user_meta_data['_vendor_state']) || !isset($user_meta_data['_vendor_country']) || !isset($user_meta_data['_vendor_phone']) || !isset($user_meta_data['_vendor_postcode'])) {
@@ -26,7 +26,7 @@ if (is_user_wcmp_vendor($user->ID)) :
 
             <?php
         }
-    }
+    //}
     $notice_data = get_option('wcmp_notices_settings_name');
     $notice_to_be_display = '';
 
@@ -62,7 +62,7 @@ if (is_user_wcmp_vendor($user->ID)) :
             <a href="<?php echo wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements')) ?>"><button><?php echo __('DETAILS', $WCMp->text_domain); ?></button></a>
             <div class="clear"></div>
             <a href="#" id="cross-admin" data-element = "<?php echo $msg->ID; ?>"  class="wcmp_cross wcmp_delate_announcements_dashboard"><i class="fa fa-times-circle"></i></a> 
-        </div>      
+        </div>		
     <?php } ?>
     <div class="wcmp_tab">
         <ul>
@@ -391,7 +391,7 @@ if (is_user_wcmp_vendor($user->ID)) :
                 <?php echo __('Showing Results', $WCMp->text_domain); ?> <span> <span class="wcmp_front_count_first_num_week_ps"><?php echo $week_pending_shipping_show; ?></span> <?php echo __(' out of ', $WCMp->text_domain); ?> <?php echo $week_pending_shipping_whole; ?></span>
                 <?php if ($week_pending_shipping_whole > 6) { ?><button class="wcmp_black_btn wcmp_frontend_pending_shipping_show_more_button" element-data="pending_shipping_weekly_more" style="float:right"><?php echo __('Show More', $WCMp->text_domain); ?></button><?php } ?>
                 <div class="clear"></div>
-            </div>      
+            </div>		
         </div>
     </div>
 <?php endif; ?>

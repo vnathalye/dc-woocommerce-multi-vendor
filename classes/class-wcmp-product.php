@@ -17,7 +17,9 @@ class WCMp_Product {
     public $more_product_array;
 
     public function __construct() {
+        global $WCMp;
         $general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
+
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_vendor_tab'), 30);
         add_action('woocommerce_product_data_panels', array(&$this, 'output_vendor_tab'), 30);
         add_action('save_post', array(&$this, 'process_vendor_data'));
@@ -39,8 +41,10 @@ class WCMp_Product {
         if (is_admin()) {
             add_action('transition_post_status', array(&$this, 'on_all_status_transitions'), 10, 3);
         }
-        add_action('woocommerce_product_thumbnails', array(&$this, 'add_report_abuse_link'), 30);
-        add_filter('woocommerce_product_tabs', array(&$this, 'product_vendor_tab'));
+        add_action('woocommerce_product_meta_start', array(&$this, 'add_report_abuse_link'), 30);
+        if ($WCMp->vendor_caps->vendor_frontend_settings('enable_vendor_tab')) {
+            add_filter('woocommerce_product_tabs', array(&$this, 'product_vendor_tab'));
+        }
         add_filter('wp_count_posts', array(&$this, 'vendor_count_products'), 10, 3);
         /* Related Products */
         add_filter('woocommerce_related_products_args', array($this, 'related_products_args'), 15);
@@ -1161,14 +1165,16 @@ class WCMp_Product {
      */
     function product_vendor_tab($tabs) {
         global $product, $WCMp;
-        $vendor = get_wcmp_product_vendors($product->get_id());
-        if ($vendor) {
-            $title = __('Vendor', $WCMp->text_domain);
-            $tabs['vendor'] = array(
-                'title' => $title,
-                'priority' => 20,
-                'callback' => array($this, 'woocommerce_product_vendor_tab')
-            );
+        if ($product) {
+            $vendor = get_wcmp_product_vendors($product->get_id());
+            if ($vendor) {
+                $title = __('Vendor', $WCMp->text_domain);
+                $tabs['vendor'] = array(
+                    'title' => $title,
+                    'priority' => 20,
+                    'callback' => array($this, 'woocommerce_product_vendor_tab')
+                );
+            }
         }
         return $tabs;
     }
@@ -1190,33 +1196,35 @@ class WCMp_Product {
      */
     function product_policy_tab($tabs) {
         global $product, $WCMp;
-        $policies_can_override_by_vendor = '';
-        $wcmp_capabilities_settings_name = get_option('wcmp_general_policies_settings_name');
-        $can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
-        $policies_settings = get_option('wcmp_general_policies_settings_name');
-        if (isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && ( isset($policies_settings['is_cancellation_on']) || isset($policies_settings['is_refund_on']) || isset($policies_settings['is_shipping_on']) )) {
-            $policies_can_override_by_vendor = 'Enable';
+        if ($product) {
+            $policies_can_override_by_vendor = '';
+            $wcmp_capabilities_settings_name = get_option('wcmp_general_policies_settings_name');
+            $can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
+            $policies_settings = get_option('wcmp_general_policies_settings_name');
+            if (isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && ( isset($policies_settings['is_cancellation_on']) || isset($policies_settings['is_refund_on']) || isset($policies_settings['is_shipping_on']) )) {
+                $policies_can_override_by_vendor = 'Enable';
+            }
+            $title = __('Policies', $WCMp->text_domain);
+            $product_id = $product->get_id();
+            $product_vendors = get_wcmp_product_vendors($product_id);
+            if ($product_vendors) {
+                $author_id = $product_vendors->id;
+            } else {
+                $author_id = get_post_field('post_author', $product_id);
+            }
+            $tab_title_by_vendor = get_user_meta($author_id, '_vendor_policy_tab_title', true);
+            if (isset($policies_settings['policy_tab_title']) && (!empty($policies_settings['policy_tab_title']))) {
+                $title = $policies_settings['policy_tab_title'];
+            }
+            if ($policies_can_override_by_vendor != '' && (!empty($tab_title_by_vendor))) {
+                $title = $tab_title_by_vendor;
+            }
+            $tabs['policies'] = array(
+                'title' => $title,
+                'priority' => 30,
+                'callback' => array($this, 'woocommerce_product_policies_tab')
+            );
         }
-        $title = __('Policies', $WCMp->text_domain);
-        $product_id = $product->get_id();
-        $product_vendors = get_wcmp_product_vendors($product_id);
-        if ($product_vendors) {
-            $author_id = $product_vendors->id;
-        } else {
-            $author_id = get_post_field('post_author', $product_id);
-        }
-        $tab_title_by_vendor = get_user_meta($author_id, '_vendor_policy_tab_title', true);
-        if (isset($policies_settings['policy_tab_title']) && (!empty($policies_settings['policy_tab_title']))) {
-            $title = $policies_settings['policy_tab_title'];
-        }
-        if ($policies_can_override_by_vendor != '' && (!empty($tab_title_by_vendor))) {
-            $title = $tab_title_by_vendor;
-        }
-        $tabs['policies'] = array(
-            'title' => $title,
-            'priority' => 30,
-            'callback' => array($this, 'woocommerce_product_policies_tab')
-        );
 
         return $tabs;
     }
@@ -1305,33 +1313,35 @@ class WCMp_Product {
         }
 
         $report_abuse_text = $WCMp->vendor_caps->frontend_cap;
-        if (isset($report_abuse_text['report_abuse_text'])) {
+        if (isset($report_abuse_text['report_abuse_text']) && !empty($report_abuse_text['report_abuse_text'])) {
             $display_text = $report_abuse_text['report_abuse_text'];
         } else {
             $display_text = __('Report Abuse', $WCMp->text_domain);
         }
-
         if ($is_display) {
             ?>
-            <a href="#" id="report_abuse"><?php echo $display_text; ?></a>
+            <a href="#" id="report_abuse"><?php echo $display_text; ?></a><br>
             <div id="report_abuse_form" class="simplePopup"> 
-                <h3 class="wcmp-abuse-report-title"><?php _e('Report an abuse for product', $WCMp->text_domain) . ' ' . the_title(); ?> </h3>
-                <form action="#" method="post" id="report-abuse" class="report-abuse-form">
+                <h3 class="wcmp-abuse-report-title"><?php _e('Report an abuse for product ', $WCMp->text_domain) . ' ' . the_title(); ?> </h3>
+                <form action="#" method="post" id="report-abuse" class="report-abuse-form" name="report-abuse">
                     <table>
                         <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" class="report_abuse_name" name="report_abuse[name]" value="" style="width: 100%;" placeholder="<?php _e('Name', $WCMp->text_domain); ?>" required="">
+                                    <input type="text" class="report_abuse_name" id="report_abuse_name" name="report_abuse[name]" value="" style="width: 100%;" placeholder="<?php _e('Name', $WCMp->text_domain); ?>" required="">
+                                    <span class="wcmp-report-abuse-error"></span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="email" class="report_abuse_email" name="report_abuse[email]" value="" style="width: 100%;" placeholder="<?php _e('Email', $WCMp->text_domain); ?>" required="">
+                                    <input type="email" class="report_abuse_email" id="report_abuse_email" name="report_abuse[email]" value="" style="width: 100%;" placeholder="<?php _e('Email', $WCMp->text_domain); ?>" required="">
+                                    <span class="wcmp-report-abuse-error"></span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <textarea name="report_abuse[message]" class="report_abuse_msg" rows="5" style="width: 100%;" placeholder="<?php _e('Leave a message explaining the reasons for your abuse report', $WCMp->text_domain); ?>" required=""></textarea>
+                                    <textarea name="report_abuse[message]" class="report_abuse_msg" id="report_abuse_msg" rows="5" style="width: 100%;" placeholder="<?php _e('Leave a message explaining the reasons for your abuse report', $WCMp->text_domain); ?>" required=""></textarea>
+                                    <span class="wcmp-report-abuse-error"></span>
                                 </td>
                             </tr>
                             <tr>

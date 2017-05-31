@@ -4,7 +4,7 @@ Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi selle
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.6.5
+Stable tag: 2.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,6 +110,23 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+
+= 2.7.0 =
+* Added: Shipping cost split among order associated vendors.
+* Added: Admin setting to hide 'Vendor' tab from the product page.
+* Added: Locking period before the commission can be disbursed.
+* Added: Vendor wise shipping cost to WCMp report.
+* Updated: Once paid Admin can no longer edit commissions.
+* Updated: 'University' renamed to 'Knowledgebase'.
+* Fixed: Problem accessing vendor dashboard area for PHP 5.4.
+* Fixed: Vendor Shop Title Update.
+* Fixed: Calculation bug in WCMp report (admin and vendor).
+* Fixed: Bulk action to mark orders as shipped (vendor).
+* Fixed: Vendors' shipping class cost setting.
+* Fixed: CSS fix in vendor dashboard. 
+* Fixed: Validation added for 'Report abuse' popup.
+* Fixed: Vendor review and rating bug.
+
 = 2.6.5 =
 * Fixed: Vendor capabilities 
 * Fixed: Vendor dashboard CSS
@@ -220,5 +237,6 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Upgrade Notice ==
-= 2.6.5 =
-2.6 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.
+
+= 2.7.0 =
+2.7 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.

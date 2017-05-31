@@ -27,20 +27,20 @@ class WCMp_University {
 		global $WCMp;
 		if ( post_type_exists($this->post_type) ) return;
 		$labels = array(
-			'name' => _x( 'University', 'post type general name' , $WCMp->text_domain ),
-			'singular_name' => _x( 'University', 'post type singular name' , $WCMp->text_domain ),
+			'name' => _x( 'Knowledgebase', 'post type general name' , $WCMp->text_domain ),
+			'singular_name' => _x( 'Knowledgebase', 'post type singular name' , $WCMp->text_domain ),
 			'add_new' => _x( 'Add New', $this->post_type , $WCMp->text_domain ),
-			'add_new_item' => sprintf( __( 'Add New %s' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
-			'edit_item' => sprintf( __( 'Edit %s' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain) ),
-			'new_item' => sprintf( __( 'New %s' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain) ),
-			'all_items' => sprintf( __( 'All %s' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
-			'view_item' => sprintf( __( 'View %s' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
-			'search_items' => sprintf( __( 'Search %a' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
-			'not_found' =>  sprintf( __( 'No %s found' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
-			'not_found_in_trash' => sprintf( __( 'No %s found in trash' , $WCMp->text_domain ), __( 'University' , $WCMp->text_domain ) ),
+			'add_new_item' => sprintf( __( 'Add New %s' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
+			'edit_item' => sprintf( __( 'Edit %s' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain) ),
+			'new_item' => sprintf( __( 'New %s' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain) ),
+			'all_items' => sprintf( __( 'All %s' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
+			'view_item' => sprintf( __( 'View %s' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
+			'search_items' => sprintf( __( 'Search %a' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
+			'not_found' =>  sprintf( __( 'No %s found' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
+			'not_found_in_trash' => sprintf( __( 'No %s found in trash' , $WCMp->text_domain ), __( 'Knowledgebase' , $WCMp->text_domain ) ),
 			'parent_item_colon' => '',
-			'all_items' => __( 'University' , $WCMp->text_domain ),
-			'menu_name' => __( 'University' , $WCMp->text_domain )
+			'all_items' => __( 'Knowledgebase' , $WCMp->text_domain ),
+			'menu_name' => __( 'Knowledgebase' , $WCMp->text_domain )
 		);
 		
 		$args = array(

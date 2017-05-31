@@ -45,7 +45,7 @@ class WCMp_Settings_Gneral_Customer_support_Details {
                 "vendor_customer_support" => array(
                     "title" => __('Vendor customer support', $WCMp->text_domain),
                     'fields' => array(
-                        "can_vendor_add_customer_support_details" => array('title' => __('Vendor Shop Support', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'can_vendor_add_customer_support_details', 'label_for' => 'can_vendor_add_customer_support_details', 'name' => 'can_vendor_add_customer_support_details', 'value' => 'Enable', 'desc' => __('Allow vendors to add vendor shop specific customer support details. If left blank by the vendor, the site wide customer support details would be on display.', $WCMp->text_domain)), // Checkbox
+                        "can_vendor_add_customer_support_details" => array('title' => __('Vendor Shop Support', $WCMp->text_domain), 'type' => 'checkbox', 'id' => 'can_vendor_add_customer_support_details', 'label_for' => 'can_vendor_add_customer_support_details', 'name' => 'can_vendor_add_customer_support_details', 'value' => 'Enable', 'text' => __('Allow vendors to add vendor shop specific customer support details. If left blank by the vendor, the site wide customer support details would be on display.', $WCMp->text_domain)), // Checkbox
                     )
                 )
             ),
@@ -112,7 +112,7 @@ class WCMp_Settings_Gneral_Customer_support_Details {
      */
     public function vendor_return_address_info() {
         global $WCMp;
-        _e('Enter the store wide customer support deails here. If you wish to show your customers vendor specific customer support details, the setting is at WooCommerce>WCMp>Capabilities>Customer Support Setting.', $WCMp->text_domain);
+        _e('Enter the store wide customer support deails here.', $WCMp->text_domain);
     }
 
 }

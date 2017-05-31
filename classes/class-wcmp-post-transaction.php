@@ -115,12 +115,14 @@ class WCMp_Transaction {
                 $trans_id = wp_insert_post($trans_details);
                 if ($trans_id) {
                     update_post_meta($trans_id, 'transaction_mode', $mode);
-                    if (!isset($transaction_detail['transfer_charge']))
+                    if (!isset($transaction_detail['transfer_charge'])) {
                         $transaction_detail['transfer_charge'] = 0;
+                    }
                     update_post_meta($trans_id, 'amount', $transaction_detail['amount'] - $transaction_detail['transfer_charge']);
                     update_post_meta($trans_id, 'transfer_charge', $transaction_detail['transfer_charge']);
-                    if ($paypal_response)
+                    if ($paypal_response) {
                         update_post_meta($trans_id, 'paypal_response', $paypal_response);
+                    }
                     update_post_meta($trans_id, 'commission_detail', $transaction_detail['commission_detail']);
                     if ($transaction_status != 'wcmp_processing') {
                         $email_admin = WC()->mailer()->emails['WC_Email_Vendor_Commission_Transactions'];

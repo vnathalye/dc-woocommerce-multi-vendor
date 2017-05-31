@@ -176,73 +176,21 @@ class WCMp_Report {
 				foreach($orders as $order_obj) {
 					
 					$order = new WC_Order( $order_obj->ID );
-					$items = $order->get_items( 'line_item' );
-					
-					$commission_array = array();
-					
-					foreach( $items as $item_id => $item ) {
-						//if(!isset($item['item_meta']['_vendor_id'][0])) continue;
-						$comm_pro_id = $product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
-						$line_total = wc_get_order_item_meta( $item_id, '_line_total', true );
-						$variation_id = wc_get_order_item_meta( $item_id, '_variation_id', true );
-						
-						if($variation_id) $comm_pro_id = $variation_id;
-						
-						if( $product_id ) {
-							
-							$product_vendors = get_wcmp_product_vendors($product_id);
-							
-							if( $product_vendors ) {
-								if($vendor->id == $product_vendors->id) {
-									$sales += $line_total;
-									$total_sales += $line_total;
-									
-									$args = array(
-										'post_type' =>  'dc_commission',
-										'post_status' => array( 'publish', 'private' ),
-										'posts_per_page' => -1,
-										'meta_query' => array(
-											array(
-												'key' => '_commission_vendor',
-												'value' => absint($product_vendors->term_id),
-												'compare' => '='
-											),
-											array(
-												'key' => '_commission_order_id',
-												'value' => absint($order_obj->ID),
-												'compare' => '='
-											),
-											array(
-												'key' => '_commission_product',
-												'value' => absint($comm_pro_id),
-												'compare' => 'LIKE'
-											),
-										),
-									);
-									$commissions = get_posts( $args );
-									$comm_amount = 0;
-									if(!empty($commissions)) { 
-										foreach($commissions as $commission) {
-											
-											
-											if(in_array($commission->ID, $commission_array)) continue;
-											
-											$comm_amount += (float)get_post_meta($commission->ID, '_commission_amount', true);
-											
-											$commission_array[] = $commission->ID;
-										}
-									}
-									
-									$vendor_earnings += $comm_amount;
-									$total_vendor_earnings  += $comm_amount;
-									$earnings += ( $line_total - $comm_amount );
-									$total_earnings += ( $line_total - $comm_amount );
-									$total_purchased_products++;
-								}
-							}							
-						}						
+					$vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
+					if(is_user_wcmp_vendor(get_current_user_id())){
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_user_id());
+
+                        $total_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
+                        $total_vendor_earnings += $vendors_orders_amount['total'];
+                        $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>get_current_user_id()));
+                        foreach ($current_vendor_orders as $key => $vendor_order) { 
+                            $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                            $total_sales += $item->get_subtotal();
+                            $sales += $item->get_subtotal();
+                            $total_purchased_products++;
+                        }
 					}
-					
+
 					//coupons count
 					$coupon_used = array();
 					$coupons = $order->get_items( 'coupon' );
@@ -263,7 +211,7 @@ class WCMp_Report {
 			}			
 		}
 		
-		return array('total_order_count' => $total_order_count, 'total_vendor_sales' => $total_sales, 'total_vendor_earning' => $total_vendor_earnings, 'total_coupon_discount_value' => $total_coupon_discount_value, 'total_coupon_used' => $total_coupon_used, 'total_customers' => array_unique($total_customers), 'total_purchased_products' => $total_purchased_products);
+		return apply_filters('wcmp_vendor_dashboard_report_data', array('total_order_count' => $total_order_count, 'total_vendor_sales' => $total_sales, 'total_vendor_earning' => $total_vendor_earnings, 'total_coupon_discount_value' => $total_coupon_discount_value, 'total_coupon_used' => $total_coupon_used, 'total_customers' => array_unique($total_customers), 'total_purchased_products' => $total_purchased_products), $vendor);
 	}
 	
 }

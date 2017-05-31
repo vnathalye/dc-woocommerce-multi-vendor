@@ -285,11 +285,11 @@ class WCMp_Settings {
             echo $link;
         echo '</h2>';
 
-        foreach ($this->tabs as $tab => $name) :
-            if ($tab == $current && $tab != 'wcmp-addons') :
-                printf(__("<h2>%s Settings</h2>", $WCMp->text_domain), $name);
-            endif;
-        endforeach;
+//        foreach ($this->tabs as $tab => $name) :
+//            if ($tab == $current && $tab != 'wcmp-addons') :
+//                printf(__("<h2>%s Settings</h2>", $WCMp->text_domain), $name);
+//            endif;
+//        endforeach;
 
         $display_sublink = false;
         if ($current == 'general' || $current == 'payment' || $current == 'vendor' || $current == 'capabilities') {
@@ -720,6 +720,7 @@ class WCMp_Settings {
         $callBack = '';
         switch ($fieldType) {
             case 'input':
+            case 'number':
             case 'text':
             case 'email':
             case 'url':

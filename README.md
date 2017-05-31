@@ -21,7 +21,7 @@ You: [ In disbelief ] It is free and yet “useful”, that’s what you are sel
 
 Riley: Don’t take my word for it, checkout our exhaustive, have-it-all feature list. You will be surprised to find out what other multivendor plugins offer in pro or premium, WC Marketplace has all of them covered.
 ```
-Take a step forward and try our demo.
+Take a step forward and try our [demo](http://wcmpdemos.com/addon/WCMp/my-account/).
 ```
 You: [In your mind- “There should be a catch or a hidden cost. Let me dig more.” ] Well your plugin looks promising. But, I wonder, why this charity?
 

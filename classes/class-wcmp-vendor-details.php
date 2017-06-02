@@ -175,9 +175,11 @@ class WCMp_Vendor {
             if (!is_wp_error($term)) {
                 update_user_meta($this->id, '_vendor_term_id', $term['term_id']);
                 update_woocommerce_term_meta($term['term_id'], '_vendor_user_id', $this->id);
+                $this->term_id = $term['term_id'];
             } else if ($term->get_error_code() == 'term_exists') {
                 update_user_meta($this->id, '_vendor_term_id', $term->get_error_data());
                 update_woocommerce_term_meta($term->get_error_data(), '_vendor_user_id', $this->id);
+                $this->term_id = $term->get_error_data();
             }
         }
     }
@@ -190,15 +192,9 @@ class WCMp_Vendor {
      */
     public function update_page_title($title = '') {
         global $WCMp;
-        $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
-        if(!$vendor_term){
+        $this->term_id = get_user_meta($this->id, '_vendor_term_id',true);
+        if(!$this->term_id){
             $this->generate_term();
-            $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
-        }
-        if (!is_wp_error($vendor_term)) {
-            $this->term_id = $vendor_term->term_id;
-            update_user_meta($this->id, '_vendor_term_id', $this->term_id);
-            update_woocommerce_term_meta($this->term_id, '_vendor_user_id', $this->id);
         }
         if (!empty($title) && isset($this->term_id)) {
             if (!is_wp_error(wp_update_term($this->term_id, $WCMp->taxonomy->taxonomy_name, array('name' => $title)))) {
@@ -216,15 +212,9 @@ class WCMp_Vendor {
      */
     public function update_page_slug($slug = '') {
         global $WCMp;
-        $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
-        if(!$vendor_term){
+        $this->term_id = get_user_meta($this->id, '_vendor_term_id',true);
+        if(!$this->term_id){
             $this->generate_term();
-            $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
-        }
-        if (!is_wp_error($vendor_term)) {
-            $this->term_id = $vendor_term->term_id;
-            update_user_meta($this->id, '_vendor_term_id', $this->term_id);
-            update_woocommerce_term_meta($this->term_id, '_vendor_user_id', $this->id);
         }
         if (!empty($slug) && isset($this->term_id)) {
             if (!is_wp_error(wp_update_term($this->term_id, $WCMp->taxonomy->taxonomy_name, array('slug' => $slug)))) {

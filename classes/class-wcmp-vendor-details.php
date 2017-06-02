@@ -191,6 +191,10 @@ class WCMp_Vendor {
     public function update_page_title($title = '') {
         global $WCMp;
         $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
+        if(!$vendor_term){
+            $this->generate_term();
+            $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
+        }
         if (!is_wp_error($vendor_term)) {
             $this->term_id = $vendor_term->term_id;
             update_user_meta($this->id, '_vendor_term_id', $this->term_id);
@@ -213,6 +217,10 @@ class WCMp_Vendor {
     public function update_page_slug($slug = '') {
         global $WCMp;
         $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
+        if(!$vendor_term){
+            $this->generate_term();
+            $vendor_term = get_term_by('slug', $this->user_data->user_login, $WCMp->taxonomy->taxonomy_name);
+        }
         if (!is_wp_error($vendor_term)) {
             $this->term_id = $vendor_term->term_id;
             update_user_meta($this->id, '_vendor_term_id', $this->term_id);

@@ -30,14 +30,18 @@ foreach ($sale_orders as $sale_order) {
     $item_sub_total = 0;
     $vendor_earning = 0;
     foreach ($sale_results as $sale_result) {
-        $product = new WC_Product($sale_result->product_id);
-        if ($product->get_sku()) {
-            $sku[] = '#' . $product->get_sku();
-        } else {
-            $sku[] = '---';
+        try {
+            $product = new WC_Product($sale_result->product_id);
+            if ($product->get_sku()) {
+                $sku[] = '#' . $product->get_sku();
+            } else {
+                $sku[] = '---';
+            }
+            $item_total += get_metadata('order_item', $sale_result->order_item_id, '_line_total', true);
+            $item_sub_total += get_metadata('order_item', $sale_result->order_item_id, '_line_subtotal', true);
+        } catch (Exception $ex) {
+            
         }
-        $item_total += get_metadata('order_item', $sale_result->order_item_id, '_line_total', true);
-        $item_sub_total += get_metadata('order_item', $sale_result->order_item_id, '_line_subtotal', true);
     }
     $discount = $item_sub_total - $item_total;
     $item_total += ($sales_amount['shipping_amount'] + $sales_amount['tax_amount'] + $sales_amount['shipping_tax_amount']);

@@ -43,7 +43,7 @@ form#respond #submit {
 
 }
 
-.popup-overlay {
+.wcmp_main_page .popup-overlay {
     background: rgba(0, 0, 0, 0.85) none repeat scroll 0 0;
     height: 100%;
     left: 100%;

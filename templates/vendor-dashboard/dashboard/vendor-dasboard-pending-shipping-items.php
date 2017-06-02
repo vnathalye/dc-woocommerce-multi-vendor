@@ -26,6 +26,7 @@ if ($today_or_weekly == 'today') {
 
 foreach ($pending_orders_items as $pending_orders_item) {
     $vendor = get_wcmp_vendor(get_current_user_id());
+    try{
     $order = new WC_Order($pending_orders_item->order_id);
     $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
     $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0));
@@ -65,4 +66,7 @@ foreach ($pending_orders_items as $pending_orders_item) {
     </tr>
 
     <?php
+    } catch (Exception $ex){
+        
+    }
 }

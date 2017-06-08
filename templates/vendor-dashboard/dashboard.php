@@ -112,39 +112,17 @@ if (is_user_wcmp_vendor($user->ID)) :
                     $comission_total_arr[] = $sale_row->commission_id;
                 }
             }
-            foreach ($comission_total_arr as $comission_id) {
-                $vendor_comission = get_metadata('post', $comission_id, '_commission_amount', true);
-                $shipping_comission = get_metadata('post', $comission_id, '_shipping', true);
-                $shipping_total += $shipping_comission;
-                $tax_comission = get_metadata('post', $comission_id, '_tax', true);
-                $tax_total += $tax_comission;
-                $total_comission += ($vendor_comission + $shipping_comission + $tax_comission);
+            foreach ($comission_total_arr as $comission_id){
+                $amount = get_wcmp_vendor_order_amount(array('commission_id' => $comission_id));
+                $total_comission += $amount['total'];
+                $shipping_total += $amount['shipping_amount'];
+                $tax_total += $amount['tax_amount'] + $amount['shipping_tax_amount'];
                 $paid_status = get_metadata('post', $comission_id, '_paid_status', true);
                 if ($paid_status == "unpaid") {
-                    $net_balance_today += ($vendor_comission + $shipping_comission + $tax_comission);
+                    $net_balance_today += $amount['total'];
                 }
             }
-            $int_comission = intval($total_comission);
-            if ($total_comission == $int_comission) {
-                $precision_value_comission = '00';
-            } else {
-                $precision_value_comission = round(($total_comission - $int_comission), 2);
-            }
             $item_total += ($shipping_total + $tax_total);
-            $int_item_total = intval($item_total);
-
-            if ($item_total == $int_item_total) {
-                $precision_value_item = '00';
-            } else {
-                $precision_value_item = round(($item_total - $int_item_total), 2);
-            }
-            $int_net_balance_today = intval($net_balance_today);
-
-            if ($net_balance_today == $int_net_balance_today) {
-                $precision_net_balance = '00';
-            } else {
-                $precision_net_balance = round(($net_balance_today - $int_net_balance_today), 2);
-            }
             ?>
             <input type = "hidden" name="today_sale_current_page" id="today_sale_current_page" value="1">
             <input type = "hidden" name="today_sale_next_page" id="today_sale_next_page" value="<?php
@@ -155,29 +133,17 @@ if (is_user_wcmp_vendor($user->ID)) :
             }
             ?>">
             <input type = "hidden" name="today_sale_total_page" id="today_sale_total_page" value="<?php echo $total_page_sale_today; ?>">
-            <?php
-            if($precision_value_item){
-                $precision_value_array = explode('.', $precision_value_item);
-                if(is_array($precision_value_array)){
-                    $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
-                } else{
-                    $precision_value = '00';
-                }
-            } else{
-                $precision_value = '00';
-            }
-            ?>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$item_total,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Todays Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$total_comission,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Net Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_today, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$net_balance_today,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>
@@ -275,45 +241,19 @@ if (is_user_wcmp_vendor($user->ID)) :
                 if (!in_array($sale_row_week->commission_id, $comission_total_arr_week)) {
                     $comission_total_arr_week[] = $sale_row_week->commission_id;
                 }
-                //$comission_total = get_metadata('post', $object_id, $meta_key, true);
             }
+            
             foreach ($comission_total_arr_week as $comission_id_week) {
-                $vendor_comission_week = get_metadata('post', $comission_id_week, '_commission_amount', true);
-                $shipping_comission_week = get_metadata('post', $comission_id_week, '_shipping', true);
-                $shipping_total_week += $shipping_comission_week;
-                $tax_comission_week = get_metadata('post', $comission_id_week, '_tax', true);
-                $tax_total_week += $tax_comission_week;
-                $total_comission_week += ($vendor_comission_week + $shipping_comission_week + $tax_comission_week);
+                $amount = get_wcmp_vendor_order_amount(array('commission_id' => $comission_id_week));
+                $total_comission_week += $amount['total'];
+                $shipping_total_week += $amount['shipping_amount'];
+                $tax_total_week += $amount['tax_amount'] + $amount['shipping_tax_amount'];
                 $paid_status_week = get_metadata('post', $comission_id_week, '_paid_status', true);
                 if ($paid_status_week == "unpaid") {
-                    $net_balance_week += ($vendor_comission_week + $shipping_comission_week + $tax_comission_week);
+                    $net_balance_week += $amount['total'];
                 }
             }
-            //$total_comission = number_format($total_comission , 2);
-            $int_comission_week = intval($total_comission_week);
-            if ($total_comission_week == $int_comission_week) {
-                $precision_value_comission_week = '00';
-            } else {
-                $precision_value_comission_week = round(($total_comission_week - $int_comission_week), 2);
-            }
             $item_total_week += ($shipping_total_week + $tax_total_week);
-            //$item_total = number_format($item_total,2);
-            $int_item_total_week = intval($item_total_week);
-
-            if ($item_total_week == $int_item_total_week) {
-                $precision_value_item_week = '00';
-            } else {
-                $precision_value_item_week = round(($item_total_week - $int_item_total_week), 2);
-            }
-
-            //$net_balance_today = number_format($net_balance_today,2);
-            $int_net_balance_week = intval($net_balance_week);
-
-            if ($net_balance_week == $int_net_balance_week) {
-                $precision_net_balance_week = '00';
-            } else {
-                $precision_net_balance_week = round(($net_balance_week - $int_net_balance_week), 2);
-            }
             ?>
             <input type = "hidden" name="week_sale_current_page" id="week_sale_current_page" value="1">
             <input type = "hidden" name="week_sale_next_page" id="week_sale_next_page" value="<?php
@@ -322,29 +262,17 @@ if (is_user_wcmp_vendor($user->ID)) :
             }
             ?>">
             <input type = "hidden" name="week_sale_total_page" id="week_sale_total_page" value="<?php echo $total_page_sale_week; ?>">
-            <?php
-            if($precision_value_item_week){
-                $precision_value_array = explode('.', $precision_value_item_week);
-                if(is_array($precision_value_array)){
-                    $precision_value = isset($precision_value_array[1]) ? $precision_value_array[1] : '00';
-                } else{
-                    $precision_value = '00';
-                }
-            } else{
-                $precision_value = '00';
-            }
-            ?>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Sales', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_item_total_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$item_total_week,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Earnings', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_comission_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$total_comission_week,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="wcmp_dashboard_display_box">
                 <h4><?php echo __('Weekly Balance', $WCMp->text_domain); ?></h4>
-                <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo number_format($int_net_balance_week, 0); ?><span>.<?php echo $precision_value; ?></span></h3>
+                <h3><sup><?php list($before, $after) = explode(".", number_format((float)$net_balance_week,2)); echo get_woocommerce_currency_symbol(); ?></sup><?php echo $before; ?><span>.<?php echo $after; ?></span></h3>
             </div>
             <div class="clear"></div>
             <h3 class="wcmp_black_headding"><?php echo __('Sales', $WCMp->text_domain); ?></h3>

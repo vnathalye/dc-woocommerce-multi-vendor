@@ -29,7 +29,7 @@ class WCMp_Shortcode {
         // Products by vendor
         add_shortcode('wcmp_products', array(&$this, 'wcmp_show_products'));
 
-        add_shortcode('wcmp_recent_products', array(&$this, 'wcmp_recent_products'));
+        //add_shortcode('wcmp_recent_products', array(&$this, 'wcmp_recent_products'));
         //Featured products by vendor
         add_shortcode('wcmp_featured_products', array(&$this, 'wcmp_show_featured_products'));
         // Sale products by vendor
@@ -763,7 +763,7 @@ class WCMp_Shortcode {
 
         // Default ordering args
         $ordering_args = WC()->query->get_catalog_ordering_args($orderby, $order);
-
+        $meta_query = WC()->query->get_meta_query();
         $args = array(
             'post_type' => 'product',
             'post_status' => 'publish',
@@ -771,13 +771,7 @@ class WCMp_Shortcode {
             'orderby' => $ordering_args['orderby'],
             'order' => $ordering_args['order'],
             'posts_per_page' => $per_page,
-            'meta_query' => array(
-                array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                )
-            ),
+            'meta_query' => $meta_query,
             'tax_query' => array(
                 array(
                     'taxonomy' => 'product_cat',

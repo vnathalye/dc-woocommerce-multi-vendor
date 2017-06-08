@@ -31,14 +31,16 @@ foreach ($sale_orders as $sale_order) {
     $vendor_earning = 0;
     foreach ($sale_results as $sale_result) {
         try {
-            $product = new WC_Product($sale_result->product_id);
-            if ($product->get_sku()) {
-                $sku[] = '#' . $product->get_sku();
-            } else {
-                $sku[] = '---';
+            $product = wc_get_product($sale_result->product_id);
+            if ($product) {
+                if ($product->get_sku()) {
+                    $sku[] = '#' . $product->get_sku();
+                } else {
+                    $sku[] = '---';
+                }
+                $item_total += get_metadata('order_item', $sale_result->order_item_id, '_line_total', true);
+                $item_sub_total += get_metadata('order_item', $sale_result->order_item_id, '_line_subtotal', true);
             }
-            $item_total += get_metadata('order_item', $sale_result->order_item_id, '_line_total', true);
-            $item_sub_total += get_metadata('order_item', $sale_result->order_item_id, '_line_subtotal', true);
         } catch (Exception $ex) {
             
         }

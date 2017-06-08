@@ -26,47 +26,49 @@ if ($today_or_weekly == 'today') {
 
 foreach ($pending_orders_items as $pending_orders_item) {
     $vendor = get_wcmp_vendor(get_current_user_id());
-    try{
-    $order = new WC_Order($pending_orders_item->order_id);
-    $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
-    $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0));
-    $product_sku = array();
-    $product_name = array();
-    $product_dimention = array();
-    foreach ($pending_shipping_products as $pending_shipping_product) {
-        $product = new WC_Product($pending_shipping_product->product_id);
-        $product_sku[] = $product->get_sku() ? $product->get_sku() : '---';
-        $product_name[] = $product->get_title();
-        if ($pending_shipping_product->variation_id != 0) {
-            $product = new WC_Product_Variable($pending_shipping_product->variation_id);
+    try {
+        $order = new WC_Order($pending_orders_item->order_id);
+        $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
+        $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0));
+        $product_sku = array();
+        $product_name = array();
+        $product_dimention = array();
+        foreach ($pending_shipping_products as $pending_shipping_product) {
+            $product = wc_get_product($pending_shipping_product->product_id);
+            if ($product) {
+                $product_sku[] = $product->get_sku() ? $product->get_sku() : '---';
+                $product_name[] = $product->get_title();
+                if ($pending_shipping_product->variation_id != 0) {
+                    $product = wc_get_product($pending_shipping_product->variation_id);
+                }
+                $product_dimention[] = array(
+                    'width' => $product->get_width() ? $product->get_width() : '..',
+                    'height' => $product->get_height() ? $product->get_height() : '..',
+                    'length' => $product->get_length() ? $product->get_length() : '..',
+                    'weight' => $product->get_weight() ? $product->get_weight() : '..'
+                );
+            }
         }
-        $product_dimention[] = array(
-            'width' => $product->get_width() ? $product->get_width() : '..',
-            'height' => $product->get_height() ? $product->get_height() : '..',
-            'length' => $product->get_length() ? $product->get_length() : '..',
-            'weight' => $product->get_weight() ? $product->get_weight() : '..'
-        );
-    }
-    $dimentions = array();
-    foreach ($product_dimention as $dimension) {
-        $output = implode('/ ', array_map(
-                        function ($v, $k) {
-                    return sprintf("%s", $v);
-                }, $dimension, array_keys($dimension)
-        ));
-        $dimentions[] = $output;
-    }
-    ?>
-    <tr>
-        <td align="center" ><?php echo implode(' , ', $product_name); ?> </td>
-        <td align="center" class="no_display" ><?php echo @date('d/m', strtotime($order->get_date_created())); ?></td>
-        <td align="center" class="no_display" >( <?php echo implode(' ) , ( ', $dimentions) ?> )</td>
-        <td align="left" ><?php echo $order->get_formatted_shipping_address(); ?></td>
-        <td align="center" class="no_display" ><?php echo wc_price($pending_shipping_amount['shipping_amount']); ?></td>
-    </tr>
+        $dimentions = array();
+        foreach ($product_dimention as $dimension) {
+            $output = implode('/ ', array_map(
+                            function ($v, $k) {
+                        return sprintf("%s", $v);
+                    }, $dimension, array_keys($dimension)
+            ));
+            $dimentions[] = $output;
+        }
+        ?>
+        <tr>
+            <td align="center" ><?php echo implode(' , ', $product_name); ?> </td>
+            <td align="center" class="no_display" ><?php echo @date('d/m', strtotime($order->get_date_created())); ?></td>
+            <td align="center" class="no_display" >( <?php echo implode(' ) , ( ', $dimentions) ?> )</td>
+            <td align="left" ><?php echo $order->get_formatted_shipping_address(); ?></td>
+            <td align="center" class="no_display" ><?php echo wc_price($pending_shipping_amount['shipping_amount']); ?></td>
+        </tr>
 
-    <?php
-    } catch (Exception $ex){
+        <?php
+    } catch (Exception $ex) {
         
     }
 }

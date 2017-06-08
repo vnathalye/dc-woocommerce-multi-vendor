@@ -141,14 +141,18 @@ class WCMp_Commission {
                     $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td>';
                     if (!empty($fields[$k])) {
                         foreach ($fields[$k] as $dat) {
-                            $product = new WC_Product($dat);
+                            $product = wc_get_product($dat);
                             $html .= '<table>';
                             $html .= '<tr>';
                             $html .= '<td style="padding:0">';
-                            $html .= get_the_post_thumbnail($product->get_id(), array('50', '50'));
+                            $html .= get_the_post_thumbnail($product->get_id(), array('50', '50')) ? get_the_post_thumbnail($product->get_id(), array('50', '50')) : wc_placeholder_img(array('50', '50'));
                             $html .= '</td>';
                             $html .= '<td>';
-                            $html .= '<a href="' . get_edit_post_link($product->get_id()) . '">' . $product->get_title() . '</a>';
+                            if($product->get_type() == 'variation'){
+                                $html .= '<a href="' . get_edit_post_link($product->get_parent_id()) . '">' . $product->get_title() . '</a>';
+                            } else{
+                                $html .= '<a href="' . get_edit_post_link($product->get_id()) . '">' . $product->get_title() . '</a>';
+                            }
                             $html .= '</td>';
                             $html .= '</tr>';
                             $html .= '</table>';

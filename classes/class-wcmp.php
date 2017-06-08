@@ -60,12 +60,12 @@ final class WCMp {
         $this->init_masspay_cron();
         // Intialize WCMp
         add_action('init', array(&$this, 'init'));
-        
-        add_action('admin_init', array(&$this,'wcmp_admin_init'));
+
+        add_action('admin_init', array(&$this, 'wcmp_admin_init'));
         // Intialize WCMp Emails
         add_filter('woocommerce_email_classes', array(&$this, 'wcmp_email_classes'));
         // WCMp Update Notice
-        add_action('in_plugin_update_message-dc-woocommerce-multi-vendor/dc_product_vendor.php', array(&$this, 'wcmp_plugin_update_message')); 
+        add_action('in_plugin_update_message-dc-woocommerce-multi-vendor/dc_product_vendor.php', array(&$this, 'wcmp_plugin_update_message'));
     }
 
     /**
@@ -128,7 +128,7 @@ final class WCMp {
         $this->email = new WCMp_Email();
         // WCMp Fields Lib
         $this->wcmp_wp_fields = $this->library->load_wp_fields();
-        
+
         // Init user roles
         $this->init_user_roles();
         // Init product vendor custom post types
@@ -145,10 +145,11 @@ final class WCMp {
         $this->init_vendor_coupon();
         do_action('wcmp_init');
     }
+
     /**
      * plugin admin init callback
      */
-    function wcmp_admin_init(){
+    function wcmp_admin_init() {
         global $WCMp;
         $previous_plugin_version = get_option('dc_product_vendor_plugin_db_version');
         /* Migrate WCMp data */
@@ -431,16 +432,26 @@ final class WCMp {
         $upgrade_notice = '';
 
         if (preg_match($regexp, $content, $matches)) {
-            $version = trim($matches[1]);
             $notices = (array) preg_split('~[\r\n]+~', trim($matches[2]));
+            
+            // Convert the full version strings to minor versions.
+            $notice_version_parts = explode('.', trim($matches[1]));
+            $current_version_parts = explode('.', WCMp_PLUGIN_VERSION);
+
+            if (3 !== sizeof($notice_version_parts)) {
+                return;
+            }
+
+            $notice_version = $notice_version_parts[0] . '.' . $notice_version_parts[1];
+            $current_version = $current_version_parts[0] . '.' . $current_version_parts[1];
 
             // Check the latest stable version and ignore trunk.
-            if ($version === $new_version && version_compare(WCMp_PLUGIN_VERSION, $version, '<')) {
-                
+            if (version_compare( $current_version, $notice_version, '<' )) {
+
                 $upgrade_notice .= '<div class="wcmp_plugin_upgrade_notice dashicons-before">';
 
                 foreach ($notices as $index => $line) {
-                    $upgrade_notice .= wp_kses_post(preg_replace('~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $line));
+                    $upgrade_notice .= preg_replace('~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $line);
                 }
 
                 $upgrade_notice .= '</div> ';

@@ -411,8 +411,9 @@ class WCMp_User {
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
             $vendor_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
             if ($vendor_submit_coupon) {
+                $caps[] = 'edit_shop_coupon';
                 $caps[] = 'edit_shop_coupons';
-                $caps[] = 'read_shop_coupons';
+                $caps[] = 'delete_shop_coupon';
                 $caps[] = 'delete_shop_coupons';
                 if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
                     $caps[] = "publish_shop_coupons";
@@ -1033,7 +1034,7 @@ class WCMp_User {
                             <a class="button-primary" target="_blank" href=<?php echo $vendor->permalink; ?>>View</a>
                         </td>
                     </tr>
-            <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
+                    <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
                 </tbody>
             </table>
             <?php
@@ -1151,7 +1152,7 @@ class WCMp_User {
                 delete_user_meta($user_id, '_vendor_is_policy_off');
             }
         }
-        //$this->user_change_cap($user_id);
+        $this->user_change_cap($user_id);
 
         if (is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] != 'dc_vendor') {
             $vendor = get_wcmp_vendor($user_id);
@@ -1212,31 +1213,45 @@ class WCMp_User {
 
         $product_caps = array("edit_product", "delete_product", "edit_products", "delete_published_products", "delete_products", "edit_published_products");
         $is_submit_product = get_user_meta($user_id, '_vendor_submit_product', true);
+        foreach ($product_caps as $product_cap_remove) {
+            $user->remove_cap($product_cap_remove);
+        }
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
             if ($is_submit_product) {
-                foreach ($product_caps as $product_cap_add) {
-                    $user->add_cap($product_cap_add);
+                $caps = array();
+                $caps[] = "edit_product";
+                $caps[] = "delete_product";
+                $caps[] = "edit_products";
+                $caps[] = "delete_products";
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
+                    $caps[] = "edit_published_products";
+                    $caps[] = 'delete_published_products';
                 }
-            }
-        }
-        if (empty($is_submit_product)) {
-            foreach ($product_caps as $product_cap_remove) {
-                $user->remove_cap($product_cap_remove);
+                foreach ($caps as $cap) {
+                    $user->add_cap($cap);
+                }
             }
         }
 
-        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "delete_published_shop_coupons", "delete_shop_coupons", "edit_published_shop_coupons");
+        $coupon_caps = array("edit_shop_coupon", "delete_shop_coupon", "edit_shop_coupons", "delete_published_shop_coupons", "delete_shop_coupons", "edit_published_shop_coupons");
         $is_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
+        foreach ($coupon_caps as $coupon_cap_remove) {
+            $user->remove_cap($coupon_cap_remove);
+        }
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
             if ($is_submit_coupon) {
-                foreach ($coupon_caps as $coupon_cap_add) {
-                    $user->add_cap($coupon_cap_add);
+                $caps = array();
+                $caps[] = 'edit_shop_coupon';
+                $caps[] = 'edit_shop_coupons';
+                $caps[] = 'delete_shop_coupon';
+                $caps[] = 'delete_shop_coupons';
+                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
+                    $caps[] = "edit_published_shop_coupons";
+                    $caps[] = "delete_published_shop_coupons";
                 }
-            }
-        }
-        if (empty($is_submit_coupon)) {
-            foreach ($coupon_caps as $coupon_cap_remove) {
-                $user->remove_cap($coupon_cap_remove);
+                foreach ($caps as $cap) {
+                    $user->add_cap($cap);
+                }
             }
         }
     }

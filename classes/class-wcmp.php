@@ -37,7 +37,9 @@ final class WCMp {
     public $transaction;
     public $email;
     public $review_rating;
+    public $coupon;
     public $more_product_array = array();
+    public $payment_gateway;
 
     /**
      * Class construct
@@ -58,6 +60,7 @@ final class WCMp {
         $this->init_custom_widgets();
         // Intialize Crons
         $this->init_masspay_cron();
+        
         // Intialize WCMp
         add_action('init', array(&$this, 'init'));
 
@@ -135,6 +138,9 @@ final class WCMp {
         $this->init_custom_post();
         // Init custom reports
         $this->init_custom_reports();
+        
+        // Init payment gateways
+        //$this->init_payment_gateway();
         // Init paypal masspay
         $this->init_paypal_masspay();
         // Init paypal payout
@@ -177,9 +183,10 @@ final class WCMp {
      * @return void
      */
     public function load_plugin_textdomain() {
-        $locale = apply_filters('plugin_locale', get_locale(), $this->token);
-        load_textdomain($this->text_domain, WP_LANG_DIR . "/plugins/wcmp-$locale.mo");
-        load_textdomain($this->text_domain, $this->plugin_path . "/languages/wcmp-$locale.mo");
+        $locale = is_admin() && function_exists('get_user_locale') ? get_user_locale() : get_locale();
+        $locale = apply_filters('plugin_locale', $locale, 'dc-woocommerce-multi-vendor');
+        load_textdomain('dc-woocommerce-multi-vendor', WP_LANG_DIR . '/dc-woocommerce-multi-vendor/dc-woocommerce-multi-vendor-' . $locale . '.mo');
+        load_plugin_textdomain('dc-woocommerce-multi-vendor', false, plugin_basename(dirname(dirname(__FILE__))) . '/languages');
     }
 
     /**
@@ -332,6 +339,11 @@ final class WCMp {
         $this->load_class('masspay-cron');
         $this->masspay_cron = new WCMp_MassPay_Cron();
     }
+    
+    private function init_payment_gateway(){
+        $this->load_class('payment-gateways');
+        $this->payment_gateway = new WCMp_Payment_Gateways();
+    }
 
     /**
      * Init Vendor Coupon
@@ -341,7 +353,7 @@ final class WCMp {
      */
     function init_vendor_coupon() {
         $this->load_class('coupon');
-        new WCMp_Coupon();
+        $this->coupon = new WCMp_Coupon();
     }
 
     /**
@@ -433,7 +445,7 @@ final class WCMp {
 
         if (preg_match($regexp, $content, $matches)) {
             $notices = (array) preg_split('~[\r\n]+~', trim($matches[2]));
-            
+
             // Convert the full version strings to minor versions.
             $notice_version_parts = explode('.', trim($matches[1]));
             $current_version_parts = explode('.', WCMp_PLUGIN_VERSION);
@@ -446,7 +458,7 @@ final class WCMp {
             $current_version = $current_version_parts[0] . '.' . $current_version_parts[1];
 
             // Check the latest stable version and ignore trunk.
-            if (version_compare( $current_version, $notice_version, '<' )) {
+            if (version_compare($current_version, $notice_version, '<')) {
 
                 $upgrade_notice .= '<div class="wcmp_plugin_upgrade_notice dashicons-before">';
 

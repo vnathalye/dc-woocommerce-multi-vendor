@@ -58,6 +58,10 @@ final class WCMp {
         }
         // Intialize WCMp Widgets
         $this->init_custom_widgets();
+                
+        // Init payment gateways
+        $this->init_payment_gateway();
+        
         // Intialize Crons
         $this->init_masspay_cron();
         
@@ -88,7 +92,13 @@ final class WCMp {
         $this->endpoints = new WCMp_Endpoints();
         // Init custom capabilities
         $this->init_custom_capabilities();
-        // Init main admin action class 
+        
+        // Init product vendor custom post types
+        $this->init_custom_post();
+        
+        $this->load_class('payment-gateways');
+        $this->payment_gateway = new WCMp_Payment_Gateways();
+        
         $this->load_class('seller-review-rating');
         $this->review_rating = new WCMp_Seller_Review_Rating();
         // Init ajax
@@ -134,17 +144,10 @@ final class WCMp {
 
         // Init user roles
         $this->init_user_roles();
-        // Init product vendor custom post types
-        $this->init_custom_post();
+        
         // Init custom reports
         $this->init_custom_reports();
         
-        // Init payment gateways
-        //$this->init_payment_gateway();
-        // Init paypal masspay
-        $this->init_paypal_masspay();
-        // Init paypal payout
-        $this->init_paypal_payout();
         // Init vendor dashboard
         $this->init_vendor_dashboard();
         // Init vendor coupon
@@ -296,28 +299,6 @@ final class WCMp {
     }
 
     /**
-     * Init WCMp vendor MassPay.
-     *
-     * @access public
-     * @return void
-     */
-    function init_paypal_masspay() {
-        $this->load_class('paypal-masspay');
-        $this->paypal_masspay = new WCMp_Paypal_Masspay();
-    }
-
-    /**
-     * Init WCMp vendor MassPay.
-     *
-     * @access public
-     * @return void
-     */
-    function init_paypal_payout() {
-        $this->load_class('paypal-payout');
-        $this->paypal_payout = new WCMp_Paypal_PAyout();
-    }
-
-    /**
      * Init WCMp Dashboard Function
      *
      * @access public
@@ -341,8 +322,7 @@ final class WCMp {
     }
     
     private function init_payment_gateway(){
-        $this->load_class('payment-gateways');
-        $this->payment_gateway = new WCMp_Payment_Gateways();
+        $this->load_class('payment-gateway');
     }
 
     /**

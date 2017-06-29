@@ -170,10 +170,10 @@ div.rowhead div.rowsub{
 	}
 	
 }
-.singleproductmultivendor_tab .container{
+.singleproductmultivendor_tab .container, .woocommerce-Tabs-panel--singleproductmultivendor .container{
 	max-width: 100%;
 } 
-.singleproductmultivendor_tab .wc-accordion-content{
+.singleproductmultivendor_tab .wc-accordion-content, .woocommerce-Tabs-panel--singleproductmultivendor{
 	position: relative;
 }
 .ajax_loader_class_msg {

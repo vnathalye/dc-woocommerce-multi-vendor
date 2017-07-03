@@ -140,20 +140,22 @@ class WCMp_Commission {
                     if (!empty($fields[$k])) {
                         foreach ($fields[$k] as $dat) {
                             $product = wc_get_product($dat);
-                            $html .= '<table>';
-                            $html .= '<tr>';
-                            $html .= '<td style="padding:0">';
-                            $html .= get_the_post_thumbnail($product->get_id(), array('50', '50')) ? get_the_post_thumbnail($product->get_id(), array('50', '50')) : wc_placeholder_img(array('50', '50'));
-                            $html .= '</td>';
-                            $html .= '<td>';
-                            if ($product->get_type() == 'variation') {
-                                $html .= '<a href="' . get_edit_post_link($product->get_parent_id()) . '">' . $product->get_title() . '</a>';
-                            } else {
-                                $html .= '<a href="' . get_edit_post_link($product->get_id()) . '">' . $product->get_title() . '</a>';
+                            if ($product) {
+                                $html .= '<table>';
+                                $html .= '<tr>';
+                                $html .= '<td style="padding:0">';
+                                $html .= get_the_post_thumbnail($product->get_id(), array('50', '50')) ? get_the_post_thumbnail($product->get_id(), array('50', '50')) : wc_placeholder_img(array('50', '50'));
+                                $html .= '</td>';
+                                $html .= '<td>';
+                                if ($product->get_type() == 'variation') {
+                                    $html .= '<a href="' . get_edit_post_link($product->get_parent_id()) . '">' . $product->get_title() . '</a>';
+                                } else {
+                                    $html .= '<a href="' . get_edit_post_link($product->get_id()) . '">' . $product->get_title() . '</a>';
+                                }
+                                $html .= '</td>';
+                                $html .= '</tr>';
+                                $html .= '</table>';
                             }
-                            $html .= '</td>';
-                            $html .= '</tr>';
-                            $html .= '</table>';
                         }
                     }
                     $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";

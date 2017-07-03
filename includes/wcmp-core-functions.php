@@ -1623,12 +1623,45 @@ if (!function_exists('do_wcmp_commission_data_migrate')) {
 
 }
 
-if(!function_exists('wcmp_unpaid_commission_count')){
+if (!function_exists('wcmp_unpaid_commission_count')) {
+
     /**
      * Count unpaid commisssion
      * @return int
      */
-    function wcmp_unpaid_commission_count(){
-        return count(array_unique(wp_list_pluck(get_wcmp_vendor_orders(array('commission_status' => 'unpaid', 'is_trashed' => '')),'commission_id')));
+    function wcmp_unpaid_commission_count() {
+        return count(array_unique(wp_list_pluck(get_wcmp_vendor_orders(array('commission_status' => 'unpaid', 'is_trashed' => '')), 'commission_id')));
     }
+
+}
+
+if (!function_exists('wcmp_count_commission')) {
+
+    function wcmp_count_commission() {
+        $args = array(
+            'post_type' => 'dc_commission',
+            'post_status' => array('private', 'publish')
+        );
+        $commission_id = wp_list_pluck(get_posts($args), 'ID');
+        $commission_count = new stdClass();
+        $commission_count->paid = $commission_count->unpaid = $commission_count->reverse = 0;
+        foreach ($commission_id as $id){
+            $commission_status = get_post_meta($id, '_paid_status', true);
+            if($commission_status){
+                switch($commission_status){
+                    case 'paid':
+                        $commission_count->paid += count($commission_count->paid);
+                        break;
+                    case 'unpaid':
+                        $commission_count->unpaid += count($commission_count->unpaid);
+                        break;
+                    case 'reverse':
+                        $commission_count->reverse += count($commission_count->reverse);
+                        break;
+                }
+            }
+        }
+        return $commission_count;
+    }
+
 }

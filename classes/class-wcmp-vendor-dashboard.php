@@ -465,7 +465,7 @@ Class WCMp_Admin_Dashboard {
                                         ?>
                                         <tr>
                                             <td>
-                                                <label><?php echo $instance_field['title']; ?></label>
+                                                <label><?php echo $instance_field['title'] . ' - ' . $raw_method->title; ?></label>
                                             </td>
                                             <td>
                                                 <input name="vendor_shipping_data[<?php echo $option_name; ?>]" type="text" value='<?php echo $instance_settings; ?>' placeholder="<?php echo $instance_field['placeholder']; ?>" />

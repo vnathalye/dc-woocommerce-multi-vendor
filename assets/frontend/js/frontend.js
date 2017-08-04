@@ -62,4 +62,20 @@ jQuery(document).ready(function ($) {
         }
 
     });
+
+    $('#wcmp_widget_vendor_search .search_keyword').on('input', function() {
+
+        var vendor_search_data = {
+            action: 'vendor_list_by_search_keyword',
+            s: $(this).val(),
+            vendor_search_nonce: $('#wcmp_vendor_search_nonce').val()
+        }
+
+        $.post(woocommerce_params.ajax_url, vendor_search_data, function (response) {
+            $('#wcmp_widget_vendor_list').html('');
+            $('#wcmp_widget_vendor_list').html(response);
+
+        });
+
+    });
 });

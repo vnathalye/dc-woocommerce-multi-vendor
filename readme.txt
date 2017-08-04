@@ -36,7 +36,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 
 <strong>You:</strong> [In your mind- "There should be a catch or a hidden cost. Let me dig more." ] Well your plugin looks promising. But, I wonder, why this charity?
 
-<strong>Riley:</strong> No question of charity. We provide [paid customization](https://wc-marketplace.com/contact-us/) services for marketplace owners to meet their specific business goals. Also, we have categorized our bouquet of features under necessity and extras. So if marketplaces need these nice-to-have extras, we have add-ons for them. But you will always have your fully functional multi vendor store with or without them. [Check out our add-ons](https://wc-marketplace.com/addons).
+<strong>Riley:</strong> No question of charity. We provide [paid customization](https://wc-marketplace.com/custom-development/) services for marketplace owners to meet their specific business goals. Also, we have categorized our bouquet of features under necessity and extras. So if marketplaces need these nice-to-have extras, we have add-ons for them. But you will always have your fully functional multi vendor store with or without them. [Check out our add-ons](https://wc-marketplace.com/addons).
 
 <strong>You:</strong> [Got ya!] So, you have just tweaked the game in your favor. Others offer "pro" and you have your own bagful of paid "add-ons". Right?
 

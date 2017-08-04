@@ -10,38 +10,28 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-global $woocommerce, $WCMp;
-$vendor_sort_type = '';
-if(isset($_GET['vendor_sort_type']))
-$vendor_sort_type = $_GET['vendor_sort_type'];
+global $WCMp;
 ?>
 <div class="vendor_list woocommerce">
 	<form name="vendor_sort" method="get">
 		<div class="vendor_sort">
 			<select class="select short" id="vendor_sort_type" name="vendor_sort_type">
-				<option value="registered" <?php if( $vendor_sort_type == 'registered'){ echo 'selected="selected"'; } ?> ><?php echo __('By date','dc-woocommerce-multi-vendor');?></option>
-				<option value="name" <?php if( $vendor_sort_type == 'name'){ echo 'selected="selected"'; } ?> ><?php echo __('By Alphabetically','dc-woocommerce-multi-vendor');?></option>
-				<option value="category" <?php if( $vendor_sort_type == 'category'){ echo 'selected="selected"'; } ?> ><?php echo __('By Category','dc-woocommerce-multi-vendor');?></option>
+				<option value="registered" <?php if( $sort_type == 'registered'){ echo 'selected="selected"'; } ?> ><?php echo __('By date','dc-woocommerce-multi-vendor');?></option>
+				<option value="name" <?php if( $sort_type == 'name'){ echo 'selected="selected"'; } ?> ><?php echo __('By Alphabetically','dc-woocommerce-multi-vendor');?></option>
+				<option value="category" <?php if( $sort_type == 'category'){ echo 'selected="selected"'; } ?> ><?php echo __('By Category','dc-woocommerce-multi-vendor');?></option>
 			</select>
 			<?php 
-			if(isset($_GET['vendor_sort_type'])) {
-				if($_GET['vendor_sort_type'] == 'category') {
-					$category_terms = get_terms('product_cat');
-					$select_html = '&nbsp&nbsp&nbsp<select class="select" id="vendor_sort_category" name="vendor_sort_category">';
-					foreach( $category_terms as $terms ) {
-						if( isset( $_GET['vendor_sort_category'] ) ) {
-							if( $_GET['vendor_sort_category'] == $terms->term_id ) {
-								$select_html .= '<option selected value="' . $terms->term_id . '">' . $terms->name . '</option>';
-							} else {
-								$select_html .= '<option value="' . $terms->term_id . '">' . $terms->name . '</option>';
-							}
-						}
-					}
-					echo $select_html .= '</select>';
-				}
-			}
-			?>
-			&nbsp;&nbsp;&nbsp;					
+                        $product_category = get_terms('product_cat');
+                        $options_html = '';
+                        foreach ($product_category as $category){
+                            if($category->term_id == $selected_category){
+                                $options_html .= '<option value="'.esc_attr($category->term_id).'" selected="selected">'.esc_html($category->name).'</option>';
+                            } else{
+                                $options_html .= '<option value="'.esc_attr($category->term_id).'">'.esc_html($category->name).'</option>';
+                            }
+                        }
+                        ?>
+                        <select name="vendor_sort_category" id="vendor_sort_category" class="select"><?php echo $options_html; ?></select>					
 			<input value="<?php echo __('Sort','dc-woocommerce-multi-vendor');?>" type="submit">
 		</div>
 	</form>

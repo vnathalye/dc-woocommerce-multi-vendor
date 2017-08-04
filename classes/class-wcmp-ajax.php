@@ -49,9 +49,6 @@ class WCMp_Ajax {
         add_action('wp_ajax_wcmp_dismiss_dashboard_announcements', array($this, 'wcmp_dismiss_dashboard_message'));
         add_action('wp_ajax_nopriv_wcmp_dismiss_dashboard_announcements', array($this, 'wcmp_dismiss_dashboard_message'));
 
-        // Sort vendors by category
-        add_action('wp_ajax_vendor_list_by_category', array($this, 'vendor_list_by_category'));
-        add_action('wp_ajax_nopriv_vendor_list_by_category', array($this, 'vendor_list_by_category'));
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
             // Product auto suggestion
             add_action('wp_ajax_wcmp_auto_search_product', array($this, 'wcmp_auto_suggesion_product'));
@@ -182,25 +179,6 @@ class WCMp_Ajax {
         } else {
             echo "<div>" . __('No Suggestion found', 'dc-woocommerce-multi-vendor') . "</div>";
         }
-        die;
-    }
-
-    function vendor_list_by_category() {
-        global $WCMp;
-        $html = '';
-
-        $category_terms = get_terms('product_cat');
-
-        $html = '&nbsp&nbsp&nbsp<select class="select" id="vendor_sort_category" name="vendor_sort_category">';
-
-        foreach ($category_terms as $terms) {
-            $html .= '<option value="' . $terms->term_id . '">' . $terms->name . '</option>';
-        }
-
-        $html .= '</select>';
-
-        echo $html;
-
         die;
     }
 

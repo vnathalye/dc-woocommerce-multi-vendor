@@ -269,7 +269,8 @@ class WCMp_User {
                 if (in_array('dc_vendor', $old_role)) {
                     $vendor = get_wcmp_vendor($user_id);
                     if ($vendor) {
-                        wp_delete_term($vendor->term_id, 'dc_vendor_shop');
+                        wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
+                        delete_user_meta($user_id, '_vendor_term_id');
                     }
                 }
                 break;
@@ -1158,7 +1159,8 @@ class WCMp_User {
             if ($_POST['role'] != 'dc_pending_vendor') {
                 $user->remove_role('dc_pending_vendor');
             }
-            wp_delete_term($vendor->term_id, 'dc_vendor_shop');
+            wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
+            delete_user_meta($user_id, '_vendor_term_id');
         }
     }
 
@@ -1195,6 +1197,7 @@ class WCMp_User {
             }
 
             wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
+            delete_user_meta($user_id, '_vendor_term_id');
         }
     }
 

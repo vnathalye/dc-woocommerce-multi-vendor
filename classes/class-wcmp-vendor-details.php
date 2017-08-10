@@ -192,8 +192,8 @@ class WCMp_Vendor {
      */
     public function update_page_title($title = '') {
         global $WCMp;
-        $this->term_id = get_user_meta($this->id, '_vendor_term_id',true);
-        if(!$this->term_id){
+        $this->term_id = get_user_meta($this->id, '_vendor_term_id', true);
+        if (!$this->term_id) {
             $this->generate_term();
         }
         if (!empty($title) && isset($this->term_id)) {
@@ -212,8 +212,8 @@ class WCMp_Vendor {
      */
     public function update_page_slug($slug = '') {
         global $WCMp;
-        $this->term_id = get_user_meta($this->id, '_vendor_term_id',true);
-        if(!$this->term_id){
+        $this->term_id = get_user_meta($this->id, '_vendor_term_id', true);
+        if (!$this->term_id) {
             $this->generate_term();
         }
         if (!empty($slug) && isset($this->term_id)) {
@@ -510,7 +510,6 @@ class WCMp_Vendor {
                 </td>
                 <td scope="col" style="text-align:left; border: 1px solid #eee;">
                     <?php
-                    
                     $variation_id = 0;
                     if (isset($item['variation_id']) && !empty($item['variation_id'])) {
                         $variation_id = $item['variation_id'];
@@ -560,7 +559,7 @@ class WCMp_Vendor {
             if ($is_ship)
                 echo "\n" . sprintf(__('Total: %s', 'dc-woocommerce-multi-vendor'), $order->get_formatted_line_subtotal($item));
             else
-                echo "\n" . sprintf(__('Commission: %s', 'dc-woocommerce-multi-vendor'), get_woocommerce_currency_symbol ().$commission_amount['commission_amount']);
+                echo "\n" . sprintf(__('Commission: %s', 'dc-woocommerce-multi-vendor'), get_woocommerce_currency_symbol() . $commission_amount['commission_amount']);
 
             echo "\n\n";
         }
@@ -663,14 +662,18 @@ class WCMp_Vendor {
         _deprecated_function('get_vendor_total_tax_and_shipping', '2.6.6', 'get_wcmp_vendor_order_amount');
         return get_wcmp_vendor_order_amount(array('vendor_id' => $this->id, 'order_id' => $order, 'product_id' => $product));
     }
-    
-    public function is_shipping_enable(){
+
+    public function is_shipping_enable() {
         global $WCMp;
         $is_enable = false;
         $is_capability_shipping_tab_enable = get_wcmp_vendor_settings('shipping', 'capabilities', 'product');
-        if($WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($this->id, '_vendor_give_shipping', true) && $is_capability_shipping_tab_enable == 'Enable' && wc_shipping_enabled()){
+        if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($this->id, '_vendor_give_shipping', true) && $is_capability_shipping_tab_enable == 'Enable' && wc_shipping_enabled()) {
             $is_enable = true;
         }
+        return apply_filters('is_wcmp_vendor_shipping_enable', $is_enable);
+    }
+
+    public function is_shipping_tab_enable() {
         $is_enable_flat_rate = false;
         $raw_zones = WC_Shipping_Zones::get_zones();
         $raw_zones[] = array('id' => 0);
@@ -678,16 +681,16 @@ class WCMp_Vendor {
             $zone = new WC_Shipping_Zone($raw_zone['id']);
             $raw_methods = $zone->get_shipping_methods();
             foreach ($raw_methods as $raw_method) {
-                if ($raw_method->id == 'flat_rate'){
+                if ($raw_method->id == 'flat_rate') {
                     $is_enable_flat_rate = true;
                 }
             }
         }
-        $is_shipping_enable = false;
-        if($is_enable && $is_enable_flat_rate){
-            $is_shipping_enable = true;
+        $is_shipping_flat_rate_enable = false;
+        if ($this->is_shipping_enable() && $is_enable_flat_rate) {
+            $is_shipping_flat_rate_enable = true;
         }
-        return apply_filters('is_wcmp_vendor_shipping_enable', $is_shipping_enable, $is_enable, $is_enable_flat_rate);
+        return apply_filters('is_wcmp_vendor_shipping_tab_enable', $is_shipping_flat_rate_enable, $this->is_shipping_enable());
     }
 
     /**

@@ -505,8 +505,8 @@ class WCMp_Admin {
         if (in_array($screen->id, array('wcmp_page_wcmp-extensions'))) :
             wp_enqueue_style('admin-extensions', $WCMp->plugin_url . 'assets/admin/css/admin-extensions' . $suffix . '.css', array(), $WCMp->version);
         endif;
-        
-        if(is_user_wcmp_vendor(get_current_user_id())){
+
+        if (is_user_wcmp_vendor(get_current_user_id())) {
             wp_enqueue_script('wcmp_vendor_js', $WCMp->plugin_url . 'assets/admin/js/vendor' . $suffix . '.js', array('jquery', 'woocommerce_admin'), $WCMp->version, true);
         }
     }
@@ -528,16 +528,26 @@ class WCMp_Admin {
             <div class="round2"></div>
             <div class="round3"></div>
             <div class="round4"></div>
-            <span class="txt">Get WC Marketplace setup as per your store requirements, totally FREE! Excited?  </span>
-            <div class="rightside">        
-                <a href="#" class="wcmp_btn_service_claim_now" onclick="dismiss_servive_notice(event, 'http://google.co.in');">Claim Now</a>
-                <span class="link"><a href="#" onclick="dismiss_servive_notice(event);">No, Thanks!</a></span>
+            <div class="wcmp_banner-content">
+                <span class="txt">Get WC Marketplace setup as per your store requirements, totally FREE! Excited?  </span>
+                <div class="rightside">        
+                    <a href="https://wc-marketplace.com/wcmp-services/?install=1" target="_blank" class="wcmp_btn_service_claim_now" onclick="dismiss_servive_notice(event);">Claim Now</a>
+                    <span class="link"><a href="javascript:void(0)" onclick="dismiss_servive_notice(event);">No, Thanks!</a></span>
+                </div>
+               
             </div>
         </div>
-        <style type="text/css">.clearfix{clear:both}.wcmp_admin_new_banner.updated{border-left:0}.wcmp_admin_new_banner{box-shadow:0 3px 1px 1px rgba(0,0,0,.2);padding:10px 30px;background:#fff;position:relative;overflow:hidden;clear:both;border-top:2px solid #7b589e;text-align:left;background-size:contain}.wcmp_admin_new_banner .round{width:200px;height:200px;position:absolute;border-radius:100%;border:30px solid rgba(157,42,255,.05);top:-150px;left:73px;z-index:1}.wcmp_admin_new_banner .round1{position:absolute;border-radius:100%;border:45px solid rgba(194,108,144,.05);bottom:-82px;right:-58px;width:180px;height:180px;z-index:1}.wcmp_admin_new_banner .round2,.wcmp_admin_new_banner .round3{border-radius:100%;width:180px;height:180px;position:absolute;z-index:1}.wcmp_admin_new_banner .round2{border:18px solid rgba(194,108,144,.05);top:35px;left:249px}.wcmp_admin_new_banner .round3{border:45px solid rgba(31,194,255,.05);top:2px;right:40%}.wcmp_admin_new_banner .round4{position:absolute;border-radius:100%;border:31px solid rgba(31,194,255,.05);top:11px;left:-49px;width:100px;height:100px;z-index:1}.wcmp_admin_new_banner .txt{color:#333;font-size:18px;line-height:50px;width:70%;position:relative;z-index:2;display:inline-block;font-weight:400;float:left;padding-left:8px}.wcmp_admin_new_banner .link,.wcmp_admin_new_banner .wcmp_btn_service_claim_now{font-weight:400;display:inline-block;z-index:2;padding:0 20px;position:relative}.wcmp_admin_new_banner .rightside{width:28%;float:right}.wcmp_admin_new_banner .wcmp_btn_service_claim_now{cursor:pointer;background:#7b589e;height:40px;color:#fff;font-size:20px;text-align:center;border:none;margin:5px 13px;border-radius:5px;text-decoration:none;line-height:40px}.wcmp_admin_new_banner button:hover{opacity:.8;transition:.5s}.wcmp_admin_new_banner .link{font-size:18px;line-height:49px;background:0 0;height:50px}.wcmp_admin_new_banner .link a{color:#333;text-decoration:none}@media (max-width:990px){.wcmp_admin_new_banner::before{left:-4%;top:-12%}}@media (max-width:767px){.wcmp_admin_new_banner::before{left:0;top:0;transform:rotate(0);width:10px}.wcmp_admin_new_banner .txt{width:100%;line-height:28px}.wcmp_admin_new_banner .rightside{width:100%;padding-left:10px;box-sizing:border-box}.wcmp_admin_new_banner .wcmp_btn_service_claim_now{margin:10px 0}}</style>
-        <script type="text/javascript">function dismiss_servive_notice(e, i) {e.preventDefault(), jQuery.post(ajaxurl, {action: "dismiss_wcmp_servive_notice"}, function (e) {e && (jQuery(".wcmp_admin_new_banner").addClass("hidden"), void 0 !== i && (location.href = i))})}</script>
+        <style type="text/css">.clearfix{clear:both}.wcmp_admin_new_banner.updated{border-left:0}.wcmp_admin_new_banner{box-shadow:0 3px 1px 1px rgba(0,0,0,.2);padding:10px 30px;background:#fff;position:relative;overflow:hidden;clear:both;border-top:2px solid #7b589e;text-align:left;background-size:contain}.wcmp_admin_new_banner .round{width:200px;height:200px;position:absolute;border-radius:100%;border:30px solid rgba(157,42,255,.05);top:-150px;left:73px;z-index:1}.wcmp_admin_new_banner .round1{position:absolute;border-radius:100%;border:45px solid rgba(194,108,144,.05);bottom:-82px;right:-58px;width:180px;height:180px;z-index:1}.wcmp_admin_new_banner .round2,.wcmp_admin_new_banner .round3{border-radius:100%;width:180px;height:180px;position:absolute;z-index:1}.wcmp_admin_new_banner .round2{border:18px solid rgba(194,108,144,.05);top:35px;left:249px}.wcmp_admin_new_banner .round3{border:45px solid rgba(31,194,255,.05);top:2px;right:40%}.wcmp_admin_new_banner .round4{position:absolute;border-radius:100%;border:31px solid rgba(31,194,255,.05);top:11px;left:-49px;width:100px;height:100px;z-index:1}.wcmp_banner-content{display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;align-items:center}.wcmp_admin_new_banner .txt{color:#333;font-size:18px;line-height:1.4;width:calc(100% - 330px);position:relative;z-index:2;display:inline-block;font-weight:400;float:left;padding-left:8px}.wcmp_admin_new_banner .link,.wcmp_admin_new_banner .wcmp_btn_service_claim_now{font-weight:400;display:inline-block;z-index:2;padding:0 20px;position:relative}.wcmp_admin_new_banner .rightside{float:right;width:303px}.wcmp_admin_new_banner .wcmp_btn_service_claim_now{cursor:pointer;background:#7b589e;height:40px;color:#fff;font-size:20px;text-align:center;border:none;margin:5px 13px;border-radius:5px;text-decoration:none;line-height:40px}.wcmp_admin_new_banner button:hover{opacity:.8;transition:.5s}.wcmp_admin_new_banner .link{font-size:18px;line-height:49px;background:0 0;height:50px}.wcmp_admin_new_banner .link a{color:#333;text-decoration:none}@media (max-width:990px){.wcmp_admin_new_banner::before{left:-4%;top:-12%}}@media (max-width:767px){.wcmp_admin_new_banner::before{left:0;top:0;transform:rotate(0);width:10px}.wcmp_admin_new_banner .txt{width:400px;max-width:100%;text-align:center;padding:0;margin:0 auto 5px;float:none;display:block;font-size:17px;line-height:1.6}.wcmp_admin_new_banner .rightside{width:100%;padding-left:10px;text-align:center;box-sizing:border-box}.wcmp_admin_new_banner .wcmp_btn_service_claim_now{margin:10px 0}.wcmp_banner-content{display:block}}</style>
+        <script type="text/javascript">
+            function dismiss_servive_notice(e, i) {
+                jQuery.post(ajaxurl, {action: "dismiss_wcmp_servive_notice"}, function (e) {
+                    e && (jQuery(".wcmp_admin_new_banner").addClass("hidden"), void 0 !== i && (window.open(i, '_blank')))
+                })
+            }
+        </script>
         <?php
     }
+
     /**
      * Remove wp dashboard widget for vendor
      * @global array $wp_meta_boxes

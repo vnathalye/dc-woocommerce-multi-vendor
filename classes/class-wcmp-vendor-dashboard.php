@@ -384,7 +384,7 @@ Class WCMp_Admin_Dashboard {
             }
 
             $shipping_page = apply_filters('wcmp_vendor_view_shipping_page', true);
-            if ($vendor->is_shipping_enable() && $shipping_page) {
+            if ($vendor->is_shipping_tab_enable() && $shipping_page) {
                 add_menu_page(__('Shipping', 'dc-woocommerce-multi-vendor'), __('Shipping', 'dc-woocommerce-multi-vendor'), 'read', 'dc-vendor-shipping', array($this, 'shipping_page'));
             }
         }

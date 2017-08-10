@@ -1095,8 +1095,10 @@ class WCMp_Ajax {
 
         if (is_array($user->roles) && in_array('dc_vendor', $user->roles)) {
             $vendor = get_wcmp_vendor($user_id);
-            if ($vendor)
-                wp_delete_term($vendor->term_id, 'dc_vendor_shop');
+            if ($vendor) {
+                wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
+                delete_user_meta($user_id, '_vendor_term_id');
+            }
             $caps = $this->get_vendor_caps($user_id);
             foreach ($caps as $cap) {
                 $user->remove_cap($cap);

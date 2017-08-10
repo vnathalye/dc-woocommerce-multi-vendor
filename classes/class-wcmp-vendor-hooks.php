@@ -548,7 +548,7 @@ class WCMp_Vendor_Hooks {
     
     public function wcmp_vendor_dashboard_menu_vendor_shipping_capability($cap){
         $vendor = get_wcmp_vendor(get_current_user_id());
-        return $vendor->is_shipping_enable();
+        return $vendor->is_shipping_tab_enable();
     }
 
     /**

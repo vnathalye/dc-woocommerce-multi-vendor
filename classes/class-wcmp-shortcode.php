@@ -53,7 +53,7 @@ class WCMp_Shortcode {
      * @return object
      */
     public static function wcmp_vendor_dashboard_shortcode() {
-        $this->load_class('vendor-dashboard');
+        self::load_class('vendor-dashboard');
         return self::shortcode_wrapper(array('WCMp_Vendor_Dashboard_Shortcode', 'output'));
     }
     /**
@@ -61,7 +61,7 @@ class WCMp_Shortcode {
      * @return object
      */
     public static function wcmp_vendor_registration_shortcode() {
-        $this->load_class('vendor-registration');
+        self::load_class('vendor-registration');
         return self::shortcode_wrapper(array('WCMp_Vendor_Registration_Shortcode', 'output'));
     }
     
@@ -71,7 +71,7 @@ class WCMp_Shortcode {
      * @return void
      */
     public static function vendor_coupons_shortcode($attr) {
-        $this->load_class('vendor-used-coupon');
+        self::load_class('vendor-used-coupon');
         return self::shortcode_wrapper(array('WCMp_Vendor_Coupon_Shortcode', 'output'));
     }
     
@@ -97,7 +97,7 @@ class WCMp_Shortcode {
      * @param mixed $class_name
      * @return void
      */
-    public function load_class($class_name = '') {
+    public static function load_class($class_name = '') {
         global $WCMp;
         if ('' != $class_name && '' != $WCMp->token) {
             require_once ('shortcode/class-' . esc_attr($WCMp->token) . '-shortcode-' . esc_attr($class_name) . '.php');
@@ -807,7 +807,7 @@ class WCMp_Shortcode {
      */
     public static function wcmp_show_vendorslist($atts) {
         global $WCMp;
-        $this->load_class('vendor-list');
+        self::load_class('vendor-list');
         return self::shortcode_wrapper(array('WCMp_Shortcode_Vendor_List', 'output'), $atts);
     }
 

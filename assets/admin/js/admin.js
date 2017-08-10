@@ -160,13 +160,25 @@ jQuery(document).ready(function ($) {
     } else {
         $('.payment_gateway_charge').hide();
     }
-    
-    $('#payment_gateway_charge').on('change', function(){
-       if($(this).is(':checked')) {
-           $('.payment_gateway_charge').show();
-       } else{
-           $('.payment_gateway_charge').hide();
-       }
+
+    $('#payment_gateway_charge').on('change', function () {
+        if ($(this).is(':checked')) {
+            $('.payment_gateway_charge').show();
+        } else {
+            $('.payment_gateway_charge').hide();
+        }
     });
+
+    $('.automatic_payment_method').change(function () {
+        var id = $(this).attr('id');
+        if (id !== undefined) {
+            var terget_id = 'gateway_charge' + id.split('payment_method')[1];
+            if ($(this).is(':checked')) {
+                $('#' + terget_id).closest('tr').show();
+            } else {
+                $('#' + terget_id).closest('tr').hide();
+            }
+        }
+    }).change();
     // end
 });

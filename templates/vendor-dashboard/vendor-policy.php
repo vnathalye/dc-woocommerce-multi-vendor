@@ -17,6 +17,7 @@ $can_vendor_edit_refund_policy_field = apply_filters('can_vendor_edit_refund_pol
 $can_vendor_edit_shipping_policy_field = apply_filters('can_vendor_edit_shipping_policy_field', true);
 ?>
 <form method="post" name="shop_settings_form" class="wcmp_policy_form">
+    <?php do_action('wcmp_before_vendor_policy'); ?>
     <div class="wcmp_form1">
         <?php if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && (isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) || isset($wcmp_capabilities_settings_name['can_vendor_edit_cancellation_policy']) || isset($wcmp_capabilities_settings_name['can_vendor_edit_refund_policy']) || isset($wcmp_capabilities_settings_name['can_vendor_edit_shipping_policy']) )) { ?>
             <p> <?php _e('Policy Tab Label', 'dc-woocommerce-multi-vendor'); ?>	</p>
@@ -63,7 +64,7 @@ $can_vendor_edit_shipping_policy_field = apply_filters('can_vendor_edit_shipping
             <div class="clear"></div>
         <?php } ?>
     </div>
-
+    <?php do_action('wcmp_after_vendor_policy'); ?>
     <?php do_action('other_exta_field_dcmv'); ?>
     <p class="error_wcmp"><?php _e('* This field is required, you must fill some information.', 'dc-woocommerce-multi-vendor'); ?></p>
     <div class="action_div">

@@ -224,9 +224,11 @@ class WCMp_Vendor_Hooks {
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_style('font-vendor_announcements', '//fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic', array(), $WCMp->version);
         wp_enqueue_style('ui_vendor_announcements', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css', array(), $WCMp->version);
+        wp_enqueue_script('jquery-ui-accordion');
         wp_enqueue_script('wcmp_new_vandor_announcements_js', $frontend_script_path . 'wcmp_vendor_announcements' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        wp_enqueue_script('jquery');
-        wp_enqueue_script('wcmp_new_vandor_announcements_js_lib_ui', '//code.jquery.com/ui/1.10.4/jquery-ui.js', array('jquery'), $WCMp->version, true);
+        //wp_enqueue_script('jquery');
+        
+        //wp_enqueue_script('wcmp_new_vandor_announcements_js_lib_ui', '//code.jquery.com/ui/1.10.4/jquery-ui.js', array('jquery'), $WCMp->version, true);
         $WCMp->template->get_template('vendor-dashboard/vendor-announcements.php');
     }
 
@@ -476,7 +478,7 @@ class WCMp_Vendor_Hooks {
      */
     public function wcmp_vendor_dashboard_vendor_knowledgebase_endpoint() {
         global $WCMp;
-        wp_enqueue_style('jquery-ui-css', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css');
+        wp_enqueue_style( 'jquery-ui-style' );
         wp_enqueue_script('jquery-ui-accordion');
         $WCMp->template->get_template('vendor-dashboard/vendor-university.php');
     }

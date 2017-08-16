@@ -37,7 +37,6 @@ class WCMp_Frontend {
         add_action('woocommerce_checkout_create_order_shipping_item', array(&$this, 'add_meta_date_in_shipping_package'), 10, 4);
         // processed woocomerce checkout order data
         add_action('woocommerce_checkout_order_processed', array(&$this, 'wcmp_checkout_order_processed'), 30, 3);
-        add_action('woocommerce_login_form', array(&$this, 'add_extra_wcmp_login_field'));
     }
 
     /**
@@ -482,20 +481,9 @@ class WCMp_Frontend {
             wp_enqueue_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         }
 
-//        $link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_colorpicker'] : '#000000';
-//        $hover_link_color = isset($WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker']) ? $WCMp->vendor_caps->frontend_cap['catalog_hover_colorpicker'] : '#000000';
-//
-//        $custom_css = "
-//                .by-vendor-name-link:hover{
-//                        color: {$hover_link_color} !important;
-//                }
-//                .by-vendor-name-link{
-//                        color: {$link_color} !important;
-//                }";
-//        wp_add_inline_style('product_css', $custom_css);
         if (is_vendor_page()) {
             wp_enqueue_style('dashicons');
-            wp_enqueue_style('jquery-style', '//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+            wp_enqueue_style( 'jquery-ui-style' );
             wp_enqueue_style('wcmp_new_vandor_dashboard_css', $frontend_style_path . 'vendor_dashboard' . $suffix . '.css', array(), $WCMp->version);
             wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', array(), $WCMp->version);
         }
@@ -582,105 +570,6 @@ class WCMp_Frontend {
                 wp_safe_redirect(get_permalink(wc_get_page_id('myaccount')));
             }
             exit();
-        }
-    }
-
-    /**
-     * Calculate order falt rate shipping
-     * @deprecated since version 2.6.6
-     * @support WC 2.4
-     */
-    public function evaluate_flat_shipping_cost($sum, $args = array()) {
-        include_once( WC()->plugin_path() . '/includes/shipping/flat-rate/includes/class-wc-eval-math.php' );
-
-        add_shortcode('fee', array($this, 'wcmp_shipping_fee_calculation'));
-        $this->wcmp_shipping_fee_cost = $args['cost'];
-
-        $sum = rtrim(ltrim(do_shortcode(str_replace(
-                                        array(
-            '[qty]',
-            '[cost]'
-                                        ), array(
-            $args['qty'],
-            $args['cost']
-                                        ), $sum
-                        )), "\t\n\r\0\x0B+*/"), "\t\n\r\0\x0B+-*/");
-
-        remove_shortcode('fee', array($this, 'wcmp_shipping_fee_calculation'));
-
-        return $sum ? WC_Eval_Math::evaluate($sum) : 0;
-    }
-
-    /**
-     * Calculate order flat rate shipping
-     * @deprecated since version 2.6.6
-     * @support WC 2.6
-     */
-    public function calculate_flat_rate_shipping_cost($sum, $args = array()) {
-        include_once( WC()->plugin_path() . '/includes/libraries/class-wc-eval-math.php' );
-        $WC_Shipping_Flat_Rate = new WC_Shipping_Flat_Rate();
-        // Allow 3rd parties to process shipping cost arguments
-        $args = apply_filters('woocommerce_evaluate_shipping_cost_args', $args, $sum, $this);
-        $locale = localeconv();
-        $decimals = array(wc_get_price_decimal_separator(), $locale['decimal_point'], $locale['mon_decimal_point']);
-        $this->fee_cost = $args['cost'];
-
-        // Expand shortcodes
-        add_shortcode('fee', array($WC_Shipping_Flat_Rate, 'fee'));
-
-        $sum = do_shortcode(str_replace(
-                        array(
-            '[qty]',
-            '[cost]'
-                        ), array(
-            $args['qty'],
-            $args['cost']
-                        ), $sum
-        ));
-
-        remove_shortcode('fee', array($WC_Shipping_Flat_Rate, 'fee'));
-
-        // Remove whitespace from string
-        $sum = preg_replace('/\s+/', '', $sum);
-
-        // Remove locale from string
-        $sum = str_replace($decimals, '.', $sum);
-
-        // Trim invalid start/end characters
-        $sum = rtrim(ltrim($sum, "\t\n\r\0\x0B+*/"), "\t\n\r\0\x0B+-*/");
-
-        // Do the math
-        return $sum ? WC_Eval_Math::evaluate($sum) : 0;
-    }
-
-    /**
-     * Calculate flat rate shipping fee
-     * @deprecated since version 2.6.6
-     * @support WC 2.4
-     */
-    public function wcmp_shipping_fee_calculation($atts) {
-        $atts = shortcode_atts(array(
-            'percent' => '',
-            'min_fee' => ''
-                ), $atts);
-
-        $calculated_fee = 0;
-
-        if ($atts['percent']) {
-            $calculated_fee = $this->wcmp_shipping_fee_cost * ( floatval($atts['percent']) / 100 );
-        }
-        if ($atts['min_fee'] && $calculated_fee < $atts['min_fee']) {
-            $calculated_fee = $atts['min_fee'];
-        }
-
-        return $calculated_fee;
-    }
-    /**
-     * add extra login field
-     */
-    public function add_extra_wcmp_login_field() {
-        if (is_vendor_dashboard()) {
-            echo '<input type="wcmp-login-vendor" name="wcmp-login-nonce" value="wcmp"';
         }
     }
 

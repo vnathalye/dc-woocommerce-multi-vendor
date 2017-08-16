@@ -1,7 +1,7 @@
 jQuery(window).load(function(){
     jQuery(document).ready(function ($) {
 
-        $('[data-popup-target]').click(function () {
+        $(document).on('click','[data-popup-target]',function () {
             $('html').addClass('wcmp-overlay');
             var activePopup = $(this).attr('data-popup-target');
             var timeOut = $(this).data('time_out');

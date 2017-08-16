@@ -36,9 +36,10 @@ jQuery(document).ready(function($){
 	});
 	$("body").on("click", "._wcmp_vendor_message_delete", function(e){
 		var msg_id = $(this).parent().attr('data-element');
-		var element_to_be_deleted1 = $(this).parent().parent().parent().parent();
-		var element_to_be_deleted2 = $(this).parent().parent().parent().parent().next();
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var element_to_be_deleted1 = $(this).parents('.ui-accordion-header');
+		var element_to_be_deleted2 = $('#'+element_to_be_deleted1.attr('aria-controls'));
+
+		var tab_element = $(this).parents('.ui-tabs-panel');		
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 		var tab_to_refrash = tab_element.attr('data-element');
@@ -89,7 +90,7 @@ jQuery(document).ready(function($){
 		var msg_id = $(this).parent().attr('data-element');
 		var element_to_be_deleted1 = $(this);	
 		var element_parent = $(this).parent();
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var tab_element = $(this).parents('.ui-tabs-panel');	
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 				
@@ -113,7 +114,7 @@ jQuery(document).ready(function($){
 		var msg_id = $(this).parent().attr('data-element');
 		var element_to_be_deleted1 = $(this);	
 		var element_parent = $(this).parent();
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var tab_element = $(this).parents('.ui-tabs-panel');		
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 		var data = {
@@ -134,11 +135,11 @@ jQuery(document).ready(function($){
 	
 	$("div#wcmp_msg_tab_2").on("click", "._wcmp_vendor_message_unread",  function(e){
 		var msg_id = $(this).parent().attr('data-element');
-		var element_to_be_deleted1 = $(this).parent().parent().parent().parent();
-		var element_to_be_deleted2 = $(this).parent().parent().parent().parent().next();	
+		var element_to_be_deleted1 = $(this).parents('.ui-accordion-header');
+		var element_to_be_deleted2 = $('#'+element_to_be_deleted1.attr('aria-controls'));
 		var element_parent = $(this).parent();
 
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var tab_element = $(this).parents('.ui-tabs-panel');	
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 		var tab_to_refrash = tab_element.attr('data-element');
@@ -176,11 +177,11 @@ jQuery(document).ready(function($){
 	
 	$("div#wcmp_msg_tab_3").on("click", "._wcmp_vendor_message_read", function(e){			
 		var msg_id = $(this).parent().attr('data-element');
-		var element_to_be_deleted1 = $(this).parent().parent().parent().parent();
-		var element_to_be_deleted2 = $(this).parent().parent().parent().parent().next();	
+		var element_to_be_deleted1 = $(this).parents('.ui-accordion-header');
+		var element_to_be_deleted2 = $('#'+element_to_be_deleted1.attr('aria-controls'));
 		var element_parent = $(this).parent();
 		
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var tab_element = $(this).parents('.ui-tabs-panel');	
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 		var tab_to_refrash = tab_element.attr('data-element');
@@ -220,11 +221,11 @@ jQuery(document).ready(function($){
 	
 	$("div#wcmp_msg_tab_4").on("click", "._wcmp_vendor_message_restore", function(e){			
 		var msg_id = $(this).parent().attr('data-element');
-		var element_to_be_deleted1 = $(this).parent().parent().parent().parent();
-		var element_to_be_deleted2 = $(this).parent().parent().parent().parent().next();	
+		var element_to_be_deleted1 = $(this).parents('.ui-accordion-header');
+		var element_to_be_deleted2 = $('#'+element_to_be_deleted1.attr('aria-controls'));
 		var element_parent = $(this).parent();
 		
-		var tab_element = $(this).parent().parent().parent().parent().parent().parent().parent();		
+		var tab_element = $(this).parents('.ui-tabs-panel');	
 		var lodder = tab_element.find('.ajax_loader_class_msg');
 		lodder.show();		
 		var tab_to_refrash = tab_element.attr('data-element');

@@ -66,8 +66,9 @@ jQuery(document).ready(function($) {
 		}); 
 	});
 	
-	$('.submit_tracking').on( "click", function(e) {
+	$(document).on( "click", ".submit_tracking", function(e) {
 		e.preventDefault();
+                var $this = $(this);
                 var order_id = $(this).attr('data-id');
                 var tracking_url = $('#shipping_tracking_url_'+order_id).val();
                 if(tracking_url == '') return false;
@@ -85,9 +86,10 @@ jQuery(document).ready(function($) {
 			user_id : selector.attr('data-user'),
                         tracking_url : tracking_url,
                         tracking_id : tracking_id
-		}	
+		}
+		$(this).toggleClass('submit_tracking_loader').blur();	
 		$.post(woocommerce_params.ajax_url, data, function(response) {
-				
+				$this.removeClass('submit_tracking_loader').blur();
 				//console.log(response);
                                 $('.shipping_msg_'+order_id).html(wcmp_mark_shipped_text.text);
                                 setTimeout(function(){

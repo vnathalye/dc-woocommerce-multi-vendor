@@ -25,6 +25,7 @@ if ($vendor) :
     ?>
     <div class="wcmp_headding2"><?php _e('General', 'dc-woocommerce-multi-vendor'); ?></div>
     <form method="post" name="shop_settings_form" class="wcmp_shop_settings_form">
+        <?php do_action('wcmp_before_shop_front'); ?>
         <div class="wcmp_form1">
             <p><?php _e('Store Name *', 'dc-woocommerce-multi-vendor'); ?></p>
             <input class="no_input" readonly type="text" name="vendor_page_title" value="<?php echo isset($vendor_page_title['value']) ? $vendor_page_title['value'] : ''; ?>"  placeholder="<?php _e('Enter your Store Name here', 'dc-woocommerce-multi-vendor'); ?>">
@@ -40,41 +41,41 @@ if ($vendor) :
                 ?><input class="small no_input" readonly type="text" name="vendor_page_slug" readonly value="<?php echo isset($vendor_page_slug['value']) ? $vendor_page_slug['value'] : ''; ?>" placeholder="<?php _e('Enter your Store Name here', 'dc-woocommerce-multi-vendor'); ?>">
             </span>				
             <p> <?php _e('Shop Description', 'dc-woocommerce-multi-vendor'); ?>
-            <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
+                <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
                     <span class="input-group-addon beautiful" ><input type="checkbox" name="vendor_hide_description"  value="Enable" <?php if ($vendor_hide_description == 'Enable') echo 'checked=checked'; ?>><span>  <?php _e('Hide from user', 'dc-woocommerce-multi-vendor'); ?></span></span></p>
             <?php } ?>
             <textarea class="no_input" readonly name="vendor_description" cols="" rows="" placeholder="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. "><?php echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea>
             <?php if (isset($vendor_message_to_buyers)) { ?>
                 <p> <?php _e('Message to Buyers', 'dc-woocommerce-multi-vendor'); ?></p>
                 <textarea class="no_input" readonly name="vendor_message_to_buyers" cols="" rows="" placeholder="It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. "><?php echo isset($vendor_message_to_buyers['value']) ? $vendor_message_to_buyers['value'] : ''; ?></textarea>
-                    <?php } ?>
+            <?php } ?>
             <div class="half_part">
                 <p><?php _e('Phone', 'dc-woocommerce-multi-vendor'); ?>
-    <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
+                    <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
                         <span class="input-group-addon beautiful" >
                             <input type="checkbox" name="vendor_hide_phone"  value="Enable" <?php if ($vendor_hide_phone == 'Enable') echo 'checked=checked'; ?> >
                             <span> <?php _e('Hide from user', 'dc-woocommerce-multi-vendor'); ?></span> </span> 
-    <?php } ?>	
+                    <?php } ?>	
                 </p>
                 <input class="no_input" readonly type="text" name="vendor_phone" placeholder="" value="<?php echo isset($vendor_phone['value']) ? $vendor_phone['value'] : ''; ?>">
             </div>
             <div class="half_part">
                 <p><?php _e('Email *', 'dc-woocommerce-multi-vendor'); ?> 
-    <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
+                    <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
                         <span class="input-group-addon beautiful" >
                             <input type="checkbox"  name="vendor_hide_email"  value="Enable" <?php if ($vendor_hide_email == 'Enable') echo 'checked=checked'; ?>>
                             <span><?php _e('Hide from user', 'dc-woocommerce-multi-vendor'); ?></span> </span>
-    <?php } ?>
+                    <?php } ?>
                 </p>
                 <input class="no_input vendor_email" readonly type="text" disabled placeholder=""  value="<?php echo isset($vendor->user_data->user_email) ? $vendor->user_data->user_email : ''; ?>">
             </div>
             <div class="clear"></div>
             <p><?php _e('Address', 'dc-woocommerce-multi-vendor'); ?> 
-    <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
+                <?php if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous') && $is_hide_option_show_enable) { ?>
                     <span class="input-group-addon beautiful" >
                         <input type="checkbox" name="vendor_hide_address"  value="Enable" <?php if ($vendor_hide_address == 'Enable') echo 'checked=checked'; ?>>
                         <span><?php _e(' Hide from user', 'dc-woocommerce-multi-vendor'); ?></span> </span> 
-    <?php } ?>	
+                <?php } ?>	
             </p>
             <input class="no_input" readonly type="text" placeholder="Address line 1" name="vendor_address_1"  value="<?php echo isset($vendor_address_1['value']) ? $vendor_address_1['value'] : ''; ?>">
             <input class="no_input" readonly type="text" placeholder="Address line 2" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value'] : ''; ?>">
@@ -98,9 +99,9 @@ if ($vendor) :
                 <div class="half_part">
                     <input class="no_input" readonly type="text" placeholder="External store URL Label" name="vendor_external_store_label" value="<?php echo isset($vendor_external_store_label['value']) ? $vendor_external_store_label['value'] : ''; ?>">
                 </div>
-        <?php
-    }
-    ?>
+                <?php
+            }
+            ?>
         </div>
         <div class="wcmp_headding2 moregap"><?php _e('Media Files', 'dc-woocommerce-multi-vendor'); ?></div>
         <div class="wcmp_media_block">
@@ -145,7 +146,8 @@ if ($vendor) :
             </div>
             <div class="clear"></div>
         </div>
-            <?php do_action('other_exta_field_dcmv'); ?>
+        <?php do_action('wcmp_after_shop_front'); ?>
+        <?php do_action('other_exta_field_dcmv'); ?>
         <div class="action_div_space"> </div>
         <p class="error_wcmp"><?php _e('* This field is required, you must fill some information.', 'dc-woocommerce-multi-vendor'); ?></p>
         <div class="action_div">

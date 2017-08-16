@@ -141,7 +141,8 @@ final class WCMp {
         $this->email = new WCMp_Email();
         // WCMp Fields Lib
         $this->wcmp_wp_fields = $this->library->load_wp_fields();
-
+        // Load Jquery style
+        $this->library->load_jquery_style_lib();
         // Init user roles
         $this->init_user_roles();
         

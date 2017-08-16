@@ -247,7 +247,7 @@ class WCMp_Ajax {
     public function wcmp_msg_refresh_tab_data() {
         global $wpdb, $WCMp;
         $tab = $_POST['tabname'];
-        $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements' . $tab . '.php');
+        $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements' . str_replace("_","-",$tab) . '.php');
         die;
     }
 
@@ -1165,7 +1165,7 @@ class WCMp_Ajax {
             die();
         }
         $html = '';
-        if(!empty(sanitize_text_field($_POST['s']))){
+        if(isset($_POST['s']) && sanitize_text_field($_POST['s'])){
             $args =array(
                 'search' => '*'.esc_attr( $_POST['s'] ).'*',
                 'search_columns' => array( 'display_name' ),

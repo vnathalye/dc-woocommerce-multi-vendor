@@ -1921,3 +1921,27 @@ table.customer_order_dtl label{
 .popup-content p {
    margin: 15px 0 5px;
 }
+
+/*................wcmp vendor order..............*/
+button.submit_tracking_loader{cursor: not-allowed;}
+button.submit_tracking_loader:before{
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 2px solid white;
+  border-left-color: transparent;
+  border-top-color: transparent;
+  animation: loading 1s linear infinite;
+}
+
+@keyframes loading{
+  0%{
+    transform: rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+}

@@ -33,7 +33,7 @@ class WCMp_Coupon {
 	*/
 	public function woocommerce_coupon_is_valid_for_product( $valid, $product, $coupon, $values) {
 	  if ( $coupon->is_type( array( 'fixed_product', 'percent_product' ) ) ) {
-	    $current_coupon = get_post( $coupon->id );
+	    $current_coupon = get_post( $coupon->get_id() );
 	    if(is_user_wcmp_vendor($current_coupon->post_author)) {
 	      $current_product = get_post($product->get_id());
 	      if($current_product->post_author != $current_coupon->post_author) $valid = false;
@@ -49,7 +49,7 @@ class WCMp_Coupon {
 	* @return abject $coupon
 	*/
 	public function woocommerce_coupon_is_valid($true, $coupon) {
-		$current_coupon = get_post( $coupon->id );
+		$current_coupon = get_post( $coupon->get_id() );
 		if(is_user_wcmp_vendor($current_coupon->post_author)) {
 			if ($coupon->is_type( array( 'fixed_product', 'percent_product' ) ) ) {
 				$is_coupon_valid = false;

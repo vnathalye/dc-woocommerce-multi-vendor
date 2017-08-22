@@ -251,7 +251,7 @@ Class WCMp_Admin_Dashboard {
                         $coupons = $order->get_items('coupon');
                         foreach ($coupons as $coupon_item_id => $item) {
                             $coupon = new WC_Coupon(trim($item['name']));
-                            $coupon_post = get_post($coupon->id);
+                            $coupon_post = get_post($coupon->get_id());
                             $author_id = $coupon_post->post_author;
                             if ($vendor->id == $author_id) {
                                 $coupon_used .= $item['name'] . ', ';

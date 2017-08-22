@@ -77,7 +77,7 @@ if ($vendor && $order_id) {
                         $coupon_used = false;
                         foreach ($coupons as $coupon_code) {
                             $coupon = new WC_Coupon($coupon_code);
-                            $coupon_post = get_post($coupon->id);
+                            $coupon_post = get_post($coupon->get_id());
                             $author_id = $coupon_post->post_author;
                             if (get_current_user_id() == $author_id) {
                                 $coupon_used = true;

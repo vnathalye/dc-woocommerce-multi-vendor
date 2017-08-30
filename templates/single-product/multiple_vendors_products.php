@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $WCMp, $post, $wpdb;
-if (count($results) > 1) {
+if (count($more_product_array) > 0) {
     $i = 0;
     ?>
     <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>

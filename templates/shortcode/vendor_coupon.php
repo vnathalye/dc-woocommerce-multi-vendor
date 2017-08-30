@@ -15,7 +15,7 @@ $user = wp_get_current_user();
 $vendor = get_wcmp_vendor($user->ID);
 if($vendor) {
 	echo  '<h3>'.__('Coupons', 'dc-woocommerce-multi-vendor').'</h3>';
-	if($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon') && get_user_meta($user->ID, '_vendor_submit_coupon' ,true)) { 
+	if($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) { 
 		if($coupons) {?> 
 			<table>
 				<tbody>

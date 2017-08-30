@@ -103,18 +103,4 @@ class WCMp_Settings_Frontend {
         return apply_filters("settings_{$this->tab}_tab_new_input", $new_input, $input);
     }
 
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function custom_settings_section_info() {
-        global $WCMp;
-    }
-
 }

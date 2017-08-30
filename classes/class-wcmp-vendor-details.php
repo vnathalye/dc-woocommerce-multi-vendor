@@ -15,6 +15,7 @@ class WCMp_Vendor {
     public $taxonomy;
     public $term;
     public $user_data;
+    public $shipping_class_id;
 
     /**
      * Get the vendor if UserID is passed, otherwise the vendor is new and empty.
@@ -180,6 +181,21 @@ class WCMp_Vendor {
                 update_user_meta($this->id, '_vendor_term_id', $term->get_error_data());
                 update_woocommerce_term_meta($term->get_error_data(), '_vendor_user_id', $this->id);
                 $this->term_id = $term->get_error_data();
+            }
+        }
+    }
+
+    public function generate_shipping_class() {
+        if (!$this->shipping_class_id && apply_filters('wcmp_add_vendor_shipping_class', true)) {
+            $shipping_term = wp_insert_term($this->user_data->user_login . '-' . $this->id, 'product_shipping_class');
+            if (!is_wp_error($shipping_term)) {
+                update_user_meta($this->id, 'shipping_class_id', $shipping_term['term_id']);
+                add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $this->id);
+                add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
+            } else if ($shipping_term->get_error_code() == 'term_exists') {
+                update_user_meta($this->id, 'shipping_class_id', $shipping_term->get_error_data());
+                add_woocommerce_term_meta($shipping_term->get_error_data(), 'vendor_id', $this->id);
+                add_woocommerce_term_meta($shipping_term->get_error_data(), 'vendor_shipping_origin', get_option('woocommerce_default_country'));
             }
         }
     }

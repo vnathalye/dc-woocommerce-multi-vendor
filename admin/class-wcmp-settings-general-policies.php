@@ -126,24 +126,4 @@ class WCMp_Settings_Gneral_Policies {
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
     }
 
-    public function wcmp_shipping_policies_settings_section_info() {
-        
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function wcmp_store_policies_settings_section_info() {
-        global $WCMp;
-        //printf(__('Cancellation / Return / Exchange Policy.', 'dc-woocommerce-multi-vendor'));
-    }
-
-    public function wcmp_refund_policies_settings_section_info() {
-        
-    }
-
-    public function wcmp_general_policies_settings_section_info() {
-        
-    }
-
 }

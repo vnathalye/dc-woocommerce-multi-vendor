@@ -12,8 +12,13 @@ global $WCMp;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
-// Get vendor ID
+// Get vendor 
 $vendor = get_wcmp_vendor_by_term(get_queried_object()->term_id);
+if(!$vendor){
+    // Redirect if not vendor
+    wp_safe_redirect(get_permalink( woocommerce_get_page_id( 'shop' ) ));
+    exit();
+}
 $is_block = get_user_meta($vendor->id, '_vendor_turn_off' , true);
 if($is_block) {
 	get_header( 'shop' ); ?>

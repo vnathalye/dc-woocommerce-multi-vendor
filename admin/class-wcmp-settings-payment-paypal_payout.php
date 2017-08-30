@@ -77,12 +77,4 @@ class WCMp_Settings_Payment_Paypal_Payout {
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
     }
 
-    /**
-     * Print the Section text
-     */
-    public function wcmp_payment_paypal_payout_settings_section_info() {
-        global $WCMp;
-        //printf(__('Please configure the policies section.', 'dc-woocommerce-multi-vendor'));
-    }
-
 }

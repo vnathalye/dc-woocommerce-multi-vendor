@@ -73,40 +73,4 @@ class WCMp_Settings_Capabilities_Miscellaneous {
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
     }
 
-    /**
-     * Print the Section text
-     */
-    public function vendor_messages_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function vendor_customer_support_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_type_option_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_miscellaneous_info() {
-        global $WCMp;
-    }
-
-    public function default_settings_section_policies_info() {
-        global $WCMp;
-    }
-
-    public function default_settings_section_policiessettings_info() {
-        global $WCMp;
-    }
-
 }

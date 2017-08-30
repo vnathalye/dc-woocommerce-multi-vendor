@@ -69,7 +69,7 @@ class WC_Email_Admin_Added_New_Product_to_Vendor extends WC_Email {
 		$this->replace[ ]  = $this->vendor_name;
 		
 		$this->submit_product = false;
-		if($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product') && get_user_meta($vendor->id, '_vendor_submit_product' ,true)) { 
+		if($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) { 
 			$this->submit_product = true;
 		}
 		

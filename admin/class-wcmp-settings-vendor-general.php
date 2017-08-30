@@ -116,20 +116,4 @@ class WCMp_Settings_Vendor_General {
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
     }
 
-    /**
-     * Print the Section text
-     */
-    public function wcmp_vendor_general_settings_section_info() {
-        global $WCMp;
-        //printf(__('Setup vendor registration field from <a href="'.  admin_url('admin.php').'?page=wcmp-setting-admin&tab=vendor&tab_section=registration">here</a>.', 'dc-woocommerce-multi-vendor'));
-    }
-
-    public function wcmp_vendor_general_settings_endpoint_ssection_info() {
-        
-    }
-
-    public function wcmp_pages_section_info() {
-        
-    }
-
 }

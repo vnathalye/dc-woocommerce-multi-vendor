@@ -65,16 +65,16 @@ class WCMp_Settings_Payment_Paypal_Masspay {
         global $WCMp;
         $new_input = array();
         $hasError = false;
-        if (isset($input['api_username'])){
+        if (isset($input['api_username'])) {
             $new_input['api_username'] = sanitize_text_field($input['api_username']);
         }
-        if (isset($input['api_pass'])){
+        if (isset($input['api_pass'])) {
             $new_input['api_pass'] = sanitize_text_field($input['api_pass']);
         }
-        if (isset($input['api_signature'])){
+        if (isset($input['api_signature'])) {
             $new_input['api_signature'] = sanitize_text_field($input['api_signature']);
         }
-        if(isset($input['is_testmode'])){
+        if (isset($input['is_testmode'])) {
             $new_input['is_testmode'] = sanitize_text_field($input['is_testmode']);
         }
         if (!$hasError) {
@@ -83,14 +83,6 @@ class WCMp_Settings_Payment_Paypal_Masspay {
             );
         }
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function wcmp_payment_paypal_masspay_settings_section_info() {
-        global $WCMp;
-        //printf(__('Please configure the policies section.', 'dc-woocommerce-multi-vendor'));
     }
 
 }

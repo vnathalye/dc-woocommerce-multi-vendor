@@ -71,6 +71,7 @@ class WCMp_Product {
             add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
+            add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
         }
         $this->vendor_product_restriction();
     }
@@ -206,7 +207,7 @@ class WCMp_Product {
             $vendor_data = get_wcmp_product_vendors($result->ID);
             $_product = wc_get_product($result->ID);
             $other_user = new WP_User($result->post_author);
-            if ($_product->is_visible()) {
+            if ($_product->is_visible() && !is_user_wcmp_pending_vendor($other_user) && !is_user_wcmp_rejected_vendor($other_user) && $post->post_author != $result->post_author) {
                 if ($vendor_data) {
                     if (isset($vendor_data->user_data->data->display_name)) {
                         $more_product_array[$i]['seller_name'] = $vendor_data->user_data->data->display_name;
@@ -1359,6 +1360,40 @@ class WCMp_Product {
             </div> 							
             <?php
         }
+    }
+
+    /**
+     * filter shop loop for single product multiple vendor
+     * @global Object $wpdb
+     * @param WC_Query object $q
+     */
+    public function woocommerce_product_query($q) {
+        global $wpdb;
+        if (is_tax('dc_vendor_shop')) {
+            return;
+        }
+        $exclude_products = array();
+        $resualts = $wpdb->get_results("SELECT `product_ids` FROM {$wpdb->prefix}wcmp_products_map");
+        if ($resualts) {
+            foreach ($resualts as $resualt) {
+                $product_ids = explode(',', $resualt->product_ids);
+                $product_array_price = array();
+                if (count($product_ids) > 1) {
+                    foreach ($product_ids as $product_id) {
+                        $product = wc_get_product(absint($product_id));
+                        if ($product && $product->get_price()) {
+                            $product_array_price[$product_id] = $product->get_price();
+                        }
+                    }
+                }
+                if ($product_array_price) {
+                    $min_product = array_search(min($product_array_price), $product_array_price);
+                    unset($product_array_price[$min_product]);
+                    $exclude_products = array_merge($exclude_products, array_keys($product_array_price));
+                }
+            }
+        }
+        $q->set('post__not_in', array_unique($exclude_products));
     }
 
 }

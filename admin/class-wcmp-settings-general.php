@@ -97,19 +97,4 @@ class WCMp_Settings_Gneral {
         return apply_filters("settings_{$this->tab}_tab_new_input", $new_input, $input);
     }
 
-    /**
-     * Print the Section text
-     */
-    public function venor_approval_settings_section_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function venor_frontend_settings_section_info() {
-        global $WCMp;
-        printf(__('These features are now available in the %sFrontend%s tab.', 'dc-woocommerce-multi-vendor'), '<a target="_blank" href="?page=wcmp-setting-admin&tab=frontend">', '</a>');
-    }
-
 }

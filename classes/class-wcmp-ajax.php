@@ -10,7 +10,7 @@
 class WCMp_Ajax {
 
     public function __construct() {
-        $general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
+        //$general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
         add_action('wp_ajax_woocommerce_json_search_vendors', array(&$this, 'woocommerce_json_search_vendors'));
         add_action('wp_ajax_activate_pending_vendor', array(&$this, 'activate_pending_vendor'));
         add_action('wp_ajax_reject_pending_vendor', array(&$this, 'reject_pending_vendor'));
@@ -1054,25 +1054,14 @@ class WCMp_Ajax {
      * @return void
      */
     function activate_pending_vendor() {
-        global $WCMp;
-        $user_id = $_POST['user_id'];
-        $user = new WP_User(absint($user_id));
-        $user->remove_role('dc_pending_vendor');
-        $user->remove_role('dc_rejected_vendor');
-        $WCMp->user->update_vendor_meta($user_id);
-        $user->set_role('dc_vendor');
-        $WCMp->user->add_vendor_caps($user_id);
-        $vendor = get_wcmp_vendor($user_id);
-        $vendor->generate_term();
-        $user_dtl = get_userdata(absint($user_id));
-        $email = WC()->mailer()->emails['WC_Email_Approved_New_Vendor_Account'];
-        $email->trigger($user_id, $user_dtl->user_pass);
-        $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
-        if (empty($shipping_class_id)) {
-            $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
-            update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
+        $user_id = filter_input(INPUT_POST, 'user_id');
+        if($user_id){
+            $user = new WP_User(absint($user_id));
+            $user->set_role('dc_vendor');
+            $user_dtl = get_userdata(absint($user_id));
+            $email = WC()->mailer()->emails['WC_Email_Approved_New_Vendor_Account'];
+            $email->trigger($user_id, $user_dtl->user_pass);
         }
-        do_action('wcmp_add_user_role', $user_id, 'dc_vendor');
         die();
     }
 
@@ -1082,30 +1071,11 @@ class WCMp_Ajax {
      * @return void
      */
     function reject_pending_vendor() {
-        global $WCMp;
-        $user_id = $_POST['user_id'];
-        $user = new WP_User(absint($user_id));
-        if (is_array($user->roles) && in_array('dc_pending_vendor', $user->roles)) {
-            $user->remove_role('dc_pending_vendor');
+        $user_id = filter_input(INPUT_POST, 'user_id');
+        if($user_id){
+            $user = new WP_User(absint($user_id));
+            $user->set_role('dc_rejected_vendor');
         }
-        $user->add_role('dc_rejected_vendor');
-        $user_dtl = get_userdata(absint($user_id));
-        $email = WC()->mailer()->emails['WC_Email_Rejected_New_Vendor_Account'];
-        $email->trigger($user_id, $user_dtl->user_pass);
-
-        if (is_array($user->roles) && in_array('dc_vendor', $user->roles)) {
-            $vendor = get_wcmp_vendor($user_id);
-            if ($vendor) {
-                wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
-                delete_user_meta($user_id, '_vendor_term_id');
-            }
-            $caps = $this->get_vendor_caps($user_id);
-            foreach ($caps as $cap) {
-                $user->remove_cap($cap);
-            }
-            $user->remove_cap('manage_woocommerce');
-        }
-        //wp_delete_user($user_id);
         die();
     }
 

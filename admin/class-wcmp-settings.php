@@ -525,10 +525,11 @@ class WCMp_Settings {
                             "wcmp-{$tab_options['tab']}-settings-admin" // Page
                     );
                 } else {
+                    $callback = isset($section['ref']) && method_exists($section['ref'], "{$sectionID}_info") ? array($section['ref'], "{$sectionID}_info") : __return_false();
                     add_settings_section(
                             $sectionID, // ID
                             $section['title'], // Title
-                            array($section['ref'], "{$sectionID}_info"), // Callback
+                            $callback, // Callback
                             "wcmp-{$tab_options['tab']}-settings-admin" // Page
                     );
                 }
@@ -577,10 +578,11 @@ class WCMp_Settings {
                             "wcmp-{$tab_options['tab']}-{$tab_options['subsection']}-settings-admin" // Page
                     );
                 } else {
+                    $callback = isset($section['ref']) && method_exists($section['ref'], "{$sectionID}_info") ? array($section['ref'], "{$sectionID}_info") : __return_false();
                     add_settings_section(
                             $sectionID, // ID
                             $section['title'], // Title
-                            array($section['ref'], "{$sectionID}_info"), // Callback
+                            $callback, // Callback
                             "wcmp-{$tab_options['tab']}-{$tab_options['subsection']}-settings-admin" // Page
                     );
                 }

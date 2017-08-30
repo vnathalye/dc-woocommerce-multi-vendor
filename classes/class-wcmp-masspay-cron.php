@@ -26,19 +26,21 @@ class WCMp_MassPay_Cron {
         }
         $commission_to_pay = array();
         $commissions = $this->get_query_commission();
-        if($commissions && is_array($commissions)){
-            foreach ($commissions as $commission){
+        if ($commissions && is_array($commissions)) {
+            foreach ($commissions as $commission) {
                 $commission_id = $commission->ID;
                 $vendor_term_id = get_post_meta($commission_id, '_commission_vendor', true);
                 $commission_to_pay[$vendor_term_id][] = $commission_id;
             }
         }
-        foreach ($commission_to_pay as $vendor_term_id => $commissions){
+        foreach ($commission_to_pay as $vendor_term_id => $commissions) {
             $vendor = get_wcmp_vendor_by_term($vendor_term_id);
-            $payment_method = get_user_meta($vendor->id, '_vendor_payment_mode', true);
-            if($payment_method && $payment_method != 'direct_bank'){
-                if(array_key_exists($payment_method, $WCMp->payment_gateway->payment_gateways)){
-                    $WCMp->payment_gateway->payment_gateways[$payment_method]->process_payment($vendor, $commissions);
+            if ($vendor) {
+                $payment_method = get_user_meta($vendor->id, '_vendor_payment_mode', true);
+                if ($payment_method && $payment_method != 'direct_bank') {
+                    if (array_key_exists($payment_method, $WCMp->payment_gateway->payment_gateways)) {
+                        $WCMp->payment_gateway->payment_gateways[$payment_method]->process_payment($vendor, $commissions);
+                    }
                 }
             }
         }

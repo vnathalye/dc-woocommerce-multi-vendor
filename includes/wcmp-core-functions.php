@@ -301,128 +301,128 @@ if (!function_exists('wcmp_vendor_registration_page_id')) {
 
 }
 
-if (!function_exists('change_cap_existing_users')) {
-
-    /**
-     * Remove Capability of existing users
-     * @return void
-     */
-    function remove_wcmp_users_caps($user_cap) {
-        $product_caps = array("edit_product", "delete_product", "edit_products", "delete_products");
-        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "delete_shop_coupons");
-        $wcmp_vendors = get_wcmp_vendors();
-        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
-            foreach ($wcmp_vendors as $wcmp_vendor) {
-                $user = new WP_User($wcmp_vendor->id);
-                if ($user) {
-                    switch ($user_cap) {
-                        case 'is_upload_files':
-                            $user->remove_cap('upload_files');
-                            break;
-                        case 'is_submit_product':
-                            foreach ($product_caps as $product_cap) {
-                                $user->remove_cap($product_cap);
-                            }
-                            break;
-                        case 'edit_delete_published_product':
-                            $user->remove_cap('edit_published_products');
-                            $user->remove_cap('delete_published_products');
-                            break;
-                        case 'is_published_product':
-                            $user->remove_cap('publish_products');
-                            break;
-                        case 'is_submit_coupon':
-                            foreach ($coupon_caps as $coupon_cap) {
-                                $user->remove_cap($coupon_cap);
-                            }
-                            break;
-                        case 'edit_delete_published_coupons':
-                            $user->remove_cap('delete_published_shop_coupons');
-                            $user->remove_cap('edit_published_shop_coupons');
-                            break;
-                        case 'is_published_coupon':
-                            $user->remove_cap('publish_shop_coupons');
-                            break;
-                        default :
-                            $user->remove_cap($user_cap);
-                            break;
-                    }
-                }
-            }
-        }
-    }
-
-}
-
-if (!function_exists('add_cap_existing_users')) {
-
-    /**
-     * Add Capability in existing users
-     * @return void
-     */
-    function add_wcmp_users_caps($user_cap) {
-        $wcmp_vendors = get_wcmp_vendors();
-        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
-            $product_caps = array(
-                "edit_product"
-                , "delete_product"
-                , "edit_products"
-                , "delete_products"
-            );
-            $coupon_caps = array(
-                "edit_shop_coupon"
-                , "delete_shop_coupon"
-                , "edit_shop_coupons"
-                , "delete_shop_coupons"
-            );
-            foreach ($wcmp_vendors as $wcmp_vendor) {
-                $user = new WP_User($wcmp_vendor->id);
-                if ($user) {
-                    $is_submit_product = get_user_meta($user->ID, '_vendor_submit_product', true);
-                    $is_submit_coupon = get_user_meta($user->ID, '_vendor_submit_coupon', true);
-                    $is_vendor_publish_product = get_user_meta($user->ID, '_vendor_publish_product', true);
-                    $is_vendor_publish_coupon = get_user_meta($user->ID, '_vendor_publish_coupon', true);
-                    if ($user_cap == 'is_submit_product') {
-                        if (!empty($is_submit_product) && $is_submit_product) {
-                            foreach ($product_caps as $cap) {
-                                $user->add_cap($cap);
-                            }
-                            $user->add_cap("read_product");
-                        }
-                    } else if ($user_cap == 'edit_delete_published_product') {
-                        if ($is_submit_product == 'Enable') {
-                            $user->add_cap('edit_published_products');
-                            $user->add_cap('delete_published_products');
-                        }
-                    } else if ($user_cap == 'edit_delete_published_coupons') {
-                        if ($is_submit_coupon == 'Enable') {
-                            $user->add_cap('edit_published_shop_coupons');
-                            $user->add_cap('delete_published_shop_coupons');
-                        }
-                    } else if ($user_cap == 'is_submit_coupon') {
-                        if (!empty($is_submit_coupon) && $is_submit_coupon) {
-                            foreach ($coupon_caps as $cap) {
-                                $user->add_cap($cap);
-                            }
-                        }
-                        $user->add_cap("read_shop_coupon");
-                    } else if ($user_cap == 'publish_products') {
-                        if ($is_vendor_publish_product != 'Enable') {
-                            $user->add_cap($user_cap);
-                        }
-                    } else if ($user_cap == 'publish_shop_coupons') {
-                        if ($is_vendor_publish_coupon != 'Enable') {
-                            $user->add_cap($user_cap);
-                        }
-                    } else {
-                        $user->add_cap($user_cap);
-                    }
-                }
-            }
-        }
-    }
-
-}
+//if (!function_exists('remove_wcmp_users_caps')) {
+//
+//    /**
+//     * Remove Capability of existing users
+//     * @return void
+//     */
+//    function remove_wcmp_users_caps($user_cap) {
+//        $product_caps = array("edit_product", "delete_product", "edit_products", "delete_products");
+//        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "delete_shop_coupons");
+//        $wcmp_vendors = get_wcmp_vendors();
+//        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
+//            foreach ($wcmp_vendors as $wcmp_vendor) {
+//                $user = new WP_User($wcmp_vendor->id);
+//                if ($user) {
+//                    switch ($user_cap) {
+//                        case 'is_upload_files':
+//                            $user->remove_cap('upload_files');
+//                            break;
+//                        case 'is_submit_product':
+//                            foreach ($product_caps as $product_cap) {
+//                                $user->remove_cap($product_cap);
+//                            }
+//                            break;
+//                        case 'edit_delete_published_product':
+//                            $user->remove_cap('edit_published_products');
+//                            $user->remove_cap('delete_published_products');
+//                            break;
+//                        case 'is_published_product':
+//                            $user->remove_cap('publish_products');
+//                            break;
+//                        case 'is_submit_coupon':
+//                            foreach ($coupon_caps as $coupon_cap) {
+//                                $user->remove_cap($coupon_cap);
+//                            }
+//                            break;
+//                        case 'edit_delete_published_coupons':
+//                            $user->remove_cap('delete_published_shop_coupons');
+//                            $user->remove_cap('edit_published_shop_coupons');
+//                            break;
+//                        case 'is_published_coupon':
+//                            $user->remove_cap('publish_shop_coupons');
+//                            break;
+//                        default :
+//                            $user->remove_cap($user_cap);
+//                            break;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//}
+//
+//if (!function_exists('add_wcmp_users_caps')) {
+//
+//    /**
+//     * Add Capability in existing users
+//     * @return void
+//     */
+//    function add_wcmp_users_caps($user_cap) {
+//        $wcmp_vendors = get_wcmp_vendors();
+//        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
+//            $product_caps = array(
+//                "edit_product"
+//                , "delete_product"
+//                , "edit_products"
+//                , "delete_products"
+//            );
+//            $coupon_caps = array(
+//                "edit_shop_coupon"
+//                , "delete_shop_coupon"
+//                , "edit_shop_coupons"
+//                , "delete_shop_coupons"
+//            );
+//            foreach ($wcmp_vendors as $wcmp_vendor) {
+//                $user = new WP_User($wcmp_vendor->id);
+//                if ($user) {
+//                    $is_submit_product = get_user_meta($user->ID, '_vendor_submit_product', true);
+//                    $is_submit_coupon = get_user_meta($user->ID, '_vendor_submit_coupon', true);
+//                    $is_vendor_publish_product = get_user_meta($user->ID, '_vendor_publish_product', true);
+//                    $is_vendor_publish_coupon = get_user_meta($user->ID, '_vendor_publish_coupon', true);
+//                    if ($user_cap == 'is_submit_product') {
+//                        if (!empty($is_submit_product) && $is_submit_product) {
+//                            foreach ($product_caps as $cap) {
+//                                $user->add_cap($cap);
+//                            }
+//                            $user->add_cap("read_product");
+//                        }
+//                    } else if ($user_cap == 'edit_delete_published_product') {
+//                        if ($is_submit_product == 'Enable') {
+//                            $user->add_cap('edit_published_products');
+//                            $user->add_cap('delete_published_products');
+//                        }
+//                    } else if ($user_cap == 'edit_delete_published_coupons') {
+//                        if ($is_submit_coupon == 'Enable') {
+//                            $user->add_cap('edit_published_shop_coupons');
+//                            $user->add_cap('delete_published_shop_coupons');
+//                        }
+//                    } else if ($user_cap == 'is_submit_coupon') {
+//                        if (!empty($is_submit_coupon) && $is_submit_coupon) {
+//                            foreach ($coupon_caps as $cap) {
+//                                $user->add_cap($cap);
+//                            }
+//                        }
+//                        $user->add_cap("read_shop_coupon");
+//                    } else if ($user_cap == 'publish_products') {
+//                        if ($is_vendor_publish_product != 'Enable') {
+//                            $user->add_cap($user_cap);
+//                        }
+//                    } else if ($user_cap == 'publish_shop_coupons') {
+//                        if ($is_vendor_publish_coupon != 'Enable') {
+//                            $user->add_cap($user_cap);
+//                        }
+//                    } else {
+//                        $user->add_cap($user_cap);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//}
 
 
 if (!function_exists('get_vendor_from_an_order')) {
@@ -1158,7 +1158,49 @@ if (!function_exists('do_wcmp_data_migrate')) {
      * @param string $previous_plugin_version
      */
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
-        global $WCMp, $wpdb;
+        global $WCMp, $wpdb, $wp_roles;
+        if ($previous_plugin_version && $previous_plugin_version <= '2.7.5') {
+            if (!class_exists('WP_Roles')) {
+                return;
+            }
+
+            if (!isset($wp_roles)) {
+                $wp_roles = new WP_Roles();
+            }
+            $wp_roles->add_cap('dc_vendor', 'assign_product_terms', true);
+            $wp_roles->add_cap('dc_vendor', 'read_product', true);
+            $wp_roles->add_cap('dc_vendor', 'read_shop_coupon', true);
+            /** remove user wise capability **/
+            $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
+            $user_query = new WP_User_Query($args);
+            if (!empty($user_query->results)) {
+                foreach ($user_query->results as $vendor_id) {
+                    $user = new WP_User($vendor_id);
+                    if ($user && !get_user_meta($vendor_id, 'vendor_group_id', true)) {
+                        $user->remove_cap('publish_products');
+                        $user->remove_cap('assign_product_terms');
+                        $user->remove_cap('read_product');
+                        $user->remove_cap('read_shop_coupon');
+                        $user->remove_cap('read_shop_coupons');
+                        $user->remove_cap('edit_posts');
+                        $user->remove_cap('edit_shop_coupon');
+                        $user->remove_cap('delete_shop_coupon');
+                        $user->remove_cap('upload_files');
+                        $user->remove_cap('edit_published_products');
+                        $user->remove_cap('delete_published_products');
+                        $user->remove_cap('edit_product');
+                        $user->remove_cap('delete_product');
+                        $user->remove_cap('edit_products');
+                        $user->remove_cap('delete_products');
+                        $user->remove_cap('publish_shop_coupons');
+                        $user->remove_cap('edit_shop_coupons');
+                        $user->remove_cap('delete_shop_coupons');
+                        $user->remove_cap('edit_published_shop_coupons');
+                        $user->remove_cap('delete_published_shop_coupons');
+                    }
+                }
+            }
+        }
         if ($previous_plugin_version && $previous_plugin_version <= '2.7.3') {
             if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
                 $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_vendor_orders` DROP INDEX `vendor_orders`;");
@@ -1669,6 +1711,105 @@ if (!function_exists('wcmp_count_commission')) {
             }
         }
         return $commission_count;
+    }
+
+}
+if (!function_exists('wcmp_process_order')) {
+
+    /**
+     * Calculate shipping, tax and insert into wcmp_vendor_orders table whenever an order is created.
+     * 
+     * @since 2.7.6
+     * @global onject $wpdb
+     * @param int $order_id
+     * @param WC_Order object $order
+     */
+    function wcmp_process_order($order_id, $order) {
+        global $wpdb;
+        if (get_post_meta($order_id, '_wcmp_order_processed', true)) {
+            return;
+        }
+        $vendor_shipping_array = get_post_meta($order_id, 'dc_pv_shipped', true);
+        $mark_ship = 0;
+        $items = $order->get_items('line_item');
+        $shipping_items = $order->get_items('shipping');
+        $vendor_shipping = array();
+        foreach ($shipping_items as $shipping_item_id => $shipping_item) {
+            $order_item_shipping = new WC_Order_Item_Shipping($shipping_item_id);
+            $shipping_vendor_id = $order_item_shipping->get_meta('vendor_id', true);
+            $vendor_shipping[$shipping_vendor_id] = array(
+                'shipping' => $order_item_shipping->get_total()
+                , 'shipping_tax' => $order_item_shipping->get_total_tax()
+                , 'package_qty' => $order_item_shipping->get_meta('package_qty', true)
+            );
+        }
+        foreach ($items as $order_item_id => $item) {
+            $line_item = new WC_Order_Item_Product($item);
+            $product_id = $item['product_id'];
+            $variation_id = isset($item['variation_id']) ? $item['variation_id'] : 0;
+            if ($product_id) {
+                $product_vendors = get_wcmp_product_vendors($product_id);
+                if ($product_vendors) {
+                    if (isset($product_vendors->id) && is_array($vendor_shipping_array)) {
+                        if (in_array($product_vendors->id, $vendor_shipping_array)) {
+                            $mark_ship = 1;
+                        }
+                    }
+                    $shipping_amount = $shipping_tax_amount = 0;
+                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id])) {
+                        $shipping_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
+                        $shipping_tax_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping_tax'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
+                    }
+                    $wpdb->query(
+                            $wpdb->prepare(
+                                    "INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` 
+                                        ( order_id
+                                        , commission_id
+                                        , vendor_id
+                                        , shipping_status
+                                        , order_item_id
+                                        , product_id
+                                        , variation_id
+                                        , tax
+                                        , line_item_type
+                                        , quantity
+                                        , commission_status
+                                        , shipping
+                                        , shipping_tax_amount
+                                        ) VALUES ( %d
+                                        , %d
+                                        , %d
+                                        , %s
+                                        , %d
+                                        , %d 
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %d
+                                        , %s
+                                        , %s
+                                        , %s
+                                        ) ON DUPLICATE KEY UPDATE `created` = now()"
+                                    , $order_id
+                                    , 0
+                                    , $product_vendors->id
+                                    , $mark_ship
+                                    , $order_item_id
+                                    , $product_id
+                                    , $variation_id
+                                    , $line_item->get_total_tax()
+                                    , 'product'
+                                    , $line_item->get_quantity()
+                                    , 'unpaid'
+                                    , $shipping_amount
+                                    , $shipping_tax_amount
+                            )
+                    );
+                }
+            }
+        }
+        update_post_meta($order_id, '_wcmp_order_processed', true);
+        do_action('wcmp_order_processed', $order);
     }
 
 }

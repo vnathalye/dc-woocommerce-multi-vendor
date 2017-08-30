@@ -85,65 +85,37 @@ class WCMp_Settings_Capabilities_Product {
      * @param array $input Contains all settings fields as array keys
      */
     public function wcmp_capabilities_product_settings_sanitize($input) {
-        global $WCMp;
         $new_input = array();
 
         $hasError = false;
 
         if (isset($input['is_upload_files'])) {
             $new_input['is_upload_files'] = sanitize_text_field($input['is_upload_files']);
-            add_wcmp_users_caps('upload_files');
-        } else {
-            remove_wcmp_users_caps('is_upload_files');
-        }
+        } 
 
         if (isset($input['is_published_product'])) {
             $new_input['is_published_product'] = sanitize_text_field($input['is_published_product']);
-            add_wcmp_users_caps('publish_products');
-        } else {
-            remove_wcmp_users_caps('is_published_product');
-        }
+        } 
         
         if(isset($input['is_edit_delete_published_product'])){
             $new_input['is_edit_delete_published_product'] = $input['is_edit_delete_published_product'];
-            add_wcmp_users_caps('edit_delete_published_product');
-        } else{
-            remove_wcmp_users_caps('edit_delete_published_product');
-        }
+        } 
 
         if (isset($input['is_submit_product'])) {
             $new_input['is_submit_product'] = sanitize_text_field($input['is_submit_product']);
-            add_wcmp_users_caps('is_submit_product');
-        } else {
-            remove_wcmp_users_caps('is_submit_product');
-            if (isset($input['is_published_product'])) {
-                unset($new_input['is_published_product']);
-            }
-        }
+        } 
 
         if (isset($input['is_published_coupon'])) {
             $new_input['is_published_coupon'] = sanitize_text_field($input['is_published_coupon']);
-            add_wcmp_users_caps('publish_shop_coupons');
-        } else {
-            remove_wcmp_users_caps('is_published_coupon');
-        }
+        } 
 
         if (isset($input['is_submit_coupon'])) {
             $new_input['is_submit_coupon'] = sanitize_text_field($input['is_submit_coupon']);
-            add_wcmp_users_caps('is_submit_coupon');
-        } else {
-            remove_wcmp_users_caps('is_submit_coupon');
-            if (isset($input['is_published_coupon'])) {
-                unset($new_input['is_published_coupon']);
-            }
-        }
+        } 
         
         if(isset($input['is_edit_delete_published_coupon'])){
             $new_input['is_edit_delete_published_coupon'] = $input['is_edit_delete_published_coupon'];
-            add_wcmp_users_caps('edit_delete_published_coupons');
-        } else{
-            remove_wcmp_users_caps('edit_delete_published_coupons');
-        }
+        } 
         if (isset($input['inventory'])) {
             $new_input['inventory'] = sanitize_text_field($input['inventory']);
         }
@@ -193,7 +165,6 @@ class WCMp_Settings_Capabilities_Product {
             $new_input['stylesheet'] = sanitize_text_field($input['stylesheet']);
         }
 
-
         if (!$hasError) {
             add_settings_error(
                     "wcmp_{$this->tab}_{$this->subsection}_settings_name", esc_attr("wcmp_{$this->tab}_{$this->subsection}_settings_admin_updated"), __('Vendor Settings Updated', 'dc-woocommerce-multi-vendor'), 'updated'
@@ -201,45 +172,4 @@ class WCMp_Settings_Capabilities_Product {
         }
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
     }
-    
-    public function products_capability_info(){
-        
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_left_pnl_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_types_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_type_option_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function default_settings_section_miscellaneous_info() {
-        global $WCMp;
-    }
-
-    public function default_settings_section_policies_info() {
-        global $WCMp;
-    }
-
-    public function default_settings_section_policiessettings_info() {
-        global $WCMp;
-    }
-
 }

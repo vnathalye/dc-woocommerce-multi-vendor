@@ -806,7 +806,6 @@ class WCMp_Shortcode {
      * 	@param $atts shortcode attributs 
      */
     public static function wcmp_show_vendorslist($atts) {
-        global $WCMp;
         self::load_class('vendor-list');
         return self::shortcode_wrapper(array('WCMp_Shortcode_Vendor_List', 'output'), $atts);
     }

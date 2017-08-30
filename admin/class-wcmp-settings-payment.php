@@ -189,13 +189,6 @@ class WCMp_Settings_Payment {
     }
 
     /**
-     * Print the section text
-     */
-    public function wcmp_paypal_settings_info() {
-        global $WCMp;
-    }
-
-    /**
      * Print the Section text
      */
     public function revenue_sharing_mode_section_info() {
@@ -225,27 +218,6 @@ class WCMp_Settings_Payment {
         </style>
         <?php
 
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function what_to_pay_section_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function commiossion_tax_sextion_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
-    public function commiossion_shipping_sextion_info() {
-        global $WCMp;
     }
 
 }

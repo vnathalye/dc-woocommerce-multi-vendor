@@ -155,14 +155,9 @@ jQuery(document).ready(function ($) {
         }
     });
     // toggle check uncheck event on gatewar charge
-    if ($('#payment_gateway_charge').is(':checked')) {
-        $('.payment_gateway_charge').show();
-    } else {
-        $('.payment_gateway_charge').hide();
-    }
 
-    $('#payment_gateway_charge').on('change', function () {
-        if ($(this).is(':checked')) {
+    $('#payment_gateway_charge').change(function () {
+        if ($(this).prop('checked')) {
             $('.payment_gateway_charge').show();
         } else {
             $('.payment_gateway_charge').hide();
@@ -173,7 +168,7 @@ jQuery(document).ready(function ($) {
         var id = $(this).attr('id');
         if (id !== undefined) {
             var terget_id = 'gateway_charge' + id.split('payment_method')[1];
-            if ($(this).is(':checked')) {
+            if ($(this).is(':checked') && $('#payment_gateway_charge').prop('checked')) {
                 $('#' + terget_id).closest('tr').show();
             } else {
                 $('#' + terget_id).closest('tr').hide();

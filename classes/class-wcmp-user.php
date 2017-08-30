@@ -11,66 +11,51 @@ if (!defined('ABSPATH'))
  */
 class WCMp_User {
 
-    private $post_type;
-
     public function __construct() {
-
         // Add dc_pending_vendor, dc_vendor, dc_rejected_vendor role
         $this->register_user_role();
-
         // Set vendor role
         add_action('user_register', array(&$this, 'vendor_registration'), 10, 1);
-
         // Add column product in users dashboard
         add_filter('manage_users_columns', array(&$this, 'column_register_product'));
         add_filter('manage_users_custom_column', array(&$this, 'column_display_product'), 10, 3);
-
         // Set vendor_action links in user dashboard
         add_filter('user_row_actions', array(&$this, 'vendor_action_links'), 10, 2);
-
         // Add addistional user fields
         add_action('show_user_profile', array(&$this, 'additional_user_fields'));
         add_action('edit_user_profile', array(&$this, 'additional_user_fields'));
-
         // Validate addistional user fields
         add_action('user_profile_update_errors', array(&$this, 'validate_user_fields'), 10, 3);
-
         // Save addistional user fields
         add_action('personal_options_update', array(&$this, 'save_vendor_data'));
         add_action('edit_user_profile_update', array(&$this, 'save_vendor_data'));
-
-        //add_action( 'profile_update', array( &$this, 'save_vendor_data') );
-        add_action('set_user_role', array(&$this, 'save_vendor_data'));
-
         // Delete vendor
         add_action('delete_user', array(&$this, 'delete_vendor'));
-
-        add_action('admin_head', array($this, 'profile_admin_buffer_start'));
-        add_action('admin_footer', array($this, 'profile_admin_buffer_end'));
-
-        // Add vednor registration checkbox in front-end
-        //add_action( 'woocommerce_register_form', array($this, 'wcmp_woocommerce_register_form'));
         // Created customer notification
         add_action('woocommerce_created_customer_notification', array($this, 'wcmp_woocommerce_created_customer_notification'), 9, 3);
-
+        // Create woocommerce term and shipping on change user role
         add_action('set_user_role', array(&$this, 'set_user_role'), 30, 3);
-        add_action('add_user_role', array(&$this, 'add_user_role'), 30, 2);
-
         // Add message in my account page after vendore registrtaion
         add_action('woocommerce_before_my_account', array(&$this, 'woocommerce_before_my_account'));
-
+        // Add vendor new order email template
         add_filter('woocommerce_resend_order_emails_available', array($this, 'wcmp_order_emails_available'));
-
+        // Redirect user to vendor dashboard or my account page
         add_filter('woocommerce_registration_redirect', array($this, 'vendor_login_redirect'), 30, 1);
-
+        // Register vendor from vendor dashboard
         $this->register_vendor_from_vendor_dashboard();
-
+        // wordpress, woocommerce login redirest
         add_filter('woocommerce_login_redirect', array($this, 'wcmp_vendor_login'), 10, 2);
         add_filter('login_redirect', array($this, 'wp_wcmp_vendor_login'), 10, 3);
     }
 
-    function wp_wcmp_vendor_login($redirect_to, $requested_redirect_to, $user) {
-        global $WCMp;
+    /**
+     * Wordpress Login redirect
+     * @param string $redirect_to
+     * @param string $requested_redirect_to
+     * @param WP_User $user
+     * @return string
+     */
+    public function wp_wcmp_vendor_login($redirect_to, $requested_redirect_to, $user) {
         //is there a user to check?
         if ($requested_redirect_to == admin_url()) {
             if (isset($user->roles) && is_array($user->roles)) {
@@ -84,7 +69,13 @@ class WCMp_User {
         return $redirect_to;
     }
 
-    function wcmp_vendor_login($redirect, $user) {
+    /**
+     * WooCommerce login redirect
+     * @param string $redirect
+     * @param WP_User $user
+     * @return string
+     */
+    public function wcmp_vendor_login($redirect, $user) {
         if (!isset($_POST['wcmp-login-vendor'])) {
             if (is_array($user->roles)) {
                 if (in_array('dc_vendor', $user->roles)) {
@@ -97,8 +88,11 @@ class WCMp_User {
         return $redirect;
     }
 
-    function register_vendor_from_vendor_dashboard() {
-        global $WCMp;
+    /**
+     * Register vendor from vendor dashboard
+     * @return void
+     */
+    public function register_vendor_from_vendor_dashboard() {
         $user = wp_get_current_user();
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['wcmp_vendor_fields']) && isset($_POST['pending_vendor']) && isset($_POST['vendor_apply'])) {
@@ -237,7 +231,6 @@ class WCMp_User {
      * @return void
      */
     public function woocommerce_before_my_account() {
-        global $WCMp;
         $current_user = wp_get_current_user();
         if (is_user_wcmp_pending_vendor($current_user)) {
             _e('Congratulations! You have successfully applied as a Vendor. Please wait for further notifications from the admin.', 'dc-woocommerce-multi-vendor');
@@ -257,79 +250,18 @@ class WCMp_User {
      * @return void
      */
     public function set_user_role($user_id, $new_role, $old_role) {
-        global $WCMp;
-        $user = new WP_User($user_id);
-        switch ($new_role) {
-            case 'dc_rejected_vendor':
-                $user->remove_all_caps();
-                $user->add_role('dc_rejected_vendor');
-                $user_dtl = get_userdata(absint($user_id));
-                $email = WC()->mailer()->emails['WC_Email_Rejected_New_Vendor_Account'];
-                $email->trigger($user_id, $user_dtl->user_pass);
-                if (in_array('dc_vendor', $old_role)) {
-                    $vendor = get_wcmp_vendor($user_id);
-                    if ($vendor) {
-                        wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
-                        delete_user_meta($user_id, '_vendor_term_id');
-                    }
-                }
-                break;
-            case 'dc_pending_vendor':
-                $user->remove_all_caps();
-                $user->add_role('dc_pending_vendor');
-                break;
-            case 'dc_vendor':
-                $this->update_vendor_meta($user_id);
-
-                $caps = $this->get_vendor_caps($user_id);
-                foreach ($caps as $cap) {
-                    $user->add_cap($cap);
-                }
-                $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
-                $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class', true);
-                if (empty($shipping_class_id) && $add_vendor_shipping_class) {
-                    $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
-                    if (!is_wp_error($shipping_term)) {
-                        update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
-                        add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);
-                        add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
-                    }
-                }
-                break;
-            default :
-                break;
+        if ($new_role == 'dc_rejected_vendor') {
+            $user_dtl = get_userdata(absint($user_id));
+            $email = WC()->mailer()->emails['WC_Email_Rejected_New_Vendor_Account'];
+            $email->trigger($user_id, $user_dtl->user_pass);
+        } else if ($new_role == 'dc_vendor') {
+            $vendor = get_wcmp_vendor($user_id);
+            if ($vendor) {
+                $vendor->generate_shipping_class();
+                $vendor->generate_term();
+            }
         }
         do_action('wcmp_set_user_role', $user_id, $new_role, $old_role);
-    }
-
-    /**
-     * Add vendor user role and associate capabilities
-     *
-     * @access public
-     * @param user_id, new role, old role
-     * @return void
-     */
-    public function add_user_role($user_id, $new_role) {
-        global $WCMp;
-        $user = new WP_User($user_id);
-        if ($new_role == 'dc_vendor') {
-            $this->update_vendor_meta($user_id);
-
-            $caps = $this->get_vendor_caps($user_id);
-            foreach ($caps as $cap) {
-                $user->add_cap($cap);
-            }
-            $shipping_class_id = get_user_meta($user_id, 'shipping_class_id', true);
-            $add_vendor_shipping_class = apply_filters('wcmp_add_vendor_shipping_class', true);
-            if (empty($shipping_class_id) && $add_vendor_shipping_class) {
-                $shipping_term = wp_insert_term($user->user_login . '-' . $user_id, 'product_shipping_class');
-                if (!is_wp_error($shipping_term)) {
-                    update_user_meta($user_id, 'shipping_class_id', $shipping_term['term_id']);
-                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_id', $user_id);
-                    add_woocommerce_term_meta($shipping_term['term_id'], 'vendor_shipping_origin', get_option('woocommerce_default_country'));
-                }
-            }
-        }
     }
 
     /**
@@ -339,110 +271,113 @@ class WCMp_User {
      * @return void
      */
     public function register_user_role() {
-        global $wp_roles, $WCMp;
-        if (class_exists('WP_Roles'))
-            if (!isset($wp_roles))
-                $wp_roles = new WP_Roles();
-        if (is_object($wp_roles)) {
-            if (get_role('dc_vendor') == null) {
-                // Vendor role
-                add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', 'dc-woocommerce-multi-vendor')), array(
-                    'read' => true,
-                    'manage_product' => true,
-                    'edit_posts' => true,
-                    'delete_posts' => false,
-                    'view_woocommerce_reports' => true,
-                ));
-            }
-            if (get_role('dc_pending_vendor') == null) {
-                // Pending Vendor role
-                add_role('dc_pending_vendor', apply_filters('dc_pending_vendor_role', __('Pending Vendor', 'dc-woocommerce-multi-vendor')), array(
-                    'read' => true,
-                    'edit_posts' => false,
-                    'delete_posts' => false,
-                ));
-            }
-            if (get_role('dc_rejected_vendor') == null) {
-                // Pending Vendor role
-                add_role('dc_rejected_vendor', apply_filters('dc_rejected_vendor_role', __('Rejected Vendor', 'dc-woocommerce-multi-vendor')), array(
-                    'read' => true,
-                    'edit_posts' => false,
-                    'delete_posts' => false,
-                ));
-            }
-//            if (isset($wordpress_default_role))
-//                update_option('default_role', $wordpress_default_role);
+        global $wp_roles;
+
+        if (!class_exists('WP_Roles')) {
+            return;
+        }
+
+        if (!isset($wp_roles)) {
+            $wp_roles = new WP_Roles();
+        }
+
+        add_role('dc_pending_vendor', apply_filters('dc_pending_vendor_role', __('Pending Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false,
+        ));
+
+        add_role('dc_rejected_vendor', apply_filters('dc_rejected_vendor_role', __('Rejected Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false,
+        ));
+
+        add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'manage_product' => true,
+            'edit_posts' => true,
+            'delete_posts' => false,
+            'view_woocommerce_reports' => true,
+            'assign_product_terms' => true,
+            'read_product' => true,
+            'read_shop_coupon' => true
+        ));
+
+        $capabilities = $this->get_vendor_caps();
+        foreach ($capabilities as $cap => $is_enable) {
+            $wp_roles->add_cap('dc_vendor', $cap, $is_enable);
         }
     }
 
     /**
      * Set up array of vendor admin capabilities
      *
-     * @access private
-     * @param int $user_id
+     * @access public
      * @return arr Vendor capabilities
      */
-    private function get_vendor_caps($user_id) {
+    public function get_vendor_caps() {
         global $WCMp;
         $caps = array();
-        $caps[] = "assign_product_terms";
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_upload_files')) {
-            $caps[] = "upload_files";
+            $caps['upload_files'] = true;
+        } else {
+            $caps['upload_files'] = false;
         }
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-            $vendor_submit_products = get_user_meta($user_id, '_vendor_submit_product', true);
-            if ($vendor_submit_products) {
-                $caps[] = "edit_product";
-                $caps[] = "delete_product";
-                $caps[] = "edit_products";
-                $caps[] = "delete_products";
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-                    $caps[] = "publish_products";
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
-                    $caps[] = "edit_published_products";
-                    $caps[] = 'delete_published_products';
-                }
+            $caps['edit_product'] = true;
+            $caps['delete_product'] = true;
+            $caps['edit_products'] = true;
+            $caps['delete_products'] = true;
+            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
+                $caps['publish_products'] = true;
+            } else {
+                $caps['publish_products'] = false;
             }
+            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
+                $caps['edit_published_products'] = true;
+                $caps['delete_published_products'] = true;
+            } else {
+                $caps['edit_published_products'] = false;
+                $caps['delete_published_products'] = false;
+            }
+        } else {
+            $caps['edit_product'] = false;
+            $caps['delete_product'] = false;
+            $caps['edit_products'] = false;
+            $caps['delete_products'] = false;
+            $caps['publish_products'] = false;
+            $caps['edit_published_products'] = false;
+            $caps['delete_published_products'] = false;
         }
-
-        $caps[] = "read_product";
-        $caps[] = "read_shop_coupon";
 
         if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-            $vendor_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
-            if ($vendor_submit_coupon) {
-                $caps[] = 'edit_shop_coupon';
-                $caps[] = 'edit_shop_coupons';
-                $caps[] = 'delete_shop_coupon';
-                $caps[] = 'delete_shop_coupons';
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-                    $caps[] = "publish_shop_coupons";
-                }
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
-                    $caps[] = "edit_published_shop_coupons";
-                    $caps[] = "delete_published_shop_coupons";
-                }
+            $caps['edit_shop_coupon'] = true;
+            $caps['edit_shop_coupons'] = true;
+            $caps['delete_shop_coupon'] = true;
+            $caps['delete_shop_coupons'] = true;
+            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
+                $caps['publish_shop_coupons'] = true;
+            } else {
+                $caps['publish_shop_coupons'] = false;
             }
-        }
-        return apply_filters('vendor_capabilities', $caps, $user_id);
-    }
-
-    /**
-     * Add capabilities to vendor admins
-     *
-     * @param int $user_id User ID of vendor admin
-     */
-    public function add_vendor_caps($user_id = 0) {
-        if ($user_id > 0) {
-            $caps = $this->get_vendor_caps($user_id);
-            $user = new WP_User($user_id);
-            foreach ($caps as $cap) {
-                //echo $cap;
-                $user->add_cap($cap);
+            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
+                $caps['edit_published_shop_coupons'] = true;
+                $caps['delete_published_shop_coupons'] = true;
+            } else {
+                $caps['edit_published_shop_coupons'] = false;
+                $caps['delete_published_shop_coupons'] = false;
             }
+        } else {
+            $caps['edit_shop_coupon'] = false;
+            $caps['edit_shop_coupons'] = false;
+            $caps['delete_shop_coupon'] = false;
+            $caps['delete_shop_coupons'] = false;
+            $caps['publish_shop_coupons'] = false;
+            $caps['edit_published_shop_coupons'] = false;
+            $caps['delete_published_shop_coupons'] = false;
         }
-        //die;
+        return apply_filters('wcmp_vendor_capabilities', $caps);
     }
 
     /**
@@ -611,14 +546,14 @@ class WCMp_User {
                 'label' => __('Logo', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 125,
-                'value' => $vendor->image,
+                'value' => $vendor->image ? $vendor->image : $WCMp->plugin_url . 'assets/images/logo_placeholder.jpg',
                 'class' => "user-profile-fields"
             ), // Upload
             "vendor_banner" => array(
                 'label' => __('Banner', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 600,
-                'value' => $vendor->banner,
+                'value' => $vendor->banner ? $vendor->banner : $WCMp->plugin_url . 'assets/images/banner_placeholder.jpg',
                 'class' => "user-profile-fields"
             ), // Upload			
             "vendor_csd_return_address1" => array(
@@ -817,34 +752,34 @@ class WCMp_User {
                 'value' => $vendor->commission,
                 'class' => "user-profile-fields"
             ); // Text   
-            $fields['vendor_submit_product'] = array(
-                'label' => __('Submit products', 'dc-woocommerce-multi-vendor'),
-                'type' => 'checkbox',
-                'dfvalue' => $vendor->submit_product,
-                'value' => 'Enable',
-                'class' => 'user-profile-fields'
-            );
-            $fields['vendor_publish_product'] = array(
-                'label' => __('Disallow direct publishing of products', 'dc-woocommerce-multi-vendor'),
-                'type' => 'checkbox',
-                'dfvalue' => $vendor->publish_product,
-                'value' => 'Enable',
-                'class' => 'user-profile-fields'
-            );
-            $fields['vendor_submit_coupon'] = array(
-                'label' => __('Submit Coupons', 'dc-woocommerce-multi-vendor'),
-                'type' => 'checkbox',
-                'dfvalue' => $vendor->submit_coupon,
-                'value' => 'Enable',
-                'class' => 'user-profile-fields'
-            );
-            $fields['vendor_publish_coupon'] = array(
-                'label' => __('Disallow direct publishing of coupons', 'dc-woocommerce-multi-vendor'),
-                'type' => 'checkbox',
-                'dfvalue' => $vendor->publish_coupon,
-                'value' => 'Enable',
-                'class' => 'user-profile-fields'
-            );
+//            $fields['vendor_submit_product'] = array(
+//                'label' => __('Submit products', 'dc-woocommerce-multi-vendor'),
+//                'type' => 'checkbox',
+//                'dfvalue' => $vendor->submit_product,
+//                'value' => 'Enable',
+//                'class' => 'user-profile-fields'
+//            );
+//            $fields['vendor_publish_product'] = array(
+//                'label' => __('Disallow direct publishing of products', 'dc-woocommerce-multi-vendor'),
+//                'type' => 'checkbox',
+//                'dfvalue' => $vendor->publish_product,
+//                'value' => 'Enable',
+//                'class' => 'user-profile-fields'
+//            );
+//            $fields['vendor_submit_coupon'] = array(
+//                'label' => __('Submit Coupons', 'dc-woocommerce-multi-vendor'),
+//                'type' => 'checkbox',
+//                'dfvalue' => $vendor->submit_coupon,
+//                'value' => 'Enable',
+//                'class' => 'user-profile-fields'
+//            );
+//            $fields['vendor_publish_coupon'] = array(
+//                'label' => __('Disallow direct publishing of coupons', 'dc-woocommerce-multi-vendor'),
+//                'type' => 'checkbox',
+//                'dfvalue' => $vendor->publish_coupon,
+//                'value' => 'Enable',
+//                'class' => 'user-profile-fields'
+//            );
             $fields['vendor_give_tax'] = array(
                 'label' => __('Withhold Tax', 'dc-woocommerce-multi-vendor'),
                 'type' => 'checkbox',
@@ -902,19 +837,19 @@ class WCMp_User {
             }
         }
 
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-            unset($fields['vendor_submit_product']);
-        }
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-            unset($fields['vendor_publish_product']);
-        }
-
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-            unset($fields['vendor_submit_coupon']);
-        }
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-            unset($fields['vendor_publish_coupon']);
-        }
+//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
+//            unset($fields['vendor_submit_product']);
+//        }
+//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
+//            unset($fields['vendor_publish_product']);
+//        }
+//
+//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
+//            unset($fields['vendor_submit_coupon']);
+//        }
+//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
+//            unset($fields['vendor_publish_coupon']);
+//        }
 
         return $fields;
     }
@@ -930,24 +865,12 @@ class WCMp_User {
         $is_approve_manually = $WCMp->vendor_caps->vendor_general_settings('approve_vendor_manually');
         if (isset($_POST['pending_vendor']) && ($_POST['pending_vendor'] == 'true') && !is_user_wcmp_vendor($user_id) && $is_approve_manually) {
             $user = new WP_User(absint($user_id));
-            $user->remove_role('customer');
-            $user->remove_role('Subscriber');
-            $user->add_role('dc_pending_vendor');
+            $user->set_role('dc_pending_vendor');
         }
 
         if (isset($_POST['pending_vendor']) && ($_POST['pending_vendor'] == 'true') && !is_user_wcmp_vendor($user_id) && !$is_approve_manually) {
             $user = new WP_User(absint($user_id));
-            $user->remove_role('customer');
-            $user->remove_role('Subscriber');
-            $user->add_role('dc_vendor');
-            $this->update_vendor_meta($user_id);
-        }
-
-        if (is_user_wcmp_vendor($user_id)) {
-            $this->update_vendor_meta($user_id);
-            $this->add_vendor_caps($user_id);
-            $vendor = get_wcmp_vendor($user_id);
-            $vendor->generate_term();
+            $user->set_role('dc_vendor');
         }
     }
 
@@ -958,7 +881,6 @@ class WCMp_User {
      * @return array
      */
     function column_register_product($columns) {
-        global $WCMp;
         $columns['product'] = __('Products', 'dc-woocommerce-multi-vendor');
         return $columns;
     }
@@ -970,14 +892,16 @@ class WCMp_User {
      * @return string
      */
     function column_display_product($empty, $column_name, $user_id) {
-        if ('product' != $column_name)
+        if ('product' != $column_name) {
             return $empty;
+        }
         $vendor = get_wcmp_vendor($user_id);
         if ($vendor) {
             $product_count = count($vendor->get_products());
             return "<a href='edit.php?post_type=product&dc_vendor_shop=" . $vendor->user_data->user_login . "'><strong>{$product_count}</strong></a>";
-        } else
+        } else {
             return "<strong></strong>";
+        }
     }
 
     /**
@@ -987,8 +911,6 @@ class WCMp_User {
      * @return array
      */
     function vendor_action_links($actions, $user_object) {
-        global $WCMp;
-
         if (is_user_wcmp_vendor($user_object)) {
             $vendor = get_wcmp_vendor($user_object->ID);
             if ($vendor) {
@@ -1006,8 +928,6 @@ class WCMp_User {
             $vendor = get_wcmp_vendor($user_object->ID);
             $actions['activate'] = "<a class='activate_vendor' data-id='" . $user_object->ID . "'href=#>" . __('Approve', 'dc-woocommerce-multi-vendor') . "</a>";
         }
-
-
         return $actions;
     }
 
@@ -1033,7 +953,7 @@ class WCMp_User {
                             <a class="button-primary" target="_blank" href=<?php echo $vendor->permalink; ?>>View</a>
                         </td>
                     </tr>
-                    <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
+            <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
                 </tbody>
             </table>
             <?php
@@ -1044,7 +964,6 @@ class WCMp_User {
      * Validate user additional fields
      */
     function validate_user_fields(&$errors, $update, &$user) {
-        global $WCMp;
         if (isset($_POST['vendor_page_slug'])) {
             if (!$update) {
                 if (term_exists(sanitize_title($_POST['vendor_page_slug']), 'dc_vendor_shop')) {
@@ -1053,8 +972,9 @@ class WCMp_User {
             } else {
                 if (is_user_wcmp_vendor($user->ID)) {
                     $vendor = get_wcmp_vendor($user->ID);
-                    if (isset($vendor->term_id))
+                    if (isset($vendor->term_id)) {
                         $vendor_term = get_term($vendor->term_id, 'dc_vendor_shop');
+                    }
                     if (isset($_POST['vendor_page_slug']) && isset($vendor_term->slug) && $vendor_term->slug != $_POST['vendor_page_slug']) {
                         if (term_exists(sanitize_title($_POST['vendor_page_slug']), 'dc_vendor_shop')) {
                             $errors->add('vendor_slug_exists', __('Slug already exists', 'dc-woocommerce-multi-vendor'));
@@ -1073,94 +993,52 @@ class WCMp_User {
      * @return void
      */
     function save_vendor_data($user_id) {
-        global $WCMp;
-        $user = new WP_User($user_id);
         // only saves if the current user can edit user profiles
-        if (!current_user_can('edit_user', $user_id))
+        if (!current_user_can('edit_user', $user_id)) {
             return false;
+        }
         $errors = new WP_Error();
-
-        if ((!is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] == 'dc_vendor') || (isset($_REQUEST['new_role']) && $_REQUEST['new_role'] == 'dc_vendor') || (isset($_REQUEST['new_role2']) && $_REQUEST['new_role2'] == 'dc_vendor')) {
-            $user->add_role('dc_vendor');
-            $this->update_vendor_meta($user_id);
-            $this->add_vendor_caps($user_id);
-            $vendor = get_wcmp_vendor($user_id);
-            $vendor->generate_term();
-            $user_dtl = get_userdata(absint($user_id));
-            $email = WC()->mailer()->emails['WC_Email_Approved_New_Vendor_Account'];
-            $email->trigger($user_id, $user_dtl->user_pass);
-        }
-
         $fields = $this->get_vendor_fields($user_id);
-
         $vendor = get_wcmp_vendor($user_id);
-        foreach ($fields as $fieldkey => $value) {
-            if (isset($_POST[$fieldkey])) {
-                if ($fieldkey == 'vendor_page_title') {
-                    if ($vendor && !$vendor->update_page_title(wc_clean($_POST[$fieldkey]))) {
-                        $errors->add('vendor_title_exists', __('Title Update Error', 'dc-woocommerce-multi-vendor'));
+        if ($vendor) {
+            foreach ($fields as $fieldkey => $value) {
+                $fieldvalue = filter_input(INPUT_POST, $fieldkey);
+                if ($fieldvalue) {
+                    if ($fieldkey == 'vendor_page_title') {
+                        if (!$vendor->update_page_title(wc_clean($fieldvalue))) {
+                            $errors->add('vendor_title_exists', __('Title Update Error', 'dc-woocommerce-multi-vendor'));
+                        } else {
+                            wp_update_user(array('ID' => $user_id, 'display_name' => $fieldvalue));
+                        }
+                    } elseif ($fieldkey == 'vendor_page_slug') {
+                        if (!$vendor->update_page_slug(wc_clean($fieldvalue))) {
+                            $errors->add('vendor_slug_exists', __('Slug already exists', 'dc-woocommerce-multi-vendor'));
+                        }
+                    } elseif ($fieldkey == 'vendor_description') {
+                        update_user_meta($user_id, '_' . $fieldkey, $_POST[$fieldkey]);
                     } else {
-                        wp_update_user(array('ID' => $user_id, 'display_name' => $_POST[$fieldkey]));
+                        update_user_meta($user_id, '_' . $fieldkey, wc_clean($_POST[$fieldkey]));
                     }
-                } elseif ($fieldkey == 'vendor_page_slug') {
-                    if ($vendor && !$vendor->update_page_slug(wc_clean($_POST[$fieldkey]))) {
-                        $errors->add('vendor_slug_exists', __('Slug already exists', 'dc-woocommerce-multi-vendor'));
-                    }
-                } elseif ($fieldkey == 'vendor_publish_product') {
-                    $user->remove_cap('publish_products');
-                    update_user_meta($user_id, '_' . $fieldkey, wc_clean($_POST[$fieldkey]));
-                } elseif ($fieldkey == 'vendor_publish_coupon') {
-                    $user->remove_cap('publish_shop_coupons');
-                    update_user_meta($user_id, '_' . $fieldkey, wc_clean($_POST[$fieldkey]));
-                } elseif ($fieldkey == 'vendor_description') {
-                    update_user_meta($user_id, '_' . $fieldkey, $_POST[$fieldkey]);
-                } else {
-                    update_user_meta($user_id, '_' . $fieldkey, wc_clean($_POST[$fieldkey]));
+                } else if (!isset($_POST['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
+                    delete_user_meta($user_id, '_vendor_hide_description');
+                } else if (!isset($_POST['vendor_hide_address']) && $fieldkey == 'vendor_hide_address') {
+                    delete_user_meta($user_id, '_vendor_hide_address');
+                } else if (!isset($_POST['vendor_hide_message_to_buyers']) && $fieldkey == 'vendor_hide_message_to_buyers') {
+                    delete_user_meta($user_id, '_vendor_hide_message_to_buyers');
+                } else if (!isset($_POST['vendor_hide_phone']) && $fieldkey == 'vendor_hide_phone') {
+                    delete_user_meta($user_id, '_vendor_hide_phone');
+                } else if (!isset($_POST['vendor_hide_email']) && $fieldkey == 'vendor_hide_email') {
+                    delete_user_meta($user_id, '_vendor_hide_email');
+                } else if (!isset($_POST['vendor_give_tax']) && $fieldkey == 'vendor_give_tax') {
+                    delete_user_meta($user_id, '_vendor_give_tax');
+                } else if (!isset($_POST['vendor_give_shipping']) && $fieldkey == 'vendor_give_shipping') {
+                    delete_user_meta($user_id, '_vendor_give_shipping');
+                } else if (!isset($_POST['vendor_turn_off']) && $fieldkey == 'vendor_turn_off') {
+                    delete_user_meta($user_id, '_vendor_turn_off');
+                } else if (!isset($_POST['vendor_is_policy_off']) && $fieldkey == 'vendor_is_policy_off') {
+                    delete_user_meta($user_id, '_vendor_is_policy_off');
                 }
-            } else if (!isset($_POST['vendor_submit_product']) && $fieldkey == 'vendor_submit_product') {
-                delete_user_meta($user_id, '_vendor_submit_product');
-            } else if (!isset($_POST['vendor_submit_coupon']) && $fieldkey == 'vendor_submit_coupon') {
-                delete_user_meta($user_id, '_vendor_submit_coupon');
-            } else if (!isset($_POST['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
-                delete_user_meta($user_id, '_vendor_hide_description');
-            } else if (!isset($_POST['vendor_hide_address']) && $fieldkey == 'vendor_hide_address') {
-                delete_user_meta($user_id, '_vendor_hide_address');
-            } else if (!isset($_POST['vendor_hide_message_to_buyers']) && $fieldkey == 'vendor_hide_message_to_buyers') {
-                delete_user_meta($user_id, '_vendor_hide_message_to_buyers');
-            } else if (!isset($_POST['vendor_hide_phone']) && $fieldkey == 'vendor_hide_phone') {
-                delete_user_meta($user_id, '_vendor_hide_phone');
-            } else if (!isset($_POST['vendor_hide_email']) && $fieldkey == 'vendor_hide_email') {
-                delete_user_meta($user_id, '_vendor_hide_email');
-            } else if (!isset($_POST['vendor_give_tax']) && $fieldkey == 'vendor_give_tax') {
-                delete_user_meta($user_id, '_vendor_give_tax');
-            } else if (!isset($_POST['vendor_give_shipping']) && $fieldkey == 'vendor_give_shipping') {
-                delete_user_meta($user_id, '_vendor_give_shipping');
-            } else if (!isset($_POST['vendor_turn_off']) && $fieldkey == 'vendor_turn_off') {
-                delete_user_meta($user_id, '_vendor_turn_off');
-            } else if (!isset($_POST['vendor_publish_product']) && $fieldkey == 'vendor_publish_product') {
-                delete_user_meta($user_id, '_vendor_publish_product');
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-                    $user->add_cap('publish_products');
-                }
-            } else if (!isset($_POST['vendor_publish_coupon']) && $fieldkey == 'vendor_publish_coupon') {
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-                    $user->add_cap('publish_shop_coupons');
-                }
-                delete_user_meta($user_id, '_vendor_publish_coupon');
-            } else if (!isset($_POST['vendor_is_policy_off']) && $fieldkey == 'vendor_is_policy_off') {
-                delete_user_meta($user_id, '_vendor_is_policy_off');
             }
-        }
-        $this->user_change_cap($user_id);
-
-        if (is_user_wcmp_vendor($user_id) && isset($_POST['role']) && $_POST['role'] != 'dc_vendor') {
-            $vendor = get_wcmp_vendor($user_id);
-            $user->remove_role('dc_vendor');
-            if ($_POST['role'] != 'dc_pending_vendor') {
-                $user->remove_role('dc_pending_vendor');
-            }
-            wp_delete_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
-            delete_user_meta($user_id, '_vendor_term_id');
         }
     }
 
@@ -1202,128 +1080,6 @@ class WCMp_User {
     }
 
     /**
-     * Change user capability
-     *
-     * @access public
-     * @return void
-     */
-    function user_change_cap($user_id) {
-        global $WCMp;
-
-        $user = new WP_User($user_id);
-
-        $product_caps = array("edit_product", "delete_product", "edit_products", "delete_published_products", "delete_products", "edit_published_products");
-        $is_submit_product = get_user_meta($user_id, '_vendor_submit_product', true);
-        foreach ($product_caps as $product_cap_remove) {
-            $user->remove_cap($product_cap_remove);
-        }
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-            if ($is_submit_product) {
-                $caps = array();
-                $caps[] = "edit_product";
-                $caps[] = "delete_product";
-                $caps[] = "edit_products";
-                $caps[] = "delete_products";
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
-                    $caps[] = "edit_published_products";
-                    $caps[] = 'delete_published_products';
-                }
-                foreach ($caps as $cap) {
-                    $user->add_cap($cap);
-                }
-            }
-        }
-
-        $coupon_caps = array("edit_shop_coupon", "delete_shop_coupon", "edit_shop_coupons", "delete_published_shop_coupons", "delete_shop_coupons", "edit_published_shop_coupons");
-        $is_submit_coupon = get_user_meta($user_id, '_vendor_submit_coupon', true);
-        foreach ($coupon_caps as $coupon_cap_remove) {
-            $user->remove_cap($coupon_cap_remove);
-        }
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-            if ($is_submit_coupon) {
-                $caps = array();
-                $caps[] = 'edit_shop_coupon';
-                $caps[] = 'edit_shop_coupons';
-                $caps[] = 'delete_shop_coupon';
-                $caps[] = 'delete_shop_coupons';
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
-                    $caps[] = "edit_published_shop_coupons";
-                    $caps[] = "delete_published_shop_coupons";
-                }
-                foreach ($caps as $cap) {
-                    $user->add_cap($cap);
-                }
-            }
-        }
-    }
-
-    function profile_admin_buffer_start() {
-        ob_start(array($this, 'remove_plain_bio'));
-    }
-
-    function profile_admin_buffer_end() {
-        $screen = get_current_screen();
-        if (in_array($screen->id, array('users'))) {
-            ob_end_flush();
-        }
-    }
-
-    /**
-     * remove_plain_bio
-     *
-     * @access public
-     * @return $buffer
-     */
-    function remove_plain_bio($buffer) {
-        $titles = array('#<h3>About Yourself</h3>#', '#<h3>About the user</h3>#');
-        $buffer = preg_replace($titles, '<h3>Password</h3>', $buffer, 1);
-        $biotable = '#<h3>Password</h3>.+?<table.+?/tr>#s';
-        $buffer = preg_replace($biotable, '<h3>Password</h3> <table class="form-table">', $buffer, 1);
-        return $buffer;
-    }
-
-    /**
-     * Add vendor form in woocommece registration form
-     *
-     * @access public
-     * @return void
-     */
-    public function wcmp_woocommerce_register_form() {
-        global $WCMp;
-        $customer_can = $WCMp->vendor_caps->vendor_general_settings('enable_registration');
-        if ($customer_can) {
-            ?>
-            <tr>
-            <p class="form-row form-row-wide">
-                <input type="checkbox" name="pending_vendor" value="true"> <?php echo apply_filters('wcmp_vendor_registration_checkbox', __('Apply to become a vendor? ', 'dc-woocommerce-multi-vendor')); ?>
-            </p>
-            </tr>
-            <?php
-        }
-    }
-
-    /**
-     * Add vendor form in woocommece registration form
-     *
-     * @access public
-     * @return void
-     */
-    public function wcmp_woocommerce_add_vendor_form() {
-        global $WCMp;
-        $customer_can = $WCMp->vendor_caps->vendor_general_settings('enable_registration');
-        if ($customer_can) {
-            ?>
-            <tr>
-            <p class="form-row form-row-wide">
-                <input type="checkbox" name="pending_vendor" value="true"> <?php echo apply_filters('wcmp_vendor_registration_checkbox', __('Apply to become a vendor? ', 'dc-woocommerce-multi-vendor')); ?>
-            </p>
-            </tr>
-            <tr><input type="submit" name="vendor_apply" value="<?php _e('Save', 'dc-woocommerce-multi-vendor') ?>"></tr>
-            <?php
-        }
-    }
-
-    /**
      * created customer notification
      *
      * @access public
@@ -1343,8 +1099,9 @@ class WCMp_User {
      * @return void
      */
     function wcmp_customer_new_account($customer_id, $new_customer_data = array(), $password_generated = false) {
-        if (!$customer_id)
+        if (!$customer_id) {
             return;
+        }
         $user_pass = !empty($new_customer_data['user_pass']) ? $new_customer_data['user_pass'] : '';
         $email = WC()->mailer()->emails['WC_Email_Vendor_New_Account'];
         $email->trigger($customer_id, $user_pass, $password_generated);
@@ -1360,28 +1117,7 @@ class WCMp_User {
      */
     public function wcmp_order_emails_available($available_emails) {
         $available_emails[] = 'vendor_new_order';
-
         return $available_emails;
     }
 
-    /**
-     * update_vendor_meta
-     *
-     * @param  $user_id
-     */
-    public function update_vendor_meta($user_id) {
-        update_user_meta($user_id, '_vendor_submit_product', 'Enable');
-        update_user_meta($user_id, '_vendor_submit_coupon', 'Enable');
-
-//        update_user_meta($user_id, '_vendor_image', '');
-//        update_user_meta($user_id, '_vendor_banner', '');
-//        update_user_meta($user_id, '_vendor_address_1', '');
-//        update_user_meta($user_id, '_vendor_city', '');
-//        update_user_meta($user_id, '_vendor_state', '');
-//        update_user_meta($user_id, '_vendor_country', '');
-//        update_user_meta($user_id, '_vendor_phone', '');
-//        update_user_meta($user_id, '_vendor_postcode', '');
-    }
-
 }
-?>

@@ -82,12 +82,16 @@ class WCMp_Calculate_Commission {
      * @return void
      */
     public function wcmp_process_commissions($order_id) {
-        global $WCMp, $wpdb;
+        global $wpdb;
         // Only process commissions once
+        $order = new WC_Order($order_id);
         $processed = get_post_meta($order_id, '_commissions_processed', true);
+        $order_processed = get_post_meta($order_id, '_wcmp_order_processed', true);
+        if(!$order_processed){
+            wcmp_process_order($order_id, $order);
+        }
         $commission_ids = get_post_meta($order_id, '_commission_ids', true) ? get_post_meta($order_id, '_commission_ids', true) : array();
         if (!$processed) {
-            $order = new WC_Order($order_id);
             $vendor_array = array();
             $items = $order->get_items('line_item');
             foreach ($items as $item_id => $item) {
@@ -153,7 +157,6 @@ class WCMp_Calculate_Commission {
      * @return void
      */
     public function record_commission($product_id = 0, $order_id = 0, $variation_id = 0, $order, $vendor, $item_id = 0, $item) {
-        global $WCMp;
         if ($product_id > 0) {
             if ($vendor) {
                 $vendor_due = $vendor->wcmp_get_vendor_part_from_order($order, $vendor->term_id);
@@ -175,7 +178,7 @@ class WCMp_Calculate_Commission {
      * @return void
      */
     public function create_commission($vendor_id = 0, $product_id = 0, $amount = 0, $order_id = 0, $variation_id = 0, $item_id = 0, $item, $order) {
-        global $WCMp, $wpdb;
+        global $wpdb;
         if ($vendor_id == 0) {
             return false;
         }
@@ -385,5 +388,3 @@ class WCMp_Calculate_Commission {
     }
 
 }
-
-?>

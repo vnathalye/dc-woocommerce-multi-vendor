@@ -9,11 +9,6 @@
  */
 class WCMp_Frontend {
 
-    public $wcmp_shipping_fee_cost = 0;
-    public $pagination_sale = array();
-    public $give_tax_to_vendor = false;
-    public $give_shipping_to_vendor = false;
-
     public function __construct() {
         //enqueue scripts
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_scripts'));
@@ -24,8 +19,6 @@ class WCMp_Frontend {
         add_action('template_redirect', array(&$this, 'template_redirect'));
 
         add_action('woocommerce_order_details_after_order_table', array($this, 'display_vendor_msg_in_thank_you_page'), 100);
-        $this->give_tax_to_vendor = get_wcmp_vendor_settings('give_tax', 'payment');
-        $this->give_shipping_to_vendor = get_wcmp_vendor_settings('give_shipping', 'payment');
         add_action('wcmp_vendor_register_form', array(&$this, 'wcmp_vendor_register_form_callback'));
         add_action('woocommerce_register_post', array(&$this, 'wcmp_validate_extra_register_fields'), 10, 3);
         add_action('woocommerce_created_customer', array(&$this, 'wcmp_save_extra_register_fields'), 10, 3);
@@ -178,7 +171,7 @@ class WCMp_Frontend {
      * @param int $order_id
      */
     public function display_vendor_msg_in_thank_you_page($order_id) {
-        global $wpdb, $WCMp;
+        global $WCMp;
         $order = wc_get_order($order_id);
         $items = $order->get_items('line_item');
         $vendor_array = array();
@@ -281,7 +274,6 @@ class WCMp_Frontend {
      * @return string
      */
     public function woocommerce_shipping_package_name($package_name, $vendor_id, $package) {
-        global $WCMp;
         if ($vendor_id && $vendor_id != 0) {
             $vendor = get_wcmp_vendor($vendor_id);
             if ($vendor) {
@@ -293,117 +285,24 @@ class WCMp_Frontend {
     }
 
     /**
-     * WCMp Calculate shipping for order
+     * Process order after checkout for shipping, Tax calculation.
      *
-     * @support flat rate per item 
      * @param int $order_id
-     * @param object $order_posted
+     * @param array $order_posted
+     * @param WC_Order $order WooCommerce order object
      * @return void
      */
-    function wcmp_checkout_order_processed($order_id, $order_posted, $order) {
-        global $wpdb, $WCMp;
-        $vendor_shipping_array = get_post_meta($order_id, 'dc_pv_shipped', true);
-        $mark_ship = 0;
-        $items = $order->get_items('line_item');
-        $shipping_items = $order->get_items('shipping');
-        $vendor_shipping = array();
-        foreach ($shipping_items as $shipping_item_id => $shipping_item) {
-            $order_item_shipping = new WC_Order_Item_Shipping($shipping_item_id);
-            $shipping_vendor_id = $order_item_shipping->get_meta('vendor_id', true);
-            $vendor_shipping[$shipping_vendor_id] = array(
-                'shipping' => $order_item_shipping->get_total()
-                , 'shipping_tax' => $order_item_shipping->get_total_tax()
-                , 'package_qty' => $order_item_shipping->get_meta('package_qty', true)
-            );
+    public function wcmp_checkout_order_processed($order_id, $order_posted, $order) {
+        if (!get_post_meta($order_id, '_wcmp_order_processed', true)) {
+            wcmp_process_order($order_id, $order);
         }
-        foreach ($items as $order_item_id => $item) {
-            $line_item = new WC_Order_Item_Product($item);
-            $product_id = $item['product_id'];
-            $variation_id = isset($item['variation_id']) ? $item['variation_id'] : 0;
-            if ($product_id) {
-                $product_vendors = get_wcmp_product_vendors($product_id);
-                if ($product_vendors) {
-                    if (isset($product_vendors->id) && is_array($vendor_shipping_array)) {
-                        if (in_array($product_vendors->id, $vendor_shipping_array)) {
-                            $mark_ship = 1;
-                        }
-                    }
-                    $shipping_amount = $shipping_tax_amount = 0;
-                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id])) {
-                        $shipping_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
-                        $shipping_tax_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping_tax'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
-                    }
-                    $wpdb->query(
-                            $wpdb->prepare(
-                                    "INSERT INTO `{$wpdb->prefix}wcmp_vendor_orders` 
-                                        ( order_id
-                                        , commission_id
-                                        , vendor_id
-                                        , shipping_status
-                                        , order_item_id
-                                        , product_id
-                                        , variation_id
-                                        , tax
-                                        , line_item_type
-                                        , quantity
-                                        , commission_status
-                                        , shipping
-                                        , shipping_tax_amount
-                                        ) VALUES ( %d
-                                        , %d
-                                        , %d
-                                        , %s
-                                        , %d
-                                        , %d 
-                                        , %d
-                                        , %s
-                                        , %s
-                                        , %d
-                                        , %s
-                                        , %s
-                                        , %s
-                                        ) ON DUPLICATE KEY UPDATE `created` = now()"
-                                    , $order_id
-                                    , 0
-                                    , $product_vendors->id
-                                    , $mark_ship
-                                    , $order_item_id
-                                    , $product_id
-                                    , $variation_id
-                                    , $line_item->get_total_tax()
-                                    , 'product'
-                                    , $line_item->get_quantity()
-                                    , 'unpaid'
-                                    , $shipping_amount
-                                    , $shipping_tax_amount
-                            )
-                    );
-                }
-            }
-        }
-    }
-
-    /**
-     * Get shipping fee
-     * @deprecated since version 2.6.6
-     * Now deprecated
-     */
-    function get_fee($fee, $total) {
-        $woocommerce_flat_rate_settings = get_option('woocommerce_flat_rate_settings');
-        if (strstr($fee, '%')) {
-            $fee = ( $total / 100 ) * str_replace('%', '', $fee);
-        }
-        if (!empty($woocommerce_flat_rate_settings['minimum_fee']) && $woocommerce_flat_rate_settings['minimum_fee'] > $fee) {
-            $fee = $woocommerce_flat_rate_settings['minimum_fee'];
-        }
-        return $fee;
     }
 
     /**
      * Add frontend scripts
      * @return void
      */
-    function frontend_scripts() {
+    public function frontend_scripts() {
         global $WCMp;
         $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
@@ -463,7 +362,7 @@ class WCMp_Frontend {
      * Add frontend styles
      * @return void
      */
-    function frontend_styles() {
+    public function frontend_styles() {
         global $WCMp;
         $frontend_style_path = $WCMp->plugin_url . 'assets/frontend/css/';
         $frontend_style_path = str_replace(array('http:', 'https:'), '', $frontend_style_path);
@@ -483,7 +382,7 @@ class WCMp_Frontend {
 
         if (is_vendor_page()) {
             wp_enqueue_style('dashicons');
-            wp_enqueue_style( 'jquery-ui-style' );
+            wp_enqueue_style('jquery-ui-style');
             wp_enqueue_style('wcmp_new_vandor_dashboard_css', $frontend_style_path . 'vendor_dashboard' . $suffix . '.css', array(), $WCMp->version);
             wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css', array(), $WCMp->version);
         }
@@ -502,17 +401,14 @@ class WCMp_Frontend {
      * Add html for vendor taxnomy page
      * @return void
      */
-    function product_archive_vendor_info() {
+    public function product_archive_vendor_info() {
         global $WCMp;
         if (is_tax('dc_vendor_shop')) {
             // Get vendor ID
             $vendor_id = get_queried_object()->term_id;
             // Get vendor info
             $vendor = get_wcmp_vendor_by_term($vendor_id);
-            $image = '';
-            $image = $vendor->image;
-            if (!$image)
-                $image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+            $image = $vendor->image ? $vendor->image : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
             $description = $vendor->description;
 
             $address = '';
@@ -561,13 +457,13 @@ class WCMp_Frontend {
      * template redirect function
      * @return void
      */
-    function template_redirect() {
+    public function template_redirect() {
         //redirect to my account or vendor dashbord page if user loggedin
         if (is_user_logged_in() && is_page_vendor_registration()) {
-            if (is_user_wcmp_vendor(get_current_user_id())) {
-                wp_safe_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
-            } else {
+            if (current_user_can('administrator') || current_user_can('shop_manager')) {
                 wp_safe_redirect(get_permalink(wc_get_page_id('myaccount')));
+            } else{
+                wp_safe_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
             }
             exit();
         }

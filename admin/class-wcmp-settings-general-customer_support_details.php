@@ -103,13 +103,6 @@ class WCMp_Settings_Gneral_Customer_support_Details {
     /**
      * Print the Section text
      */
-    public function vendor_customer_support_info() {
-        global $WCMp;
-    }
-
-    /**
-     * Print the Section text
-     */
     public function vendor_return_address_info() {
         global $WCMp;
         _e('Enter the store wide customer support deails here.', 'dc-woocommerce-multi-vendor');

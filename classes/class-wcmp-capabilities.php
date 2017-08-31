@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('ABSPATH'))
+if (!defined('ABSPATH')) {
     exit;
+}
 
 /**
  * @class 		WCMp_Capabilities
@@ -26,10 +27,6 @@ class WCMp_Capabilities {
                 , (array) get_option('wcmp_capabilities_order_settings_name', array())
                 , (array) get_option('wcmp_capabilities_miscellaneous_settings_name', array())
         );
-
-        //$this->capability = get_option("wcmp_product_settings_name");
-        //$this->general_cap = get_option("wcmp_general_settings_name");
-        //$this->vendor_cap = get_option("wcmp_capabilities_settings_name");
         $this->frontend_cap = get_option("wcmp_frontend_settings_name");
         $this->payment_cap = get_option("wcmp_payment_settings_name");
 
@@ -39,12 +36,11 @@ class WCMp_Capabilities {
         add_filter('woocommerce_product_data_tabs', array(&$this, 'wcmp_woocommerce_product_data_tabs'), 30);
         add_action('admin_print_styles', array(&$this, 'output_capability_css'));
         add_action('woocommerce_get_item_data', array(&$this, 'add_sold_by_text_cart'), 30, 2);
-        //add_action('woocommerce_order_status_processing', array(&$this, 'payment_complete_vendor_mail'), 10, 1);
         add_action('woocommerce_add_order_item_meta', array(&$this, 'order_item_meta_2'), 20, 2);
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'wcmp_after_add_to_cart_form'), 30);
         /* for single product */
         add_action('woocommerce_product_meta_start', array($this, 'wcmp_after_add_to_cart_form'), 25);
-        //add_action('woocommerce_order_status_changed', array($this, 'wcmp_order_hold_to_completed'), 10, 3);
+        add_action('update_option_wcmp_capabilities_product_settings_name', array(&$this, 'update_wcmp_vendor_role_capability'), 10);
     }
 
     /**
@@ -70,8 +66,9 @@ class WCMp_Capabilities {
     public function vendor_general_settings($cap) {
         if (is_array($this->wcmp_capability) && array_key_exists($cap, $this->wcmp_capability)) {
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -80,11 +77,13 @@ class WCMp_Capabilities {
      * @param capability
      * @return boolean 
      */
-    public function vendor_capabilities_settings($cap) {
+    public function vendor_capabilities_settings($cap, $default = array()) {
+        $this->wcmp_capability = !empty($default) ? $default : $this->wcmp_capability;
         if (is_array($this->wcmp_capability) && array_key_exists($cap, $this->wcmp_capability)) {
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -96,8 +95,9 @@ class WCMp_Capabilities {
     public function vendor_frontend_settings($cap) {
         if (is_array($this->frontend_cap) && array_key_exists($cap, $this->frontend_cap)) {
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -109,8 +109,9 @@ class WCMp_Capabilities {
     public function vendor_payment_settings($cap) {
         if (is_array($this->payment_cap) && array_key_exists($cap, $this->payment_cap)) {
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -205,7 +206,7 @@ class WCMp_Capabilities {
     /**
      * Set output capability css
      */
-    function output_capability_css() {
+    public function output_capability_css() {
         global $post;
         $screen = get_current_screen();
 
@@ -255,13 +256,12 @@ class WCMp_Capabilities {
      * @param array, cart_item
      * @return array 
      */
-    function add_sold_by_text_cart($array, $cart_item) {
-        global $WCMp;
-
+    public function add_sold_by_text_cart($array, $cart_item) {
         if ($this->vendor_frontend_settings('sold_by_cart_and_checkout')) {
             $general_cap = isset($this->frontend_cap['sold_by_text']) ? $this->frontend_cap['sold_by_text'] : '';
-            if (!$general_cap)
+            if (!$general_cap) {
                 $general_cap = __('Sold By', 'dc-woocommerce-multi-vendor');
+            }
             $vendor = get_wcmp_product_vendors($cart_item['product_id']);
             if ($vendor) {
                 $array = array_merge($array, array(array('name' => $general_cap, 'value' => $vendor->user_data->display_name)));
@@ -276,8 +276,8 @@ class WCMp_Capabilities {
      *
      * @return void 
      */
-    function wcmp_after_add_to_cart_form() {
-        global $post, $WCMp;
+    public function wcmp_after_add_to_cart_form() {
+        global $post;
         if ($this->vendor_frontend_settings('sold_by_catalog')) {
             $vendor = get_wcmp_product_vendors($post->ID);
             $general_cap = isset($this->frontend_cap['sold_by_text']) ? $this->frontend_cap['sold_by_text'] : '';
@@ -291,36 +291,12 @@ class WCMp_Capabilities {
     }
 
     /**
-     * Send if order completed directly from hold Mail
-     *
-     * @param order_id
-     * @return void 
-     */
-    public function wcmp_order_hold_to_completed($order_id, $old_status, $new_status) {
-        global $post, $WCMp;
-        if (!empty($old_status) && $old_status == 'on-hold' && $new_status == 'completed' && !empty($new_status)) {
-            $this->payment_complete_vendor_mail($order_id);
-        }
-    }
-
-    /**
-     * Send Order Processing Mail
-     *
-     * @param order_id
-     * @return void 
-     */
-    public function payment_complete_vendor_mail($order_id) {
-        $email_admin = WC()->mailer()->emails['WC_Email_Vendor_New_Order'];
-        $email_admin->trigger($order_id);
-    }
-
-    /**
      * Save sold by text in database
      *
      * @param item_id, cart_item
      * @return void 
      */
-    function order_item_meta_2($item_id, $cart_item) {
+    public function order_item_meta_2($item_id, $cart_item) {
         global $WCMp;
         if ($WCMp->vendor_caps->vendor_frontend_settings('sold_by_cart_and_checkout')) {
             $general_cap = isset($this->frontend_cap['sold_by_text']) ? $this->frontend_cap['sold_by_text'] : '';
@@ -335,6 +311,92 @@ class WCMp_Capabilities {
         }
     }
 
-}
+    public function update_wcmp_vendor_role_capability() {
+        global $wp_roles;
 
-?>
+        if (!class_exists('WP_Roles')) {
+            return;
+        }
+
+        if (!isset($wp_roles)) {
+            $wp_roles = new WP_Roles();
+        }
+
+        $capabilities = $this->get_vendor_caps();
+        foreach ($capabilities as $cap => $is_enable) {
+            $wp_roles->add_cap('dc_vendor', $cap, $is_enable);
+        }
+    }
+
+    /**
+     * Set up array of vendor admin capabilities
+     * 
+     * @since 2.7.6
+     * @access public
+     * @return arr Vendor capabilities
+     */
+    public function get_vendor_caps() {
+        $caps = array();
+        $capability = get_option('wcmp_capabilities_product_settings_name', array());
+        if ($this->vendor_capabilities_settings('is_upload_files', $capability)) {
+            $caps['upload_files'] = true;
+        } else {
+            $caps['upload_files'] = false;
+        }
+        if ($this->vendor_capabilities_settings('is_submit_product', $capability)) {
+            $caps['edit_product'] = true;
+            $caps['delete_product'] = true;
+            $caps['edit_products'] = true;
+            $caps['delete_products'] = true;
+            if ($this->vendor_capabilities_settings('is_published_product', $capability)) {
+                $caps['publish_products'] = true;
+            } else {
+                $caps['publish_products'] = false;
+            }
+            if ($this->vendor_capabilities_settings('is_edit_delete_published_product', $capability)) {
+                $caps['edit_published_products'] = true;
+                $caps['delete_published_products'] = true;
+            } else {
+                $caps['edit_published_products'] = false;
+                $caps['delete_published_products'] = false;
+            }
+        } else {
+            $caps['edit_product'] = false;
+            $caps['delete_product'] = false;
+            $caps['edit_products'] = false;
+            $caps['delete_products'] = false;
+            $caps['publish_products'] = false;
+            $caps['edit_published_products'] = false;
+            $caps['delete_published_products'] = false;
+        }
+
+        if ($this->vendor_capabilities_settings('is_submit_coupon', $capability)) {
+            $caps['edit_shop_coupon'] = true;
+            $caps['edit_shop_coupons'] = true;
+            $caps['delete_shop_coupon'] = true;
+            $caps['delete_shop_coupons'] = true;
+            if ($this->vendor_capabilities_settings('is_published_coupon', $capability)) {
+                $caps['publish_shop_coupons'] = true;
+            } else {
+                $caps['publish_shop_coupons'] = false;
+            }
+            if ($this->vendor_capabilities_settings('is_edit_delete_published_coupon', $capability)) {
+                $caps['edit_published_shop_coupons'] = true;
+                $caps['delete_published_shop_coupons'] = true;
+            } else {
+                $caps['edit_published_shop_coupons'] = false;
+                $caps['delete_published_shop_coupons'] = false;
+            }
+        } else {
+            $caps['edit_shop_coupon'] = false;
+            $caps['edit_shop_coupons'] = false;
+            $caps['delete_shop_coupon'] = false;
+            $caps['delete_shop_coupons'] = false;
+            $caps['publish_shop_coupons'] = false;
+            $caps['edit_published_shop_coupons'] = false;
+            $caps['delete_published_shop_coupons'] = false;
+        }
+        return apply_filters('wcmp_vendor_capabilities', $caps);
+    }
+
+}

@@ -33,7 +33,7 @@ class WCMp_Taxonomy {
      */
     public function register_post_taxonomy() {
         $labels = array(
-            'name' => apply_filters('wcmp_vendor_taxonomy_name', __('WCMp Vendors', 'dc-woocommerce-multi-vendor')),
+            'name' => apply_filters('wcmp_vendor_taxonomy_name', __('Vendor', 'dc-woocommerce-multi-vendor')),
             'singular_name' => __('Vendor', 'dc-woocommerce-multi-vendor'),
             'menu_name' => __('Vendors', 'dc-woocommerce-multi-vendor'),
             'search_items' => __('Search Vendors', 'dc-woocommerce-multi-vendor'),

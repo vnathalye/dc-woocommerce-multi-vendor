@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Demo plugin Install
  *
@@ -12,22 +16,25 @@
 class WCMp_Install {
 
     public function __construct() {
-        global $WCMp;
-        if(!get_option('dc_product_vendor_plugin_db_version')){
+        global $WCMp, $wp_rewrite;
+        if (!get_option('dc_product_vendor_plugin_db_version')) {
             $this->save_default_plugin_settings();
         }
         $this->wcmp_plugin_tables_install();
         $this->remove_other_vendors_plugin_role();
+        self::register_user_role();
         if (class_exists('WCMp')) {
             if (!get_option("dc_product_vendor_plugin_page_install")) {
                 $this->wcmp_product_vendor_plugin_create_pages();
                 update_option("dc_product_vendor_plugin_page_install", 1);
             }
             $this->do_wcmp_migrate();
-            $WCMp->load_class('endpoints');
-            $endpoints = new WCMp_Endpoints();
-            $endpoints->add_wcmp_endpoints();
-            flush_rewrite_rules();
+            if(isset($wp_rewrite)){
+                $WCMp->load_class('endpoints');
+                $endpoints = new WCMp_Endpoints();
+                $endpoints->add_wcmp_endpoints();
+                flush_rewrite_rules();
+            }
         }
     }
 
@@ -38,9 +45,18 @@ class WCMp_Install {
      * @return void
      */
     function remove_other_vendors_plugin_role() {
+        global $wp_roles;
+
+        if (!class_exists('WP_Roles')) {
+            return;
+        }
+
+        if (!isset($wp_roles)) {
+            $wp_roles = new WP_Roles();
+        }
         $other_vendor_role = array('seller', 'yith_vendor', 'pending_vendor', 'vendor');
         foreach ($other_vendor_role as $element) {
-            if (wcmp_role_exists($element)) {
+            if ($wp_roles->is_role($element)) {
                 remove_role($element);
             }
         }
@@ -114,7 +130,7 @@ class WCMp_Install {
      * @return void
      */
     function save_default_plugin_settings() {
-        
+
         $general_settings = get_option('wcmp_general_settings_name');
         if (empty($general_settings)) {
             $general_settings = array(
@@ -124,91 +140,91 @@ class WCMp_Install {
             );
             update_option('wcmp_general_settings_name', $general_settings);
         }
-        
-        if(!get_wcmp_vendor_settings('is_upload_files', 'capabilities', 'product')){
+
+        if (!get_wcmp_vendor_settings('is_upload_files', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_upload_files', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('is_submit_product', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('is_submit_product', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_submit_product', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('inventory', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('inventory', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('inventory', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('shipping', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('shipping', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('shipping', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('linked_products', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('linked_products', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('linked_products', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('attribute', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('attribute', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('attribute', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('advanced', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('advanced', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('advanced', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('simple', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('simple', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('simple', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('variable', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('variable', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('variable', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('grouped', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('grouped', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('grouped', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('virtual', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('virtual', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('virtual', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('external', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('external', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('external', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('downloadable', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('downloadable', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('downloadable', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('taxes', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('taxes', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('taxes', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('add_comment', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('add_comment', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('add_comment', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('comment_box', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('comment_box', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('comment_box', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('sku', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('sku', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('sku', 'Enable', 'capabilities', 'product');
         }
 
-        if(!get_wcmp_vendor_settings('is_order_csv_export', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('is_order_csv_export', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_order_csv_export', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('is_show_email', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('is_show_email', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_show_email', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_vendor_view_comment', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_cust_billing_add', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_cust_billing_add', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_cust_billing_add', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_cust_shipping_add', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_cust_order_calulations', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_customer_dtl', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_customer_dtl', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_customer_dtl', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_customer_billing', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_customer_billing', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_customer_billing', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_customer_shipping', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_customer_shipping', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_customer_shipping', 'Enable', 'capabilities', 'product');
         }
-        if(!get_wcmp_vendor_settings('show_cust_add', 'capabilities', 'product')){
+        if (!get_wcmp_vendor_settings('show_cust_add', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('show_cust_add', 'Enable', 'capabilities', 'product');
         }
-        
-        if(!get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous')){
+
+        if (!get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous')) {
             update_wcmp_vendor_settings('is_hide_option_show', 'Enable', 'capabilities', 'miscellaneous');
         }
 
@@ -227,9 +243,7 @@ class WCMp_Install {
             $frontend_settings = array(
                 'sold_by_cart_and_checkout' => 'Enable',
                 'sold_by_catalog' => 'Enable',
-                'enable_vendor_tab' => 'Enable',
-//                'catalog_colorpicker' => '#000000',
-//                'catalog_hover_colorpicker' => '#000000',
+                'enable_vendor_tab' => 'Enable'
             );
             update_option('wcmp_frontend_settings_name', $frontend_settings);
         }
@@ -320,6 +334,43 @@ class WCMp_Install {
         }
         #endregion
         do_wcmp_data_migrate($previous_plugin_version, $WCMp->version);
+    }
+
+    /**
+     * Register vendor user role
+     *
+     * @access public
+     * @return void
+     */
+    public static function register_user_role() {
+
+        add_role('dc_pending_vendor', apply_filters('dc_pending_vendor_role', __('Pending Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false,
+        ));
+
+        add_role('dc_rejected_vendor', apply_filters('dc_rejected_vendor_role', __('Rejected Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false,
+        ));
+
+        add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', 'dc-woocommerce-multi-vendor')), array(
+            'read' => true,
+            'manage_product' => true,
+            'edit_posts' => true,
+            'delete_posts' => false,
+            'view_woocommerce_reports' => true,
+            'assign_product_terms' => true,
+            'upload_files' => true,
+            'read_product' => true,
+            'read_shop_coupon' => true,
+            'edit_product' => true,
+            'delete_product' => true,
+            'edit_products' => true,
+            'delete_products' => true
+        ));
     }
 
 }

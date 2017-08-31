@@ -1159,398 +1159,400 @@ if (!function_exists('do_wcmp_data_migrate')) {
      */
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
         global $WCMp, $wpdb, $wp_roles;
-        if ($previous_plugin_version && $previous_plugin_version <= '2.7.5') {
-            if (!class_exists('WP_Roles')) {
-                return;
-            }
+        if ($previous_plugin_version) {
+            if ($previous_plugin_version <= '2.7.5') {
+                if (!class_exists('WP_Roles')) {
+                    return;
+                }
 
-            if (!isset($wp_roles)) {
-                $wp_roles = new WP_Roles();
-            }
-            $wp_roles->add_cap('dc_vendor', 'assign_product_terms', true);
-            $wp_roles->add_cap('dc_vendor', 'read_product', true);
-            $wp_roles->add_cap('dc_vendor', 'read_shop_coupon', true);
-            /** remove user wise capability **/
-            $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
-            $user_query = new WP_User_Query($args);
-            if (!empty($user_query->results)) {
-                foreach ($user_query->results as $vendor_id) {
-                    $user = new WP_User($vendor_id);
-                    if ($user && !get_user_meta($vendor_id, 'vendor_group_id', true)) {
-                        $user->remove_cap('publish_products');
-                        $user->remove_cap('assign_product_terms');
-                        $user->remove_cap('read_product');
-                        $user->remove_cap('read_shop_coupon');
-                        $user->remove_cap('read_shop_coupons');
-                        $user->remove_cap('edit_posts');
-                        $user->remove_cap('edit_shop_coupon');
-                        $user->remove_cap('delete_shop_coupon');
-                        $user->remove_cap('upload_files');
-                        $user->remove_cap('edit_published_products');
-                        $user->remove_cap('delete_published_products');
-                        $user->remove_cap('edit_product');
-                        $user->remove_cap('delete_product');
-                        $user->remove_cap('edit_products');
-                        $user->remove_cap('delete_products');
-                        $user->remove_cap('publish_shop_coupons');
-                        $user->remove_cap('edit_shop_coupons');
-                        $user->remove_cap('delete_shop_coupons');
-                        $user->remove_cap('edit_published_shop_coupons');
-                        $user->remove_cap('delete_published_shop_coupons');
-                    }
+                if (!isset($wp_roles)) {
+                    $wp_roles = new WP_Roles();
                 }
-            }
-        }
-        if ($previous_plugin_version && $previous_plugin_version <= '2.7.3') {
-            if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
-                $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_vendor_orders` DROP INDEX `vendor_orders`;");
-                $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_vendor_orders` ADD CONSTRAINT `vendor_orders` UNIQUE (order_id, vendor_id, commission_id, order_item_id);");
-            }
-        }
-        if ($previous_plugin_version && $previous_plugin_version <= '2.6.5') {
-            if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_status';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_status` varchar(100) NOT NULL DEFAULT 'unpaid';");
-                }
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'quantity';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `quantity` bigint(20) NOT NULL DEFAULT 1;");
-                }
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'variation_id';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `variation_id` bigint(20) NOT NULL DEFAULT 0;");
-                }
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'shipping_tax_amount';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `shipping_tax_amount` varchar(255) NOT NULL DEFAULT 0;");
-                }
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'line_item_type';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `line_item_type` longtext NULL;");
-                }
-                if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_paid_date';")) {
-                    $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_paid_date` timestamp NULL;");
-                }
-            }
-            if (!get_wcmp_vendor_settings('enable_vendor_tab', 'frontend')) {
-                update_wcmp_vendor_settings('enable_vendor_tab', 'Enable', 'frontend');
-            }
-        }
-        if ($previous_plugin_version && $previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
-            $old_pages = get_option('wcmp_pages_settings_name');
-            if (isset($old_pages['vendor_dashboard'])) {
-                wp_update_post(array('ID' => $old_pages['vendor_dashboard'], 'post_content' => '[wcmp_vendor]'));
-                update_option('wcmp_product_vendor_vendor_page_id', get_option('wcmp_product_vendor_vendor_dashboard_page_id'));
-                $wcmp_product_vendor_vendor_page_id = get_option('wcmp_product_vendor_vendor_page_id');
-                update_wcmp_vendor_settings('wcmp_vendor', $wcmp_product_vendor_vendor_page_id, 'vendor', 'general');
-            }
-            /* remove unwanted vendor caps */
-            $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
-            $user_query = new WP_User_Query($args);
-            if (!empty($user_query->results)) {
-                foreach ($user_query->results as $vendor_id) {
-                    $user = new WP_User($vendor_id);
-                    if ($user) {
-                        if ($user->has_cap('edit_others_products')) {
-                            $user->remove_cap('edit_others_products');
-                        }
-                        if ($user->has_cap('delete_others_products')) {
-                            $user->remove_cap('delete_others_products');
-                        }
-                        if ($user->has_cap('edit_others_shop_coupons')) {
-                            $user->remove_cap('edit_others_shop_coupons');
-                        }
-                        if ($user->has_cap('delete_others_shop_coupons')) {
-                            $user->remove_cap('delete_others_shop_coupons');
+                $wp_roles->add_cap('dc_vendor', 'assign_product_terms', true);
+                $wp_roles->add_cap('dc_vendor', 'read_product', true);
+                $wp_roles->add_cap('dc_vendor', 'read_shop_coupon', true);
+                /** remove user wise capability * */
+                $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
+                $user_query = new WP_User_Query($args);
+                if (!empty($user_query->results)) {
+                    foreach ($user_query->results as $vendor_id) {
+                        $user = new WP_User($vendor_id);
+                        if ($user && !get_user_meta($vendor_id, 'vendor_group_id', true)) {
+                            $user->remove_cap('publish_products');
+                            $user->remove_cap('assign_product_terms');
+                            $user->remove_cap('read_product');
+                            $user->remove_cap('read_shop_coupon');
+                            $user->remove_cap('read_shop_coupons');
+                            $user->remove_cap('edit_posts');
+                            $user->remove_cap('edit_shop_coupon');
+                            $user->remove_cap('delete_shop_coupon');
+                            $user->remove_cap('upload_files');
+                            $user->remove_cap('edit_published_products');
+                            $user->remove_cap('delete_published_products');
+                            $user->remove_cap('edit_product');
+                            $user->remove_cap('delete_product');
+                            $user->remove_cap('edit_products');
+                            $user->remove_cap('delete_products');
+                            $user->remove_cap('publish_shop_coupons');
+                            $user->remove_cap('edit_shop_coupons');
+                            $user->remove_cap('delete_shop_coupons');
+                            $user->remove_cap('edit_published_shop_coupons');
+                            $user->remove_cap('delete_published_shop_coupons');
                         }
                     }
                 }
             }
-            #region settings tab general data migrate
-            if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') && get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') == 'Enable') {
-                update_wcmp_vendor_settings('is_singleproductmultiseller', 'Enable', 'general');
+            if ($previous_plugin_version <= '2.7.3') {
+                if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
+                    $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_vendor_orders` DROP INDEX `vendor_orders`;");
+                    $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_vendor_orders` ADD CONSTRAINT `vendor_orders` UNIQUE (order_id, vendor_id, commission_id, order_item_id);");
+                }
             }
-            delete_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller');
-            if (get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') && get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') == 'Enable') {
-                update_wcmp_vendor_settings('is_sellerreview', 'Enable', 'general');
+            if ($previous_plugin_version <= '2.6.5') {
+                if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wcmp_vendor_orders';")) {
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_status';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_status` varchar(100) NOT NULL DEFAULT 'unpaid';");
+                    }
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'quantity';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `quantity` bigint(20) NOT NULL DEFAULT 1;");
+                    }
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'variation_id';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `variation_id` bigint(20) NOT NULL DEFAULT 0;");
+                    }
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'shipping_tax_amount';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `shipping_tax_amount` varchar(255) NOT NULL DEFAULT 0;");
+                    }
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'line_item_type';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `line_item_type` longtext NULL;");
+                    }
+                    if (!$wpdb->get_var("SHOW COLUMNS FROM `{$wpdb->prefix}wcmp_vendor_orders` LIKE 'commission_paid_date';")) {
+                        $wpdb->query("ALTER TABLE {$wpdb->prefix}wcmp_vendor_orders ADD `commission_paid_date` timestamp NULL;");
+                    }
+                }
+                if (!get_wcmp_vendor_settings('enable_vendor_tab', 'frontend')) {
+                    update_wcmp_vendor_settings('enable_vendor_tab', 'Enable', 'frontend');
+                }
             }
-            delete_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview');
-            if (get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview') == 'Enable' && get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview')) {
-                update_wcmp_vendor_settings('is_sellerreview_varified', 'Enable', 'general');
-            }
-            delete_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview');
-            if (get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') && get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') == 'Enable') {
-                update_wcmp_vendor_settings('is_policy_on', 'Enable', 'general');
-            }
-            delete_wcmp_vendor_settings('is_policy_on', 'general', 'policies');
-            if (get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') && get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') == 'Enable') {
-                update_wcmp_vendor_settings('is_customer_support_details', 'Enable', 'general');
-            }
-            delete_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details');
-            #endregion
-            #region migrate other data
-            if (get_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'Enable', 'general', 'policies');
-            }
-            delete_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'capabilities');
-            if (get_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'Enable', 'general', 'policies');
-            }
-            delete_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'capabilities');
-            if (get_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'Enable', 'general', 'policies');
-            }
-            delete_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities');
-            if (get_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'Enable', 'general', 'policies');
-            }
-            delete_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities');
-            if (get_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'Enable', 'general', 'customer_support_details');
-            }
-            delete_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'capabilities');
-            /* product tab */
-            if (get_wcmp_vendor_settings('inventory', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('inventory', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('inventory', 'product');
-            if (get_wcmp_vendor_settings('shipping', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('shipping', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('shipping', 'product');
-            if (get_wcmp_vendor_settings('linked_products', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('linked_products', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('linked_products', 'product');
-            if (get_wcmp_vendor_settings('attribute', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('attribute', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('attribute', 'product');
-            if (get_wcmp_vendor_settings('advanced', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('advanced', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('advanced', 'product');
-            if (get_wcmp_vendor_settings('simple', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('simple', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('simple', 'product');
-            if (get_wcmp_vendor_settings('variable', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('variable', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('variable', 'product');
-            if (get_wcmp_vendor_settings('grouped', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('grouped', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('grouped', 'product');
-            if (get_wcmp_vendor_settings('external', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('external', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('external', 'product');
-            if (get_wcmp_vendor_settings('virtual', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('virtual', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('virtual', 'product');
-            if (get_wcmp_vendor_settings('downloadable', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('downloadable', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('downloadable', 'product');
-            if (get_wcmp_vendor_settings('sku', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('sku', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('sku', 'product');
-            if (get_wcmp_vendor_settings('taxes', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('taxes', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('taxes', 'product');
-            if (get_wcmp_vendor_settings('add_comment', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('add_comment', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('add_comment', 'product');
-            if (get_wcmp_vendor_settings('comment_box', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('comment_box', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('comment_box', 'product');
-            if (get_wcmp_vendor_settings('stylesheet', 'product') == 'Enable') {
-                update_wcmp_vendor_settings('stylesheet', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('stylesheet', 'product');
-            /* Capability tab */
-            if (get_wcmp_vendor_settings('is_submit_product', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_submit_product', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_submit_product', 'capabilities');
-            if (get_wcmp_vendor_settings('is_published_product', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_published_product', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_published_product', 'capabilities');
-            if (get_wcmp_vendor_settings('is_upload_files', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_upload_files', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_upload_files', 'capabilities');
-            if (get_wcmp_vendor_settings('is_submit_coupon', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_submit_coupon', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_submit_coupon', 'capabilities');
-            if (get_wcmp_vendor_settings('is_published_coupon', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_published_coupon', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_published_coupon', 'capabilities');
-            if (get_wcmp_vendor_settings('is_edit_published_product', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_edit_published_product', 'Enable', 'capabilities', 'product');
-            }
-            delete_wcmp_vendor_settings('is_edit_published_product', 'capabilities');
-            /* order tab */
-            if (get_wcmp_vendor_settings('is_order_csv_export', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_order_csv_export', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('is_order_csv_export', 'capabilities');
-            if (get_wcmp_vendor_settings('is_show_email', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_show_email', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('is_show_email', 'capabilities');
-            if (get_wcmp_vendor_settings('show_customer_dtl', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_customer_dtl', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_customer_dtl', 'capabilities');
-            if (get_wcmp_vendor_settings('show_customer_billing', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_customer_billing', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_customer_billing', 'capabilities');
-            if (get_wcmp_vendor_settings('show_customer_shipping', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_customer_shipping', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_customer_shipping', 'capabilities');
-            if (get_wcmp_vendor_settings('show_cust_add', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_cust_add', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_cust_add', 'capabilities');
-            if (get_wcmp_vendor_settings('show_cust_billing_add', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_cust_billing_add', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_cust_billing_add', 'capabilities');
-            if (get_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_cust_shipping_add', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities');
-            if (get_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('show_cust_order_calulations', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities');
-            if (get_wcmp_vendor_settings('is_vendor_submit_comment', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_vendor_submit_comment', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('is_vendor_submit_comment', 'capabilities');
-            if (get_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_vendor_view_comment', 'Enable', 'capabilities', 'order');
-            }
-            delete_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities');
-            /* Mis Tab */
-            if (get_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'Enable', 'capabilities', 'miscellaneous');
-            }
-            delete_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'capabilities');
-            if (get_wcmp_vendor_settings('is_vendor_add_external_url', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_vendor_add_external_url', 'Enable', 'capabilities', 'miscellaneous');
-            }
-            delete_wcmp_vendor_settings('is_vendor_add_external_url', 'capabilities');
-            if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities') == 'Enable') {
-                update_wcmp_vendor_settings('is_hide_option_show', 'Enable', 'capabilities', 'miscellaneous');
-            }
-            delete_wcmp_vendor_settings('is_hide_option_show', 'capabilities');
-            #endregion
+            if ($previous_plugin_version <= '2.6.0' && !get_option('wcmp_database_upgrade')) {
+                $old_pages = get_option('wcmp_pages_settings_name');
+                if (isset($old_pages['vendor_dashboard'])) {
+                    wp_update_post(array('ID' => $old_pages['vendor_dashboard'], 'post_content' => '[wcmp_vendor]'));
+                    update_option('wcmp_product_vendor_vendor_page_id', get_option('wcmp_product_vendor_vendor_dashboard_page_id'));
+                    $wcmp_product_vendor_vendor_page_id = get_option('wcmp_product_vendor_vendor_page_id');
+                    update_wcmp_vendor_settings('wcmp_vendor', $wcmp_product_vendor_vendor_page_id, 'vendor', 'general');
+                }
+                /* remove unwanted vendor caps */
+                $args = array('role' => 'dc_vendor', 'fields' => 'ids', 'orderby' => 'registered', 'order' => 'ASC');
+                $user_query = new WP_User_Query($args);
+                if (!empty($user_query->results)) {
+                    foreach ($user_query->results as $vendor_id) {
+                        $user = new WP_User($vendor_id);
+                        if ($user) {
+                            if ($user->has_cap('edit_others_products')) {
+                                $user->remove_cap('edit_others_products');
+                            }
+                            if ($user->has_cap('delete_others_products')) {
+                                $user->remove_cap('delete_others_products');
+                            }
+                            if ($user->has_cap('edit_others_shop_coupons')) {
+                                $user->remove_cap('edit_others_shop_coupons');
+                            }
+                            if ($user->has_cap('delete_others_shop_coupons')) {
+                                $user->remove_cap('delete_others_shop_coupons');
+                            }
+                        }
+                    }
+                }
+                #region settings tab general data migrate
+                if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') && get_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller') == 'Enable') {
+                    update_wcmp_vendor_settings('is_singleproductmultiseller', 'Enable', 'general');
+                }
+                delete_wcmp_vendor_settings('is_singleproductmultiseller', 'general', 'singleproductmultiseller');
+                if (get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') && get_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview') == 'Enable') {
+                    update_wcmp_vendor_settings('is_sellerreview', 'Enable', 'general');
+                }
+                delete_wcmp_vendor_settings('is_sellerreview', 'general', 'sellerreview');
+                if (get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview') == 'Enable' && get_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview')) {
+                    update_wcmp_vendor_settings('is_sellerreview_varified', 'Enable', 'general');
+                }
+                delete_wcmp_vendor_settings('is_sellerreview_varified', 'general', 'sellerreview');
+                if (get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') && get_wcmp_vendor_settings('is_policy_on', 'general', 'policies') == 'Enable') {
+                    update_wcmp_vendor_settings('is_policy_on', 'Enable', 'general');
+                }
+                delete_wcmp_vendor_settings('is_policy_on', 'general', 'policies');
+                if (get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') && get_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details') == 'Enable') {
+                    update_wcmp_vendor_settings('is_customer_support_details', 'Enable', 'general');
+                }
+                delete_wcmp_vendor_settings('is_customer_support_details', 'general', 'customer_support_details');
+                #endregion
+                #region migrate other data
+                if (get_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'Enable', 'general', 'policies');
+                }
+                delete_wcmp_vendor_settings('can_vendor_edit_policy_tab_label', 'capabilities');
+                if (get_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'Enable', 'general', 'policies');
+                }
+                delete_wcmp_vendor_settings('can_vendor_edit_cancellation_policy', 'capabilities');
+                if (get_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'Enable', 'general', 'policies');
+                }
+                delete_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities');
+                if (get_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_edit_shipping_policy', 'Enable', 'general', 'policies');
+                }
+                delete_wcmp_vendor_settings('can_vendor_edit_refund_policy', 'capabilities');
+                if (get_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'Enable', 'general', 'customer_support_details');
+                }
+                delete_wcmp_vendor_settings('can_vendor_add_customer_support_details', 'capabilities');
+                /* product tab */
+                if (get_wcmp_vendor_settings('inventory', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('inventory', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('inventory', 'product');
+                if (get_wcmp_vendor_settings('shipping', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('shipping', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('shipping', 'product');
+                if (get_wcmp_vendor_settings('linked_products', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('linked_products', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('linked_products', 'product');
+                if (get_wcmp_vendor_settings('attribute', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('attribute', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('attribute', 'product');
+                if (get_wcmp_vendor_settings('advanced', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('advanced', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('advanced', 'product');
+                if (get_wcmp_vendor_settings('simple', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('simple', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('simple', 'product');
+                if (get_wcmp_vendor_settings('variable', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('variable', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('variable', 'product');
+                if (get_wcmp_vendor_settings('grouped', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('grouped', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('grouped', 'product');
+                if (get_wcmp_vendor_settings('external', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('external', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('external', 'product');
+                if (get_wcmp_vendor_settings('virtual', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('virtual', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('virtual', 'product');
+                if (get_wcmp_vendor_settings('downloadable', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('downloadable', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('downloadable', 'product');
+                if (get_wcmp_vendor_settings('sku', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('sku', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('sku', 'product');
+                if (get_wcmp_vendor_settings('taxes', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('taxes', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('taxes', 'product');
+                if (get_wcmp_vendor_settings('add_comment', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('add_comment', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('add_comment', 'product');
+                if (get_wcmp_vendor_settings('comment_box', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('comment_box', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('comment_box', 'product');
+                if (get_wcmp_vendor_settings('stylesheet', 'product') == 'Enable') {
+                    update_wcmp_vendor_settings('stylesheet', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('stylesheet', 'product');
+                /* Capability tab */
+                if (get_wcmp_vendor_settings('is_submit_product', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_submit_product', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_submit_product', 'capabilities');
+                if (get_wcmp_vendor_settings('is_published_product', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_published_product', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_published_product', 'capabilities');
+                if (get_wcmp_vendor_settings('is_upload_files', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_upload_files', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_upload_files', 'capabilities');
+                if (get_wcmp_vendor_settings('is_submit_coupon', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_submit_coupon', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_submit_coupon', 'capabilities');
+                if (get_wcmp_vendor_settings('is_published_coupon', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_published_coupon', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_published_coupon', 'capabilities');
+                if (get_wcmp_vendor_settings('is_edit_published_product', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_edit_published_product', 'Enable', 'capabilities', 'product');
+                }
+                delete_wcmp_vendor_settings('is_edit_published_product', 'capabilities');
+                /* order tab */
+                if (get_wcmp_vendor_settings('is_order_csv_export', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_order_csv_export', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('is_order_csv_export', 'capabilities');
+                if (get_wcmp_vendor_settings('is_show_email', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_show_email', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('is_show_email', 'capabilities');
+                if (get_wcmp_vendor_settings('show_customer_dtl', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_customer_dtl', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_customer_dtl', 'capabilities');
+                if (get_wcmp_vendor_settings('show_customer_billing', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_customer_billing', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_customer_billing', 'capabilities');
+                if (get_wcmp_vendor_settings('show_customer_shipping', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_customer_shipping', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_customer_shipping', 'capabilities');
+                if (get_wcmp_vendor_settings('show_cust_add', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_cust_add', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_cust_add', 'capabilities');
+                if (get_wcmp_vendor_settings('show_cust_billing_add', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_cust_billing_add', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_cust_billing_add', 'capabilities');
+                if (get_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_cust_shipping_add', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities');
+                if (get_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('show_cust_order_calulations', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities');
+                if (get_wcmp_vendor_settings('is_vendor_submit_comment', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_vendor_submit_comment', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('is_vendor_submit_comment', 'capabilities');
+                if (get_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_vendor_view_comment', 'Enable', 'capabilities', 'order');
+                }
+                delete_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities');
+                /* Mis Tab */
+                if (get_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'Enable', 'capabilities', 'miscellaneous');
+                }
+                delete_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'capabilities');
+                if (get_wcmp_vendor_settings('is_vendor_add_external_url', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_vendor_add_external_url', 'Enable', 'capabilities', 'miscellaneous');
+                }
+                delete_wcmp_vendor_settings('is_vendor_add_external_url', 'capabilities');
+                if (get_wcmp_vendor_settings('is_hide_option_show', 'capabilities') == 'Enable') {
+                    update_wcmp_vendor_settings('is_hide_option_show', 'Enable', 'capabilities', 'miscellaneous');
+                }
+                delete_wcmp_vendor_settings('is_hide_option_show', 'capabilities');
+                #endregion
 
-            if (!get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product')) {
-                update_wcmp_vendor_settings('is_edit_delete_published_product', 'Enable', 'capabilities', 'product');
-            }
-            if (!get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product')) {
-                update_wcmp_vendor_settings('is_edit_delete_published_coupon', 'Enable', 'capabilities', 'product');
-            }
+                if (!get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product')) {
+                    update_wcmp_vendor_settings('is_edit_delete_published_product', 'Enable', 'capabilities', 'product');
+                }
+                if (!get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product')) {
+                    update_wcmp_vendor_settings('is_edit_delete_published_coupon', 'Enable', 'capabilities', 'product');
+                }
 
-            $wcmp_pages = get_option('wcmp_pages_settings_name');
-            $wcmp_old_pages = array(
+                $wcmp_pages = get_option('wcmp_pages_settings_name');
+                $wcmp_old_pages = array(
 //                'vendor_dashboard' => 'wcmp_product_vendor_vendor_dashboard_page_id'
-                'shop_settings' => 'wcmp_product_vendor_shop_settings_page_id'
-                , 'view_order' => 'wcmp_product_vendor_vendor_orders_page_id'
-                , 'vendor_order_detail' => 'wcmp_product_vendor_vendor_order_detail_page_id'
-                , 'vendor_transaction_thankyou' => 'wcmp_product_vendor_transaction_widthdrawal_page_id'
-                , 'vendor_transaction_detail' => 'wcmp_product_vendor_transaction_details_page_id'
-                , 'vendor_policies' => 'wcmp_product_vendor_policies_page_id'
-                , 'vendor_billing' => 'wcmp_product_vendor_billing_page_id'
-                , 'vendor_shipping' => 'wcmp_product_vendor_shipping_page_id'
-                , 'vendor_report' => 'wcmp_product_vendor_report_page_id'
-                , 'vendor_widthdrawals' => 'wcmp_product_vendor_widthdrawals_page_id'
-                , 'vendor_university' => 'wcmp_product_vendor_university_page_id'
-                , 'vendor_announcements' => 'wcmp_product_vendor_announcements_page_id'
-            );
-            foreach ($wcmp_old_pages as $page_slug => $page_option) {
-                $trash_status = wp_trash_post(get_option($page_option));
-                if ($trash_status) {
-                    delete_option($page_option);
-                    unset($wcmp_pages[$page_slug]);
+                    'shop_settings' => 'wcmp_product_vendor_shop_settings_page_id'
+                    , 'view_order' => 'wcmp_product_vendor_vendor_orders_page_id'
+                    , 'vendor_order_detail' => 'wcmp_product_vendor_vendor_order_detail_page_id'
+                    , 'vendor_transaction_thankyou' => 'wcmp_product_vendor_transaction_widthdrawal_page_id'
+                    , 'vendor_transaction_detail' => 'wcmp_product_vendor_transaction_details_page_id'
+                    , 'vendor_policies' => 'wcmp_product_vendor_policies_page_id'
+                    , 'vendor_billing' => 'wcmp_product_vendor_billing_page_id'
+                    , 'vendor_shipping' => 'wcmp_product_vendor_shipping_page_id'
+                    , 'vendor_report' => 'wcmp_product_vendor_report_page_id'
+                    , 'vendor_widthdrawals' => 'wcmp_product_vendor_widthdrawals_page_id'
+                    , 'vendor_university' => 'wcmp_product_vendor_university_page_id'
+                    , 'vendor_announcements' => 'wcmp_product_vendor_announcements_page_id'
+                );
+                foreach ($wcmp_old_pages as $page_slug => $page_option) {
+                    $trash_status = wp_trash_post(get_option($page_option));
+                    if ($trash_status) {
+                        delete_option($page_option);
+                        unset($wcmp_pages[$page_slug]);
+                    }
                 }
-            }
-            update_option('wcmp_pages_settings_name', $wcmp_pages);
+                update_option('wcmp_pages_settings_name', $wcmp_pages);
 
-            #region update page option
-            if (get_wcmp_vendor_settings('wcmp_vendor', 'pages')) {
-                update_wcmp_vendor_settings('wcmp_vendor', get_wcmp_vendor_settings('wcmp_vendor', 'pages'), 'vendor', 'general');
+                #region update page option
+                if (get_wcmp_vendor_settings('wcmp_vendor', 'pages')) {
+                    update_wcmp_vendor_settings('wcmp_vendor', get_wcmp_vendor_settings('wcmp_vendor', 'pages'), 'vendor', 'general');
+                }
+                if (get_wcmp_vendor_settings('vendor_registration', 'pages')) {
+                    update_wcmp_vendor_settings('vendor_registration', get_wcmp_vendor_settings('vendor_registration', 'pages'), 'vendor', 'general');
+                }
+                $WCMp->load_class('endpoints');
+                $endpoints = new WCMp_Endpoints();
+                $endpoints->add_wcmp_endpoints();
+                flush_rewrite_rules();
+                delete_option('wcmp_pages_settings_name');
+                update_option('wcmp_database_upgrade', 'done');
+                #endregion
             }
-            if (get_wcmp_vendor_settings('vendor_registration', 'pages')) {
-                update_wcmp_vendor_settings('vendor_registration', get_wcmp_vendor_settings('vendor_registration', 'pages'), 'vendor', 'general');
-            }
-            $WCMp->load_class('endpoints');
-            $endpoints = new WCMp_Endpoints();
-            $endpoints->add_wcmp_endpoints();
-            flush_rewrite_rules();
-            delete_option('wcmp_pages_settings_name');
-            update_option('wcmp_database_upgrade', 'done');
-            #endregion
+
+            /* Migrate commission data into table */
+            do_wcmp_commission_data_migrate();
         }
-
-        /* Migrate commission data into table */
-        do_wcmp_commission_data_migrate();
         update_option('dc_product_vendor_plugin_db_version', $new_plugin_version);
     }
 
-    /**
-     * 
-     * @param type $a
-     * @param type $b
-     * @return type
-     * sort vendor order
-     */
-    function vendor_orders_sort($a, $b) {
-        return $a[0] - $b[0];
-    }
+}
 
-    /**
-     * Multilevel sort by subarry key
-     * @param array $array
-     * @param string $subkey
-     * @param Boolean $sort_ascending
-     */
-    function sksort(&$array, $subkey = "id", $sort_ascending = false) {
-        if (count($array)) {
-            $temp_array[key($array)] = array_shift($array);
-        }
-        foreach ($array as $key => $val) {
-            $offset = 0;
-            $found = false;
-            foreach ($temp_array as $tmp_key => $tmp_val) {
-                if (!$found and strtolower($val[$subkey]) > strtolower($tmp_val[$subkey])) {
-                    $temp_array = array_merge((array) array_slice($temp_array, 0, $offset), array($key => $val), array_slice($temp_array, $offset)
-                    );
-                    $found = true;
-                }
-                $offset++;
+/**
+ * 
+ * @param type $a
+ * @param type $b
+ * @return type
+ * sort vendor order
+ */
+function vendor_orders_sort($a, $b) {
+    return $a[0] - $b[0];
+}
+
+/**
+ * Multilevel sort by subarry key
+ * @param array $array
+ * @param string $subkey
+ * @param Boolean $sort_ascending
+ */
+function sksort(&$array, $subkey = "id", $sort_ascending = false) {
+    if (count($array)) {
+        $temp_array[key($array)] = array_shift($array);
+    }
+    foreach ($array as $key => $val) {
+        $offset = 0;
+        $found = false;
+        foreach ($temp_array as $tmp_key => $tmp_val) {
+            if (!$found and strtolower($val[$subkey]) > strtolower($tmp_val[$subkey])) {
+                $temp_array = array_merge((array) array_slice($temp_array, 0, $offset), array($key => $val), array_slice($temp_array, $offset)
+                );
+                $found = true;
             }
-            if (!$found) {
-                $temp_array = array_merge($temp_array, array($key => $val));
-            }
+            $offset++;
         }
-        if ($sort_ascending) {
-            $array = array_reverse($temp_array);
-        } else {
-            $array = $temp_array;
+        if (!$found) {
+            $temp_array = array_merge($temp_array, array($key => $val));
         }
     }
-
+    if ($sort_ascending) {
+        $array = array_reverse($temp_array);
+    } else {
+        $array = $temp_array;
+    }
 }
 
 if (!function_exists('do_wcmp_commission_data_migrate')) {
@@ -1570,7 +1572,7 @@ if (!function_exists('do_wcmp_commission_data_migrate')) {
             'offset' => $offset
         );
 
-        if (wp_count_posts('dc_commission')->private >= $offset * 50) {
+        if (isset(wp_count_posts('dc_commission')->private) && wp_count_posts('dc_commission')->private >= $offset * 50) {
             $commissions = get_posts($args);
             $commissions_to_migrate = array();
             foreach ($commissions as $commission) {

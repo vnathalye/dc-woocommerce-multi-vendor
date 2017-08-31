@@ -1,6 +1,7 @@
 <?php
-if (!defined('ABSPATH'))
+if (!defined('ABSPATH')) {
     exit;
+}
 
 /**
  * @class 		WCMp User Class
@@ -12,9 +13,6 @@ if (!defined('ABSPATH'))
 class WCMp_User {
 
     public function __construct() {
-        // Add dc_pending_vendor, dc_vendor, dc_rejected_vendor role
-        $this->register_user_role();
-        // Set vendor role
         add_action('user_register', array(&$this, 'vendor_registration'), 10, 1);
         // Add column product in users dashboard
         add_filter('manage_users_columns', array(&$this, 'column_register_product'));
@@ -265,119 +263,16 @@ class WCMp_User {
     }
 
     /**
-     * Register vendor user role
-     *
-     * @access public
-     * @return void
-     */
-    public function register_user_role() {
-        global $wp_roles;
-
-        if (!class_exists('WP_Roles')) {
-            return;
-        }
-
-        if (!isset($wp_roles)) {
-            $wp_roles = new WP_Roles();
-        }
-
-        add_role('dc_pending_vendor', apply_filters('dc_pending_vendor_role', __('Pending Vendor', 'dc-woocommerce-multi-vendor')), array(
-            'read' => true,
-            'edit_posts' => false,
-            'delete_posts' => false,
-        ));
-
-        add_role('dc_rejected_vendor', apply_filters('dc_rejected_vendor_role', __('Rejected Vendor', 'dc-woocommerce-multi-vendor')), array(
-            'read' => true,
-            'edit_posts' => false,
-            'delete_posts' => false,
-        ));
-
-        add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', 'dc-woocommerce-multi-vendor')), array(
-            'read' => true,
-            'manage_product' => true,
-            'edit_posts' => true,
-            'delete_posts' => false,
-            'view_woocommerce_reports' => true,
-            'assign_product_terms' => true,
-            'read_product' => true,
-            'read_shop_coupon' => true
-        ));
-
-        $capabilities = $this->get_vendor_caps();
-        foreach ($capabilities as $cap => $is_enable) {
-            $wp_roles->add_cap('dc_vendor', $cap, $is_enable);
-        }
-    }
-
-    /**
      * Set up array of vendor admin capabilities
      *
      * @access public
      * @return arr Vendor capabilities
+     * @deprecated since version 2.7.6
      */
     public function get_vendor_caps() {
         global $WCMp;
-        $caps = array();
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_upload_files')) {
-            $caps['upload_files'] = true;
-        } else {
-            $caps['upload_files'] = false;
-        }
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-            $caps['edit_product'] = true;
-            $caps['delete_product'] = true;
-            $caps['edit_products'] = true;
-            $caps['delete_products'] = true;
-            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-                $caps['publish_products'] = true;
-            } else {
-                $caps['publish_products'] = false;
-            }
-            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_product')) {
-                $caps['edit_published_products'] = true;
-                $caps['delete_published_products'] = true;
-            } else {
-                $caps['edit_published_products'] = false;
-                $caps['delete_published_products'] = false;
-            }
-        } else {
-            $caps['edit_product'] = false;
-            $caps['delete_product'] = false;
-            $caps['edit_products'] = false;
-            $caps['delete_products'] = false;
-            $caps['publish_products'] = false;
-            $caps['edit_published_products'] = false;
-            $caps['delete_published_products'] = false;
-        }
-
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-            $caps['edit_shop_coupon'] = true;
-            $caps['edit_shop_coupons'] = true;
-            $caps['delete_shop_coupon'] = true;
-            $caps['delete_shop_coupons'] = true;
-            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-                $caps['publish_shop_coupons'] = true;
-            } else {
-                $caps['publish_shop_coupons'] = false;
-            }
-            if ($WCMp->vendor_caps->vendor_capabilities_settings('is_edit_delete_published_coupon')) {
-                $caps['edit_published_shop_coupons'] = true;
-                $caps['delete_published_shop_coupons'] = true;
-            } else {
-                $caps['edit_published_shop_coupons'] = false;
-                $caps['delete_published_shop_coupons'] = false;
-            }
-        } else {
-            $caps['edit_shop_coupon'] = false;
-            $caps['edit_shop_coupons'] = false;
-            $caps['delete_shop_coupon'] = false;
-            $caps['delete_shop_coupons'] = false;
-            $caps['publish_shop_coupons'] = false;
-            $caps['edit_published_shop_coupons'] = false;
-            $caps['delete_published_shop_coupons'] = false;
-        }
-        return apply_filters('wcmp_vendor_capabilities', $caps);
+        _deprecated_function('get_vendor_caps', '2.7.6', 'WCMp_Capabilities::get_vendor_caps');
+        return $WCMp->vendor_caps->get_vendor_caps();
     }
 
     /**
@@ -404,13 +299,13 @@ class WCMp_User {
                 'label' => __('Vendor Page Title', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->page_title,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_page_slug" => array(
                 'label' => __('Vendor Page Slug', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->page_slug,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_description" => array(
                 'label' => __('Description', 'dc-woocommerce-multi-vendor'),
@@ -450,97 +345,97 @@ class WCMp_User {
                 'label' => __('Company Name', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->company,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_address_1" => array(
                 'label' => __('Address 1', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->address_1,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_address_2" => array(
                 'label' => __('Address 2', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->address_2,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_city" => array(
                 'label' => __('City', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->city,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_postcode" => array(
                 'label' => __('Postcode', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->postcode,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_external_store_url" => array(
                 'label' => __('External store URL', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->external_store_url,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_external_store_label" => array(
                 'label' => __('External store URL label', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->external_store_label,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_state" => array(
                 'label' => __('State', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->state,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_country" => array(
                 'label' => __('Country', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->country,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_phone" => array(
                 'label' => __('Phone', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->phone,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_fb_profile" => array(
                 'label' => __('Facebook Profile', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->fb_profile,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_twitter_profile" => array(
                 'label' => __('Twitter Profile', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->twitter_profile,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_google_plus_profile" => array(
                 'label' => __('Google+ Profile', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->google_plus_profile,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_linkdin_profile" => array(
                 'label' => __('LinkedIn Profile', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->linkdin_profile,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_youtube" => array(
                 'label' => __('YouTube Channel', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->youtube,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_instagram" => array(
                 'label' => __('Instagram Profile', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->instagram,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_image" => array(
                 'label' => __('Logo', 'dc-woocommerce-multi-vendor'),
@@ -560,49 +455,49 @@ class WCMp_User {
                 'label' => __('Customer address1', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_address1,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_csd_return_address2" => array(
                 'label' => __('Customer address2', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_address2,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_csd_return_country" => array(
                 'label' => __('Customer Country', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_country,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_csd_return_state" => array(
                 'label' => __('Customer Return State', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_state,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_csd_return_city" => array(
                 'label' => __('Customer Return City', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_city,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text 
             "vendor_csd_return_zip" => array(
                 'label' => __('Customer Return Zip', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->csd_return_zip,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text  
             "vendor_customer_phone" => array(
                 'label' => __('Customer Phone', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->customer_phone,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
             "vendor_customer_email" => array(
                 'label' => __('Customer Email', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->customer_email,
-                'class' => "user-profile-fields"
+                'class' => "user-profile-fields regular-text"
             ), // Text
                 ), $user_id);
 
@@ -629,7 +524,7 @@ class WCMp_User {
             'type' => 'select',
             'options' => apply_filters('wcmp_vendor_payment_mode', $payment_mode),
             'value' => $vendor->payment_mode,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_bank_account_type"] = array(
@@ -637,28 +532,28 @@ class WCMp_User {
             'type' => 'select',
             'options' => array('current' => __('Current', 'dc-woocommerce-multi-vendor'), 'savings' => __('Savings', 'dc-woocommerce-multi-vendor')),
             'value' => $vendor->bank_account_type,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_bank_account_number"] = array(
             'label' => __('Bank Account Name', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->bank_account_number,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_bank_name"] = array(
             'label' => __('Bank Name', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->bank_name,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_aba_routing_number"] = array(
             'label' => __('ABA Routing Number', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->aba_routing_number,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_bank_address"] = array(
@@ -672,27 +567,27 @@ class WCMp_User {
             'label' => __('Destination Currency', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->destination_currency,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_iban"] = array(
             'label' => __('IBAN', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->iban,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         $fields["vendor_account_holder_name"] = array(
             'label' => __('Account Holder Name', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->account_holder_name,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
         $fields["vendor_paypal_email"] = array(
             'label' => __('PayPal Email', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->paypal_email,
-            'class' => "user-profile-fields"
+            'class' => "user-profile-fields regular-text"
         ); // Text
 
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_policy_tab_label'])) {
@@ -701,7 +596,7 @@ class WCMp_User {
                 'label' => __('Enter the title of Policies Tab', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->policy_tab_title,
-                'class' => 'user-profile-fields'
+                'class' => 'user-profile-fields regular-text'
             );
         }
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
@@ -725,7 +620,7 @@ class WCMp_User {
                 'label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->shipping_policy,
-                'class' => 'user-profile-fields'
+                'class' => 'user-profile-fields regular-text'
             );
         }
         if (isset($settings_capabilities['can_vendor_add_message_on_email_and_thankyou_page'])) {
@@ -750,36 +645,8 @@ class WCMp_User {
                 'label' => __('Commission Amount', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
                 'value' => $vendor->commission,
-                'class' => "user-profile-fields"
-            ); // Text   
-//            $fields['vendor_submit_product'] = array(
-//                'label' => __('Submit products', 'dc-woocommerce-multi-vendor'),
-//                'type' => 'checkbox',
-//                'dfvalue' => $vendor->submit_product,
-//                'value' => 'Enable',
-//                'class' => 'user-profile-fields'
-//            );
-//            $fields['vendor_publish_product'] = array(
-//                'label' => __('Disallow direct publishing of products', 'dc-woocommerce-multi-vendor'),
-//                'type' => 'checkbox',
-//                'dfvalue' => $vendor->publish_product,
-//                'value' => 'Enable',
-//                'class' => 'user-profile-fields'
-//            );
-//            $fields['vendor_submit_coupon'] = array(
-//                'label' => __('Submit Coupons', 'dc-woocommerce-multi-vendor'),
-//                'type' => 'checkbox',
-//                'dfvalue' => $vendor->submit_coupon,
-//                'value' => 'Enable',
-//                'class' => 'user-profile-fields'
-//            );
-//            $fields['vendor_publish_coupon'] = array(
-//                'label' => __('Disallow direct publishing of coupons', 'dc-woocommerce-multi-vendor'),
-//                'type' => 'checkbox',
-//                'dfvalue' => $vendor->publish_coupon,
-//                'value' => 'Enable',
-//                'class' => 'user-profile-fields'
-//            );
+                'class' => "user-profile-fields regular-text"
+            );
             $fields['vendor_give_tax'] = array(
                 'label' => __('Withhold Tax', 'dc-woocommerce-multi-vendor'),
                 'type' => 'checkbox',
@@ -810,13 +677,13 @@ class WCMp_User {
                     'label' => __('Commission Percentage(%)', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
                     'value' => $vendor->commission_percentage,
-                    'class' => 'user-profile-fields'
+                    'class' => 'user-profile-fields regular-text'
                 );
                 $fields['vendor_commission_fixed_with_percentage'] = array(
                     'label' => __('Commission(fixed), Per Transaction', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
                     'value' => $vendor->commission_fixed_with_percentage,
-                    'class' => 'user-profile-fields'
+                    'class' => 'user-profile-fields regular-text'
                 );
             }
 
@@ -826,30 +693,16 @@ class WCMp_User {
                     'label' => __('Commission Percentage(%)', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
                     'value' => $vendor->commission_percentage,
-                    'class' => 'user-profile-fields'
+                    'class' => 'user-profile-fields regular-text'
                 );
                 $fields['vendor_commission_fixed_with_percentage_qty'] = array(
                     'label' => __('Commission Fixed Per Unit', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
                     'value' => $vendor->commission_fixed_with_percentage_qty,
-                    'class' => 'user-profile-fields'
+                    'class' => 'user-profile-fields regular-text'
                 );
             }
         }
-
-//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_product')) {
-//            unset($fields['vendor_submit_product']);
-//        }
-//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_product')) {
-//            unset($fields['vendor_publish_product']);
-//        }
-//
-//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_submit_coupon')) {
-//            unset($fields['vendor_submit_coupon']);
-//        }
-//        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_published_coupon')) {
-//            unset($fields['vendor_publish_coupon']);
-//        }
 
         return $fields;
     }
@@ -953,7 +806,7 @@ class WCMp_User {
                             <a class="button-primary" target="_blank" href=<?php echo $vendor->permalink; ?>>View</a>
                         </td>
                     </tr>
-            <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
+                    <?php $WCMp->wcmp_wp_fields->dc_generate_form_field($this->get_vendor_fields($user->ID), array('in_table' => 1)); ?>
                 </tbody>
             </table>
             <?php

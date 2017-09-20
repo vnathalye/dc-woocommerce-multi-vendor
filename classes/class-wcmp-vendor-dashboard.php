@@ -51,7 +51,7 @@ Class WCMp_Admin_Dashboard {
         global $WCMp;
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['vendor_get_paid']) && isset($_POST['commissions'])) {
-                $vendor = get_wcmp_vendor(get_current_user_id());
+                $vendor = get_wcmp_vendor(get_current_vendor_id());
                 $commissions = $_POST['commissions'];
                 $payment_method = get_user_meta($vendor->id, '_vendor_payment_mode', true);
                 if ($payment_method) {
@@ -88,8 +88,6 @@ Class WCMp_Admin_Dashboard {
      */
     function export_csv() {
         global $WCMp;
-
-        $user_id = get_current_user_id();
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -366,7 +364,7 @@ Class WCMp_Admin_Dashboard {
                 $order = new WC_Order($_POST['order_id']);
                 $comment = esc_textarea($_POST['comment_text']);
                 $comment_id = $order->add_order_note($comment, 1);
-                add_comment_meta($comment_id, '_vendor_id', get_current_user_id());
+                add_comment_meta($comment_id, '_vendor_id', get_current_vendor_id());
             }
         }
     }
@@ -394,10 +392,7 @@ Class WCMp_Admin_Dashboard {
      * HTML setup for the Orders Page 
      */
     public static function shipping_page() {
-        global $WCMp, $post, $wpdb;
-
-        $vendor_user_id = get_current_user_id();
-        $vendor_user_id = apply_filters('wcmp_dashboard_shipping_vendor', $vendor_user_id);
+        $vendor_user_id = apply_filters('wcmp_dashboard_shipping_vendor', get_current_vendor_id());
 
         $vendor_data = get_wcmp_vendor($vendor_user_id);
         $shipping_class_id = get_user_meta($vendor_user_id, 'shipping_class_id', true);
@@ -569,7 +564,7 @@ Class WCMp_Admin_Dashboard {
             $current_shipping_class = false;
         }
         $product_shipping_class = get_terms('product_shipping_class', array('hide_empty' => 0));
-        $current_user_id = get_current_user_id();
+        $current_user_id = get_current_vendor_id();
         $option = '<option value="-1">' . __("No shipping class", 'dc-woocommerce-multi-vendor') . '</option>';
 
         if (!empty($product_shipping_class)) {
@@ -725,6 +720,9 @@ Class WCMp_Admin_Dashboard {
             } else if (!isset($post['vendor_hide_message_to_buyers']) && $fieldkey == 'vendor_hide_message_to_buyers') {
                 delete_user_meta($user_id, '_vendor_hide_message_to_buyers');
             }
+        }
+        if(isset($_POST['_shop_template']) && !empty($_POST['_shop_template'])){
+            update_user_meta($user_id, '_shop_template', $_POST['_shop_template']);
         }
     }
 

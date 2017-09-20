@@ -18,7 +18,7 @@ if (isset($WCMp->vendor_caps->payment_cap['commission_threshold']) && $WCMp->ven
     $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 }
 ?>
-<div class="wcmp_orange_mix_txt"><?php _e('Your Threshold value for withdrawals is :', 'dc-woocommerce-multi-vendor'); ?><span><?php echo get_woocommerce_currency_symbol() . $get_vendor_thresold; ?></span> 
+<div class="wcmp_orange_mix_txt"><?php _e('Your Threshold value for withdrawals is :', 'dc-woocommerce-multi-vendor'); ?><span><?php echo wc_price($get_vendor_thresold); ?></span> 
     <div class="clear"></div>
 </div>
 <div class="wcmp_headding3">

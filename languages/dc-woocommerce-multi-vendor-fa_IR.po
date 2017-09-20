@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WC Marketplace\n"
-"POT-Creation-Date: 2017-08-28 11:25+0000\n"
-"PO-Revision-Date: 2017-08-28 11:25+0000\n"
+"POT-Creation-Date: 2017-09-19 12:28+0000\n"
+"PO-Revision-Date: 2017-09-19 12:28+0000\n"
 "Last-Translator: WC Marketplace <subrata@dualcube.com>\n"
 "Language-Team: Persian\n"
 "Language: fa-IR\n"
@@ -44,7 +44,7 @@ msgstr ""
 msgid "Gateway Fee"
 msgstr ""
 
-#: classes/class-wcmp-post-transaction.php:198 classes/class-wcmp-user.php:621
+#: classes/class-wcmp-post-transaction.php:198 classes/class-wcmp-user.php:517
 #: templates/vendor-dashboard/vendor-billing.php:26
 msgid "PayPal Payout"
 msgstr ""
@@ -103,17 +103,17 @@ msgstr ""
 msgid "No payment method selected for withdrawal commission"
 msgstr ""
 
-#: classes/class-wcmp-vendor-dashboard.php:114
+#: classes/class-wcmp-vendor-dashboard.php:112
 #: templates/vendor-dashboard/vendor-transactions.php:53
 msgid "Commission IDs"
 msgstr ""
 
-#: classes/class-wcmp-vendor-dashboard.php:441
-#: classes/class-wcmp-vendor-dashboard.php:758
+#: classes/class-wcmp-vendor-dashboard.php:436
+#: classes/class-wcmp-vendor-dashboard.php:756
 msgid "Shipping Data Updated"
 msgstr ""
 
-#: classes/class-wcmp-vendor-dashboard.php:760
+#: classes/class-wcmp-vendor-dashboard.php:758
 msgid "Shipping Data Not Updated"
 msgstr ""
 
@@ -215,7 +215,7 @@ msgstr ""
 #: classes/class-wcmp-post-university.php:42
 #: classes/class-wcmp-post-university.php:43
 #: classes/class-wcmp-vendor-hooks.php:171
-#: classes/class-wcmp-vendor-hooks.php:623 admin/class-wcmp-settings.php:122
+#: classes/class-wcmp-vendor-hooks.php:627 admin/class-wcmp-settings.php:124
 msgid "Knowledgebase"
 msgstr ""
 
@@ -241,25 +241,25 @@ msgstr ""
 msgid "CNPJ"
 msgstr ""
 
-#: classes/class-wcmp-admin.php:51
+#: classes/class-wcmp-admin.php:52
 msgid "Vendor Form Data"
 msgstr ""
 
-#: classes/class-wcmp-admin.php:113
+#: classes/class-wcmp-admin.php:112
 msgid "Username"
 msgstr ""
 
-#: classes/class-wcmp-admin.php:268 classes/class-wcmp-taxonomy.php:21
+#: classes/class-wcmp-admin.php:265 classes/class-wcmp-taxonomy.php:21
 msgctxt "slug"
 msgid "vendor"
 msgstr ""
 
 #. Name of the plugin
-#: classes/class-wcmp-admin.php:351 admin/class-wcmp-settings.php:104
+#: classes/class-wcmp-admin.php:347 admin/class-wcmp-settings.php:106
 msgid "WC Marketplace"
 msgstr ""
 
-#: classes/class-wcmp-admin.php:375
+#: classes/class-wcmp-admin.php:370
 msgid ""
 "\"Knowledgebase\" section is visible only to vendors through the vendor "
 "dashboard. You may use this section to onboard your vendors. Share tutorials,"
@@ -296,51 +296,51 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
-#: classes/class-wcmp-frontend.php:280
+#: classes/class-wcmp-frontend.php:281
 msgid " Shipping"
 msgstr ""
 
-#: classes/class-wcmp-frontend.php:316
+#: classes/class-wcmp-frontend.php:317
 msgid "Report has been sent"
 msgstr ""
 
-#: classes/class-wcmp-frontend.php:346
+#: classes/class-wcmp-frontend.php:347
 msgid "Please review your vendor and minimum 10 Character required"
 msgstr ""
 
-#: classes/class-wcmp-frontend.php:347
+#: classes/class-wcmp-frontend.php:348
 msgid "Your review submitted successfully"
 msgstr ""
 
-#: classes/class-wcmp-frontend.php:348
+#: classes/class-wcmp-frontend.php:349
 msgid "Error in system please try again later"
 msgstr ""
 
-#: classes/class-wcmp-product.php:154
+#: classes/class-wcmp-product.php:153
 msgid "More Offers"
 msgstr ""
 
-#: classes/class-wcmp-product.php:1329
+#: classes/class-wcmp-product.php:1311
 msgid "Report an abuse for product "
 msgstr ""
 
-#: classes/class-wcmp-user.php:540
+#: classes/class-wcmp-user.php:436
 msgid "Instagram Profile"
 msgstr ""
 
-#: includes/class-wcmp-install.php:102
+#: includes/class-wcmp-install.php:113
 msgctxt "page_slug"
 msgid "wcmp"
 msgstr ""
 
-#: includes/class-wcmp-install.php:103
+#: includes/class-wcmp-install.php:114
 msgctxt "page_slug"
 msgid "wcmp_vendor_registration"
 msgstr ""
 
-#: includes/class-wcmp-install.php:103 admin/class-wcmp-settings-general.php:34
+#: includes/class-wcmp-install.php:114 admin/class-wcmp-settings-general.php:34
 #: admin/class-wcmp-settings-vendor-general.php:41
-#: admin/class-wcmp-settings.php:173
+#: admin/class-wcmp-settings.php:181
 msgid "Vendor Registration"
 msgstr ""
 
@@ -358,6 +358,7 @@ msgstr ""
 
 #: admin/class-wcmp-settings-capabilities-order.php:118
 #: admin/class-wcmp-settings-capabilities-miscellaneous.php:70
+#: admin/class-wcmp-settings-vendor-dashboard.php:93
 #: admin/class-wcmp-settings-capabilities-product.php:170
 #: admin/class-wcmp-settings-vendor-general.php:113
 msgid "Vendor Settings Updated"
@@ -442,6 +443,7 @@ msgstr ""
 #: admin/class-wcmp-settings-general-policies.php:44
 #: admin/class-wcmp-settings-general-policies.php:54
 #: admin/class-wcmp-settings-general-policies.php:63
+#: admin/class-wcmp-settings-vendor-dashboard.php:52
 msgid "Vendor Can Edit"
 msgstr ""
 
@@ -495,24 +497,235 @@ msgstr ""
 msgid "Allow vendors to edit the cancellation / return / exchange policy."
 msgstr ""
 
-#: admin/class-wcmp-settings-capabilities-product.php:32
-msgid "Products Capability"
+#: admin/class-wcmp-admin-setup-wizard.php:51
+msgid "Introduction"
 msgstr ""
 
+#: admin/class-wcmp-admin-setup-wizard.php:56
+msgid "Store Setup"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:61
+msgid "Commission Setup"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:71
+msgid "Capability"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:76
+msgid "Ready!"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:89
+msgctxt "enhanced select"
+msgid "No matches found"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:90
+msgctxt "enhanced select"
+msgid "Loading failed"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:91
+msgctxt "enhanced select"
+msgid "Please enter 1 or more characters"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:92
+msgctxt "enhanced select"
+msgid "Please enter %qty% or more characters"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:93
+msgctxt "enhanced select"
+msgid "Please delete 1 character"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:94
+msgctxt "enhanced select"
+msgid "Please delete %qty% characters"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:95
+msgctxt "enhanced select"
+msgid "You can only select 1 item"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:96
+msgctxt "enhanced select"
+msgid "You can only select %qty% items"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:97
+msgctxt "enhanced select"
+msgid "Loading more results&hellip;"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:98
+msgctxt "enhanced select"
+msgid "Searching&hellip;"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:134
+#: admin/class-wcmp-admin-setup-wizard.php:365
+msgid "WC Marketplace &rsaquo; Setup Wizard"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:416
+msgid "Welcome to the WC Marketplace family!"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:417
+msgid ""
+"Thank you for choosing WC Marketplace! This quick setup wizard will help you "
+"configure the basic settings and you will have your marketplace ready in no "
+"time. <strong>It’s completely optional and shouldn’t take longer than five "
+"minutes.</strong>"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:418
+msgid ""
+"If you don't want to go through the wizard right now, you can skip and "
+"return to the WordPress dashboard. Come back anytime if you change your mind!"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:420
+msgid "Let's go!"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:421
+msgid "Not right now"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:439
+msgctxt "slug"
+msgid ""
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:583
+msgid "If checked, automatically vendors commission will disburse."
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:606
+msgid "Vendors can request for commission withdrawal."
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:652
 #: admin/class-wcmp-settings-capabilities-product.php:36
 msgid "Edit Publish Products"
 msgstr ""
 
+#: admin/class-wcmp-admin-setup-wizard.php:655
 #: admin/class-wcmp-settings-capabilities-product.php:36
 msgid "Allow vendors to Edit published products."
 msgstr ""
 
+#: admin/class-wcmp-admin-setup-wizard.php:682
 #: admin/class-wcmp-settings-capabilities-product.php:39
 msgid "Edit Publish Coupons"
 msgstr ""
 
+#: admin/class-wcmp-admin-setup-wizard.php:685
 #: admin/class-wcmp-settings-capabilities-product.php:39
 msgid "Allow Vendor To edit delete published shop coupons."
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:716
+msgid ""
+"Your marketplace is ready. It's time to bring some sellers on your platform "
+"and start your journey. We wish you all the success for your business, you "
+"will be great!"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:722
+msgid "Create your vendor registration form"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:923
+#: admin/class-wcmp-settings-payment.php:28 admin/class-wcmp-settings.php:172
+msgid "Paypal Masspay"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:924
+msgid "Pay via paypal masspay"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:928
+#: admin/class-wcmp-settings-payment.php:28 admin/class-wcmp-settings.php:173
+msgid "Paypal Payout"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:929
+msgid "Pay via paypal payout"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:938
+msgid "Stripe Connect"
+msgstr ""
+
+#: admin/class-wcmp-admin-setup-wizard.php:944
+msgid "PayPal Adaptive"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:39
+msgid "Vendor Dashboard Color Scheme"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:41
+msgid "Background Color"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:41
+msgid "Choose your preferred dashboard background Color."
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:42
+msgid "Menu Background Color"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:42
+msgid "Choose your preferred dashboard menu Background Color."
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:43
+msgid "Menu Color"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:43
+msgid "Choose your preferred dashboard menu Color."
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:44
+msgid "Menu Hover Background Color"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:44
+msgid "Choose your preferred dashboard menu hover Background Color."
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:45
+msgid "Menu Hover Color"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:45
+msgid "Choose your preferred dashboard menu hover color."
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:49
+msgid "Vendor Shop"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:51
+msgid "Vendor Shop Template"
+msgstr ""
+
+#: admin/class-wcmp-settings-vendor-dashboard.php:52
+msgid "Allow vendors to edit the shop template."
+msgstr ""
+
+#: admin/class-wcmp-settings-capabilities-product.php:32
+msgid "Products Capability"
 msgstr ""
 
 #: admin/class-wcmp-settings-capabilities-product.php:43
@@ -551,14 +764,6 @@ msgstr ""
 msgid "Section"
 msgstr ""
 
-#: admin/class-wcmp-settings-payment.php:28 admin/class-wcmp-settings.php:163
-msgid "Paypal Masspay"
-msgstr ""
-
-#: admin/class-wcmp-settings-payment.php:28 admin/class-wcmp-settings.php:164
-msgid "Paypal Payout"
-msgstr ""
-
 #: admin/class-wcmp-settings-payment.php:34
 msgid "Allowed Payment Methods"
 msgstr ""
@@ -569,6 +774,10 @@ msgstr ""
 
 #: admin/class-wcmp-settings-payment.php:40
 msgid "Gateway Charge For "
+msgstr ""
+
+#: admin/class-wcmp-settings-payment.php:40
+msgid " (in percent)"
 msgstr ""
 
 #: admin/class-wcmp-settings-payment.php:59
@@ -720,58 +929,68 @@ msgstr ""
 msgid "Blocked Vendor Notice"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:70 admin/class-wcmp-settings.php:70
+#: admin/class-wcmp-settings.php:72 admin/class-wcmp-settings.php:72
 msgid "Reports"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:73 admin/class-wcmp-settings.php:73
+#: admin/class-wcmp-settings.php:75 admin/class-wcmp-settings.php:75
 msgid "Extensions"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:109
+#: admin/class-wcmp-settings.php:111
 msgid "Help &amp; Support"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:116
+#: admin/class-wcmp-settings.php:118
 msgid "Found a bug?"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:127
+#: admin/class-wcmp-settings.php:130 admin/class-wcmp-settings.php:132
+msgid "Setup wizard"
+msgstr ""
+
+#: admin/class-wcmp-settings.php:133
+msgid ""
+"If you need to access the setup wizard again, please click on the button "
+"below."
+msgstr ""
+
+#: admin/class-wcmp-settings.php:137
 msgid "For more information:"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:128
+#: admin/class-wcmp-settings.php:138
 msgid "WordPress.org Project"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:129
+#: admin/class-wcmp-settings.php:139
 msgid "Github Project"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:130
+#: admin/class-wcmp-settings.php:140
 msgid "View Demo"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:131
+#: admin/class-wcmp-settings.php:141
 msgid "Supported Themes"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:132
+#: admin/class-wcmp-settings.php:142
 msgid "Official Extensions"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:162
+#: admin/class-wcmp-settings.php:171
 msgid "Payment Settings"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:312
+#: admin/class-wcmp-settings.php:314
 #, php-format
 msgid ""
 "<h4 style=\\'border-bottom: 1px solid rgb(215, 211, 211);padding-bottom: "
 "21px;\\'>%s</h4>"
 msgstr ""
 
-#: admin/class-wcmp-settings.php:427
+#: admin/class-wcmp-settings.php:429
 msgid "<br><b>MassPay Sync</b><br>"
 msgstr ""
 
@@ -866,7 +1085,7 @@ msgstr ""
 msgid "Leave Vendor feedback"
 msgstr ""
 
-#: templates/review/rating.php:43
+#: templates/review/rating.php:41
 msgid " No Reviews Yet "
 msgstr ""
 
@@ -906,15 +1125,15 @@ msgstr ""
 msgid "Sorry no knowledgebase found"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products_body.php:74
-msgid "no ratings"
+#: templates/vendor-dashboard/shop-front.php:150
+msgid "Shop Template"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products_body.php:83
+#: templates/single-product/multiple_vendors_products_body.php:64
 msgid "Add to Cart"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products_body.php:86
+#: templates/single-product/multiple_vendors_products_body.php:66
 msgid "Details"
 msgstr ""
 
@@ -922,27 +1141,23 @@ msgstr ""
 msgid " Load More "
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products.php:28
-msgid "Rating"
-msgstr ""
-
-#: templates/single-product/multiple_vendors_products.php:32
+#: templates/single-product/multiple_vendors_products.php:31
 msgid "Price Low To High"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products.php:33
+#: templates/single-product/multiple_vendors_products.php:32
 msgid "Price High To Low"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products.php:34
+#: templates/single-product/multiple_vendors_products.php:33
 msgid "Rating High To Low"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products.php:35
+#: templates/single-product/multiple_vendors_products.php:34
 msgid "Rating Low To High"
 msgstr ""
 
-#: templates/single-product/multiple_vendors_products.php:49
+#: templates/single-product/multiple_vendors_products.php:48
 msgid "Sorry no more offers available"
 msgstr ""
 
@@ -1055,7 +1270,7 @@ msgstr "درآمد های فروشنده"
 msgid "Please Select"
 msgstr "لطفا یک محول انتخاب کنید."
 
-#: classes/class-wcmp-frontend.php:345
+#: classes/class-wcmp-frontend.php:346
 #, fuzzy
 msgid "Please rate the vendor"
 msgstr "لطفا سیاست استرداد را وارد کنید ."
@@ -1070,7 +1285,7 @@ msgstr "نرخ"
 msgid "Your Review"
 msgstr "مشاهده بررسی ها"
 
-#: templates/review/review-link.php:32 templates/review/rating.php:31
+#: templates/review/review-link.php:32 templates/review/rating.php:34
 #: templates/review/rating_vendor_lists.php:32
 #: templates/review/rating-vendor-tab.php:32 templates/review/review.php:37
 #, fuzzy
@@ -1082,7 +1297,7 @@ msgstr "بیرون از "
 msgid "No Rating Yet"
 msgstr "درآمد های فروشنده"
 
-#: dc_product_vendor.php:57
+#: dc_product_vendor.php:86
 msgid ""
 "WCMp plugin requires <a href=\"http://wordpress."
 "org/extend/plugins/woocommerce/\">WooCommerce</a> plugins to be active!"
@@ -1201,12 +1416,12 @@ msgstr "هزینه نقل و انتقال"
 msgid "Transaction Mode"
 msgstr "حالت معامله (واریز پول)"
 
-#: classes/class-wcmp-post-transaction.php:185 classes/class-wcmp-user.php:624
+#: classes/class-wcmp-post-transaction.php:185 classes/class-wcmp-user.php:520
 #: templates/vendor-dashboard/vendor-billing.php:29
 msgid "Direct Bank"
 msgstr "حساب بانکی"
 
-#: classes/class-wcmp-post-transaction.php:186 classes/class-wcmp-user.php:636
+#: classes/class-wcmp-post-transaction.php:186 classes/class-wcmp-user.php:532
 msgid "Bank Account Type"
 msgstr "نوع حساب بانکی"
 
@@ -1214,43 +1429,43 @@ msgstr "نوع حساب بانکی"
 msgid "Bank Account Number"
 msgstr "شماره حساب بانکی"
 
-#: classes/class-wcmp-post-transaction.php:188 classes/class-wcmp-user.php:651
+#: classes/class-wcmp-post-transaction.php:188 classes/class-wcmp-user.php:547
 #: templates/vendor-dashboard/vendor-billing.php:65
 msgid "Bank Name"
 msgstr "نام بانک (لطفا حساب بانک کشاورزی یا صادرات را وارد کنید.)"
 
-#: classes/class-wcmp-post-transaction.php:189 classes/class-wcmp-user.php:658
+#: classes/class-wcmp-post-transaction.php:189 classes/class-wcmp-user.php:554
 #: templates/vendor-dashboard/vendor-billing.php:68
 msgid "ABA Routing Number"
 msgstr "مسیریابی عددی ABA (به جای آن شماره کارت وارد کنید.)"
 
-#: classes/class-wcmp-post-transaction.php:190 classes/class-wcmp-user.php:665
+#: classes/class-wcmp-post-transaction.php:190 classes/class-wcmp-user.php:561
 #: templates/vendor-dashboard/vendor-billing.php:71
 msgid "Bank Address"
 msgstr "آدرس بانک"
 
-#: classes/class-wcmp-post-transaction.php:191 classes/class-wcmp-user.php:672
+#: classes/class-wcmp-post-transaction.php:191 classes/class-wcmp-user.php:568
 #: templates/vendor-dashboard/vendor-billing.php:73
 msgid "Destination Currency"
 msgstr "واحد پول مقصد"
 
-#: classes/class-wcmp-post-transaction.php:192 classes/class-wcmp-user.php:679
+#: classes/class-wcmp-post-transaction.php:192 classes/class-wcmp-user.php:575
 #: templates/vendor-dashboard/vendor-billing.php:76
 msgid "IBAN"
 msgstr "شماره حساب شبا (IBAN)"
 
-#: classes/class-wcmp-post-transaction.php:193 classes/class-wcmp-user.php:686
+#: classes/class-wcmp-post-transaction.php:193 classes/class-wcmp-user.php:582
 #: templates/vendor-dashboard/vendor-billing.php:79
 msgid "Account Holder Name"
 msgstr "نام صاحب حساب"
 
-#: classes/class-wcmp-post-transaction.php:195 classes/class-wcmp-user.php:618
+#: classes/class-wcmp-post-transaction.php:195 classes/class-wcmp-user.php:514
 #: templates/vendor-dashboard/vendor-billing.php:23
 msgid "PayPal Masspay"
 msgstr "اطلاعات بانک مجازی"
 
 #: classes/class-wcmp-post-transaction.php:196
-#: classes/class-wcmp-post-transaction.php:199 classes/class-wcmp-user.php:692
+#: classes/class-wcmp-post-transaction.php:199 classes/class-wcmp-user.php:588
 msgid "PayPal Email"
 msgstr "شماره حساب پی لاین (اگر ندارید لطفا یک حساب پی لاین باز کنید)"
 
@@ -1259,7 +1474,7 @@ msgid "Manual"
 msgstr "دستی"
 
 #: classes/class-wcmp-post-transaction.php:254
-#: classes/class-wcmp-vendor-order-page.php:80 classes/class-wcmp-user.php:884
+#: classes/class-wcmp-vendor-order-page.php:80 classes/class-wcmp-user.php:738
 msgid "Products"
 msgstr "محصولات"
 
@@ -1282,12 +1497,13 @@ msgid "Processing"
 msgstr "در حال پردازش"
 
 #: classes/class-wcmp-post-transaction.php:339
-#: classes/class-wcmp-vendor-dashboard.php:129
+#: classes/class-wcmp-vendor-dashboard.php:127
 msgid "PayPal"
 msgstr "پی لاین"
 
 #: classes/class-wcmp-post-transaction.php:341
-#: classes/class-wcmp-vendor-dashboard.php:131
+#: classes/class-wcmp-vendor-dashboard.php:129
+#: admin/class-wcmp-admin-setup-wizard.php:933
 #: admin/class-wcmp-settings-payment.php:28
 msgid "Direct Bank Transfer"
 msgstr "انتقال مستقیم بانک"
@@ -1354,8 +1570,8 @@ msgstr "جزییات پشتیبانی مشتریان: "
 msgid "Our Return Address :"
 msgstr "آدرس برگشت ما:"
 
-#: classes/class-wcmp-vendor-dashboard.php:112
-#: classes/class-wcmp-vendor-order-page.php:82 classes/class-wcmp-admin.php:115
+#: classes/class-wcmp-vendor-dashboard.php:110
+#: classes/class-wcmp-vendor-order-page.php:82 classes/class-wcmp-admin.php:114
 #: classes/reports/class-wcmp-report-overview.php:269
 #: templates/vendor-dashboard/vendor-orders.php:69
 #: templates/vendor-dashboard/vendor-orders.php:123
@@ -1364,53 +1580,53 @@ msgstr "آدرس برگشت ما:"
 msgid "Date"
 msgstr "تاریخ"
 
-#: classes/class-wcmp-vendor-dashboard.php:113
+#: classes/class-wcmp-vendor-dashboard.php:111
 msgid "Transaction ID"
 msgstr "شناسه تراکنش"
 
-#: classes/class-wcmp-vendor-dashboard.php:115
+#: classes/class-wcmp-vendor-dashboard.php:113
 msgid "Mode"
 msgstr "حالت"
 
-#: classes/class-wcmp-vendor-dashboard.php:116
+#: classes/class-wcmp-vendor-dashboard.php:114
 #: classes/class-wcmp-post-commission.php:59
 #: classes/class-wcmp-post-commission.php:60
 #: classes/class-wcmp-post-commission.php:61
-#: classes/class-wcmp-post-commission.php:63 classes/class-wcmp-product.php:796
-#: classes/class-wcmp-product.php:800 classes/class-wcmp-product.php:1144
-#: classes/class-wcmp-product.php:1154
+#: classes/class-wcmp-post-commission.php:63 classes/class-wcmp-product.php:778
+#: classes/class-wcmp-product.php:782 classes/class-wcmp-product.php:1126
+#: classes/class-wcmp-product.php:1136
 #: admin/class-wcmp-settings-to_do_list.php:161
 #: templates/emails/vendor-new-order.php:25
 msgid "Commission"
 msgstr "کمیسیون"
 
-#: classes/class-wcmp-vendor-dashboard.php:117
+#: classes/class-wcmp-vendor-dashboard.php:115
 #: templates/vendor-dashboard/vendor-transactions.php:54
 msgid "Fee"
 msgstr "دستمزد"
 
-#: classes/class-wcmp-vendor-dashboard.php:118
+#: classes/class-wcmp-vendor-dashboard.php:116
 msgid "Credit"
 msgstr "اعتبار"
 
-#: classes/class-wcmp-vendor-dashboard.php:161
+#: classes/class-wcmp-vendor-dashboard.php:159
 msgid "Sorry. no transaction data is available upon your selection"
 msgstr "با عرض پوزش. اطلاعات تراکنش انتخاب شده شما در دسترس نیست."
 
-#: classes/class-wcmp-vendor-dashboard.php:203
-#: admin/class-wcmp-settings.php:182
+#: classes/class-wcmp-vendor-dashboard.php:201
+#: admin/class-wcmp-settings.php:190
 msgid "Order"
 msgstr "سفارش"
 
-#: classes/class-wcmp-vendor-dashboard.php:204
+#: classes/class-wcmp-vendor-dashboard.php:202
 msgid "Date of Purchase"
 msgstr "تاریخ خرید"
 
-#: classes/class-wcmp-vendor-dashboard.php:205
+#: classes/class-wcmp-vendor-dashboard.php:203
 msgid "Time Of Purchase"
 msgstr "زمان خرید"
 
-#: classes/class-wcmp-vendor-dashboard.php:206
+#: classes/class-wcmp-vendor-dashboard.php:204
 #: admin/class-wcmp-settings-to_do_list.php:80
 #: admin/class-wcmp-settings-to_do_list.php:119
 #: templates/customer_support_details_to_buyer.php:40
@@ -1418,102 +1634,102 @@ msgstr "زمان خرید"
 msgid "Vendor Name"
 msgstr "نام فروشنده"
 
-#: classes/class-wcmp-vendor-dashboard.php:207
+#: classes/class-wcmp-vendor-dashboard.php:205
 msgid "Items bought"
 msgstr "اقلام خریداری شده"
 
-#: classes/class-wcmp-vendor-dashboard.php:208
+#: classes/class-wcmp-vendor-dashboard.php:206
 #: templates/emails/vendor-notify-shipped.php:29
 #: templates/emails/vendor-new-order.php:24
 msgid "Quantity"
 msgstr "مقدار"
 
-#: classes/class-wcmp-vendor-dashboard.php:209
+#: classes/class-wcmp-vendor-dashboard.php:207
 msgid "Discount Used"
 msgstr "تخفیف استفاده شده"
 
-#: classes/class-wcmp-vendor-dashboard.php:210
+#: classes/class-wcmp-vendor-dashboard.php:208
 msgid "Payment System"
 msgstr "سیستم پرداخت"
 
-#: classes/class-wcmp-vendor-dashboard.php:211
+#: classes/class-wcmp-vendor-dashboard.php:209
 #: admin/class-wcmp-settings-capabilities-order.php:41
 msgid "Customer Name"
 msgstr "نام مشتری"
 
-#: classes/class-wcmp-vendor-dashboard.php:212 classes/class-wcmp-user.php:602
+#: classes/class-wcmp-vendor-dashboard.php:210 classes/class-wcmp-user.php:498
 msgid "Customer Email"
 msgstr "ایمیل مشتری"
 
-#: classes/class-wcmp-vendor-dashboard.php:213
+#: classes/class-wcmp-vendor-dashboard.php:211
 msgid "Customer Contact"
 msgstr "تماس مشتری"
 
-#: classes/class-wcmp-vendor-dashboard.php:214
+#: classes/class-wcmp-vendor-dashboard.php:212
 msgid "Billing Address Details"
 msgstr "جزئیات آدرس صورتحساب"
 
-#: classes/class-wcmp-vendor-dashboard.php:215
+#: classes/class-wcmp-vendor-dashboard.php:213
 msgid "Shipping Address Details"
 msgstr "جزئیات آدرس حمل و نقل"
 
-#: classes/class-wcmp-vendor-dashboard.php:216
+#: classes/class-wcmp-vendor-dashboard.php:214
 msgid "Order Status"
 msgstr "وضعیت سفارش"
 
-#: classes/class-wcmp-vendor-dashboard.php:217
+#: classes/class-wcmp-vendor-dashboard.php:215
 #: admin/class-wcmp-settings-payment.php:60
 msgid "Tax"
 msgstr "مالیات"
 
-#: classes/class-wcmp-vendor-dashboard.php:218
-#: classes/class-wcmp-vendor-dashboard.php:388
-#: classes/class-wcmp-vendor-dashboard.php:388
-#: classes/class-wcmp-vendor-dashboard.php:419
+#: classes/class-wcmp-vendor-dashboard.php:216
+#: classes/class-wcmp-vendor-dashboard.php:386
+#: classes/class-wcmp-vendor-dashboard.php:386
+#: classes/class-wcmp-vendor-dashboard.php:414
 #: classes/class-wcmp-vendor-hooks.php:77
-#: classes/class-wcmp-vendor-hooks.php:591
+#: classes/class-wcmp-vendor-hooks.php:595
 #: admin/class-wcmp-settings-capabilities-product.php:46
 #: admin/class-wcmp-settings-payment.php:61
 msgid "Shipping"
 msgstr "حمل و نقل"
 
-#: classes/class-wcmp-vendor-dashboard.php:219
+#: classes/class-wcmp-vendor-dashboard.php:217
 msgid "Commission Share"
 msgstr "اشتراک گذاری کمیسیون"
 
-#: classes/class-wcmp-vendor-dashboard.php:382
-#: classes/class-wcmp-vendor-dashboard.php:382
-#: classes/class-wcmp-vendor-dashboard.php:548
+#: classes/class-wcmp-vendor-dashboard.php:380
+#: classes/class-wcmp-vendor-dashboard.php:380
+#: classes/class-wcmp-vendor-dashboard.php:543
 #: classes/class-wcmp-vendor-hooks.php:138
 msgid "Orders"
 msgstr "سفارشات"
 
-#: classes/class-wcmp-vendor-dashboard.php:573
+#: classes/class-wcmp-vendor-dashboard.php:568
 msgid "No shipping class"
 msgstr "بدون کلاس حمل و نقل"
 
-#: classes/class-wcmp-vendor-dashboard.php:675
-#: classes/class-wcmp-vendor-dashboard.php:677 classes/class-wcmp-user.php:980
-#: classes/class-wcmp-user.php:1015
+#: classes/class-wcmp-vendor-dashboard.php:670
+#: classes/class-wcmp-vendor-dashboard.php:672 classes/class-wcmp-user.php:834
+#: classes/class-wcmp-user.php:869
 msgid "Slug already exists"
 msgstr "پیوند یکتا در حال حاضر از قبل موجود است"
 
-#: classes/class-wcmp-vendor-dashboard.php:687
-#: classes/class-wcmp-vendor-dashboard.php:689
+#: classes/class-wcmp-vendor-dashboard.php:682
+#: classes/class-wcmp-vendor-dashboard.php:684
 msgid "Slug can not be empty"
 msgstr "پیوند یکتا نمی تواند خالی باشد"
 
-#: classes/class-wcmp-vendor-dashboard.php:699
-#: classes/class-wcmp-vendor-dashboard.php:701
+#: classes/class-wcmp-vendor-dashboard.php:694
+#: classes/class-wcmp-vendor-dashboard.php:696
 msgid "Shop Title can not be empty"
 msgstr "عنوان فروشگاه نمی تواند خالی باشد"
 
-#: classes/class-wcmp-vendor-dashboard.php:708
-#: classes/class-wcmp-vendor-dashboard.php:710
+#: classes/class-wcmp-vendor-dashboard.php:703
+#: classes/class-wcmp-vendor-dashboard.php:705
 msgid "Shop Title Update Error"
 msgstr "خطای بروزرسانی عنوان فروشگاه"
 
-#: classes/class-wcmp-capabilities.php:264
+#: classes/class-wcmp-capabilities.php:263
 #: classes/class-wcmp-capabilities.php:285
 msgid "Sold By"
 msgstr "به فروش می رسد توسط"
@@ -1532,8 +1748,8 @@ msgstr "زمینه های اضافی"
 #: classes/class-wcmp-post-notices.php:79
 #: classes/class-wcmp-post-notices.php:81
 #: classes/class-wcmp-post-notices.php:82
-#: classes/class-wcmp-vendor-hooks.php:628
-#: templates/vendor-dashboard/navigation.php:28
+#: classes/class-wcmp-vendor-hooks.php:632
+#: templates/vendor-dashboard/navigation.php:33
 msgid "Announcements"
 msgstr "اطلاعیه ها"
 
@@ -1619,18 +1835,19 @@ msgid "Order ID"
 msgstr "شناسه سفارش"
 
 #: classes/class-wcmp-post-commission.php:386 classes/class-wcmp-report.php:97
-#: admin/class-wcmp-settings.php:181
+#: admin/class-wcmp-settings.php:189
 #: templates/emails/vendor-notify-shipped.php:28
 #: templates/emails/vendor-new-order.php:23 templates/emails/new-product.php:17
 msgid "Product"
 msgstr "محصول"
 
 #: classes/class-wcmp-post-commission.php:387 classes/class-wcmp-report.php:91
-#: classes/class-wcmp-taxonomy.php:37 classes/class-wcmp-product.php:544
-#: classes/class-wcmp-product.php:707 classes/class-wcmp-product.php:734
-#: classes/class-wcmp-product.php:1175 classes/class-wcmp-user.php:296
+#: classes/class-wcmp-taxonomy.php:36 classes/class-wcmp-taxonomy.php:37
+#: classes/class-wcmp-product.php:526 classes/class-wcmp-product.php:689
+#: classes/class-wcmp-product.php:716 classes/class-wcmp-product.php:1157
+#: includes/class-wcmp-install.php:353
 #: admin/class-wcmp-settings-to_do_list.php:160
-#: admin/class-wcmp-settings.php:140
+#: admin/class-wcmp-settings.php:150
 #: templates/single-product/multiple_vendors_products.php:27
 msgid "Vendor"
 msgstr "فروشنده"
@@ -1711,7 +1928,7 @@ msgstr "علامت گذاری به عنوان فرستاده شده"
 msgid "Orders Marked as shipped."
 msgstr "سفارشات علامت گذاری شده به عنوان فرستاده شده."
 
-#: classes/class-wcmp-vendor-order-page.php:238 classes/class-wcmp-user.php:450
+#: classes/class-wcmp-vendor-order-page.php:238 classes/class-wcmp-user.php:346
 msgid "Company Name"
 msgstr "نام شرکت"
 
@@ -1731,7 +1948,7 @@ msgstr "تاریخ تولد"
 msgid "Sex"
 msgstr "جنسیت"
 
-#: classes/class-wcmp-vendor-order-page.php:258 classes/class-wcmp-user.php:504
+#: classes/class-wcmp-vendor-order-page.php:258 classes/class-wcmp-user.php:400
 #: templates/vendor-dashboard/shop-front.php:53
 msgid "Phone"
 msgstr "تلفن"
@@ -1740,49 +1957,49 @@ msgstr "تلفن"
 msgid "Cell Phone"
 msgstr "تلفن تماس"
 
-#: classes/class-wcmp-admin.php:100 classes/class-wcmp-user.php:917
+#: classes/class-wcmp-admin.php:100 classes/class-wcmp-user.php:771
 #: templates/vendor-dashboard/vendor-orders/vendor-orders-item.php:52
 msgid "View"
 msgstr "مشاهده"
 
-#: classes/class-wcmp-admin.php:102 classes/class-wcmp-user.php:923
-#: classes/class-wcmp-user.php:929
+#: classes/class-wcmp-admin.php:102 classes/class-wcmp-user.php:777
+#: classes/class-wcmp-user.php:783
 msgid "Approve"
 msgstr "پذیرفتن"
 
-#: classes/class-wcmp-admin.php:103 classes/class-wcmp-user.php:924
+#: classes/class-wcmp-admin.php:103 classes/class-wcmp-user.php:778
 #: admin/class-wcmp-settings-to_do_list.php:37
 msgid "Reject"
 msgstr "نپذیرفتن"
 
-#: classes/class-wcmp-admin.php:114 classes/class-wcmp-product.php:1341
+#: classes/class-wcmp-admin.php:113 classes/class-wcmp-product.php:1323
 #: admin/class-wcmp-settings-vendor-registration.php:42
 #: admin/class-wcmp-settings-general-customer_support_details.php:34
 #: templates/widget/quick-info.php:31
 msgid "Email"
 msgstr "ایمیل"
 
-#: classes/class-wcmp-admin.php:257
+#: classes/class-wcmp-admin.php:255
 msgid "Vendor Shop Base"
 msgstr "مبنای فروشگاه فروشنده"
 
-#: classes/class-wcmp-admin.php:306
+#: classes/class-wcmp-admin.php:302
 msgid "Frontend  Dashboard"
 msgstr "نمای  داشبورد"
 
-#: classes/class-wcmp-admin.php:309
+#: classes/class-wcmp-admin.php:305
 msgid "Frontend Dashboard"
 msgstr "نمای  داشبورد"
 
-#: classes/class-wcmp-admin.php:318 classes/class-wcmp-admin.php:321
+#: classes/class-wcmp-admin.php:314 classes/class-wcmp-admin.php:317
 msgid "Shop Settings"
 msgstr "تنظیمات فروشگاه"
 
-#: classes/class-wcmp-admin.php:351
+#: classes/class-wcmp-admin.php:347
 msgid "Powered by"
 msgstr "قدرت گرفته توسط"
 
-#: classes/class-wcmp-admin.php:378
+#: classes/class-wcmp-admin.php:373
 msgid ""
 "Announcements are visible only to vendors through the vendor "
 "dashboard(message section). You may use this section to broadcast your "
@@ -1950,18 +2167,18 @@ msgid ""
 msgstr ""
 "صفحه محصول:: %s\n"
 
-#: classes/class-wcmp-report.php:82 admin/class-wcmp-settings.php:62
-#: admin/class-wcmp-settings.php:63
+#: classes/class-wcmp-report.php:82 admin/class-wcmp-settings.php:64
+#: admin/class-wcmp-settings.php:65
 msgid "WCMp"
 msgstr "میدان فروش کالا"
 
 #: classes/class-wcmp-report.php:85 classes/class-wcmp-vendor-hooks.php:127
-#: classes/class-wcmp-vendor-hooks.php:599
+#: classes/class-wcmp-vendor-hooks.php:603
 msgid "Overview"
 msgstr "بررسی اجمالی"
 
 #: classes/class-wcmp-vendor-hooks.php:41
-#: classes/class-wcmp-vendor-hooks.php:633
+#: classes/class-wcmp-vendor-hooks.php:637
 msgid "Dashboard"
 msgstr "داشبورد"
 
@@ -1970,13 +2187,13 @@ msgid "Store Settings"
 msgstr "تنظیمات فروشگاه"
 
 #: classes/class-wcmp-vendor-hooks.php:63
-#: classes/class-wcmp-vendor-hooks.php:575 classes/class-wcmp-product.php:830
-#: classes/class-wcmp-product.php:1211 admin/class-wcmp-settings.php:153
+#: classes/class-wcmp-vendor-hooks.php:579 classes/class-wcmp-product.php:812
+#: classes/class-wcmp-product.php:1193 admin/class-wcmp-settings.php:163
 msgid "Policies"
 msgstr "سیاست ها و خط مشی ها"
 
 #: classes/class-wcmp-vendor-hooks.php:70
-#: classes/class-wcmp-vendor-hooks.php:583
+#: classes/class-wcmp-vendor-hooks.php:587
 msgid "Billing"
 msgstr "حسابرسی (صورت حساب)"
 
@@ -1994,13 +2211,14 @@ msgid "Coupons"
 msgstr "کوپن"
 
 #: classes/class-wcmp-vendor-hooks.php:147
-#: classes/class-wcmp-vendor-hooks.php:609
-#: classes/class-wcmp-vendor-hooks.php:616
+#: classes/class-wcmp-vendor-hooks.php:613
+#: classes/class-wcmp-vendor-hooks.php:620
+#: admin/class-wcmp-admin-setup-wizard.php:66
 msgid "Payments"
 msgstr "مبلغ پرداختی"
 
 #: classes/class-wcmp-vendor-hooks.php:160
-#: classes/class-wcmp-vendor-hooks.php:618
+#: classes/class-wcmp-vendor-hooks.php:622
 msgid "History"
 msgstr "تاریخچه"
 
@@ -2017,42 +2235,38 @@ msgstr "سفارش به عنوان فرستاده شده علامت گذاری �
 msgid "All Options Saved"
 msgstr "همه گزینه های ذخیره شدند"
 
-#: classes/class-wcmp-vendor-hooks.php:565
-#: classes/class-wcmp-vendor-hooks.php:573
-#: classes/class-wcmp-vendor-hooks.php:581
-#: classes/class-wcmp-vendor-hooks.php:589
-msgid "Store Settings "
-msgstr "تنظیمات فروشگاه "
-
-#: classes/class-wcmp-vendor-hooks.php:567
-msgid "Store Front"
-msgstr "نمای فروشگاه"
-
 #: classes/class-wcmp-vendor-hooks.php:569
 #: classes/class-wcmp-vendor-hooks.php:577
 #: classes/class-wcmp-vendor-hooks.php:585
 #: classes/class-wcmp-vendor-hooks.php:593
+msgid "Store Settings "
+msgstr "تنظیمات فروشگاه "
+
+#: classes/class-wcmp-vendor-hooks.php:571
+msgid "Store Front"
+msgstr "نمای فروشگاه"
+
+#: classes/class-wcmp-vendor-hooks.php:573
+#: classes/class-wcmp-vendor-hooks.php:581
+#: classes/class-wcmp-vendor-hooks.php:589
+#: classes/class-wcmp-vendor-hooks.php:597
 #: admin/class-wcmp-settings-to_do_list.php:35
 #: admin/class-wcmp-settings-to_do_list.php:82
 #: admin/class-wcmp-settings-to_do_list.php:121
 msgid "Edit"
 msgstr "ویرایش"
 
-#: classes/class-wcmp-vendor-hooks.php:597
+#: classes/class-wcmp-vendor-hooks.php:601
 msgid "Stats & Reports"
 msgstr "آمار و گزارش ها"
 
-#: classes/class-wcmp-vendor-hooks.php:604
+#: classes/class-wcmp-vendor-hooks.php:608
 msgid "Order &amp; Shipping"
 msgstr "سفارش  &amp; حمل و نقل"
 
-#: classes/class-wcmp-vendor-hooks.php:611
+#: classes/class-wcmp-vendor-hooks.php:615
 msgid "Withdrawals"
 msgstr "برداشت وجه"
-
-#: classes/class-wcmp-taxonomy.php:36
-msgid "WCMp Vendors"
-msgstr "میدان فروش فروشنده ها - "
 
 #: classes/class-wcmp-taxonomy.php:39
 msgid "Search Vendors"
@@ -2070,7 +2284,7 @@ msgstr "منبع فروشنده"
 msgid "Parent Vendor:"
 msgstr "منبع فروشنده:"
 
-#: classes/class-wcmp-taxonomy.php:43 classes/class-wcmp-user.php:950
+#: classes/class-wcmp-taxonomy.php:43 classes/class-wcmp-user.php:804
 msgid "View Vendor"
 msgstr "نمایش فروشنده"
 
@@ -2110,63 +2324,63 @@ msgstr "انتخاب فروشندگان پر استفاده"
 msgid "No vendors found"
 msgstr "فروشنده ای پیدا نشد"
 
-#: classes/class-wcmp-product.php:414
+#: classes/class-wcmp-product.php:396
 msgid "SKU must be unique"
 msgstr "شناسه محصول باید منحصر بفرد باشد"
 
-#: classes/class-wcmp-product.php:546 classes/class-wcmp-product.php:736
+#: classes/class-wcmp-product.php:528 classes/class-wcmp-product.php:718
 msgid "Search for vendor"
 msgstr "جستجو برای فروشنده"
 
-#: classes/class-wcmp-product.php:547 classes/class-wcmp-product.php:732
+#: classes/class-wcmp-product.php:529 classes/class-wcmp-product.php:714
 msgid "Choose a vendor"
 msgstr "انتخاب یک فروشنده"
 
-#: classes/class-wcmp-product.php:750 classes/class-wcmp-product.php:754
-#: classes/class-wcmp-product.php:773 classes/class-wcmp-product.php:777
-#: classes/class-wcmp-product.php:1102 classes/class-wcmp-product.php:1123
+#: classes/class-wcmp-product.php:732 classes/class-wcmp-product.php:736
+#: classes/class-wcmp-product.php:755 classes/class-wcmp-product.php:759
+#: classes/class-wcmp-product.php:1084 classes/class-wcmp-product.php:1105
 #: admin/class-wcmp-settings-payment.php:56
 msgid "Commission Percentage"
 msgstr "درصد کمیسیون"
 
-#: classes/class-wcmp-product.php:761 classes/class-wcmp-product.php:765
+#: classes/class-wcmp-product.php:743 classes/class-wcmp-product.php:747
 msgid "Commission Fixed per transaction"
 msgstr "کمیسیون ثابت در هر معامله"
 
-#: classes/class-wcmp-product.php:784 classes/class-wcmp-product.php:788
-#: classes/class-wcmp-product.php:1113 classes/class-wcmp-product.php:1132
+#: classes/class-wcmp-product.php:766 classes/class-wcmp-product.php:770
+#: classes/class-wcmp-product.php:1095 classes/class-wcmp-product.php:1114
 msgid "Commission Fixed per unit"
 msgstr "کمیسیون ثابت در هر واحد"
 
-#: classes/class-wcmp-product.php:811
+#: classes/class-wcmp-product.php:793
 msgid "Unassign vendor"
 msgstr "عدم تخصیص فروشنده"
 
-#: classes/class-wcmp-product.php:1061 classes/class-wcmp-product.php:1081
+#: classes/class-wcmp-product.php:1043 classes/class-wcmp-product.php:1063
 msgid "Commission (percentage)"
 msgstr "کمیسیون (درصد)"
 
-#: classes/class-wcmp-product.php:1071 classes/class-wcmp-product.php:1089
+#: classes/class-wcmp-product.php:1053 classes/class-wcmp-product.php:1071
 msgid "Commission (fixed) Per Transaction"
 msgstr "کمیسیون (ثابت) هر معامله"
 
-#: classes/class-wcmp-product.php:1323
+#: classes/class-wcmp-product.php:1305
 msgid "Report Abuse"
 msgstr "گزارش تخلف"
 
-#: classes/class-wcmp-product.php:1335 templates/widget/quick-info.php:29
+#: classes/class-wcmp-product.php:1317 templates/widget/quick-info.php:29
 msgid "Name"
 msgstr "نام"
 
-#: classes/class-wcmp-product.php:1347
+#: classes/class-wcmp-product.php:1329
 msgid "Leave a message explaining the reasons for your abuse report"
 msgstr "لطفا پیامی که دلایل شما را برای نوشتن گزارش تخلف شرح دهد بنویسید"
 
-#: classes/class-wcmp-product.php:1354
+#: classes/class-wcmp-product.php:1336
 msgid "Report"
 msgstr "گزارش"
 
-#: classes/class-wcmp-user.php:236
+#: classes/class-wcmp-user.php:235
 #: templates/shortcode/non_vendor_dashboard.php:37
 msgid ""
 "Congratulations! You have successfully applied as a Vendor. Please wait for "
@@ -2176,235 +2390,236 @@ msgstr ""
 "فروشنده، از بخش (تایید هویت فروشنده)، هویت خود را تایید کنید و برای اطلاعات "
 "بیشتر از مدیریت، صبر کنید."
 
-#: classes/class-wcmp-user.php:241
+#: classes/class-wcmp-user.php:240
 msgid "Dashboard - manage your account here"
 msgstr "داشبورد - حساب خود را در اینجا مدیریت کنید"
 
-#: classes/class-wcmp-user.php:284
-msgid "Pending Vendor"
-msgstr "در حال بررسی فروشنده"
-
-#: classes/class-wcmp-user.php:290
-msgid "Rejected Vendor"
-msgstr "فروشنده رد شده"
-
-#: classes/class-wcmp-user.php:404
+#: classes/class-wcmp-user.php:300
 msgid "Vendor Page Title"
 msgstr "عنوان صفحه فروشنده"
 
-#: classes/class-wcmp-user.php:410
+#: classes/class-wcmp-user.php:306
 msgid "Vendor Page Slug"
 msgstr "پیوندهای یکتای صفحه فروشنده"
 
-#: classes/class-wcmp-user.php:416 templates/archive_vendor_info.php:75
+#: classes/class-wcmp-user.php:312 templates/archive_vendor_info.php:86
 #: classes/widgets/class-wcmp-widget-vendor-quick-info.php:173
 msgid "Description"
 msgstr "توضیحات"
 
-#: classes/class-wcmp-user.php:422
+#: classes/class-wcmp-user.php:318
 msgid "Hide address in frontend"
 msgstr "پنهان کردن آدرس در نما"
 
-#: classes/class-wcmp-user.php:429
+#: classes/class-wcmp-user.php:325
 msgid "Hide phone in frontend"
 msgstr "پنهان کردن تلفن در نما"
 
-#: classes/class-wcmp-user.php:436
+#: classes/class-wcmp-user.php:332
 msgid "Hide email in frontend"
 msgstr "پنهان کردن ایمیل در نما"
 
-#: classes/class-wcmp-user.php:443
+#: classes/class-wcmp-user.php:339
 msgid "Hide description in frontend"
 msgstr "پنهان کردن توضیحات در نما"
 
-#: classes/class-wcmp-user.php:456
+#: classes/class-wcmp-user.php:352
 msgid "Address 1"
 msgstr "آدرس 1"
 
-#: classes/class-wcmp-user.php:462
+#: classes/class-wcmp-user.php:358
 msgid "Address 2"
 msgstr "آدرس 2"
 
-#: classes/class-wcmp-user.php:468
+#: classes/class-wcmp-user.php:364
 #: admin/class-wcmp-settings-general-customer_support_details.php:39
 msgid "City"
 msgstr "شهر"
 
-#: classes/class-wcmp-user.php:474
+#: classes/class-wcmp-user.php:370
 msgid "Postcode"
 msgstr "کد پستی"
 
-#: classes/class-wcmp-user.php:480
+#: classes/class-wcmp-user.php:376
 msgid "External store URL"
 msgstr "آدرس اینترنتی فروشگاه خارجی"
 
-#: classes/class-wcmp-user.php:486
+#: classes/class-wcmp-user.php:382
 msgid "External store URL label"
 msgstr "برچسب آدرس فروشگاه اینترنتی خارجی"
 
-#: classes/class-wcmp-user.php:492
+#: classes/class-wcmp-user.php:388
 #: admin/class-wcmp-settings-general-customer_support_details.php:38
 msgid "State"
 msgstr "دولت (ایالت)"
 
-#: classes/class-wcmp-user.php:498
+#: classes/class-wcmp-user.php:394
 #: admin/class-wcmp-settings-general-customer_support_details.php:40
 msgid "Country"
 msgstr "کشور"
 
-#: classes/class-wcmp-user.php:510
+#: classes/class-wcmp-user.php:406
 msgid "Facebook Profile"
 msgstr "پروفایل فیس بوک"
 
-#: classes/class-wcmp-user.php:516
+#: classes/class-wcmp-user.php:412
 msgid "Twitter Profile"
 msgstr "پروفایل توییتر"
 
-#: classes/class-wcmp-user.php:522
+#: classes/class-wcmp-user.php:418
 msgid "Google+ Profile"
 msgstr "پروفایل گوگل"
 
-#: classes/class-wcmp-user.php:528
+#: classes/class-wcmp-user.php:424
 msgid "LinkedIn Profile"
 msgstr "پروفایل LinkedIn"
 
-#: classes/class-wcmp-user.php:534
+#: classes/class-wcmp-user.php:430
 msgid "YouTube Channel"
 msgstr "کانال یوتیوب"
 
-#: classes/class-wcmp-user.php:546
+#: classes/class-wcmp-user.php:442
 msgid "Logo"
 msgstr "لوگو"
 
-#: classes/class-wcmp-user.php:553
+#: classes/class-wcmp-user.php:449
 msgid "Banner"
 msgstr "بنر"
 
-#: classes/class-wcmp-user.php:560
+#: classes/class-wcmp-user.php:456
 msgid "Customer address1"
 msgstr "آدرس مشتری1"
 
-#: classes/class-wcmp-user.php:566
+#: classes/class-wcmp-user.php:462
 msgid "Customer address2"
 msgstr "آدرس مشتری2"
 
-#: classes/class-wcmp-user.php:572
+#: classes/class-wcmp-user.php:468
 msgid "Customer Country"
 msgstr "کشور مشتری"
 
-#: classes/class-wcmp-user.php:578
+#: classes/class-wcmp-user.php:474
 msgid "Customer Return State"
 msgstr "ایالت مراجعت (بازگشتی) مشتری"
 
-#: classes/class-wcmp-user.php:584
+#: classes/class-wcmp-user.php:480
 msgid "Customer Return City"
 msgstr "شهر مراجعت (بازگشتی) مشتری"
 
-#: classes/class-wcmp-user.php:590
+#: classes/class-wcmp-user.php:486
 msgid "Customer Return Zip"
 msgstr "کد پستی مراجعت (بازگشتی) مشتری"
 
-#: classes/class-wcmp-user.php:596
+#: classes/class-wcmp-user.php:492
 msgid "Customer Phone"
 msgstr "تلفن مشتری"
 
-#: classes/class-wcmp-user.php:616 classes/class-wcmp-user.php:628
+#: classes/class-wcmp-user.php:512 classes/class-wcmp-user.php:524
 #: templates/vendor-dashboard/vendor-billing.php:21
 msgid "Payment Mode"
 msgstr "حالت پرداخت"
 
-#: classes/class-wcmp-user.php:638
+#: classes/class-wcmp-user.php:534
 #: templates/vendor-dashboard/vendor-billing.php:58
 msgid "Current"
 msgstr "جاری"
 
-#: classes/class-wcmp-user.php:638
+#: classes/class-wcmp-user.php:534
 #: templates/vendor-dashboard/vendor-billing.php:59
 msgid "Savings"
 msgstr "پس انداز"
 
-#: classes/class-wcmp-user.php:644
+#: classes/class-wcmp-user.php:540
 msgid "Bank Account Name"
 msgstr "شماره حساب بانکی"
 
-#: classes/class-wcmp-user.php:701
+#: classes/class-wcmp-user.php:597
 msgid "Enter the title of Policies Tab"
 msgstr "عنوانی از تب سیاست ها را وارد کنید"
 
-#: classes/class-wcmp-user.php:709 templates/policies_tab.php:24
+#: classes/class-wcmp-user.php:605 templates/policies_tab.php:24
 #: templates/vendor-dashboard/vendor-policy.php:28
 msgid "Cancellation/Return/Exchange Policy"
 msgstr "لغو / بازگشت / سیاست مبادله"
 
-#: classes/class-wcmp-user.php:717
+#: classes/class-wcmp-user.php:613
 #: admin/class-wcmp-settings-general-policies.php:50
 #: templates/policies_tab.php:25
 #: templates/vendor-dashboard/vendor-policy.php:32
 msgid "Refund Policy"
 msgstr "سیاست استرداد (پس دادن)"
 
-#: classes/class-wcmp-user.php:725
+#: classes/class-wcmp-user.php:621
 #: admin/class-wcmp-settings-general-policies.php:40
 #: templates/policies_tab.php:26
 #: templates/vendor-dashboard/vendor-policy.php:36
 msgid "Shipping Policy"
 msgstr "سیاست حمل و نقل"
 
-#: classes/class-wcmp-user.php:733 templates/vendor-dashboard/shop-front.php:49
+#: classes/class-wcmp-user.php:629 templates/vendor-dashboard/shop-front.php:49
 msgid "Message to Buyers"
 msgstr "پیام به خریداران"
 
-#: classes/class-wcmp-user.php:740
+#: classes/class-wcmp-user.php:636
 msgid "Is Message to buyer Hide From Users"
 msgstr "مخفی کردن پیام خریداران از کاربران"
 
-#: classes/class-wcmp-user.php:750
+#: classes/class-wcmp-user.php:646
 msgid "Commission Amount"
 msgstr "مقدار کمیسیون"
 
-#: classes/class-wcmp-user.php:784
+#: classes/class-wcmp-user.php:652
 msgid "Withhold Tax"
 msgstr "منع کردن مالیات"
 
-#: classes/class-wcmp-user.php:791
+#: classes/class-wcmp-user.php:659
 msgid "Withhold Shipping"
 msgstr "منع کردن حمل و نقل (دریایی)"
 
-#: classes/class-wcmp-user.php:798
+#: classes/class-wcmp-user.php:666
 msgid "Block this vendor with all items"
 msgstr "مسدود کردن این فروشنده با همه آیتم ها"
 
-#: classes/class-wcmp-user.php:810 classes/class-wcmp-user.php:826
+#: classes/class-wcmp-user.php:678 classes/class-wcmp-user.php:694
 msgid "Commission Percentage(%)"
 msgstr "درصد کمیسیون (%)"
 
-#: classes/class-wcmp-user.php:816
+#: classes/class-wcmp-user.php:684
 msgid "Commission(fixed), Per Transaction"
 msgstr "کمیسیون (ثابت)، هر معامله"
 
-#: classes/class-wcmp-user.php:832
+#: classes/class-wcmp-user.php:700
 msgid "Commission Fixed Per Unit"
 msgstr "کمیسیون ثابت در هر واحد"
 
-#: classes/class-wcmp-user.php:970
+#: classes/class-wcmp-user.php:824
 msgid "Slug Already Exists"
 msgstr "پیوند یکتا در حال حاضر از قبل موجود است"
 
-#: classes/class-wcmp-user.php:1009
+#: classes/class-wcmp-user.php:863
 msgid "Title Update Error"
 msgstr "خطای بروزرسانی عنوان"
 
-#: classes/class-wcmp-user.php:1073
+#: classes/class-wcmp-user.php:927
 msgid "Select a Vendor."
 msgstr "انتخاب یک فروشنده."
 
-#: includes/class-wcmp-install.php:102
+#: includes/class-wcmp-install.php:113
 #: admin/class-wcmp-settings-vendor-general.php:40
+#: admin/class-wcmp-settings.php:182
 msgid "Vendor Dashboard"
 msgstr "داشبورد فروشنده"
 
-#: includes/wcmp-core-functions.php:556 admin/class-wcmp-settings.php:71
-#: admin/class-wcmp-settings.php:71
+#: includes/class-wcmp-install.php:341
+msgid "Pending Vendor"
+msgstr "در حال بررسی فروشنده"
+
+#: includes/class-wcmp-install.php:347
+msgid "Rejected Vendor"
+msgstr "فروشنده رد شده"
+
+#: includes/wcmp-core-functions.php:387 admin/class-wcmp-settings.php:73
+#: admin/class-wcmp-settings.php:73
 msgid "Settings"
 msgstr "تنظیمات"
 
@@ -2589,18 +2804,22 @@ msgstr "آگاه سازی ها فعال / غیر فعال:"
 msgid "Page Settings Updated"
 msgstr "بروزرسانی تنظیمات صفحه"
 
+#: admin/class-wcmp-admin-setup-wizard.php:632
 #: admin/class-wcmp-settings-capabilities-product.php:34
 msgid "Submit Products"
 msgstr "ثبت کردن محصولات"
 
+#: admin/class-wcmp-admin-setup-wizard.php:635
 #: admin/class-wcmp-settings-capabilities-product.php:34
 msgid "Allow vendors to submit products for approval/publishing."
 msgstr "به فروشندگان همیشه اجازه نشر/چاپ محصولات را می دهد."
 
+#: admin/class-wcmp-admin-setup-wizard.php:642
 #: admin/class-wcmp-settings-capabilities-product.php:35
 msgid "Publish Products"
 msgstr "انتشار محصولات"
 
+#: admin/class-wcmp-admin-setup-wizard.php:645
 #: admin/class-wcmp-settings-capabilities-product.php:35
 msgid ""
 "If checked, products uploaded by vendors will be directly published without "
@@ -2609,20 +2828,24 @@ msgstr ""
 "اگر علامت زده شود، محصولات آپلود شده توسط فروشندگان به طور مستقیم و بدون "
 "تایید مدیر منتشر می شود."
 
+#: admin/class-wcmp-admin-setup-wizard.php:662
 #: admin/class-wcmp-settings-capabilities-product.php:37
 #: templates/shortcode/vendor_coupon.php:37
 #: templates/shortcode/vendor_coupon.php:40
 msgid "Submit Coupons"
 msgstr "ارسال کوپن ها"
 
+#: admin/class-wcmp-admin-setup-wizard.php:665
 #: admin/class-wcmp-settings-capabilities-product.php:37
 msgid "Allow vendors to create coupons."
 msgstr "همیشه فروشنده کوپن بسازد."
 
+#: admin/class-wcmp-admin-setup-wizard.php:672
 #: admin/class-wcmp-settings-capabilities-product.php:38
 msgid "Publish Coupons"
 msgstr "انتشار کوپن ها"
 
+#: admin/class-wcmp-admin-setup-wizard.php:675
 #: admin/class-wcmp-settings-capabilities-product.php:38
 msgid ""
 "If checked, coupons added by vendors will be directly published without "
@@ -2631,10 +2854,12 @@ msgstr ""
 "اگر علامت زده شود، کوپن اضافه شده توسط فروشنده به صورت مستقیم و بدون تایید "
 "مدیر منتشر می شود."
 
+#: admin/class-wcmp-admin-setup-wizard.php:692
 #: admin/class-wcmp-settings-capabilities-product.php:40
 msgid "Upload Media Files"
 msgstr "آپلود فایل های رسانه ای"
 
+#: admin/class-wcmp-admin-setup-wizard.php:695
 #: admin/class-wcmp-settings-capabilities-product.php:40
 msgid "Allow vendors to upload media files."
 msgstr "همیشه فروشنده فایلهای رسانه ای آپلود کند."
@@ -2937,36 +3162,36 @@ msgstr "محصولات مرتبط از قروشگاه فروشندگان"
 msgid "Frontend Settings Updated"
 msgstr "بروزرسانی تنظیمات ظاهر"
 
-#: admin/class-wcmp-settings.php:72 admin/class-wcmp-settings.php:72
+#: admin/class-wcmp-settings.php:74 admin/class-wcmp-settings.php:74
 msgid "To-do List"
 msgstr "لیست برای انجام کار"
 
-#: admin/class-wcmp-settings.php:139 admin/class-wcmp-settings.php:152
+#: admin/class-wcmp-settings.php:149 admin/class-wcmp-settings.php:162
 #: templates/vendor-dashboard/shop-front.php:26
 msgid "General"
 msgstr "عمومی"
 
-#: admin/class-wcmp-settings.php:142
+#: admin/class-wcmp-settings.php:152
 msgid "Frontend"
 msgstr "ظاهر"
 
-#: admin/class-wcmp-settings.php:143
+#: admin/class-wcmp-settings.php:153
 msgid "Payment"
 msgstr "پرداخت"
 
-#: admin/class-wcmp-settings.php:144
+#: admin/class-wcmp-settings.php:154
 msgid "Capabilities"
 msgstr "قابلیت ها"
 
-#: admin/class-wcmp-settings.php:154
+#: admin/class-wcmp-settings.php:164
 msgid "Customer Support"
 msgstr "پشتیبانی مشتریان"
 
-#: admin/class-wcmp-settings.php:183
+#: admin/class-wcmp-settings.php:191
 msgid "Miscellaneous"
 msgstr "متفرقه"
 
-#: admin/class-wcmp-settings.php:191
+#: admin/class-wcmp-settings.php:199
 msgid ""
 "Configure the \"Product Add\" page for vendors. Choose the features you want "
 "to show to your vendors."
@@ -2974,16 +3199,16 @@ msgstr ""
 "صفحه  \"Product Add\" را برای فروشندگان پیکربندی کنید. ویژگی هایی که "
 "میخواهید به فروشندگان نمایش دهید را انتخاب کنید."
 
-#: admin/class-wcmp-settings.php:192
+#: admin/class-wcmp-settings.php:200
 msgid "Configure which vendor details you want to reveal to your users"
 msgstr "جزئیاتی از فروشنده که می خواهید برای کاربران فاش شود را پیکربندی کنید."
 
-#: admin/class-wcmp-settings.php:428
+#: admin/class-wcmp-settings.php:430
 #, php-format
 msgid "Next MassPay cron @ %s"
 msgstr "MassPay بعدی cron @ %s"
 
-#: admin/class-wcmp-settings.php:429
+#: admin/class-wcmp-settings.php:431
 #, php-format
 msgid "<br>Now the time is %s"
 msgstr "<br>اکنون زمان %s  است"
@@ -3072,7 +3297,7 @@ msgstr "جزئیات پشتیبانی محصول و آدرس بازگشت محص
 msgid "Message"
 msgstr "پیام"
 
-#: templates/archive_vendor_info.php:29
+#: templates/archive_vendor_info.php:47
 msgid "External Store URL"
 msgstr "آدرس فروشگاه خارجی"
 
@@ -3611,7 +3836,7 @@ msgstr "درخواست های کمیسیون فروشنده ها"
 msgid "[{site_title}] Commission Payment Request"
 msgstr "[{site_title}] درخواست پرداخت کمیسیون"
 
-#: templates/review/rating.php:30 templates/review/rating_vendor_lists.php:31
+#: templates/review/rating.php:33 templates/review/rating_vendor_lists.php:31
 #: templates/review/rating-vendor-tab.php:31
 #, php-format
 msgid "Rated %s out of 5"
@@ -3791,7 +4016,7 @@ msgstr "اطلاعات بانکی خود را وارد کنید"
 
 #: templates/vendor-dashboard/vendor-billing.php:87
 #: templates/vendor-dashboard/vendor-policy.php:71
-#: templates/vendor-dashboard/shop-front.php:154
+#: templates/vendor-dashboard/shop-front.php:172
 msgid "Save Options"
 msgstr "ذخیره گزینه"
 
@@ -3815,11 +4040,11 @@ msgstr "درخواست برداشت وجه"
 msgid "Your next scheduled payment date is on:"
 msgstr "تاریخ برنامه ریزی شده پرداخت شما است:"
 
-#: templates/vendor-dashboard/navigation.php:23
+#: templates/vendor-dashboard/navigation.php:28
 msgid "Shop Name"
 msgstr "نام فروشگاه"
 
-#: templates/vendor-dashboard/navigation.php:26
+#: templates/vendor-dashboard/navigation.php:31
 msgid "Shop"
 msgstr "فروشگاه"
 
@@ -3909,7 +4134,7 @@ msgid "Address*"
 msgstr "نشانی*"
 
 #: templates/vendor-dashboard/vendor-policy.php:69
-#: templates/vendor-dashboard/shop-front.php:152
+#: templates/vendor-dashboard/shop-front.php:170
 msgid "* This field is required, you must fill some information."
 msgstr "* این فیلد ضروری است، شما باید با کمی اطلاعات آن را پر کنید."
 
@@ -4047,7 +4272,7 @@ msgstr "رسانه های اجتماعی"
 msgid "Enter your Social Media profile URL below:"
 msgstr "آدرس رسانه های اجتماعی خود را در زیر وارد کنید:"
 
-#: templates/single-product/multiple_vendors_products.php:29
+#: templates/single-product/multiple_vendors_products.php:28
 #: templates/emails/vendor-notify-shipped.php:30
 msgid "Price"
 msgstr "قیمت"

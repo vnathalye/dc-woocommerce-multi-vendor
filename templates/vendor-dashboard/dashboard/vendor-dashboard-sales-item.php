@@ -52,9 +52,9 @@ foreach ($sale_orders as $sale_order) {
     <tr>
         <td align="center" >#<?php echo $sale_order->order_id; ?> </td>
         <td align="center" ><?php echo implode(', ', $sku) ?> </td>
-        <td align="center" class="no_display" ><?php echo get_woocommerce_currency_symbol(); ?><?php echo number_format($item_total, 2) ?></td>
-        <td align="center" class="no_display" ><?php echo get_woocommerce_currency_symbol(); ?><?php echo number_format($discount, 2); ?> </td>
-        <td align="center" ><?php echo get_woocommerce_currency_symbol(); ?><?php echo number_format($vendor_earnings, 2); ?></td>
+        <td align="center" class="no_display" ><?php echo wc_price($item_total); ?></td>
+        <td align="center" class="no_display" ><?php echo wc_price($discount); ?> </td>
+        <td align="center" ><?php echo wc_price($vendor_earnings); ?></td>
     </tr>
     <?php
 }

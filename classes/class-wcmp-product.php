@@ -18,15 +18,13 @@ class WCMp_Product {
 
     public function __construct() {
         global $WCMp;
-        $general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
-
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_vendor_tab'), 30);
         add_action('woocommerce_product_data_panels', array(&$this, 'output_vendor_tab'), 30);
         add_action('save_post', array(&$this, 'process_vendor_data'));
         $settings_policies = get_option('wcmp_general_policies_settings_name');
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
             if ((isset($settings_policies['is_cancellation_on']) || isset($settings_policies['is_refund_on']) || isset($settings_policies['is_shipping_on'])) && (isset($settings_policies['is_cancellation_product_level_on']) || isset($settings_policies['is_refund_product_level_on']) || isset($settings_policies['is_shipping_product_level_on']))) {
-                $current_user_id = get_current_user_id();
+                $current_user_id = get_current_vendor_id();
                 if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']) || isset($settings_policies['can_vendor_edit_refund_policy']) || isset($settings_policies['can_vendor_edit_shipping_policy']) )) || current_user_can('manage_woocommerce')) {
                     add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_policies_tab'), 30);
                     add_action('woocommerce_product_data_panels', array(&$this, 'output_policies_tab'), 30);
@@ -71,8 +69,11 @@ class WCMp_Product {
             add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
-            add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
+            if(!defined('WCMP_HIDE_MULTIPLE_PRODUCT')){
+                add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
+            }
         }
+        add_action('woocommerce_product_query_tax_query', array(&$this, 'wcmp_filter_product_category'), 10);
         $this->vendor_product_restriction();
     }
 
@@ -254,23 +255,6 @@ class WCMp_Product {
         global $WCMp, $wpdb;
         $post = get_post($post_id);
         if ($post->post_type == 'product') {
-            /* $results2 = $wpdb->get_results("select * from {$wpdb->prefix}wcmp_products_map where product_title = 'Auto Draft' ");
-              if(count($results2) > 0) {
-              $product_ids = $results2[0]->product_ids;
-              if(!empty($product_ids)) {
-              $pids_arr = explode(',',$product_ids);
-              if(count($pids_arr) > 0) {
-              foreach ( $pids_arr as $p_id ) {
-              $mydpost = get_post($p_id);
-              if($mydpost) {
-              wp_delete_post($p_id, true);
-              }
-              }
-              }
-              }
-              } */
-
-
             if (isset($post->post_title)) {
                 $searchstr = $post->post_title;
                 $searchstr = str_replace("'", "", $searchstr);
@@ -342,7 +326,7 @@ class WCMp_Product {
                 $current_shipping_class = false;
             }
             $product_shipping_class = get_terms('product_shipping_class', array('hide_empty' => 0));
-            $current_user_id = get_current_user_id();
+            $current_user_id = get_current_vendor_id();
             $option = '<option value="-1">Same as parent</option>';
 
             if (!empty($product_shipping_class)) {
@@ -419,7 +403,7 @@ class WCMp_Product {
         global $WCMp;
         if (is_ajax())
             return;
-        $current_user_id = get_current_user_id();
+        $current_user_id = get_current_vendor_id();
         if (is_user_wcmp_vendor($current_user_id)) {
             add_filter('manage_product_posts_columns', array($this, 'remove_featured_star'), 15);
             if (isset($_GET['post'])) {
@@ -428,7 +412,7 @@ class WCMp_Product {
 
                     if (in_array(get_post_status($current_post_id), array('draft', 'publish', 'pending'))) {
                         $product_vendor_obj = get_wcmp_product_vendors($current_post_id);
-                        if ($product_vendor_obj->id != $current_user_id) {
+                        if ($product_vendor_obj && $product_vendor_obj->id != $current_user_id) {
                             if (isset($_GET['action']) && $_GET['action'] == 'duplicate_product') {
                                 
                             } else {
@@ -477,7 +461,7 @@ class WCMp_Product {
         $post_type = 'product';
         $taxonomy = 'dc_vendor_shop';
 
-        if (!is_user_wcmp_vendor(get_current_user_id())) {
+        if (!is_user_wcmp_vendor(get_current_vendor_id())) {
             if ('product' == $typenow) {
                 if ($typenow == $post_type) {
                     $selected = isset($_GET[$taxonomy]) ? $_GET[$taxonomy] : '';
@@ -506,7 +490,7 @@ class WCMp_Product {
 
         $product_id = $product->get_id();
 
-        $current_user_id = get_current_user_id();
+        $current_user_id = get_current_vendor_id();
         if (!is_user_wcmp_vendor($current_user_id)) {
 
             if (isset($_REQUEST['choose_vendor_bulk']) && !empty($_REQUEST['choose_vendor_bulk'])) {
@@ -537,7 +521,7 @@ class WCMp_Product {
     function add_product_vendor() {
         global $WCMp;
 
-        $current_user_id = get_current_user_id();
+        $current_user_id = get_current_vendor_id();
         if (!is_user_wcmp_vendor($current_user_id)) {
             ?>
             <label>
@@ -664,7 +648,7 @@ class WCMp_Product {
      */
     function on_all_status_transitions($new_status, $old_status, $post) {
         if ($new_status != $old_status && $post->post_status == 'pending') {
-            $current_user = get_current_user_id();
+            $current_user = get_current_vendor_id();
             if ($current_user)
                 $current_user_is_vendor = is_user_wcmp_vendor($current_user);
             if ($current_user_is_vendor) {
@@ -674,7 +658,7 @@ class WCMp_Product {
                 $email_admin->trigger($post->post_id, $post, $vendor);
             }
         } else if ($new_status != $old_status && $post->post_status == 'publish') {
-            $current_user = get_current_user_id();
+            $current_user = get_current_vendor_id();
             if ($current_user)
                 $current_user_is_vendor = is_user_wcmp_vendor($current_user);
             if ($current_user_is_vendor) {
@@ -718,7 +702,7 @@ class WCMp_Product {
         $html = '';
         $vendor = get_wcmp_product_vendors($post->ID);
         $commission_per_poduct = get_post_meta($post->ID, '_commission_per_product', true);
-        $current_user = get_current_user_id();
+        $current_user = get_current_vendor_id();
         if ($current_user)
             $current_user_is_vendor = is_user_wcmp_vendor($current_user);
         $html .= '<div class="options_group" > <table class="form-field form-table">';
@@ -810,7 +794,7 @@ class WCMp_Product {
             if (current_user_can('manage_options')) {
                 $html .= '<tr valign="top"><td scope="row"><input type="button" class="delete_vendor_data button" value="' . __("Unassign vendor", 'dc-woocommerce-multi-vendor') . '" /></td></tr>';
 
-                wp_localize_script('commission_js', 'unassign_vendors_data', array('current_product_id' => $post->ID, 'current_user_id' => get_current_user_id()));
+                wp_localize_script('commission_js', 'unassign_vendors_data', array('current_product_id' => $post->ID, 'current_user_id' => get_current_vendor_id()));
             }
         }
 
@@ -838,7 +822,7 @@ class WCMp_Product {
         $_wcmp_refund_policy = get_post_meta($post->ID, '_wcmp_refund_policy', true) ? get_post_meta($post->ID, '_wcmp_refund_policy', true) : '';
         $_wcmp_shipping_policy = get_post_meta($post->ID, '_wcmp_shipping_policy', true) ? get_post_meta($post->ID, '_wcmp_shipping_policy', true) : '';
         $settings_policies = get_option('wcmp_general_policies_settings_name');
-        $current_user_id = get_current_user_id();
+        $current_user_id = get_current_vendor_id();
         ?>
         <div id="set_policies" class="panel woocommerce_options_panel">
             <div class="options_group" >
@@ -1053,7 +1037,7 @@ class WCMp_Product {
 
         if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage') {
 
-            if (is_user_wcmp_vendor(get_current_user_id())) {
+            if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
 											<td>
@@ -1094,7 +1078,7 @@ class WCMp_Product {
             }
         } else if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage_qty') {
 
-            if (is_user_wcmp_vendor(get_current_user_id())) {
+            if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
 											<td>
@@ -1136,7 +1120,7 @@ class WCMp_Product {
 									</tr';
             }
         } else {
-            if (is_user_wcmp_vendor(get_current_user_id())) {
+            if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission) && !empty($commission)) {
                     $html .= '<tr>
 											<td>
@@ -1251,7 +1235,7 @@ class WCMp_Product {
         global $pagenow;
         if (is_admin()) {
             if (isset($_GET['post_type']) && $_GET['post_type'] == 'product' && $pagenow == 'edit.php') {
-                $current_user_id = get_current_user_id();
+                $current_user_id = get_current_vendor_id();
                 $current_user = get_user_by('id', $current_user_id);
                 if (!in_array('dc_vendor', $current_user->roles))
                     return $query;
@@ -1394,6 +1378,23 @@ class WCMp_Product {
             }
         }
         $q->set('post__not_in', array_unique($exclude_products));
+    }
+    /**
+     * Filter product on select category from WCMp_Widget_Vendor_Product_Categories widget
+     * @param array $tax_query
+     * @return array
+     */
+    public function wcmp_filter_product_category($tax_query){
+        $category = filter_input(INPUT_GET, 'category');
+        if (!is_tax('dc_vendor_shop') || is_null($category)) {
+            return $tax_query;
+        }
+        $tax_query[] = array(
+            'taxonomy' => 'product_cat',
+            'field' => 'slug',
+            'terms' => $category
+        );
+        return $tax_query;
     }
 
 }

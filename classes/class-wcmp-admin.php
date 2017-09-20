@@ -381,8 +381,7 @@ class WCMp_Admin {
     }
 
     public function wcmp_admin_menu() {
-        $user = new WP_User(get_current_user_id());
-        if (!empty($user->roles) && is_array($user->roles) && in_array('dc_vendor', $user->roles)) {
+        if(is_user_wcmp_vendor(get_current_vendor_id())){
             remove_menu_page('edit.php');
             remove_menu_page('edit-comments.php');
             remove_menu_page('tools.php');
@@ -501,7 +500,7 @@ class WCMp_Admin {
             wp_enqueue_style('admin-extensions', $WCMp->plugin_url . 'assets/admin/css/admin-extensions' . $suffix . '.css', array(), $WCMp->version);
         endif;
 
-        if (is_user_wcmp_vendor(get_current_user_id())) {
+        if (is_user_wcmp_vendor(get_current_vendor_id())) {
             wp_enqueue_script('wcmp_vendor_js', $WCMp->plugin_url . 'assets/admin/js/vendor' . $suffix . '.js', array('jquery', 'woocommerce_admin'), $WCMp->version, true);
         }
     }
@@ -549,7 +548,7 @@ class WCMp_Admin {
      */
     public function wcmp_remove_wp_dashboard_widget() {
         global $wp_meta_boxes;
-        if (is_user_wcmp_vendor(get_current_user_id())) {
+        if (is_user_wcmp_vendor(get_current_vendor_id())) {
             unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_activity']);
             unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_right_now']);
             unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_quick_press']);

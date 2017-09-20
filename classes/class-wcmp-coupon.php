@@ -92,10 +92,10 @@ class WCMp_Coupon {
 	public function filter_coupon_list( $request ) {
 		global $typenow;
 
-		$current_user = wp_get_current_user();
+		$current_user = get_current_vendor_id();
 
 		if ( is_admin() && is_user_wcmp_vendor($current_user) && 'shop_coupon' == $typenow ) {
-				$request[ 'author' ] = $current_user->ID;
+				$request[ 'author' ] = $current_user;
 		}
 
 		return $request;
@@ -106,12 +106,12 @@ class WCMp_Coupon {
    * Get vendor coupon count
    */
 	public function vendor_count_coupons( $counts, $type, $perm ) {
-		$current_user = wp_get_current_user();
+		$current_user = get_current_vendor_id();
 
 		if ( is_user_wcmp_vendor($current_user) && 'shop_coupon' == $type ) {
 				$args = array(
 						'post_type'     => $type,
-						'author'    => $current_user->ID
+						'author'    => $current_user
 				);
 
 				/**
@@ -138,7 +138,7 @@ class WCMp_Coupon {
 	 * @return void
 	*/	
 	function json_filter_report_products($products) {
-		$current_userid = get_current_user_id();
+		$current_userid = get_current_vendor_id();
 		
 		$filtered_product = array();
 

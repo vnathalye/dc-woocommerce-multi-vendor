@@ -465,7 +465,7 @@ class WCMp_Commission {
                 break;
 
             case '_commission_amount':
-                echo get_woocommerce_currency_symbol() . number_format($data, 2);
+                echo wc_price($data);
                 break;
 
             case '_paid_status':

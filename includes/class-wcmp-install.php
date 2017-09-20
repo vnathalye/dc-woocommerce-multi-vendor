@@ -16,25 +16,21 @@ if (!defined('ABSPATH')) {
 class WCMp_Install {
 
     public function __construct() {
-        global $WCMp, $wp_rewrite;
         if (!get_option('dc_product_vendor_plugin_db_version')) {
             $this->save_default_plugin_settings();
         }
-        $this->wcmp_plugin_tables_install();
+        if(!get_option('wcmp_table_created')){
+            $this->wcmp_plugin_tables_install();
+        }
         $this->remove_other_vendors_plugin_role();
         self::register_user_role();
-        if (class_exists('WCMp')) {
-            if (!get_option("dc_product_vendor_plugin_page_install")) {
-                $this->wcmp_product_vendor_plugin_create_pages();
-                update_option("dc_product_vendor_plugin_page_install", 1);
-            }
-            $this->do_wcmp_migrate();
-            if(isset($wp_rewrite)){
-                $WCMp->load_class('endpoints');
-                $endpoints = new WCMp_Endpoints();
-                $endpoints->add_wcmp_endpoints();
-                flush_rewrite_rules();
-            }
+        if (!get_option("dc_product_vendor_plugin_page_install")) {
+            $this->wcmp_product_vendor_plugin_create_pages();
+            update_option("dc_product_vendor_plugin_page_install", 1);
+        }
+        $this->do_wcmp_migrate();
+        if(!get_option('dc_product_vendor_plugin_installed') && apply_filters('wcmp_enable_setup_wizard', true)){
+            set_transient( '_wcmp_activation_redirect', 1, 30 );
         }
     }
 
@@ -107,7 +103,6 @@ class WCMp_Install {
      * @return void
      */
     function wcmp_product_vendor_plugin_create_pages() {
-        global $WCMp;
 
         // WCMp Plugin pages
         $is_trash = wp_trash_post(get_option('wcmp_product_vendor_vendor_dashboard_page_id'));
@@ -297,6 +292,7 @@ class WCMp_Install {
         foreach ($create_tables_query as $create_table_query) {
             $wpdb->query($create_table_query);
         }
+        update_option('wcmp_table_created', true);
     }
 
     /**
@@ -305,8 +301,7 @@ class WCMp_Install {
      * @global object $wpdb
      */
     function do_wcmp_migrate() {
-        global $WCMp, $wpdb;
-        $previous_plugin_version = get_option('dc_product_vendor_plugin_db_version');
+        global $wpdb;
         #region map existing product in product map table
         if (!get_option('is_wcmp_product_sync_with_multivendor')) {
             $args_multi_vendor = array(
@@ -333,7 +328,6 @@ class WCMp_Install {
             update_option('is_wcmp_product_sync_with_multivendor', 1);
         }
         #endregion
-        do_wcmp_data_migrate($previous_plugin_version, $WCMp->version);
     }
 
     /**

@@ -79,7 +79,7 @@ if ($vendor && $order_id) {
                             $coupon = new WC_Coupon($coupon_code);
                             $coupon_post = get_post($coupon->get_id());
                             $author_id = $coupon_post->post_author;
-                            if (get_current_user_id() == $author_id) {
+                            if (get_current_vendor_id() == $author_id) {
                                 $coupon_used = true;
                                 echo '<td>"' . $coupon_code . '"</td>';
                             }

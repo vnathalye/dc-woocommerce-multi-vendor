@@ -1,17 +1,22 @@
 <?php
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The template for displaying vendor dashboard nav
+ * Override this template by copying it to yourtheme/dc-product-vendor/vendor-dashboard/navigation.php
+ *
+ * @author 	WC Marketplace
+ * @package 	WCMp/Templates
+ * @version   2.4.5
  */
-
 if (!defined('ABSPATH')) {
     exit;
 }
 global $WCMp;
 
 sksort($nav_items, 'position', true);
-$vendor = get_wcmp_vendor(get_current_user_id());
+$vendor = get_wcmp_vendor(get_current_vendor_id());
+if(!$vendor){
+    return;
+}
 if (!$vendor->image) {
     $vendor->image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
 }
@@ -20,7 +25,7 @@ do_action('wcmp_before_vendor_dashboard_navigation');
 <div class="wcmp_side_menu">
     <div class="wcmp_top_logo_div"> <img src="<?php echo $vendor->image; ?>" alt="vendordavatar">
         <h3>
-            <?php echo get_user_meta(get_current_user_id(), '_vendor_page_title', true) ? get_user_meta(get_current_user_id(), '_vendor_page_title', true) : __('Shop Name', 'dc-woocommerce-multi-vendor'); ?>
+            <?php echo get_user_meta(get_current_vendor_id(), '_vendor_page_title', true) ? get_user_meta(get_current_vendor_id(), '_vendor_page_title', true) : __('Shop Name', 'dc-woocommerce-multi-vendor'); ?>
         </h3>
         <ul>
             <li><a target="_blank" href="<?php echo apply_filters('wcmp_vendor_shop_permalink', $vendor->permalink); ?>"><?php _e('Shop', 'dc-woocommerce-multi-vendor'); ?></a> </li>

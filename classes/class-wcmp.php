@@ -79,7 +79,7 @@ final class WCMp {
      * Initialize plugin on WP init
      */
     function init() {
-        if (is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id()) || is_user_wcmp_vendor(get_current_user_id())) {
+        if (is_user_wcmp_pending_vendor(get_current_vendor_id()) || is_user_wcmp_rejected_vendor(get_current_vendor_id()) || is_user_wcmp_vendor(get_current_vendor_id())) {
             show_admin_bar(apply_filters('wcmp_show_admin_bar', false));
         }
         // Init Text Domain
@@ -160,7 +160,6 @@ final class WCMp {
      * plugin admin init callback
      */
     function wcmp_admin_init() {
-        global $WCMp;
         $previous_plugin_version = get_option('dc_product_vendor_plugin_db_version');
         /* Migrate WCMp data */
         do_wcmp_data_migrate($previous_plugin_version, $this->version);

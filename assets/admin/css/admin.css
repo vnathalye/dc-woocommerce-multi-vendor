@@ -183,3 +183,25 @@ a.wcmp_sub_sction {
         padding-left: 0;
     }
 }
+/* template selection */
+.wcmp_template_list {
+    margin: 0 0 20px 0;
+    position: relative;
+}
+.wcmp_template_list .dashicons{
+    position: absolute;
+    background: #151715;
+    color: #fff;
+    line-height: 34px;
+    top: 0;
+    width: 35px;
+    right: 0;
+    height: 35px;
+}
+.wcmp_template_list input[type="radio"]:checked + .dashicons{ 
+    background: #0073aa;    
+}
+.wcmp_template_list input[type="radio"]:checked + .dashicons:before{ 
+    content: '\f160';  
+    
+}

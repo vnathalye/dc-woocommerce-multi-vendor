@@ -16,8 +16,8 @@ if (!empty($orders)) {
     foreach ($orders as $order) {
         $order_obj = new WC_Order($order);
         //$order_obj->get_id()
-        $mark_ship = $WCMp->vendor_dashboard->is_order_shipped($order, get_wcmp_vendor(get_current_user_id()));
-        $user_id = get_current_user_id();
+        $mark_ship = $WCMp->vendor_dashboard->is_order_shipped($order, get_wcmp_vendor(get_current_vendor_id()));
+        $user_id = get_current_vendor_id();
         $user_id = apply_filters('wcmp_shipping_vendor', $user_id);
         ?>
         <tr>
@@ -33,7 +33,7 @@ if (!empty($orders)) {
                 if (!isset($vendor_share['total'])) {
                     $vendor_share['total'] = 0;
                 }
-                echo get_woocommerce_currency_symbol() . $vendor_share['total'];
+                echo wc_price($vendor_share['total']);
                 ?>
             </td>
             <td class="no_display" align="center" ><?php echo $order_obj->get_status(); ?></td>

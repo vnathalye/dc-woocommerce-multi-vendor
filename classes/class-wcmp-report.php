@@ -12,7 +12,7 @@ class WCMp_Report {
 	public function __construct() {
 		
 		add_action( 'woocommerce_admin_reports', array( $this, 'wcmp_report_tabs' ) );
-		if ( is_user_wcmp_vendor(get_current_user_id()) ) {
+		if ( is_user_wcmp_vendor(get_current_vendor_id()) ) {
 			add_filter( 'woocommerce_reports_charts', array( $this, 'filter_tabs' ), 99 );
 			add_filter( 'wcmp_filter_orders_report_overview', array( $this, 'filter_orders_report_overview' ), 99);
 		}
@@ -31,7 +31,7 @@ class WCMp_Report {
 			foreach( $items as $item_id => $item ) {
 				$product_id = wc_get_order_item_meta( $item_id, '_product_id', true );
 				$vendor_id = wc_get_order_item_meta( $item_id, '_vendor_id', true );
-				$current_user = get_current_user_id();
+				$current_user = get_current_vendor_id();
 				if( $vendor_id ) {
 					if( $vendor_id == $current_user ) {
 						$existsids[] = $product_id;
@@ -139,7 +139,7 @@ class WCMp_Report {
 		$total_coupon_discount_value = 0;
 		$total_earnings = 0;
 		$total_customers = array();
-		$vendor = get_wcmp_vendor(get_current_user_id());
+		$vendor = get_wcmp_vendor(get_current_vendor_id());
                 $vendor = apply_filters( 'wcmp_dashboard_sale_stats_vendor', $vendor);
 		for( $date = strtotime($start_date); $date <= strtotime( '+1 day', strtotime($end_date)); $date = strtotime( '+1 day', $date ) ) {
 			
@@ -177,12 +177,12 @@ class WCMp_Report {
 					
 					$order = new WC_Order( $order_obj->ID );
 					$vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
-					if(is_user_wcmp_vendor(get_current_user_id())){
-                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_user_id());
+					if(is_user_wcmp_vendor(get_current_vendor_id())){
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_vendor_id());
 
                         $total_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
                         $total_vendor_earnings += $vendors_orders_amount['total'];
-                        $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>get_current_user_id()));
+                        $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>get_current_vendor_id()));
                         foreach ($current_vendor_orders as $key => $vendor_order) { 
                             $item = new WC_Order_Item_Product($vendor_order->order_item_id);
                             $total_sales += $item->get_subtotal();

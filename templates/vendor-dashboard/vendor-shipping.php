@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 global $woocommerce, $WCMp, $wpdb;
 
-$vendor_user_id = get_current_user_id();
+$vendor_user_id = get_current_vendor_id();
 $vendor_data = get_wcmp_vendor($vendor_user_id);
 if ($vendor_data) :
 

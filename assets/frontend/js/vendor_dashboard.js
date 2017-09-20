@@ -48,7 +48,7 @@ function checkbox_custome_design() {
 				
 		$widget.prepend('<span class="' + settings[type].off.icon + '"></span>');
 				
-		$widget.on('click', function () {
+		$widget.find('span').on('click', function () {
 			$input.prop('checked', !$input.is(':checked'));
 			updateDisplay();
 			

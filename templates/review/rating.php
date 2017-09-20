@@ -16,31 +16,28 @@
  * @package dc-woocommerce-multi-vendor/Templates
  * @version 3.3.5
  */
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
 global $WCMp;
-$rating   = round( $rating_val_array['avg_rating'],2 );
-$count = intval( $rating_val_array['total_rating'] );
+$rating = round($rating_val_array['avg_rating'], 2);
+$count = intval($rating_val_array['total_rating']);
+?> 
+<div style="clear:both; width:100%;"></div> 
+<?php if ($count > 0) { ?>
+    <span class="wcmp_total_rating_number"><?php echo __(sprintf(' %s ', $rating)); ?></span>
+<?php } ?>
+<a href="#reviews">
+<?php if ($count > 0) { ?>	
+        <span itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" class="star-rating" title="<?php echo sprintf(__('Rated %s out of 5', 'dc-woocommerce-multi-vendor'), $rating) ?>">
+            <span style="width:<?php echo ( round($rating_val_array['avg_rating']) / 5 ) * 100; ?>%"><strong itemprop="ratingValue"><?php echo $rating; ?></strong> <?php _e('out of 5', 'dc-woocommerce-multi-vendor'); ?></span>
+        </span>
+        <?php echo __(sprintf(' %s Reviews', $count)); ?>
 
-?>
-<div style="width:100%; height:50px; margin-bottom:5px; ">
-	<div itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating" class="star-rating" style="float:left;" title="<?php echo sprintf( __( 'Rated %s out of 5', 'dc-woocommerce-multi-vendor' ), $rating ) ?>">
-		<span style="width:<?php echo ( $rating_val_array['avg_rating'] / 5 ) * 100; ?>%"><strong itemprop="ratingValue"><?php echo $rating; ?></strong> <?php _e( 'out of 5', 'dc-woocommerce-multi-vendor' ); ?></span>
-	</div>
-	<div style="clear:both; height:5px; width:100%;"></div>	
-	<a href="#reviews">
-		<?php 
-		if($count > 0 ) {?>	
-		<?php echo __(sprintf(' %s Stars out of 5 based on %s Reviews',$rating, $count));	 ?>
-		
-		<?php 
-		}
-		else {
-		?>
-		<?php echo __(' No Reviews Yet ','dc-woocommerce-multi-vendor');  ?>
-		<?php }?>
-	</a>
-</div>
+    <?php
+} else {
+    ?>
+        <?php echo __(' No Reviews Yet ', 'dc-woocommerce-multi-vendor'); ?>
+    <?php } ?>
+</a>

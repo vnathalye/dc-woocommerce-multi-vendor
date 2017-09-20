@@ -8,21 +8,21 @@ if (!function_exists('get_wcmp_vendor_settings')) {
      */
     function get_wcmp_vendor_settings($name = '', $tab = '', $subtab = '', $default = false) {
         if (empty($tab) && empty($name)) {
-            return $default ? $default : '';
+            return $default;
         }
         if (empty($tab)) {
-            return get_option($name);
+            return get_option($name, $default);
         }
         if (empty($name)) {
-            return get_option("wcmp_{$tab}_settings_name");
+            return get_option("wcmp_{$tab}_settings_name", $default);
         }
         if (!empty($subtab)) {
-            $settings = get_option("wcmp_{$tab}_{$subtab}_settings_name");
+            $settings = get_option("wcmp_{$tab}_{$subtab}_settings_name", $default);
         } else {
-            $settings = get_option("wcmp_{$tab}_settings_name");
+            $settings = get_option("wcmp_{$tab}_settings_name", $default);
         }
-        if (!isset($settings[$name])) {
-            return $default ? $default : '';
+        if (!isset($settings[$name]) || empty($settings[$name])) {
+            return $default;
         }
         return $settings[$name];
     }
@@ -250,10 +250,11 @@ if (!function_exists('is_vendor_dashboard')) {
      * @return boolean
      */
     function is_vendor_dashboard() {
+        $is_vendor_dashboard = false;
         if (get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general')) {
-            return is_page((int) get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general'));
+            $is_vendor_dashboard = is_page((int) get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general'));
         }
-        return false;
+        return apply_filters('is_wcmp_vendor_dashboard', $is_vendor_dashboard);
     }
 
 }
@@ -300,129 +301,6 @@ if (!function_exists('wcmp_vendor_registration_page_id')) {
     }
 
 }
-
-//if (!function_exists('remove_wcmp_users_caps')) {
-//
-//    /**
-//     * Remove Capability of existing users
-//     * @return void
-//     */
-//    function remove_wcmp_users_caps($user_cap) {
-//        $product_caps = array("edit_product", "delete_product", "edit_products", "delete_products");
-//        $coupon_caps = array("edit_shop_coupons", "delete_shop_coupons", "edit_shop_coupons", "delete_shop_coupons");
-//        $wcmp_vendors = get_wcmp_vendors();
-//        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
-//            foreach ($wcmp_vendors as $wcmp_vendor) {
-//                $user = new WP_User($wcmp_vendor->id);
-//                if ($user) {
-//                    switch ($user_cap) {
-//                        case 'is_upload_files':
-//                            $user->remove_cap('upload_files');
-//                            break;
-//                        case 'is_submit_product':
-//                            foreach ($product_caps as $product_cap) {
-//                                $user->remove_cap($product_cap);
-//                            }
-//                            break;
-//                        case 'edit_delete_published_product':
-//                            $user->remove_cap('edit_published_products');
-//                            $user->remove_cap('delete_published_products');
-//                            break;
-//                        case 'is_published_product':
-//                            $user->remove_cap('publish_products');
-//                            break;
-//                        case 'is_submit_coupon':
-//                            foreach ($coupon_caps as $coupon_cap) {
-//                                $user->remove_cap($coupon_cap);
-//                            }
-//                            break;
-//                        case 'edit_delete_published_coupons':
-//                            $user->remove_cap('delete_published_shop_coupons');
-//                            $user->remove_cap('edit_published_shop_coupons');
-//                            break;
-//                        case 'is_published_coupon':
-//                            $user->remove_cap('publish_shop_coupons');
-//                            break;
-//                        default :
-//                            $user->remove_cap($user_cap);
-//                            break;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//}
-//
-//if (!function_exists('add_wcmp_users_caps')) {
-//
-//    /**
-//     * Add Capability in existing users
-//     * @return void
-//     */
-//    function add_wcmp_users_caps($user_cap) {
-//        $wcmp_vendors = get_wcmp_vendors();
-//        if (!empty($wcmp_vendors) && is_array($wcmp_vendors)) {
-//            $product_caps = array(
-//                "edit_product"
-//                , "delete_product"
-//                , "edit_products"
-//                , "delete_products"
-//            );
-//            $coupon_caps = array(
-//                "edit_shop_coupon"
-//                , "delete_shop_coupon"
-//                , "edit_shop_coupons"
-//                , "delete_shop_coupons"
-//            );
-//            foreach ($wcmp_vendors as $wcmp_vendor) {
-//                $user = new WP_User($wcmp_vendor->id);
-//                if ($user) {
-//                    $is_submit_product = get_user_meta($user->ID, '_vendor_submit_product', true);
-//                    $is_submit_coupon = get_user_meta($user->ID, '_vendor_submit_coupon', true);
-//                    $is_vendor_publish_product = get_user_meta($user->ID, '_vendor_publish_product', true);
-//                    $is_vendor_publish_coupon = get_user_meta($user->ID, '_vendor_publish_coupon', true);
-//                    if ($user_cap == 'is_submit_product') {
-//                        if (!empty($is_submit_product) && $is_submit_product) {
-//                            foreach ($product_caps as $cap) {
-//                                $user->add_cap($cap);
-//                            }
-//                            $user->add_cap("read_product");
-//                        }
-//                    } else if ($user_cap == 'edit_delete_published_product') {
-//                        if ($is_submit_product == 'Enable') {
-//                            $user->add_cap('edit_published_products');
-//                            $user->add_cap('delete_published_products');
-//                        }
-//                    } else if ($user_cap == 'edit_delete_published_coupons') {
-//                        if ($is_submit_coupon == 'Enable') {
-//                            $user->add_cap('edit_published_shop_coupons');
-//                            $user->add_cap('delete_published_shop_coupons');
-//                        }
-//                    } else if ($user_cap == 'is_submit_coupon') {
-//                        if (!empty($is_submit_coupon) && $is_submit_coupon) {
-//                            foreach ($coupon_caps as $cap) {
-//                                $user->add_cap($cap);
-//                            }
-//                        }
-//                        $user->add_cap("read_shop_coupon");
-//                    } else if ($user_cap == 'publish_products') {
-//                        if ($is_vendor_publish_product != 'Enable') {
-//                            $user->add_cap($user_cap);
-//                        }
-//                    } else if ($user_cap == 'publish_shop_coupons') {
-//                        if ($is_vendor_publish_coupon != 'Enable') {
-//                            $user->add_cap($user_cap);
-//                        }
-//                    } else {
-//                        $user->add_cap($user_cap);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//}
 
 
 if (!function_exists('get_vendor_from_an_order')) {
@@ -471,16 +349,15 @@ if (!function_exists('is_vendor_page')) {
         $return = false;
         if (wcmp_vendor_dashboard_page_id()) {
             if (function_exists('icl_object_id')) {
-                if (is_page(icl_object_id(wcmp_vendor_dashboard_page_id(), 'page', false, ICL_LANGUAGE_CODE))) {
+                if (is_page(icl_object_id(wcmp_vendor_dashboard_page_id(), 'page', false, ICL_LANGUAGE_CODE)) || is_page(icl_object_id(wcmp_vendor_registration_page_id(), 'page', false, ICL_LANGUAGE_CODE))) {
                     $return = true;
                 }
-            } else {
-                if (is_vendor_dashboard()) {
-                    $return = true;
-                }
+            } else if (is_page(wcmp_vendor_dashboard_page_id()) || is_page(wcmp_vendor_registration_page_id())) {
+                $return = true;
             }
         }
-        return apply_filters('wcmp_plugin_pages_redirect', $return);
+        
+        return apply_filters('is_wcmp_vendor_page', $return);
     }
 
 }
@@ -496,52 +373,6 @@ if (!function_exists('is_vendor_order_by_product_page')) {
     }
 
 }
-
-/* unused function */
-//if (!function_exists('get_vendor_coupon_amount')) {
-
-/**
- * get vendor coupon from order.
- * @return boolean
- */
-//    function get_vendor_coupon_amount($item_product_id, $order_id, $vendor) {
-//        $order = new WC_Order($order_id);
-//        $coupons = $order->get_used_coupons();
-//        $coupon_used = array();
-//        if (!empty($coupons) && is_array($coupons)) {
-//            foreach ($coupons as $coupon_code) {
-//                $coupon = new WC_Coupon($coupon_code);
-//                $coupon_post = get_post($coupon->id);
-//                $author_id = $coupon_post->post_author;
-//                if (get_current_user_id() != $author_id) {
-//                    continue;
-//                } else {
-//                    $coupon_product_ids = $coupon->product_ids;
-//                    if (!in_array($item_product_id, $coupon_product_ids)) {
-//                        continue;
-//                    } else {
-//                        $coupon_used[] = $coupon_code;
-//                    }
-//                }
-//            }
-//            if (!empty($coupon_used) && is_array($coupon_used)) {
-//                $return_coupon = ' ,   Copoun Used : ';
-//                $no_of_coupon_use = false;
-//                foreach ($coupon_used as $coupon_use) {
-//                    if (!$no_of_coupon_use) {
-//                        $return_coupon .= '"' . $coupon_use . '"';
-//                    } else                         {
-//                        $return_coupon .= ', "' . $coupon_use . '"';
-//                    }
-//                    $no_of_coupon_use = true;
-//                }
-//                return $return_coupon;
-//            } else {
-//                return null;
-//            }
-//        }
-//    }
-//}
 
 if (!function_exists('wcmp_action_links')) {
 
@@ -1814,4 +1645,10 @@ if (!function_exists('wcmp_process_order')) {
         do_action('wcmp_order_processed', $order);
     }
 
+}
+
+if(!function_exists('get_current_vendor_id')){
+    function get_current_vendor_id(){
+        return apply_filters( 'wcmp_current_loggedin_vendor_id', get_current_user_id() );
+    }
 }

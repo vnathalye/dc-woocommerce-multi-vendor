@@ -403,7 +403,7 @@ class WCMp_Ajax {
             if (!wp_verify_nonce($nonce, $action))
                 die('Invalid request');
 
-            $vendor = get_wcmp_vendor(get_current_user_id());
+            $vendor = get_wcmp_vendor(get_current_vendor_id());
             $vendor = apply_filters('wcmp_csv_download_per_order_vendor', $vendor);
             if (!$vendor)
                 die('Invalid request');
@@ -617,7 +617,7 @@ class WCMp_Ajax {
                         $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id(), 'product_id' => $order_obj->product_id));
 
                         $vendor_earning = $vendors_orders_amount['commission_amount'];
-                        if ($vendor = get_wcmp_vendor(get_current_user_id()))
+                        if ($vendor = get_wcmp_vendor(get_current_vendor_id()))
                             $admin_earnings[$date] = isset($admin_earnings[$date]) ? ( $admin_earnings[$date] + $vendor_earning ) : $vendor_earning;
                         else
                             $admin_earnings[$date] = isset($admin_earnings[$date]) ? ( $admin_earnings[$date] + $item->get_subtotal() - $vendor_earning ) : $item->get_subtotal() - $vendor_earning;
@@ -925,7 +925,7 @@ class WCMp_Ajax {
         $order_id = $_POST['order_id'];
         $tracking_url = $_POST['tracking_url'];
         $tracking_id = $_POST['tracking_id'];
-        $user_id = get_current_user_id();
+        $user_id = get_current_vendor_id();
         $vendor = get_wcmp_vendor($user_id);
         $user_id = apply_filters('wcmp_mark_as_shipped_vendor', $user_id);
         $shippers = (array) get_post_meta($order_id, 'dc_pv_shipped', true);
@@ -975,7 +975,7 @@ class WCMp_Ajax {
         global $WCMp;
         $data_to_show = isset($_POST['data_to_show']) ? $_POST['data_to_show'] : '';
         $order_status = isset($_POST['order_status']) ? $_POST['order_status'] : '';
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-orders-item.php', array('vendor' => $vendor, 'orders' => $data_to_show, 'order_status' => $order_status));
         die;
     }
@@ -1005,7 +1005,7 @@ class WCMp_Ajax {
      * WCMp current user attachment
      */
     function show_current_user_attachments($query = array()) {
-        $user_id = get_current_user_id();
+        $user_id = get_current_vendor_id();
         if (is_user_wcmp_vendor($user_id)) {
             $query['author'] = $user_id;
         }

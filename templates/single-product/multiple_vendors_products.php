@@ -24,8 +24,7 @@ if (count($more_product_array) > 0) {
     <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
     <div class="container">		
         <div class="row rowhead">
-            <div class="rowsub centerclass"><?php echo __('Vendor', 'dc-woocommerce-multi-vendor'); ?></div>
-            <div class="rowsub"><?php echo __('Rating', 'dc-woocommerce-multi-vendor'); ?></div>
+            <div class="rowsub "><?php echo __('Vendor', 'dc-woocommerce-multi-vendor'); ?></div>
             <div class="rowsub"><?php echo __('Price', 'dc-woocommerce-multi-vendor'); ?></div>
             <div class="rowsub">
                 <select name="wcmp_multiple_product_sorting" id="wcmp_multiple_product_sorting" class="wcmp_multiple_product_sorting" attrid="<?php echo $post->ID; ?>" >

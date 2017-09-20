@@ -242,7 +242,7 @@ class WCMp_Vendor_Hooks {
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_script('wcmp_profile_edit_js', $frontend_script_path . '/profile_edit' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         $user_array = $WCMp->user->get_vendor_fields($vendor->id);
         $WCMp->library->load_upload_lib();
         $WCMp->template->get_template('vendor-dashboard/shop-front.php', $user_array);
@@ -258,7 +258,7 @@ class WCMp_Vendor_Hooks {
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_script('wcmp_profile_edit_js', $frontend_script_path . '/profile_edit' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         $user_array = $WCMp->user->get_vendor_fields($vendor->id);
         $WCMp->template->get_template('vendor-dashboard/vendor-policy.php', $user_array);
     }
@@ -274,7 +274,7 @@ class WCMp_Vendor_Hooks {
         $pluginURL = str_replace(array('http:', 'https:'), '', $WCMp->plugin_url);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_script('wcmp_profile_edit_js', $frontend_script_path . '/profile_edit' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         $user_array = $WCMp->user->get_vendor_fields($vendor->id);
         $WCMp->template->get_template('vendor-dashboard/vendor-billing.php', $user_array);
     }
@@ -292,7 +292,7 @@ class WCMp_Vendor_Hooks {
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
         wp_enqueue_script('wcmp_profile_edit_js', $frontend_script_path . '/profile_edit' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         $wcmp_payment_settings_name = get_option('wcmp_payment_settings_name');
-        $_vendor_give_shipping = get_user_meta(get_current_user_id(), '_vendor_give_shipping', true);
+        $_vendor_give_shipping = get_user_meta(get_current_vendor_id(), '_vendor_give_shipping', true);
         if (isset($wcmp_payment_settings_name['give_shipping']) && empty($_vendor_give_shipping)) {
             $WCMp->template->get_template('vendor-dashboard/vendor-shipping.php');
         } else {
@@ -319,7 +319,7 @@ class WCMp_Vendor_Hooks {
             // hard-coded '01' for first day
             $end_date = date('t-m-Y');
         }
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         $WCMp_Plugin_Post_Reports = new WCMp_Report();
         $array_report = $WCMp_Plugin_Post_Reports->vendor_sales_stat_overview($vendor, $start_date, $end_date);
         $WCMp->template->get_template('vendor-dashboard/vendor-report.php', $array_report);
@@ -401,7 +401,7 @@ class WCMp_Vendor_Hooks {
         if (!empty($transaction_id)) {
             $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-request.php', array('transaction_id' => $transaction_id));
         } else {
-            $vendor = get_wcmp_vendor(get_current_user_id());
+            $vendor = get_wcmp_vendor(get_current_vendor_id());
             if ($vendor) {
                 $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
                 $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
@@ -445,7 +445,7 @@ class WCMp_Vendor_Hooks {
         $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
         wp_enqueue_script('trans_dtl_js', $frontend_script_path . 'transaction_detail' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        $user_id = get_current_user_id();
+        $user_id = get_current_vendor_id();
         if (is_user_wcmp_vendor($user_id)) {
             $vendor = get_wcmp_vendor($user_id);
             $vendor = apply_filters('wcmp_transaction_vendor', $vendor);
@@ -485,7 +485,7 @@ class WCMp_Vendor_Hooks {
 
     public function save_vendor_dashboard_data() {
         global $WCMp;
-        $vendor = get_wcmp_vendor(get_current_user_id());
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             switch ($WCMp->endpoints->get_current_endpoint()) {
                 case 'shop-front':
@@ -549,8 +549,12 @@ class WCMp_Vendor_Hooks {
     }
     
     public function wcmp_vendor_dashboard_menu_vendor_shipping_capability($cap){
-        $vendor = get_wcmp_vendor(get_current_user_id());
-        return $vendor->is_shipping_tab_enable();
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
+        if($vendor){
+            return $vendor->is_shipping_tab_enable();
+        } else{
+            return false;
+        }
     }
 
     /**

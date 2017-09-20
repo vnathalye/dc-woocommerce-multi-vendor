@@ -575,7 +575,7 @@ class WCMp_Vendor {
             if ($is_ship)
                 echo "\n" . sprintf(__('Total: %s', 'dc-woocommerce-multi-vendor'), $order->get_formatted_line_subtotal($item));
             else
-                echo "\n" . sprintf(__('Commission: %s', 'dc-woocommerce-multi-vendor'), get_woocommerce_currency_symbol() . $commission_amount['commission_amount']);
+                echo "\n" . sprintf(__('Commission: %s', 'dc-woocommerce-multi-vendor'), wc_price($commission_amount['commission_amount']));
 
             echo "\n\n";
         }

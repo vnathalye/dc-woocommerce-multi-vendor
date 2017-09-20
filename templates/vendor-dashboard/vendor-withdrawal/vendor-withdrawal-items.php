@@ -35,7 +35,7 @@ if (!empty($commissions)) {
                 if (!isset($vendor_share['total'])) {
                     $vendor_share['total'] = 0;
                 }
-                echo get_woocommerce_currency_symbol() . $vendor_share['total'];
+                echo wc_price($vendor_share['total']);
                 ?>
             </td>
         </tr>

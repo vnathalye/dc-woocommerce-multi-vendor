@@ -212,7 +212,7 @@ class WCMp_Capabilities {
 
         $custom_css = '';
         if (isset($screen->id) && in_array($screen->id, array('product'))) {
-            if (is_user_wcmp_vendor(get_current_user_id())) {
+            if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (!$this->vendor_can('taxes')) {
                     $custom_css .= '
 					._tax_status_field, ._tax_class_field {
@@ -238,7 +238,7 @@ class WCMp_Capabilities {
                     $custom_css .= $this->capability['stylesheet'];
                 }
 
-                $vendor_id = get_current_user_id();
+                $vendor_id = get_current_vendor_id();
                 $vendor = get_wcmp_vendor($vendor_id);
                 if ($vendor && $post->post_author != $vendor_id) {
                     $custom_css .= '.options_group.pricing.show_if_simple.show_if_external {
@@ -326,6 +326,7 @@ class WCMp_Capabilities {
         foreach ($capabilities as $cap => $is_enable) {
             $wp_roles->add_cap('dc_vendor', $cap, $is_enable);
         }
+        do_action('wcmp_after_update_vendor_role_capability', $capabilities, $wp_roles);
     }
 
     /**

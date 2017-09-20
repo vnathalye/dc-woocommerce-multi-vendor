@@ -37,7 +37,7 @@ class WCMp_Settings_Payment {
             } else {
                 $automatic_method['payment_method_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'payment_method_' . $key, 'class' => 'automatic_payment_method', 'label_for' => 'payment_method_' . $key, 'text' => $val, 'name' => 'payment_method_' . $key, 'value' => 'Enable', 'data-display-label' => $val);
             }
-            $gateway_charge['gateway_charge_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'gateway_charge_' . $key, 'class' => 'payment_gateway_charge regular-text', 'label_for' => 'gateway_charge_' . $key, 'name' => 'gateway_charge_' . $key, 'placeholder' => __('For ', 'dc-woocommerce-multi-vendor') . $val, 'desc' => __('Gateway Charge For ', 'dc-woocommerce-multi-vendor') . $val);
+            $gateway_charge['gateway_charge_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'gateway_charge_' . $key, 'class' => 'payment_gateway_charge regular-text', 'label_for' => 'gateway_charge_' . $key, 'name' => 'gateway_charge_' . $key, 'placeholder' => __('For ', 'dc-woocommerce-multi-vendor') . $val, 'desc' => __('Gateway Charge For ', 'dc-woocommerce-multi-vendor') . $val . __(' (in percent)', 'dc-woocommerce-multi-vendor'));
             $i++;
         }
 

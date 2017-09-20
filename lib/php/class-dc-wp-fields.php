@@ -211,6 +211,33 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             $this->field_wrapper_end($field);
         }
+        
+        /**
+         * Output a radio gruop field.
+         *
+         * @access public
+         * @param array $field
+         * @return void
+         */
+        public function radio_select_input($field) {
+            $field['class'] = isset($field['class']) ? $field['class'] : 'select short';
+            $field['wrapper_class'] = isset($field['wrapper_class']) ? $field['wrapper_class'] : '';
+            $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
+            $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['dfvalue'] = isset($field['dfvalue']) ? $field['dfvalue'] : '';
+            $field['value'] = ( $field['value'] ) ? $field['value'] : $field['dfvalue'];
+
+            $options = '';
+            foreach ($field['options'] as $key => $value) {
+                $options .= '<label title="' . esc_attr($key) . '" class="wcmp_template_list"><input class="' . esc_attr($field['class']) . '" style="display:none;" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"><span class="dashicons dashicons-unlock"></span><img src="' . $value . '" /></label><br />';
+            }
+
+            $field = $this->field_wrapper_start($field);
+
+            printf('<label id="%s" class="%s_field %s"><legend class="screen-reader-text"><span>%s</span></legend>%s</label>', esc_attr($field['id']), esc_attr($field['id']), esc_attr($field['wrapper_class']), esc_attr($field['title']), $options);
+
+            $this->field_wrapper_end($field);
+        }
 
         /**
          * Output a select input box.

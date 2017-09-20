@@ -22,7 +22,7 @@ class WCMp_Settings_To_Do_List {
      */
     public function settings_page_init() {
         global $WCMp;
-
+        do_action('before_wcmp_to_do_list');
         //pending vendor
         $get_pending_vendors = get_users('role=dc_pending_vendor');
         if (!empty($get_pending_vendors)) {
@@ -183,7 +183,7 @@ class WCMp_Settings_To_Do_List {
                 ?>
                             <td class="vendor column-coupon"><a href="user-edit.php?user_id=<?php echo $currentvendor->id; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $currentvendor->user_data->display_name; ?></a></td>
                             <td class="commission column-coupon"><?php echo $transaction->post_title; ?></td>
-                            <td class="commission_val column-coupon"><?php echo get_woocommerce_currency_symbol() . $amount; ?></td>
+                            <td class="commission_val column-coupon"><?php echo wc_price($amount); ?></td>
                             <td class="account_detail"><?php echo __('Account Name- ', 'dc-woocommerce-multi-vendor') . ' ' . $account_name . '<br>' . __('Account No - ', 'dc-woocommerce-multi-vendor') . $account_no . '<br>' . __('Bank Name - ', 'dc-woocommerce-multi-vendor') . $bank_name . '<br>' . __('IBAN - ', 'dc-woocommerce-multi-vendor') . $iban; ?></td>
                             <td class="done"><input class="vendor_transaction_done_button" data-transid="<?php echo $transaction->ID; ?>" data-vendorid="<?php echo $vendor_term_id; ?>" type="button" id="done_request" name="done_request" value="Done"></td>
                             <td class="dismiss"><input class="vendor_dismiss_button" data-type="dc_commission" data-id="<?php echo $transaction->ID; ?>" type="button" id="dismiss_request" name="dismiss_request" value="Dismiss"></td>
@@ -193,6 +193,7 @@ class WCMp_Settings_To_Do_List {
             </table>
         <?php
         }
+        do_action('after_wcmp_to_do_list');
     }
 
 }

@@ -80,20 +80,20 @@ class WCMp_Report_Overview extends WC_Admin_Report {
 
                     $order = new WC_Order($order_obj->ID);
                     $items = $order->get_items('line_item');
-                    if (is_user_wcmp_vendor(get_current_user_id())) {
-                        $vendor_id = get_user_meta(get_current_user_id(), '_vendor_term_id', true);
+                    if (is_user_wcmp_vendor(get_current_vendor_id())) {
+                        $vendor_id = get_user_meta(get_current_vendor_id(), '_vendor_term_id', true);
                         if (!in_array($vendor_id, get_vendor_from_an_order($order))) {
                             continue;
                         }
                     }
 
                     $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
-                    if(is_user_wcmp_vendor(get_current_user_id()))
-                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_user_id());
+                    if(is_user_wcmp_vendor(get_current_vendor_id()))
+                        $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()),get_current_vendor_id());
                     else
                         $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id()));
                     
-                    if(is_user_wcmp_vendor(get_current_user_id())){
+                    if(is_user_wcmp_vendor(get_current_vendor_id())){
                        
                         $sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
                         $total_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
@@ -101,7 +101,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                         $total_vendor_earnings += $vendors_orders_amount['total'];
                         $total_earnings += $vendors_orders_amount['total'];
                         $earnings += $vendors_orders_amount['total'];
-                        $vendor_id = get_current_user_id();
+                        $vendor_id = get_current_vendor_id();
                         $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>$vendor_id));
 
                         foreach ($current_vendor_orders as $key => $vendor_order) { 
@@ -210,7 +210,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
             'highlight_series' => 3
         );
 
-        if (!is_user_wcmp_vendor(get_current_user_id())) {
+        if (!is_user_wcmp_vendor(get_current_vendor_id())) {
             $legend[] = array(
                 'title' => sprintf(__('%s Net Vendor Commission', 'dc-woocommerce-multi-vendor'), '<strong>' . $data->vendor_total_earned . '</strong>'),
                 'color' => $this->chart_colours['vendor_total_earned'],
@@ -312,7 +312,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
             'average_sales' => array_map(array($this, 'round_chart_totals'), array_values($average_sales)),
             'total_earned' => array_map(array($this, 'round_chart_totals'), array_values($total_earned)),
         );
-        if(!is_user_wcmp_vendor(get_current_user_id())){
+        if(!is_user_wcmp_vendor(get_current_vendor_id())){
             $chart_data['vendor_total_earned'] = array_map(array($this, 'round_chart_totals'), array_values($vendor_total_earned));
         }
         
@@ -365,7 +365,7 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                     shadowSize: 0,
                     prepend_tooltip: "<?php echo get_woocommerce_currency_symbol(); ?>"
             },
-        <?php if(!is_user_wcmp_vendor(get_current_user_id())){ ?>
+        <?php if(!is_user_wcmp_vendor(get_current_vendor_id())){ ?>
             {
             label: "<?php echo esc_js(__('Total Earnings by Vendor', 'dc-woocommerce-multi-vendor')) ?>",
                     data: order_data.vendor_total_earned,

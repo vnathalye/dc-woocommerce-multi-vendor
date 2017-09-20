@@ -31,7 +31,7 @@ if (isset($queried_object->term_id) && !empty($queried_object)) {
                 <div id="review_form_wrapper">
                     <div id="review_form">
                         <div id="respond" class="comment-respond">
-                            <?php if ($vendor->id != get_current_user_id()) : ?>
+                            <?php if ($vendor->id != get_current_vendor_id()) : ?>
                                 <h3 id="reply-title" class="comment-reply-title"><?php
                                     if ($count == 0) {
                                         echo __(sprintf('Be the first to review “%s”', $shop_name), 'dc-woocommerce-multi-vendor');

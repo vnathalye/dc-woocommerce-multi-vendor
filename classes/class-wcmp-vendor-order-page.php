@@ -19,7 +19,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
         global $status, $page;
 
         $this->index = 0;
-        $this->vendor = get_wcmp_vendor(get_current_user_id());
+        $this->vendor = get_wcmp_vendor(get_current_vendor_id());
 
         //Set parent defaults
         parent::__construct(array(
@@ -154,7 +154,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
     public function mark_shipped($ids = array()) {
         global $woocommerce, $WCMp, $wpdb;
 
-        $user_id = get_current_user_id();
+        $user_id = get_current_vendor_id();
         $vendor = get_wcmp_vendor($user_id);
 
         if (!empty($ids)) {
@@ -191,7 +191,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
      */
     function wcmp_get_vendor_orders() {
         global $WCMp;
-        $user_id = get_current_user_id();
+        $user_id = get_current_vendor_id();
         $vendor = get_wcmp_vendor($user_id);
         $vendor = apply_filters('wcmp_get_vendor_orders_vendor', $vendor);
         $orders = array();

@@ -43,45 +43,25 @@ if(isset($more_product_array) && is_array($more_product_array) && count($more_pr
             $_product = wc_get_product($more_product['product_id']);
 		?>
 		<div class="row rowbody">						
-			<div class="rowsub centerclass">
-				<a href="<?php echo $more_product['shop_link']; ?>" class="wcmp_seller_name"><?php echo $more_product['seller_name']; ?></a>
-				
-			</div>
-			<div class="rowsub">
+			<div class="rowsub ">
+				<div class="vendor_name">
+					<a href="<?php echo $more_product['shop_link']; ?>" class="wcmp_seller_name"><?php echo $more_product['seller_name']; ?></a>
+					<?php do_action('after_wcmp_singleproductmultivendor_vendor_name', $more_product['product_id'], $more_product);?>
+				</div>
 				<?php 
-					if(isset($more_product['rating_data']) && is_array($more_product['rating_data']) && isset($more_product['rating_data']['avg_rating']) && $more_product['rating_data']['avg_rating']!=0 && $more_product['rating_data']['avg_rating']!=''){ 
-						$rating_class = '';
-						if($more_product['rating_data']['avg_rating'] > 4.5 ) {
-							$rating_class = 'wcmp_superb_rating';
-						}
-						elseif($more_product['rating_data']['avg_rating'] <= 4.5 && $more_product['rating_data']['avg_rating'] > 4.0) {
-							$rating_class = 'wcmp_excellent_rating';
-						}
-						elseif($more_product['rating_data']['avg_rating'] <= 4.0 && $more_product['rating_data']['avg_rating'] > 3.5) {
-							$rating_class = 'wcmp_good_rating';
-						}
-						elseif($more_product['rating_data']['avg_rating'] <= 3.5 && $more_product['rating_data']['avg_rating'] > 2.5) {
-							$rating_class = 'wcmp_above_averege_rating';
-						}
-						elseif($more_product['rating_data']['avg_rating'] <= 2.5 && $more_product['rating_data']['avg_rating'] >= 2.0) {
-							$rating_class = 'wcmp_averege_rating';
-						}
-						elseif($more_product['rating_data']['avg_rating'] < 2.0 ) {
-							$rating_class = 'wcmp_bad_rating';
-						}
-						echo '<span title="'.__(sprintf("Based on %s Rating",$more_product['rating_data']['total_rating']), 'dc-woocommerce-multi-vendor').'" class="'.$rating_class.'"> '.number_format($more_product['rating_data']['avg_rating'],2).'/5.0 </span>';										
-					}else {
-						echo "<span class='wcmp_norating'> ".__('no ratings','dc-woocommerce-multi-vendor' )." </span>";
-					}
-				?>								
+				if(isset($more_product['rating_data']) && is_array($more_product['rating_data']) && isset($more_product['rating_data']['avg_rating']) && $more_product['rating_data']['avg_rating']!=0 && $more_product['rating_data']['avg_rating']!=''){ 
+					echo wc_get_rating_html( $more_product['rating_data']['avg_rating'] );	
+				}else {
+					echo "<div class='star-rating'></div>";
+				}
+				?>
 			</div>
 			<div class="rowsub">
-                            <?php echo $_product->get_price_html(); ?>
+                <?php echo $_product->get_price_html(); ?>
 			</div>
 			<div class="rowsub">
 				<?php if($more_product['product_type'] == 'simple') {?>
 					<a href="<?php echo '?add-to-cart='.$more_product['product_id']; ?>" class="buttongap button" ><?php echo apply_filters('add_to_cart_text', __('Add to Cart','dc-woocommerce-multi-vendor')); ?></a>
-					<br/><br/>
 				<?php } ?>
 				<a href="<?php echo get_permalink($more_product['product_id']); ?>" class="buttongap button" ><?php echo __('Details','dc-woocommerce-multi-vendor'); ?></a>
 			</div>

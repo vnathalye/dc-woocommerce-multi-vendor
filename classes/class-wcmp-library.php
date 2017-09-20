@@ -51,8 +51,14 @@ class WCMp_Library {
 	  $DC_WP_Fields = new WCMp_WP_Fields(); 
 	  return $DC_WP_Fields;
 	}
-	
-	/**
+        
+        public function load_scss_lib(){
+            require_once ($this->php_lib_path . 'scss.inc.php');
+            $scss = new scssc();
+            return $scss;
+        }
+
+                /**
 	 * Jquery qTip library
 	*/
 	public function load_qtip_lib() {

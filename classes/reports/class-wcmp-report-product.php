@@ -99,8 +99,8 @@ class WCMp_Report_Product extends WC_Admin_Report {
             $gross_sales = $my_earning = $vendor_earning = 0;
             foreach ($orders as $order_obj) {
                 $order = wc_get_order($order_obj->ID);
-                if ($vendor = get_wcmp_vendor(get_current_user_id())) {
-                    $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id(), 'vendor_id' => get_current_user_id()));
+                if ($vendor = get_wcmp_vendor(get_current_vendor_id())) {
+                    $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id(), 'vendor_id' => get_current_vendor_id()));
                 } else {
                     $vendors_orders = get_wcmp_vendor_orders(array('order_id' => $order->get_id()));
                 }
@@ -113,7 +113,7 @@ class WCMp_Report_Product extends WC_Admin_Report {
                         $vendors_orders_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id(), 'product_id' => $v_order->product_id));
 
                         $vendor_earning = $vendors_orders_amount['commission_amount'];
-                        if ($vendor = get_wcmp_vendor(get_current_user_id())) {
+                        if ($vendor = get_wcmp_vendor(get_current_vendor_id())) {
                             $admin_earnings[$v_order->product_id] = isset($admin_earnings[$v_order->product_id]) ? ( $admin_earnings[$v_order->product_id] + $vendor_earning ) : $vendor_earning;
                         } else {
                             $admin_earnings[$v_order->product_id] = isset($admin_earnings[$v_order->product_id]) ? ( $admin_earnings[$v_order->product_id] + $item->get_subtotal() - $vendor_earning ) : $item->get_subtotal() - $vendor_earning;

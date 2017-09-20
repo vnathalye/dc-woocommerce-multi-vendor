@@ -250,7 +250,7 @@ class WCMp_Transaction {
         $commission_details['body'][$commission_id][]['Commission'] = implode(', ', $commissions);
         $commission_details['body'][$commission_id][]['Products'] = implode(', ', $title);
         $commission_details['body'][$commission_id][]['Status'] = $transaction_status;
-        $commission_details['body'][$commission_id][]['Amount'] = get_woocommerce_currency_symbol() . $amount;
+        $commission_details['body'][$commission_id][]['Amount'] = wc_price($amount);
         $commission_details['header'] = array(__('Commission ID', 'dc-woocommerce-multi-vendor'), __('Products', 'dc-woocommerce-multi-vendor'), __('Status', 'dc-woocommerce-multi-vendor'), __('Amount', 'dc-woocommerce-multi-vendor'));
         return apply_filters('wcmp_transaction_item_details', $commission_details);
     }

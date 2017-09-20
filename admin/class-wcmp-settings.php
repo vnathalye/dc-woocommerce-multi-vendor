@@ -31,6 +31,8 @@ class WCMp_Settings {
         add_action('settings_page_general_customer_support_details_tab_init', array(&$this, 'general_customer_support_details_tab_init'), 10, 2);
         add_action('settings_page_vendor_general_tab_init', array(&$this, 'vendor_general_tab_init'), 10, 2);
         add_action('settings_page_vendor_registration_tab_init', array(&$this, 'vendor_registration_tab_init'), 10, 2);
+
+        add_action('settings_page_vendor_dashboard_tab_init', array(&$this, 'vendor_dashboard_tab_init'), 10, 2);
         add_action('settings_page_wcmp-addons_tab_init', array(&$this, 'wcmp_addons_tab_init'), 10, 2);
 
         add_action('update_option_wcmp_vendor_general_settings_name', array(&$this, 'wcmp_update_option_wcmp_vendor_general_settings_name'));
@@ -123,6 +125,14 @@ class WCMp_Settings {
             'content' => '<h2>Knowledgebase</h2>'
             . '<p>If you would like to learn more about using WC Marketplace, please follow our <a target="_blank" href="https://wc-marketplace.com/knowledgebase/">knowledgebase</a> section.</p>'
         ));
+        $screen->add_help_tab(array(
+            'id' => 'wcmp_onboard_tab',
+            'title' => __('Setup wizard', 'dc-woocommerce-multi-vendor'),
+            'content' =>
+            '<h2>' . __('Setup wizard', 'dc-woocommerce-multi-vendor') . '</h2>' .
+            '<p>' . __('If you need to access the setup wizard again, please click on the button below.', 'dc-woocommerce-multi-vendor') . '</p>' .
+            '<p><a href="' . admin_url('index.php?page=wcmp-setup') . '" class="button button-primary">' . __('Setup wizard', 'woocommerce') . '</a></p>',
+        ));
         $screen->set_help_sidebar(
                 '<p><strong>' . __('For more information:', 'dc-woocommerce-multi-vendor') . '</strong></p>' .
                 '<p><a href="' . 'https://wordpress.org/plugins/dc-woocommerce-multi-vendor/' . '" target="_blank">' . __('WordPress.org Project', 'dc-woocommerce-multi-vendor') . '</a></p>' .
@@ -157,7 +167,6 @@ class WCMp_Settings {
     }
 
     function get_wcmp_settings_tabsections_payment() {
-        global $WCMp;
         $tabsection_payment = apply_filters('wcmp_tabsection_payment', array(
             'payment' => __('Payment Settings', 'dc-woocommerce-multi-vendor'),
             'paypal_masspay' => __('Paypal Masspay', 'dc-woocommerce-multi-vendor'),
@@ -167,16 +176,15 @@ class WCMp_Settings {
     }
 
     function get_wcmp_settings_tabsections_vendor() {
-        global $WCMp;
         $tabsection_vendor = apply_filters('wcmp_tabsection_vendor', array(
             'general' => 'Vendor Pages',
-            'registration' => __('Vendor Registration', 'dc-woocommerce-multi-vendor')
+            'registration' => __('Vendor Registration', 'dc-woocommerce-multi-vendor'),
+            'dashboard' => __('Vendor Dashboard', 'dc-woocommerce-multi-vendor')
         ));
         return $tabsection_vendor;
     }
 
     function get_wcmp_settings_tabsections_capabilities() {
-        global $WCMp;
         $tabsection_vendor = apply_filters('wcmp_tabsection_capabilities', array(
             'product' => __('Product', 'dc-woocommerce-multi-vendor'),
             'order' => __('Order', 'dc-woocommerce-multi-vendor'),
@@ -284,12 +292,6 @@ class WCMp_Settings {
         foreach ($links as $link)
             echo $link;
         echo '</h2>';
-
-//        foreach ($this->tabs as $tab => $name) :
-//            if ($tab == $current && $tab != 'wcmp-addons') :
-//                printf(__("<h2>%s Settings</h2>", 'dc-woocommerce-multi-vendor'), $name);
-//            endif;
-//        endforeach;
 
         $display_sublink = false;
         if ($current == 'general' || $current == 'payment' || $current == 'vendor' || $current == 'capabilities') {
@@ -706,6 +708,12 @@ class WCMp_Settings {
         new WCMp_Settings_Vendor_Registration($tab, $subsection);
     }
 
+    public function vendor_dashboard_tab_init($tab, $subsection) {
+        global $WCMp;
+        $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
+        new WCMp_Settings_Vendor_Dashboard($tab, $subsection);
+    }
+
     function vendor_general_tab_init($tab, $subsection) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
@@ -747,6 +755,9 @@ class WCMp_Settings {
 
             case 'radio':
                 $callBack = 'radio_field_callback';
+                break;
+            case 'radio_select':
+                $callBack = 'radio_select_field_callback';
                 break;
 
             case 'select':
@@ -843,6 +854,17 @@ class WCMp_Settings {
         $field['value'] = isset($this->options[$field['name']]) ? esc_attr($this->options[$field['name']]) : $field['value'];
         $field['name'] = "wcmp_{$field['tab']}_settings_name[{$field['name']}]";
         $WCMp->wcmp_wp_fields->radio_input($field);
+    }
+    
+    /**
+     * Get the checkbox field display
+     */
+    public function radio_select_field_callback($field) {
+        global $WCMp;
+        $field['value'] = isset($field['value']) ? esc_attr($field['value']) : '';
+        $field['value'] = isset($this->options[$field['name']]) ? esc_attr($this->options[$field['name']]) : $field['value'];
+        $field['name'] = "wcmp_{$field['tab']}_settings_name[{$field['name']}]";
+        $WCMp->wcmp_wp_fields->radio_select_input($field);
     }
 
     /**

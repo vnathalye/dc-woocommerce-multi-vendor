@@ -4,7 +4,7 @@ Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi selle
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.8
-Stable tag: 2.7.6
+Stable tag: 2.7.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,6 +110,13 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+
+= 2.7.7 = 
+* Feature: Onboarding/setup wizard to handle basic marketplace settings and installation
+* Feature: Color Scheme to change vendor dashboard apperance.
+* Feature: 3 different vendor shop template to choose from.
+* Feature: Vendor specific product category widget added in vendor store.
+* Fix: Store logo and banner image upload from a url.
 
 = 2.7.6 =
 * Added: Hide duplicate product in shop page if single product multiple vendor enable.
@@ -290,5 +297,5 @@ Ans. This plugin is tested with PHP version 5.5.
 
 == Upgrade Notice ==
 
-= 2.7.5 =
+= 2.7.7 =
 2.7 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.

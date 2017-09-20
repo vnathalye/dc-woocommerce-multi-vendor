@@ -5,7 +5,7 @@ div.rowhead {
     box-sizing: border-box;
 }
 div.row.rowhead div.rowsub{
-    padding:1%;
+    padding:2%;
     float:left;
     padding-top:15px;
     padding-bottom:15px;	
@@ -16,11 +16,11 @@ div.row.rowbody div.rowsub{
     padding-top:5px;
     padding-bottom:5px;	
 }
-@media screen and (min-width: 1099px) {
+/*@media screen and (min-width: 1099px) {
     div.row.rowhead div.rowsub, div.row.rowbody div.rowsub{
-        width:23% !important;
+        width:32% !important;
     }
-}
+}*/
 #wcmp_multiple_product_sorting{
     margin: 0;
 }
@@ -151,6 +151,28 @@ span.wcmp_norating {
     padding:5px;
     border-radius:3px;	
 }
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(1),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(1){
+    width: 30%;
+}
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(2),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(2){
+    width: 20%;
+}
+
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(3){
+    width: 50%;
+}
+
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3){
+    text-align: right;
+}
+
+
+
+
+
 @media screen and (max-width: 1100px) {
 
     div.rowhead div.rowsub{
@@ -205,6 +227,35 @@ span.wcmp_norating {
 .goto_more_offer_tab.button{
     margin: 15px 0 10px 0;
 }
+
+
+
+
+@media (max-width: 767px){
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(1),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(1),
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(2),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(2),
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3),
+#tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(3){
+    width: 100%;
+}
+
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3){
+    text-align: center;
+}
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(1),
+#tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(2){
+    display: none;
+}
+
+#tab-singleproductmultivendor .row.rowbody .star-rating {
+    left: calc(50% - 50px);
+    }
+
+}
+
+
 @media screen and (max-width: 400px) {
 
     div.rowhead div.rowsub{

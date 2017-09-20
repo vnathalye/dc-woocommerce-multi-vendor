@@ -146,6 +146,24 @@ if ($vendor) :
             </div>
             <div class="clear"></div>
         </div>
+        <?php if(get_wcmp_vendor_settings('can_vendor_edit_shop_template', 'vendor', 'dashboard', false)): ?>
+        <div class="wcmp_headding2 moregap"><?php _e('Shop Template', 'dc-woocommerce-multi-vendor'); ?></div>
+        <ul class="wcmp_template_list">
+        <?php
+        $template_options = apply_filters('wcmp_vendor_shop_template_options', array('template1' => $WCMp->plugin_url.'assets/images/template1.png', 'template2' => $WCMp->plugin_url.'assets/images/template2.png', 'template3' => $WCMp->plugin_url.'assets/images/template3.png'));
+        $shop_template = get_wcmp_vendor_settings('wcmp_vendor_shop_template', 'vendor', 'dashboard', 'template1');
+        $shop_template = get_wcmp_vendor_settings('can_vendor_edit_shop_template', 'vendor', 'dashboard', false) && get_user_meta($user->ID, '_shop_template', true) ? get_user_meta($user->ID, '_shop_template', true) : $shop_template;
+        foreach ($template_options as $template => $template_image): ?>
+            <li>
+                <label>
+                    <input type="radio" <?php checked($template, $shop_template); ?> name="_shop_template" value="<?php echo $template; ?>" />  
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    <img src="<?php echo $template_image; ?>" />
+                </label>
+            </li>
+        <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
         <?php do_action('wcmp_after_shop_front'); ?>
         <?php do_action('other_exta_field_dcmv'); ?>
         <div class="action_div_space"> </div>

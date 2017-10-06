@@ -91,23 +91,25 @@ class WCMp_Frontend {
             $user_name = $user_data->user_login;
             $user_email = $user_data->user_email;
 
+            $wcmp_vendor_registration_form_id = get_user_meta($customer_id, 'wcmp_vendor_registration_form_id', true);
+            if (!$wcmp_vendor_registration_form_id) {
+                // Create post object
+                $my_post = array(
+                    'post_title' => $user_name,
+                    'post_status' => 'publish',
+                    'post_author' => 1,
+                    'post_type' => 'wcmp_vendorrequest'
+                );
 
-            // Create post object
-            $my_post = array(
-                'post_title' => $user_name,
-                'post_status' => 'publish',
-                'post_author' => 1,
-                'post_type' => 'wcmp_vendorrequest'
-            );
-
-            // Insert the post into the database
-            $register_vendor_post_id = wp_insert_post($my_post);
-            update_post_meta($register_vendor_post_id, 'user_id', $customer_id);
-            update_post_meta($register_vendor_post_id, 'username', $user_name);
-            update_post_meta($register_vendor_post_id, 'email', $user_email);
-            $wcmp_vendor_fields = apply_filters( 'wcmp_save_registration_fields', $wcmp_vendor_fields, $register_vendor_post_id, $customer_id );
-            update_post_meta($register_vendor_post_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
-            update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $register_vendor_post_id);
+                // Insert the post into the database
+                $wcmp_vendor_registration_form_id = wp_insert_post($my_post);
+            }
+            update_post_meta($wcmp_vendor_registration_form_id, 'user_id', $customer_id);
+            update_post_meta($wcmp_vendor_registration_form_id, 'username', $user_name);
+            update_post_meta($wcmp_vendor_registration_form_id, 'email', $user_email);
+            $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $wcmp_vendor_registration_form_id, $customer_id);
+            update_post_meta($wcmp_vendor_registration_form_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
+            update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $wcmp_vendor_registration_form_id);
             $WCMp->user->wcmp_woocommerce_created_customer_notification();
         }
     }
@@ -323,11 +325,6 @@ class WCMp_Frontend {
             wp_enqueue_script('simplepopup_js', $frontend_script_path . 'simplepopup' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         }
 
-        wp_register_script('gmaps-api', '//maps.google.com/maps/api/js?sensor=false&amp;language=en', array('jquery'));
-        wp_register_script('gmap3', $frontend_script_path . 'gmap3.min.js', array('jquery', 'gmaps-api'), '6.0.0', false);
-        if (is_tax('dc_vendor_shop') || is_singular('product')) {
-            wp_enqueue_script('gmap3');
-        }
         if (is_vendor_dashboard()) {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-tabs');
@@ -398,8 +395,8 @@ class WCMp_Frontend {
         }
         wp_enqueue_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
     }
-    
-    public function load_dashboard_color_palet(){
+
+    public function load_dashboard_color_palet() {
         global $WCMp;
         $scss = $WCMp->library->load_scss_lib();
         $wcmp_bkg = get_wcmp_vendor_settings('wcmp_background_color', 'vendor', 'dashboard', '#f5f5f5');
@@ -407,9 +404,9 @@ class WCMp_Frontend {
         $menu_color = get_wcmp_vendor_settings('wcmp_menu_color', 'vendor', 'dashboard', '#7a7a7a');
         $menu_hover_bkg = get_wcmp_vendor_settings('wcmp_menu_hover_background_color', 'vendor', 'dashboard', '#fff');
         $menu_hover_color = get_wcmp_vendor_settings('wcmp_menu_hover_color', 'vendor', 'dashboard', '#fc482f');
-        $dynamic_scss = '$wcmp-bkg : '.$wcmp_bkg.'; $menu-bkg : '.$menu_bkg.';$menu-color : '.$menu_color.';$menu-hover-bkg : '.$menu_hover_bkg.';$menu-hover-color : '.$menu_hover_color.';body{.wcmp_main_page{border-color: darken($wcmp-bkg, 10%);.wcmp_headding1, .wcmp_side_menu{background: $wcmp-bkg;border-color: darken($wcmp-bkg, 10%);} .action_div, .wcmp_top_logo_div ul li:first-child{border-color: darken($wcmp-bkg, 10%);}.wcmp_main_menu ul{li{border-top: 1px solid $menu-bkg;a{background: $menu-bkg;color: $menu-color;&:hover, &.active{background: $menu-hover-bkg;color: $menu-hover-color;						}}li{a{background: darken($menu-bkg, 7%);color: $menu-hover-color;}}&.hasmenu{li{border-color: darken($menu-bkg, 15%);a{color: $menu-hover-bkg;}&.active a, a:hover{background: $menu-hover-color;color: $menu-hover-bkg;		}						}}}}.wcmp_top_logo_div{ul{li{a:hover{color: $menu-hover-color;}}}}button, button.wcmp_black_btn, button.menu-hover-color, button.wcmp_ass_btn, button.wcmp_orange_btn,  button.wcmp_orange_btn{background: $menu-hover-color !important;color: $menu-hover-bkg;	border: solid 1px $menu-hover-color;&:hover:not([disabled="disabled"]){color: $menu-hover-color;background: $menu-hover-bkg !important;border-color: $menu-hover-color !important;} }p.error_wcmp{color: darken($menu-hover-color, 10%);}}}';
+        $dynamic_scss = '$wcmp-bkg : ' . $wcmp_bkg . '; $menu-bkg : ' . $menu_bkg . ';$menu-color : ' . $menu_color . ';$menu-hover-bkg : ' . $menu_hover_bkg . ';$menu-hover-color : ' . $menu_hover_color . ';body{.wcmp_main_page{border-color: darken($wcmp-bkg, 10%);.wcmp_headding1, .wcmp_side_menu{background: $wcmp-bkg;border-color: darken($wcmp-bkg, 10%);} .action_div, .wcmp_top_logo_div ul li:first-child{border-color: darken($wcmp-bkg, 10%);}.wcmp_main_menu ul{li{border-top: 1px solid $menu-bkg;a{background: $menu-bkg;color: $menu-color;&:hover, &.active{background: $menu-hover-bkg;color: $menu-hover-color;						}}li{a{background: darken($menu-bkg, 7%);color: $menu-hover-color;}}&.hasmenu{li{border-color: darken($menu-bkg, 15%);a{color: $menu-hover-bkg;}&.active a, a:hover{background: $menu-hover-color;color: $menu-hover-bkg;		}						}}}}.wcmp_top_logo_div{ul{li{a:hover{color: $menu-hover-color;}}}}button, button.wcmp_black_btn, button.menu-hover-color, button.wcmp_ass_btn, button.wcmp_orange_btn,  button.wcmp_orange_btn{background: $menu-hover-color !important;color: $menu-hover-bkg;	border: solid 1px $menu-hover-color;&:hover:not([disabled="disabled"]){color: $menu-hover-color;background: $menu-hover-bkg !important;border-color: $menu-hover-color !important;} }p.error_wcmp{color: darken($menu-hover-color, 10%);}}}';
         $dynamic_scss = $scss->compile($dynamic_scss);
-        wp_add_inline_style( 'wcmp_new_vandor_dashboard_css', $dynamic_scss );
+        wp_add_inline_style('wcmp_new_vandor_dashboard_css', $dynamic_scss);
     }
 
     /**
@@ -477,7 +474,7 @@ class WCMp_Frontend {
         if (is_user_logged_in() && is_page_vendor_registration()) {
             if (current_user_can('administrator') || current_user_can('shop_manager')) {
                 wp_safe_redirect(get_permalink(wc_get_page_id('myaccount')));
-            } else{
+            } else {
                 wp_safe_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
             }
             exit();

@@ -58,6 +58,12 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         $vendors = false;
         // Only show current vendor widget when showing a vendor's product(s)
         $show_widget = false;
+        if($instance['gmap_api_key']){
+            $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
+            $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
+            wp_register_script('gmaps-api', "//maps.googleapis.com/maps/api/js?key={$instance['gmap_api_key']}&sensor=false&language=en", array('jquery'));
+            wp_register_script('gmap3', $frontend_script_path . 'gmap3.min.js', array('jquery', 'gmaps-api'), '6.0.0', false);
+        }
 
         if (is_tax('dc_vendor_shop')) {
             $vendor_id = get_queried_object()->term_id;
@@ -76,6 +82,9 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         }
 
         if ($show_widget && isset($vendor->id)) {
+
+            wp_enqueue_script('gmap3');
+           
 
             $vendor_address_1 = get_user_meta($vendor->id, '_vendor_address_1', true);
             $vendor_address_2 = get_user_meta($vendor->id, '_vendor_address_2', true);
@@ -142,6 +151,7 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
     public function update($new_instance, $old_instance) {
         $instance = $old_instance;
         $instance['title'] = strip_tags($new_instance['title']);
+        $instance['gmap_api_key'] = strip_tags($new_instance['gmap_api_key']);
         return $instance;
     }
 
@@ -155,6 +165,7 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         global $WCMp, $woocommerce;
         $defaults = array(
             'title' => __('Store Location', 'dc-woocommerce-multi-vendor'),
+            'gmap_api_key' => __('Google Map API key', 'dc-woocommerce-multi-vendor'),
         );
 
         $instance = wp_parse_args((array) $instance, $defaults);
@@ -162,6 +173,12 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         <p>
             <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dc-woocommerce-multi-vendor') ?>:
                 <input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" class="widefat" />
+            </label>
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id('gmap_api_key'); ?>"><?php _e('Google Map API key', 'dc-woocommerce-multi-vendor') ?>:
+                <input type="text" id="<?php echo $this->get_field_id('gmap_api_key'); ?>" name="<?php echo $this->get_field_name('gmap_api_key'); ?>" value="<?php if($instance['gmap_api_key']) echo $instance['gmap_api_key']; ?>" class="widefat" />
+                <span class="desc"><a href="https://developers.google.com/maps/documentation/javascript/get-api-key#get-an-api-key" target="_blank"><?php _e('Click here to generate key', 'dc-woocommerce-multi-vendor') ?></a> </span>
             </label>
         </p>
         <?php

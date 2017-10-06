@@ -45,7 +45,7 @@ class WCMp_Product {
         }
         add_filter('wp_count_posts', array(&$this, 'vendor_count_products'), 10, 3);
         /* Related Products */
-        add_filter('woocommerce_related_products_args', array($this, 'related_products_args'), 15);
+        add_filter('woocommerce_output_related_products_args', array($this, 'related_products_args'), 15);
         // bulk edit vendor set
         add_action('woocommerce_product_bulk_edit_end', array($this, 'add_product_vendor'));
         add_action('woocommerce_product_bulk_edit_save', array($this, 'save_vendor_bulk_edit'));
@@ -255,7 +255,7 @@ class WCMp_Product {
         global $WCMp, $wpdb;
         $post = get_post($post_id);
         if ($post->post_type == 'product') {
-            if (isset($post->post_title)) {
+            if (isset($post->post_title) && $post->post_title != 'AUTO-DRAFT') {
                 $searchstr = $post->post_title;
                 $searchstr = str_replace("'", "", $searchstr);
                 $searchstr = str_replace('"', '', $searchstr);

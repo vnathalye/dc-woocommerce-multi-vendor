@@ -15,9 +15,9 @@ global $WCMp;
 		<div class="store-maps" class="gmap3" style="height: 300px;"></div>
 		<a href="<?php echo $gmaps_link ?>" target="_blank"><?php _e( 'Show in Google Maps', 'dc-woocommerce-multi-vendor' ) ?></a>
 </div>
-
-<script type="text/javascript">
-(function ($) {
+<?php 
+wp_add_inline_script( 'gmap3', 
+  '(function ($) {
     $(".store-maps").gmap3({
         map   : {
             options: {
@@ -33,11 +33,11 @@ global $WCMp;
                 overviewMapControl       : false,
                 OverviewMapControlOptions: false
             },
-            address: "<?php echo $location; ?>"
+            address: "'.$location.'"
         },
         marker: {
-            address: "<?php echo $location; ?>",
+            address: "'.$location.'",
         }
     });
-})(jQuery)
-</script>
+})(jQuery)');
+?>

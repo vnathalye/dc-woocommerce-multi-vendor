@@ -179,23 +179,25 @@ class WCMp_User {
                 $user_name = $user_data->user_login;
                 $user_email = $user_data->user_email;
 
+                $wcmp_vendor_registration_form_id = get_user_meta($customer_id, 'wcmp_vendor_registration_form_id', true);
+                if (!$wcmp_vendor_registration_form_id) {
+                    // Create post object
+                    $my_post = array(
+                        'post_title' => $user_name,
+                        'post_status' => 'publish',
+                        'post_author' => 1,
+                        'post_type' => 'wcmp_vendorrequest'
+                    );
 
-                // Create post object
-                $my_post = array(
-                    'post_title' => $user_name,
-                    'post_status' => 'publish',
-                    'post_author' => 1,
-                    'post_type' => 'wcmp_vendorrequest'
-                );
-
-                // Insert the post into the database
-                $register_vendor_post_id = wp_insert_post($my_post);
-                update_post_meta($register_vendor_post_id, 'user_id', $customer_id);
-                update_post_meta($register_vendor_post_id, 'username', $user_name);
-                update_post_meta($register_vendor_post_id, 'email', $user_email);
-                $wcmp_vendor_fields = apply_filters( 'wcmp_save_registration_fields', $wcmp_vendor_fields, $register_vendor_post_id, $customer_id );
-                update_post_meta($register_vendor_post_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
-                update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $register_vendor_post_id);
+                    // Insert the post into the database
+                    $wcmp_vendor_registration_form_id = wp_insert_post($my_post);
+                }
+                update_post_meta($wcmp_vendor_registration_form_id, 'user_id', $customer_id);
+                update_post_meta($wcmp_vendor_registration_form_id, 'username', $user_name);
+                update_post_meta($wcmp_vendor_registration_form_id, 'email', $user_email);
+                $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $wcmp_vendor_registration_form_id, $customer_id);
+                update_post_meta($wcmp_vendor_registration_form_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
+                update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $wcmp_vendor_registration_form_id);
             }
 
             if (isset($_POST['vendor_apply']) && $user) {
@@ -717,14 +719,15 @@ class WCMp_User {
     public function vendor_registration($user_id) {
         global $WCMp;
         $is_approve_manually = $WCMp->vendor_caps->vendor_general_settings('approve_vendor_manually');
-        if (isset($_POST['pending_vendor']) && ($_POST['pending_vendor'] == 'true') && !is_user_wcmp_vendor($user_id) && $is_approve_manually) {
-            $user = new WP_User(absint($user_id));
-            $user->set_role('dc_pending_vendor');
-        }
-
-        if (isset($_POST['pending_vendor']) && ($_POST['pending_vendor'] == 'true') && !is_user_wcmp_vendor($user_id) && !$is_approve_manually) {
-            $user = new WP_User(absint($user_id));
-            $user->set_role('dc_vendor');
+        if (isset($_POST['pending_vendor']) && ($_POST['pending_vendor'] == 'true') && !is_user_wcmp_vendor($user_id)) {
+            if ($is_approve_manually) {
+                $user = new WP_User(absint($user_id));
+                $user->set_role('dc_pending_vendor');
+            } else {
+                $user = new WP_User(absint($user_id));
+                $user->set_role('dc_vendor');
+            }
+            do_action('after_register_wcmp_vendor', $user_id);
         }
     }
 

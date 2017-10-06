@@ -98,7 +98,6 @@ class WCMp_Commission {
      * @return void
      */
     public function meta_box_setup() {
-        global $WCMp;
         add_meta_box('wcmp-commission-data', __('Commission Details', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_meta_box_content'), $this->post_type, 'normal', 'high');
     }
 
@@ -108,7 +107,7 @@ class WCMp_Commission {
      * @return void
      */
     public function wcmp_meta_box_content() {
-        global $post_id, $woocommerce, $WCMp;
+        global $post_id;
         $fields = get_post_custom($post_id);
         $field_data = $this->get_custom_fields_settings($post_id);
 
@@ -207,7 +206,6 @@ class WCMp_Commission {
      * @return arr Array of custom fields
      */
     public function get_custom_fields_settings($post_id) {
-        global $WCMp;
         $fields = array();
 
         $fields['_commission_order_id'] = array(
@@ -273,7 +271,7 @@ class WCMp_Commission {
      * @return void
      */
     public function meta_box_save($post_id) {
-        global $post, $messages, $wpdb;
+        global $wpdb;
 
         // Verify nonce
         if (( get_post_type() != $this->post_type ) || !wp_verify_nonce($_POST[$this->post_type . '_nonce'], plugin_basename($this->dir))) {
@@ -309,7 +307,7 @@ class WCMp_Commission {
      * @return void
      */
     public function custom_actions_content() {
-        global $post, $WCMp;
+        global $post;
         if (get_post_type($post) == $this->post_type) {
             echo '<div class="misc-pub-section misc-pub-section-last">';
             wp_nonce_field(plugin_basename($this->file), 'paid_status_nonce');
@@ -380,7 +378,6 @@ class WCMp_Commission {
      * @return arr           New columns
      */
     public function wcmp_register_custom_column_headings($defaults) {
-        global $WCMp;
         $new_columns = array(
             '_commission_order_id' => __('Order ID', 'dc-woocommerce-multi-vendor'),
             '_commission_product' => __('Product', 'dc-woocommerce-multi-vendor'),

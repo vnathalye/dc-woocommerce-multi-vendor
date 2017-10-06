@@ -25,7 +25,8 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
         parent::__construct(array(
             'singular' => 'order',
             'plural' => 'orders',
-            'ajax' => false
+            'ajax' => false,
+            'screen' => 'dc-vendor-orders',
         ));
     }
 
@@ -54,6 +55,8 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
             case 'status' :
                 return $item->status;
         }
+
+        do_action( "wcmp_manage_dc-vendor-orders_column_data", $item, $column_name );
     }
 
     /**
@@ -85,7 +88,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
             $columns['status'] = __('Shipped', 'dc-woocommerce-multi-vendor');
         }
 
-        return $columns;
+        return apply_filters( "wcmp_manage_dc-vendor-orders_columns", $columns );
     }
 
     /**
@@ -100,7 +103,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
             'status' => array('status', false),
         );
 
-        return $sortable_columns;
+        return apply_filters( "wcmp_manage_dc-vendor-orders_sortable_columns", $sortable_columns );
     }
 
     /**
@@ -114,7 +117,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
         if ($this->vendor->is_shipping_enable()) {
             $actions['mark_shipped'] = __('Mark as Shipped', 'dc-woocommerce-multi-vendor');
         }
-        return $actions;
+        return apply_filters( "wcmp_bulk_actions-dc-vendor-orders", $actions );
     }
 
     /**
@@ -143,6 +146,8 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
                 // code...
                 break;
         }
+
+        do_action( "wcmp_process_bulk_action-dc-vendor-orders", $items, $this->current_action());
     }
 
     /**

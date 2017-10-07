@@ -441,8 +441,8 @@ class WCMp_Admin {
             // wp_enqueue_script( 'chosen' );
             wp_enqueue_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
-            wp_enqueue_script('commission_js', $WCMp->plugin_url . 'assets/admin/js/commission' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_localize_script('commission_js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
+            wp_enqueue_script('wcmp-admin-commission-js', $WCMp->plugin_url . 'assets/admin/js/commission' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_localize_script('wcmp-admin-commission-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
         endif;
 
 
@@ -460,8 +460,8 @@ class WCMp_Admin {
 
             wp_enqueue_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
-            wp_enqueue_script('commission_js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_localize_script('commission_js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
+            wp_enqueue_script('wcmp-admin-product-js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_localize_script('wcmp-admin-product-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
             if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
                 wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
             }

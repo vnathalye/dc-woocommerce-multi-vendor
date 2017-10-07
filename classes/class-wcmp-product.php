@@ -57,11 +57,13 @@ class WCMp_Product {
 
         add_action('woocommerce_variation_options_dimensions', array($this, 'add_filter_for_shipping_class'), 10, 3);
         add_action('woocommerce_variation_options_tax', array($this, 'remove_filter_for_shipping_class'), 10, 3);
-        //add_action( 'wp_footer', array($this, 'print_in_footer'),1000);
+        add_action('admin_footer', array($this, 'wcmp_edit_product_footer'));
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
             //add_action('woocommerce_after_single_product_summary', array($this, 'get_multiple_vendors_products_of_single_product'),5);
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
+            add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
+            add_filter('wp_insert_post_data', array($this, 'restrict_user_product_title_updation'),10, 2);
             add_action('save_post', array($this, 'update_data_to_products_map_table'));
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
@@ -288,6 +290,23 @@ class WCMp_Product {
         $final_arr = array_merge($arr, $exclude_arr);
         return $final_arr;
     }
+    
+    function wcmp_product_duplicate_update_meta($duplicate, $product){
+        $singleproductmultiseller = isset( $_REQUEST['singleproductmultiseller'] ) ? absint( $_REQUEST['singleproductmultiseller'] ) : '';
+        if($singleproductmultiseller == 1){
+            update_post_meta($duplicate->get_id(), '_wcmp_parent_product_id', $product->get_id());
+        }
+    }
+    
+    function restrict_user_product_title_updation($data, $postarr){
+        
+        if(apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
+            if(isset($data['post_title']) && $postarr['post_type'] == 'product' && !empty( $postarr['ID'] )){
+                unset($data['post_title']);
+            }
+        }
+        return $data;
+    }
 
     public function get_multiple_vendors_products_of_single_product() {
         global $WCMp;
@@ -305,11 +324,21 @@ class WCMp_Product {
         remove_filter('wp_dropdown_cats', array($this, 'filter_shipping_class_for_variation'), 10, 2);
     }
 
-    public function print_in_footer() {
-        $data = get_option('shipping_class_args_test_by_prabhakar');
-        echo "<pre>";
-        print_r($data);
-        echo "<pre>";
+    function wcmp_edit_product_footer() {
+        $screen = get_current_screen();
+        // disable product title from being edit
+        if (isset($_GET['post'])) {
+            $current_post_id = $_GET['post'];
+            if (get_post_type($current_post_id) == 'product') {
+                $wcmp_have_parent_product_id = get_post_meta($current_post_id, '_wcmp_parent_product_id', true);
+                if(in_array($screen->id, array('product','edit-product')) && $wcmp_have_parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
+                    wp_add_inline_script( 'wcmp-admin-product-js', 
+                    '(function ($) { 
+                      $("#titlewrap #title").prop("disabled", true);
+                  })(jQuery)');
+                }
+            }
+        }
     }
 
     public function filter_shipping_class_for_variation($output, $arg) {
@@ -794,7 +823,7 @@ class WCMp_Product {
             if (current_user_can('manage_options')) {
                 $html .= '<tr valign="top"><td scope="row"><input type="button" class="delete_vendor_data button" value="' . __("Unassign vendor", 'dc-woocommerce-multi-vendor') . '" /></td></tr>';
 
-                wp_localize_script('commission_js', 'unassign_vendors_data', array('current_product_id' => $post->ID, 'current_user_id' => get_current_vendor_id()));
+                wp_localize_script('wcmp-admin-product-js', 'unassign_vendors_data', array('current_product_id' => $post->ID, 'current_user_id' => get_current_vendor_id()));
             }
         }
 

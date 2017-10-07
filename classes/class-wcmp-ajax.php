@@ -173,7 +173,7 @@ class WCMp_Ajax {
         if (count($results) > 0) {
             echo "<ul>";
             foreach ($results as $result) {
-                echo "<li data-element='{$result->ID}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&post=' . $result->ID), 'woocommerce-duplicate-product_' . $result->ID) . "'>{$result->post_title}</a></li>";
+                echo "<li data-element='{$result->ID}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&singleproductmultiseller=1&post=' . $result->ID), 'woocommerce-duplicate-product_' . $result->ID) . "'>{$result->post_title}</a></li>";
             }
             echo "</ul>";
         } else {

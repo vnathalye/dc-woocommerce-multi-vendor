@@ -16,7 +16,7 @@ global $WCMp;
 		<a href="<?php echo $gmaps_link ?>" target="_blank"><?php _e( 'Show in Google Maps', 'dc-woocommerce-multi-vendor' ) ?></a>
 </div>
 <?php 
-wp_add_inline_script( 'gmap3', 
+wp_add_inline_script( 'wcmp-gmap3', 
   '(function ($) {
     $(".store-maps").gmap3({
         map   : {
@@ -40,4 +40,3 @@ wp_add_inline_script( 'gmap3',
         }
     });
 })(jQuery)');
-?>

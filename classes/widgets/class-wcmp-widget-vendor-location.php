@@ -61,8 +61,8 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         if($instance['gmap_api_key']){
             $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
             $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
-            wp_register_script('gmaps-api', "//maps.googleapis.com/maps/api/js?key={$instance['gmap_api_key']}&sensor=false&language=en", array('jquery'));
-            wp_register_script('gmap3', $frontend_script_path . 'gmap3.min.js', array('jquery', 'gmaps-api'), '6.0.0', false);
+            wp_register_script('wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$instance['gmap_api_key']}&sensor=false&language=en", array('jquery'));
+            wp_register_script('wcmp-gmap3', $frontend_script_path . 'gmap3.min.js', array('jquery', 'wcmp-gmaps-api'), '6.0.0', false);
         }
 
         if (is_tax('dc_vendor_shop')) {
@@ -83,7 +83,7 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
 
         if ($show_widget && isset($vendor->id)) {
 
-            wp_enqueue_script('gmap3');
+            wp_enqueue_script('wcmp-gmap3');
            
 
             $vendor_address_1 = get_user_meta($vendor->id, '_vendor_address_1', true);

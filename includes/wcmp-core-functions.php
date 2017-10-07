@@ -991,6 +991,9 @@ if (!function_exists('do_wcmp_data_migrate')) {
     function do_wcmp_data_migrate($previous_plugin_version = '', $new_plugin_version = '') {
         global $WCMp, $wpdb, $wp_roles;
         if ($previous_plugin_version) {
+            if ($previous_plugin_version <= '2.7.7') {
+                $wpdb->delete( $wpdb->prefix.'wcmp_products_map', array( 'product_title' => 'AUTO-DRAFT' ) );
+            }
             if ($previous_plugin_version <= '2.7.5') {
                 if (!class_exists('WP_Roles')) {
                     return;

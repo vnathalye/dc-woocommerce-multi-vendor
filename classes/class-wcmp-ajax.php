@@ -1138,8 +1138,8 @@ class WCMp_Ajax {
         if(isset($_POST['s']) && sanitize_text_field($_POST['s'])){
             $args =array(
                 'search' => '*'.esc_attr( $_POST['s'] ).'*',
-                'search_columns' => array( 'display_name' ),
-                'meta_query' => array(
+                'search_columns' => array( 'display_name', 'user_login', 'user_nicename' ),
+                /*'meta_query' => array(
                     'relation' => 'OR',
                     array(
                         'key'     => 'first_name',
@@ -1151,7 +1151,7 @@ class WCMp_Ajax {
                         'value'   => esc_attr( $_POST['s'] ),
                         'compare' => 'LIKE'
                     )
-                )
+                )*/
             );
             $vendors = get_wcmp_vendors($args);
 

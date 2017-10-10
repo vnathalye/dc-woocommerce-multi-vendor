@@ -11,6 +11,7 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
     private $client_id;
     private $client_secret;
     private $test_mode = false;
+    private $payout_mode = 'true';
     private $reciver_email;
     private $api_endpoint;
     private $token_endpoint;
@@ -23,11 +24,14 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
         $this->enabled = get_wcmp_vendor_settings('payment_method_paypal_payout', 'payment');
         $this->client_id = get_wcmp_vendor_settings('client_id', 'payment', 'paypal_payout');
         $this->client_secret = get_wcmp_vendor_settings('client_secret', 'payment', 'paypal_payout');
-        $this->api_endpoint = 'https://api.paypal.com/v1/payments/payouts?sync_mode=true';
+        if (get_wcmp_vendor_settings('is_asynchronousmode', 'payment', 'paypal_payout') == 'Enable') {
+            $this->payout_mode = 'false';
+        }
+        $this->api_endpoint = 'https://api.paypal.com/v1/payments/payouts?sync_mode='.$this->payout_mode;
         $this->token_endpoint = 'https://api.paypal.com/v1/oauth2/token';
         if (get_wcmp_vendor_settings('is_testmode', 'payment', 'paypal_payout') == 'Enable') {
             $this->test_mode = true;
-            $this->api_endpoint = 'https://api.sandbox.paypal.com/v1/payments/payouts?sync_mode=true';
+            $this->api_endpoint = 'https://api.sandbox.paypal.com/v1/payments/payouts?sync_mode='.$this->payout_mode;
             $this->token_endpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
         }
     }
@@ -142,12 +146,22 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
         curl_close($curl);
         $result_array = json_decode($result, true);
         $batch_status = $result_array['batch_header']['batch_status'];
-        $transaction_status = $result_array['items'][0]['transaction_status'];
-        if ($batch_status == 'SUCCESS' && $transaction_status == 'SUCCESS') {
-            return $result_array;
-        } else {
-            doProductVendorLOG(json_encode($result_array));
-            return false;
+        if($this->payout_mode == 'true'){
+            $transaction_status = $result_array['items'][0]['transaction_status'];
+            if ($batch_status == 'SUCCESS' && $transaction_status == 'SUCCESS') {
+                return $result_array;
+            } else {
+                doProductVendorLOG(json_encode($result_array));
+                return false;
+            }
+        }else{
+            $batch_payout_status = apply_filters('wcmp_paypal_payout_batch_status', array('PENDING', 'PROCESSING', 'SUCCESS', 'NEW'));
+            if (in_array($batch_status, $batch_payout_status) ) {
+                return $result_array;
+            } else {
+                doProductVendorLOG(json_encode($result_array));
+                return false;
+            }
         }
     }
 

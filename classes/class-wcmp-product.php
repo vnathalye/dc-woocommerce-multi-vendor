@@ -63,8 +63,7 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
-            add_filter('wp_insert_post_data', array($this, 'restrict_user_product_title_updation'),10, 2);
-            add_action('save_post', array($this, 'update_data_to_products_map_table'));
+            add_action('publish_post', array($this, 'update_data_to_products_map_table'));
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
 
@@ -298,16 +297,6 @@ class WCMp_Product {
         }
     }
     
-    function restrict_user_product_title_updation($data, $postarr){
-        
-        if(apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
-            if(isset($data['post_title']) && $postarr['post_type'] == 'product' && !empty( $postarr['ID'] )){
-                unset($data['post_title']);
-            }
-        }
-        return $data;
-    }
-
     public function get_multiple_vendors_products_of_single_product() {
         global $WCMp;
         $WCMp->template->get_template('single-product/multiple_vendors_products.php');

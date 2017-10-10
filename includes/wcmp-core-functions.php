@@ -251,8 +251,12 @@ if (!function_exists('is_vendor_dashboard')) {
      */
     function is_vendor_dashboard() {
         $is_vendor_dashboard = false;
-        if (get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general')) {
-            $is_vendor_dashboard = is_page((int) get_wcmp_vendor_settings('wcmp_vendor', 'vendor', 'general'));
+        if (wcmp_vendor_dashboard_page_id()) {
+            if (function_exists('icl_object_id')) {
+                $is_vendor_dashboard = is_page(icl_object_id(wcmp_vendor_dashboard_page_id(), 'page', false, ICL_LANGUAGE_CODE));
+            }else{
+                $is_vendor_dashboard = is_page(wcmp_vendor_dashboard_page_id());
+            }
         }
         return apply_filters('is_wcmp_vendor_dashboard', $is_vendor_dashboard);
     }
@@ -280,8 +284,8 @@ if (!function_exists('is_page_vendor_registration')) {
      * @return boolean
      */
     function is_page_vendor_registration() {
-        if (get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general')) {
-            return is_page(get_wcmp_vendor_settings('vendor_registration', 'vendor', 'general')) ? true : false;
+        if (wcmp_vendor_registration_page_id()) {
+            return is_page(wcmp_vendor_registration_page_id()) ? true : false;
         }
         return false;
     }
@@ -345,19 +349,8 @@ if (!function_exists('is_vendor_page')) {
      * @return boolean
      */
     function is_vendor_page() {
-
-        $return = false;
-        if (wcmp_vendor_dashboard_page_id()) {
-            if (function_exists('icl_object_id')) {
-                if (is_page(icl_object_id(wcmp_vendor_dashboard_page_id(), 'page', false, ICL_LANGUAGE_CODE)) || is_page(icl_object_id(wcmp_vendor_registration_page_id(), 'page', false, ICL_LANGUAGE_CODE))) {
-                    $return = true;
-                }
-            } else if (is_page(wcmp_vendor_dashboard_page_id()) || is_page(wcmp_vendor_registration_page_id())) {
-                $return = true;
-            }
-        }
-        
-        return apply_filters('is_wcmp_vendor_page', $return);
+        _deprecated_function('is_vendor_page', '2.7.7', 'is_vendor_dashboard or is_page_vendor_registration');
+        return apply_filters('is_wcmp_vendor_page', (is_vendor_dashboard() || is_page_vendor_registration()));
     }
 
 }

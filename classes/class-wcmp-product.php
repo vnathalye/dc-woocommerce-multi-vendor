@@ -64,6 +64,7 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
             add_action('publish_post', array($this, 'update_data_to_products_map_table'));
+            add_action('save_post_product', array($this, 'update_duplicate_product_title'),999);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
 
@@ -255,7 +256,7 @@ class WCMp_Product {
     function update_data_to_products_map_table($post_id) {
         global $WCMp, $wpdb;
         $post = get_post($post_id);
-        if ($post->post_type == 'product') {
+        if ($post->post_type == 'product') { 
             if (isset($post->post_title) && $post->post_title != 'AUTO-DRAFT') {
                 $searchstr = $post->post_title;
                 $searchstr = str_replace("'", "", $searchstr);
@@ -275,6 +276,15 @@ class WCMp_Product {
                     $wpdb->query("insert into {$wpdb->prefix}wcmp_products_map set product_title='{$searchstr}', product_ids = '{$post->ID}' ");
                 }
             }
+        }
+    }
+    
+    function update_duplicate_product_title($post_ID, $post, $update){
+        global $wpdb;
+        $parent_product_id = get_post_meta($post_ID, '_wcmp_parent_product_id', true);
+        if($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
+            $parent_post = get_post(absint($parent_product_id));
+            $wpdb->update( $wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID) );
         }
     }
 
@@ -893,6 +903,7 @@ class WCMp_Product {
                                 }
                             }
                         }
+                        do_action( 'wcmp_product_options_policy_product_data' );
                         ?>
                     </tbody>
                 </table>			

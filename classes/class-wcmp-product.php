@@ -3,11 +3,11 @@ if (!defined('ABSPATH'))
     exit;
 
 /**
- * @class 		WCMp Product Class
+ * @class       WCMp Product Class
  *
- * @version		2.2.0
- * @package		WCMp
- * @author 		WC Marketplace
+ * @version     2.2.0
+ * @package     WCMp
+ * @author      WC Marketplace
  */
 class WCMp_Product {
 
@@ -63,7 +63,7 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
-            add_action('publish_post', array($this, 'update_data_to_products_map_table'));
+            add_action('publish_product', array($this, 'update_data_to_products_map_table'), 10, 2);
             add_action('save_post_product', array($this, 'update_duplicate_product_title'),999);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
@@ -253,11 +253,11 @@ class WCMp_Product {
         return array('results' => $results, 'more_product_array' => $more_product_array);
     }
 
-    function update_data_to_products_map_table($post_id) {
-        global $WCMp, $wpdb;
-        $post = get_post($post_id);
-        if ($post->post_type == 'product') { 
-            if (isset($post->post_title) && $post->post_title != 'AUTO-DRAFT') {
+    function update_data_to_products_map_table($post_id, $post) {
+        global $wpdb;
+        $post->post_title = get_post_meta($post_id, '_wcmp_parent_product_id', true) ? get_post(get_post_meta($post_id, '_wcmp_parent_product_id', true))->post_title : $post->post_title;
+        if ($post->post_type == 'product') {
+            if (isset($post->post_title)) {
                 $searchstr = $post->post_title;
                 $searchstr = str_replace("'", "", $searchstr);
                 $searchstr = str_replace('"', '', $searchstr);
@@ -864,9 +864,9 @@ class WCMp_Product {
                                     <tr>
                                         <td>
                                             <p><strong><?php echo __('Cancellation/Return/Exchange Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_cancallation_policy"  ><?php echo $_wcmp_cancallation_policy; ?></textarea>		 	 	      
-                                        </td>				 	 	  
-                                    </tr>									
+                                            <textarea class="widefat" name="_wcmp_cancallation_policy"  ><?php echo $_wcmp_cancallation_policy; ?></textarea>                     
+                                        </td>                         
+                                    </tr>                                   
                                     <?php
                                 }
                             }
@@ -880,8 +880,8 @@ class WCMp_Product {
                                     <tr>
                                         <td>
                                             <p><strong><?php echo __('Refund Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_refund_policy"  ><?php echo $_wcmp_refund_policy; ?></textarea>		 	 	      
-                                        </td>				 	 	  
+                                            <textarea class="widefat" name="_wcmp_refund_policy"  ><?php echo $_wcmp_refund_policy; ?></textarea>                     
+                                        </td>                         
                                     </tr>
                                     <?php
                                 }
@@ -896,8 +896,8 @@ class WCMp_Product {
                                     <tr>
                                         <td>
                                             <p><strong><?php echo __('Shipping Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_shipping_policy"  ><?php echo $_wcmp_shipping_policy; ?></textarea>		 	 	      
-                                        </td>				 	 	  
+                                            <textarea class="widefat" name="_wcmp_shipping_policy"  ><?php echo $_wcmp_shipping_policy; ?></textarea>                     
+                                        </td>                         
                                     </tr>
                                     <?php
                                 }
@@ -906,7 +906,7 @@ class WCMp_Product {
                         do_action( 'wcmp_product_options_policy_product_data' );
                         ?>
                     </tbody>
-                </table>			
+                </table>            
             </div>
         </div>
 
@@ -1069,106 +1069,106 @@ class WCMp_Product {
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-											<td>
-												<div class="_product_vendors_commission_percentage">
-													<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
-													<span class="variable_commission_cls">' . $commission_percentage . '</span>
-												</div>
-											</td>
-										</tr>';
+                                            <td>
+                                                <div class="_product_vendors_commission_percentage">
+                                                    <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                    <span class="variable_commission_cls">' . $commission_percentage . '</span>
+                                                </div>
+                                            </td>
+                                        </tr>';
                 }
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-											<td>
-												<div class="_product_vendors_commission_fixed_per_trans">
-													<label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
-													<span class="variable_commission_cls">' . $commission_fixed_per_trans . '</span>
-												</div>
-											</td>
-										</tr>';
+                                            <td>
+                                                <div class="_product_vendors_commission_fixed_per_trans">
+                                                    <label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                    <span class="variable_commission_cls">' . $commission_fixed_per_trans . '</span>
+                                                </div>
+                                            </td>
+                                        </tr>';
                 }
             } else {
                 $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission_percentage">
-												<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
-												<input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
-											</div>
-										</td>
-									</tr>';
+                                        <td>
+                                            <div class="_product_vendors_commission_percentage">
+                                                <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
+                                            </div>
+                                        </td>
+                                    </tr>';
                 $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission_fixed_per_trans">
-												<label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
-												<input size="4" type="text" name="variable_product_vendors_commission_fixed_per_trans[' . $loop . ']" id="_product_vendors_commission_fixed_per_trans__' . $loop . '" value="' . $commission_fixed_per_trans . '" />
-											</div>
-										</td>
-									</tr>';
+                                        <td>
+                                            <div class="_product_vendors_commission_fixed_per_trans">
+                                                <label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <input size="4" type="text" name="variable_product_vendors_commission_fixed_per_trans[' . $loop . ']" id="_product_vendors_commission_fixed_per_trans__' . $loop . '" value="' . $commission_fixed_per_trans . '" />
+                                            </div>
+                                        </td>
+                                    </tr>';
             }
         } else if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage_qty') {
 
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-											<td>
-												<div class="_product_vendors_commission_percentage">
-													<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
-													<span class="variable_commission_cls">' . $commission_percentage . '</span>
-												</div>
-											</td>
-										</tr>';
+                                            <td>
+                                                <div class="_product_vendors_commission_percentage">
+                                                    <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                    <span class="variable_commission_cls">' . $commission_percentage . '</span>
+                                                </div>
+                                            </td>
+                                        </tr>';
                 }
 
                 if (isset($commission_fixed_per_qty) && !empty($commission_fixed_per_qty)) {
                     $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission_fixed_per_qty">
-												<label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
-												<span class="variable_commission_cls">' . $commission_fixed_per_qty . '</span>
-											</div>
-										</td>
-									</tr';
+                                        <td>
+                                            <div class="_product_vendors_commission_fixed_per_qty">
+                                                <label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <span class="variable_commission_cls">' . $commission_fixed_per_qty . '</span>
+                                            </div>
+                                        </td>
+                                    </tr';
                 }
             } else {
                 $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission_percentage">
-												<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
-												<input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
-											</div>
-										</td>
-									</tr>';
+                                        <td>
+                                            <div class="_product_vendors_commission_percentage">
+                                                <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
+                                            </div>
+                                        </td>
+                                    </tr>';
 
                 $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission_fixed_per_qty">
-												<label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
-												<input size="4" type="text" name="variable_product_vendors_commission_fixed_per_qty[' . $loop . ']" id="_product_vendors_commission_fixed_per_qty__' . $loop . '" value="' . $commission_fixed_per_qty . '" />
-											</div>
-										</td>
-									</tr';
+                                        <td>
+                                            <div class="_product_vendors_commission_fixed_per_qty">
+                                                <label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <input size="4" type="text" name="variable_product_vendors_commission_fixed_per_qty[' . $loop . ']" id="_product_vendors_commission_fixed_per_qty__' . $loop . '" value="' . $commission_fixed_per_qty . '" />
+                                            </div>
+                                        </td>
+                                    </tr';
             }
         } else {
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission) && !empty($commission)) {
                     $html .= '<tr>
-											<td>
-												<div class="_product_vendors_commission">
-													<label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
-													<span class="variable_commission_cls">' . $commission . '</span>
-												</div>
-											</td>
-										</tr>';
+                                            <td>
+                                                <div class="_product_vendors_commission">
+                                                    <label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                    <span class="variable_commission_cls">' . $commission . '</span>
+                                                </div>
+                                            </td>
+                                        </tr>';
                 }
             } else {
                 $html .= '<tr>
-										<td>
-											<div class="_product_vendors_commission">
-												<label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
-												<input size="4" type="text" name="variable_product_vendors_commission[' . $loop . ']" id="_product_vendors_commission_' . $loop . '" value="' . $commission . '" />
-											</div>
-										</td>
-									</tr>';
+                                        <td>
+                                            <div class="_product_vendors_commission">
+                                                <label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
+                                                <input size="4" type="text" name="variable_product_vendors_commission[' . $loop . ']" id="_product_vendors_commission_' . $loop . '" value="' . $commission . '" />
+                                            </div>
+                                        </td>
+                                    </tr>';
             }
         }
 
@@ -1370,7 +1370,7 @@ class WCMp_Product {
                         </tbody>
                     </table>
                 </form>
-            </div> 							
+            </div>                          
             <?php
         }
     }

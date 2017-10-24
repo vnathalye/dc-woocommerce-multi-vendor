@@ -211,7 +211,7 @@ class WCMp_Capabilities {
         $screen = get_current_screen();
 
         $custom_css = '';
-        if (isset($screen->id) && in_array($screen->id, array('product'))) {
+        if (isset($screen->id) && in_array($screen->id, array('product','edit-product'))) {
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (!$this->vendor_can('taxes')) {
                     $custom_css .= '
@@ -235,7 +235,7 @@ class WCMp_Capabilities {
 					';
                 }
                 if ($this->vendor_can('stylesheet')) {
-                    $custom_css .= $this->capability['stylesheet'];
+                    $custom_css .= $this->wcmp_capability['stylesheet'];
                 }
 
                 $vendor_id = get_current_vendor_id();

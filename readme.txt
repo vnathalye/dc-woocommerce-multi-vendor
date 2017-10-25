@@ -1,5 +1,5 @@
 === WC Marketplace ===
-Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata, purnendu, itzmekhokan
+Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata, purnendudash, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
@@ -7,7 +7,7 @@ Tested up to: 4.8
 WC requires at least: 3.0
 WC tested up to: 3.2.0
 Requires PHP: 5.6
-Stable tag: 2.7.7
+Stable tag: 2.7.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,12 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
+
+= 2.7.8 = 
+* Added: Google Map API key to store location widget
+* Added: Restriction to update product title in single product multiple vendor.
+* Added: Asynchronous Mode in Paypal Payout settings.
+* Fix: Single product multiple vendor products issues.
 
 = 2.7.7 = 
 * Feature: Onboarding/setup wizard to handle basic marketplace settings and installation
@@ -300,5 +306,5 @@ Ans. This plugin is tested with PHP version 5.5.
 
 == Upgrade Notice ==
 
-= 2.7.7 =
+= 2.7.8 =
 2.7 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.

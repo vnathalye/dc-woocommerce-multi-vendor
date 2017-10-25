@@ -64,7 +64,7 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
             add_action('publish_product', array($this, 'update_data_to_products_map_table'), 10, 2);
-            add_action('save_post_product', array($this, 'update_duplicate_product_title'),999);
+            add_action('save_post_product', array($this, 'update_duplicate_product_title'),10, 3);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
 

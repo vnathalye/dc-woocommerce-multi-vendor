@@ -22,6 +22,18 @@ class WCMp_Calculate_Commission {
 
         $this->wcmp_order_reverse_action();
         $this->wcmp_order_complete_action();
+        // support of WooCommerce subscription plugin
+        add_filter('wcs_renewal_order_meta_query', array(&$this, 'wcs_renewal_order_meta_query'), 10, 1);
+    }
+    /**
+     * Remove meta key from renewal order
+     * Support WooCommerce subscription plugin
+     * @param string $meta_query
+     * @return string
+     */
+    public function wcs_renewal_order_meta_query($meta_query){
+        $meta_query .= " AND `meta_key` NOT LIKE '_wcmp_order_processed' AND `meta_key` NOT LIKE '_commissions_processed' ";
+        return $meta_query;
     }
 
     /**

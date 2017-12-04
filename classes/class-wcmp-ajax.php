@@ -1157,7 +1157,7 @@ class WCMp_Ajax {
 
             if($vendors) {
                 foreach($vendors as $vendors_key => $vendor) {
-                    if(!$vendor->image) $vendor->image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+                    $vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
                     $html .= '<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
                     <div style=" width: 25%;  display: inline;">        
                     <img width="50" height="50" class="vendor_img" style="display: inline;" src="'.$vendor->image.'" id="vendor_image_display">
@@ -1180,7 +1180,7 @@ class WCMp_Ajax {
             $vendors = get_wcmp_vendors();
             if($vendors) {
                 foreach($vendors as $vendors_key => $vendor) {
-                    if(!$vendor->image) $vendor->image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+                    $vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
                     $html .= '<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
                     <div style=" width: 25%;  display: inline;">        
                     <img width="50" height="50" class="vendor_img" style="display: inline;" src="'.$vendor->image.'" id="vendor_image_display">

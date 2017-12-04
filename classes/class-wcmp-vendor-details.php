@@ -748,5 +748,32 @@ class WCMp_Vendor {
         return array('body' => $body, 'items' => $items, 'product_id' => $product_id);
     }
 
+    /**
+     * Returns vendor image/banner.
+     *
+     * @param string $type (default: 'image')
+     * @param string/array $size (default: 'full')
+     * @return string
+     */
+    public function get_image( $type = 'image', $size = 'full') { 
+        $image = false;
+        $id = $this->__get($type);
+        
+        if(!is_numeric($id)){
+            $id = get_attachment_id_by_url($id);
+        }
+        if($id == 0){ /* if no attachment id found from attachment url */
+            $image = $this->__get($type);
+        }else{
+            $image_attributes = wp_get_attachment_image_src( $id, $size);
+            if( is_array($image_attributes) && count($image_attributes) ){
+               $image = $image_attributes[0];
+            }
+        }
+        $image = apply_filters('wcmp_vendor_get_image_src', $image);
+        
+        return str_replace( array( 'https://', 'http://' ), '//', $image );
+    }
+
 }
 ?>

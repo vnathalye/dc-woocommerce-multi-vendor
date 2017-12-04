@@ -17,9 +17,8 @@ $vendor = get_wcmp_vendor(get_current_vendor_id());
 if(!$vendor){
     return;
 }
-if (!$vendor->image) {
-    $vendor->image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
-}
+$vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+
 do_action('wcmp_before_vendor_dashboard_navigation');
 ?>
 <div class="wcmp_side_menu">

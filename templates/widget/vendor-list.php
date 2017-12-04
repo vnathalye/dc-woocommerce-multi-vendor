@@ -24,7 +24,7 @@ if($vendor_count > 5 )	{ ?>
 <?php }
 if($vendors) {
 	foreach($vendors as $vendors_key => $vendor) { 
-		if(!$vendor->image) $vendor->image = $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+		$vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
 		?>
 		<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
 			<div style=" width: 25%;  display: inline;">		

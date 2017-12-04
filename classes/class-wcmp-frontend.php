@@ -420,7 +420,7 @@ class WCMp_Frontend {
             $vendor_id = get_queried_object()->term_id;
             // Get vendor info
             $vendor = get_wcmp_vendor_by_term($vendor_id);
-            $image = $vendor->image ? $vendor->image : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+            $image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
             $description = $vendor->description;
 
             $address = '';
@@ -434,7 +434,7 @@ class WCMp_Frontend {
             if ($vendor->country) {
                 $address .= $vendor->country;
             }
-            $WCMp->template->get_template('archive_vendor_info.php', array('vendor_id' => $vendor->id, 'banner' => $vendor->banner, 'profile' => $image, 'description' => stripslashes($description), 'mobile' => $vendor->phone, 'location' => $address, 'email' => $vendor->user_data->user_email));
+            $WCMp->template->get_template('archive_vendor_info.php', array('vendor_id' => $vendor->id, 'banner' => $vendor->get_image('banner'), 'profile' => $image, 'description' => stripslashes($description), 'mobile' => $vendor->phone, 'location' => $address, 'email' => $vendor->user_data->user_email));
         }
     }
 

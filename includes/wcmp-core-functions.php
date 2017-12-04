@@ -1648,3 +1648,44 @@ if(!function_exists('get_current_vendor_id')){
         return apply_filters( 'wcmp_current_loggedin_vendor_id', get_current_user_id() );
     }
 }
+
+if (!function_exists('get_attachment_id_by_url')) {
+    /**
+    * Get an attachment ID by URL.
+    * 
+    * @param string $url
+    * @return int Attachment ID on success, 0 on failure
+    */
+   function get_attachment_id_by_url( $url ) {
+        $attachment_id = 0;
+        $upload_dir = wp_get_upload_dir();
+        if ( false !== strpos( $url, $upload_dir['baseurl'] . '/' ) ) { 
+            $file = basename( $url );
+            $args = array(
+                'post_type'   => 'attachment',
+                'post_status' => 'inherit',
+                'fields'      => 'ids',
+                'meta_query'  => array(
+                    array(
+                        'value'   => $file,
+                        'compare' => 'LIKE',
+                        'key'     => '_wp_attachment_metadata',
+                    )
+                )
+            );
+            $attachment_query = new WP_Query( $args );
+            if ( $attachment_query->have_posts() ) {
+                foreach ( $attachment_query->posts as $attachment_id ) {
+                    $meta = wp_get_attachment_metadata( $attachment_id );
+                    $original_file       = basename( $meta['file'] );
+                    $cropped_image_files = wp_list_pluck( $meta['sizes'], 'file' );
+                    if ( $original_file === $file || in_array( $file, $cropped_image_files ) ) {
+                        $attachment_id = $attachment_id;
+                        break;
+                    }
+                }
+            }
+        }
+        return $attachment_id;
+    }
+}

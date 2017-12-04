@@ -444,14 +444,14 @@ class WCMp_User {
                 'label' => __('Logo', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 125,
-                'value' => $vendor->image ? $vendor->image : $WCMp->plugin_url . 'assets/images/logo_placeholder.jpg',
+                'value' => $vendor->get_image() ? $vendor->get_image() : '',
                 'class' => "user-profile-fields"
             ), // Upload
             "vendor_banner" => array(
                 'label' => __('Banner', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 600,
-                'value' => $vendor->banner ? $vendor->banner : $WCMp->plugin_url . 'assets/images/banner_placeholder.jpg',
+                'value' => $vendor->get_image('banner') ? $vendor->get_image('banner') : '',
                 'class' => "user-profile-fields"
             ), // Upload			
             "vendor_csd_return_address1" => array(

@@ -40,6 +40,9 @@ final class WCMp {
     public $coupon;
     public $more_product_array = array();
     public $payment_gateway;
+    public $wcmp_frontend_lib;
+    public $cron_job;
+    public $product_qna;
 
     /**
      * Class construct
@@ -58,13 +61,13 @@ final class WCMp {
         }
         // Intialize WCMp Widgets
         $this->init_custom_widgets();
-                
+
         // Init payment gateways
         $this->init_payment_gateway();
-        
+
         // Intialize Crons
-        $this->init_masspay_cron();
-        
+        $this->init_cron_job();
+
         // Intialize WCMp
         add_action('init', array(&$this, 'init'));
 
@@ -73,6 +76,19 @@ final class WCMp {
         add_filter('woocommerce_email_classes', array(&$this, 'wcmp_email_classes'));
         // WCMp Update Notice
         add_action('in_plugin_update_message-dc-woocommerce-multi-vendor/dc_product_vendor.php', array(&$this, 'wcmp_plugin_update_message'));
+
+        // Secure commission notes
+        add_filter('comments_clauses', array(&$this, 'exclude_order_comments'), 10, 1);
+        add_filter('comment_feed_where', array(&$this, 'exclude_order_comments_from_feed_where'));
+    }
+    
+    public function exclude_order_comments($clauses) {
+        $clauses['where'] .= ( $clauses['where'] ? ' AND ' : '' ) . " comment_type != 'commission_note' ";
+        return $clauses;
+    }
+
+    public function exclude_order_comments_from_feed_where($where) {
+        return $where . ( $where ? ' AND ' : '' ) . " comment_type != 'commission_note' ";
     }
 
     /**
@@ -87,18 +103,21 @@ final class WCMp {
         // Init library
         $this->load_class('library');
         $this->library = new WCMp_Library();
+
+        $this->wcmp_frontend_fields = $this->library->load_wcmp_frontend_fields();
+
         //Init endpoints
         $this->load_class('endpoints');
         $this->endpoints = new WCMp_Endpoints();
         // Init custom capabilities
         $this->init_custom_capabilities();
-        
+
         // Init product vendor custom post types
         $this->init_custom_post();
-        
+
         $this->load_class('payment-gateways');
         $this->payment_gateway = new WCMp_Payment_Gateways();
-        
+
         $this->load_class('seller-review-rating');
         $this->review_rating = new WCMp_Seller_Review_Rating();
         // Init ajax
@@ -136,6 +155,9 @@ final class WCMp {
         // Init product action class 
         $this->load_class('product');
         $this->product = new WCMp_Product();
+        // Init Product QNA
+        $this->load_class('product-qna');
+        $this->product_qna = new WCMp_Product_QNA();
         // Init email activity action class 
         $this->load_class('email');
         $this->email = new WCMp_Email();
@@ -145,10 +167,10 @@ final class WCMp {
         $this->library->load_jquery_style_lib();
         // Init user roles
         $this->init_user_roles();
-        
+
         // Init custom reports
         $this->init_custom_reports();
-        
+
         // Init vendor dashboard
         $this->init_vendor_dashboard();
         // Init vendor coupon
@@ -247,6 +269,7 @@ final class WCMp {
     function init_custom_post() {
         /* Commission post type */
         $this->load_class('post-commission');
+
         new WCMp_Commission();
         /* transaction post type */
         $this->load_class('post-transaction');
@@ -310,18 +333,18 @@ final class WCMp {
     }
 
     /**
-     * Init Masspay Cron
-     *
+     * Init Cron Job
+     * 
      * @access public
      * @return void
      */
-    function init_masspay_cron() {
+    function init_cron_job() {
         add_filter('cron_schedules', array($this, 'add_wcmp_corn_schedule'));
-        $this->load_class('masspay-cron');
-        $this->masspay_cron = new WCMp_MassPay_Cron();
+        $this->load_class('cron-job');
+        $this->cron_job = new WCMp_Cron_Job();
     }
-    
-    private function init_payment_gateway(){
+
+    private function init_payment_gateway() {
         $this->load_class('payment-gateway');
     }
 
@@ -377,6 +400,7 @@ final class WCMp {
         include( 'emails/class-wcmp-email-vendor-new-commission-transaction.php' );
         include( 'emails/class-wcmp-email-vendor-direct-bank.php' );
         include( 'emails/class-wcmp-email-admin-withdrawal-request.php' );
+        include( 'emails/class-wcmp-email-vendor-orders-stats-report.php' );
 
         $emails['WC_Email_Vendor_New_Account'] = new WC_Email_Vendor_New_Account();
         $emails['WC_Email_Admin_New_Vendor_Account'] = new WC_Email_Admin_New_Vendor_Account();
@@ -389,6 +413,7 @@ final class WCMp {
         $emails['WC_Email_Vendor_Commission_Transactions'] = new WC_Email_Vendor_Commission_Transactions();
         $emails['WC_Email_Vendor_Direct_Bank'] = new WC_Email_Vendor_Direct_Bank();
         $emails['WC_Email_Admin_Widthdrawal_Request'] = new WC_Email_Admin_Widthdrawal_Request();
+        $emails['WC_Email_Vendor_Orders_Stats_Report'] = new WC_Email_Vendor_Orders_Stats_Report();
 
         return $emails;
     }

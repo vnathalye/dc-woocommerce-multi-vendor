@@ -3,11 +3,11 @@ if (!defined('ABSPATH'))
     exit;
 
 /**
- * @class       WCMp Product Class
+ * @class 		WCMp Product Class
  *
- * @version     2.2.0
- * @package     WCMp
- * @author      WC Marketplace
+ * @version		2.2.0
+ * @package		WCMp
+ * @author 		WC Marketplace
  */
 class WCMp_Product {
 
@@ -21,15 +21,11 @@ class WCMp_Product {
         add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_vendor_tab'), 30);
         add_action('woocommerce_product_data_panels', array(&$this, 'output_vendor_tab'), 30);
         add_action('save_post', array(&$this, 'process_vendor_data'));
-        $settings_policies = get_option('wcmp_general_policies_settings_name');
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
-            if ((isset($settings_policies['is_cancellation_on']) || isset($settings_policies['is_refund_on']) || isset($settings_policies['is_shipping_on'])) && (isset($settings_policies['is_cancellation_product_level_on']) || isset($settings_policies['is_refund_product_level_on']) || isset($settings_policies['is_shipping_product_level_on']))) {
-                $current_user_id = get_current_vendor_id();
-                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']) || isset($settings_policies['can_vendor_edit_refund_policy']) || isset($settings_policies['can_vendor_edit_shipping_policy']) )) || current_user_can('manage_woocommerce')) {
-                    add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_policies_tab'), 30);
-                    add_action('woocommerce_product_data_panels', array(&$this, 'output_policies_tab'), 30);
-                    add_action('save_post', array(&$this, 'process_policies_data'));
-                }
+            if (current_user_can('manage_woocommerce') || (is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_can_overwrite_policies', true))) {
+                add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_policies_tab'), 30);
+                add_action('woocommerce_product_data_panels', array(&$this, 'output_policies_tab'), 30);
+                add_action('save_post', array(&$this, 'process_policies_data'));
             }
             add_filter('woocommerce_product_tabs', array(&$this, 'product_policy_tab'));
         }
@@ -40,20 +36,24 @@ class WCMp_Product {
             add_action('transition_post_status', array(&$this, 'on_all_status_transitions'), 10, 3);
         }
         add_action('woocommerce_product_meta_start', array(&$this, 'add_report_abuse_link'), 30);
-        if ($WCMp->vendor_caps->vendor_frontend_settings('enable_vendor_tab')) {
-            add_filter('woocommerce_product_tabs', array(&$this, 'product_vendor_tab'));
-        }
+        //if ($WCMp->vendor_caps->vendor_frontend_settings('enable_vendor_tab')) {
+        add_filter('woocommerce_product_tabs', array(&$this, 'product_vendor_tab'));
+        //}
         add_filter('wp_count_posts', array(&$this, 'vendor_count_products'), 10, 3);
         /* Related Products */
         add_filter('woocommerce_output_related_products_args', array($this, 'related_products_args'), 15);
         // bulk edit vendor set
         add_action('woocommerce_product_bulk_edit_end', array($this, 'add_product_vendor'));
         add_action('woocommerce_product_bulk_edit_save', array($this, 'save_vendor_bulk_edit'));
+        /* Frontend Products Edit option */
+        add_action('woocommerce_before_shop_loop_item', array(&$this, 'forntend_product_edit'), 5);
+        add_action('woocommerce_before_single_product_summary', array(&$this, 'forntend_product_edit'), 5);
 
         // Filters
         add_action('restrict_manage_posts', array($this, 'restrict_manage_posts'));
         add_filter('parse_query', array($this, 'product_vendor_filters_query'));
         add_action('save_post', array(&$this, 'check_sku_is_unique'));
+        add_action("save_post_product", array($this, 'set_vendor_added_product_flag'), 10, 3);
 
         add_action('woocommerce_variation_options_dimensions', array($this, 'add_filter_for_shipping_class'), 10, 3);
         add_action('woocommerce_variation_options_tax', array($this, 'remove_filter_for_shipping_class'), 10, 3);
@@ -62,21 +62,24 @@ class WCMp_Product {
             //add_action('woocommerce_after_single_product_summary', array($this, 'get_multiple_vendors_products_of_single_product'),5);
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
-            add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'),10, 2);
+            add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'), 10, 2);
             add_action('publish_product', array($this, 'update_data_to_products_map_table'), 10, 2);
-            add_action('save_post_product', array($this, 'update_duplicate_product_title'),10, 3);
+            add_action('save_post_product', array($this, 'update_duplicate_product_title'), 10, 3);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
 
             add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
-            if(!defined('WCMP_HIDE_MULTIPLE_PRODUCT')){
+            if (!defined('WCMP_HIDE_MULTIPLE_PRODUCT')) {
                 add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
             }
         }
         add_action('woocommerce_product_query_tax_query', array(&$this, 'wcmp_filter_product_category'), 10);
         $this->vendor_product_restriction();
+        $this->wcmp_delete_product_action();
+        // vendor Q & A tab
+        add_filter('woocommerce_product_tabs', array(&$this, 'wcmp_customer_questions_and_answers_tab'));
     }
 
     public function remove_product_from_multiple_seller_mapping($post_id) {
@@ -255,6 +258,7 @@ class WCMp_Product {
 
     function update_data_to_products_map_table($post_id, $post) {
         global $wpdb;
+        //$post = get_post($post_id);
         $post->post_title = get_post_meta($post_id, '_wcmp_parent_product_id', true) ? get_post(get_post_meta($post_id, '_wcmp_parent_product_id', true))->post_title : $post->post_title;
         if ($post->post_type == 'product') {
             if (isset($post->post_title)) {
@@ -278,13 +282,13 @@ class WCMp_Product {
             }
         }
     }
-    
-    function update_duplicate_product_title($post_ID, $post, $update){
+
+    function update_duplicate_product_title($post_ID, $post, $update) {
         global $wpdb;
         $parent_product_id = get_post_meta($post_ID, '_wcmp_parent_product_id', true);
-        if($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
+        if ($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
             $parent_post = get_post(absint($parent_product_id));
-            $wpdb->update( $wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID) );
+            $wpdb->update($wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID));
         }
     }
 
@@ -299,14 +303,14 @@ class WCMp_Product {
         $final_arr = array_merge($arr, $exclude_arr);
         return $final_arr;
     }
-    
-    function wcmp_product_duplicate_update_meta($duplicate, $product){
-        $singleproductmultiseller = isset( $_REQUEST['singleproductmultiseller'] ) ? absint( $_REQUEST['singleproductmultiseller'] ) : '';
-        if($singleproductmultiseller == 1){
+
+    function wcmp_product_duplicate_update_meta($duplicate, $product) {
+        $singleproductmultiseller = isset($_REQUEST['singleproductmultiseller']) ? absint($_REQUEST['singleproductmultiseller']) : '';
+        if ($singleproductmultiseller == 1) {
             update_post_meta($duplicate->get_id(), '_wcmp_parent_product_id', $product->get_id());
         }
     }
-    
+
     public function get_multiple_vendors_products_of_single_product() {
         global $WCMp;
         $WCMp->template->get_template('single-product/multiple_vendors_products.php');
@@ -330,9 +334,8 @@ class WCMp_Product {
             $current_post_id = $_GET['post'];
             if (get_post_type($current_post_id) == 'product') {
                 $wcmp_have_parent_product_id = get_post_meta($current_post_id, '_wcmp_parent_product_id', true);
-                if(in_array($screen->id, array('product','edit-product')) && $wcmp_have_parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)){
-                    wp_add_inline_script( 'wcmp-admin-product-js', 
-                    '(function ($) { 
+                if (in_array($screen->id, array('product', 'edit-product')) && $wcmp_have_parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
+                    wp_add_inline_script('wcmp-admin-product-js', '(function ($) { 
                       $("#titlewrap #title").prop("disabled", true);
                   })(jQuery)');
                 }
@@ -581,10 +584,7 @@ class WCMp_Product {
             return $args;
         }
 
-        $frontend_cap_arr = $WCMp->vendor_caps->frontend_cap;
-        if (array_key_exists('show_related_products', $frontend_cap_arr)) {
-            $related = $frontend_cap_arr['show_related_products'];
-        }
+        $related = get_wcmp_vendor_settings('show_related_products', 'general', '', 'all_related');
 
         if (!$related) {
             return $args;
@@ -839,88 +839,40 @@ class WCMp_Product {
     function add_policies_tab() {
         global $WCMp;
         ?>
-        <li class="policy_icon policy_icons"><a href="#set_policies"><?php _e('Policies', 'dc-woocommerce-multi-vendor'); ?></a></li>
+        <li class="policy_icon policy_icons"><a href="#set_policies"><?php echo apply_filters('wcmp_policies_tab_title', __('Policies', 'dc-woocommerce-multi-vendor')); ?></a></li>
         <?php
     }
 
     function output_policies_tab() {
-        global $post, $WCMp, $woocommerce;
-        $_wcmp_enable_policy_tab = get_post_meta($post->ID, '_wcmp_enable_policy_tab', true) ? get_post_meta($post->ID, '_wcmp_enable_policy_tab', true) : '';
+        global $post, $WCMp;
         $_wcmp_cancallation_policy = get_post_meta($post->ID, '_wcmp_cancallation_policy', true) ? get_post_meta($post->ID, '_wcmp_cancallation_policy', true) : '';
         $_wcmp_refund_policy = get_post_meta($post->ID, '_wcmp_refund_policy', true) ? get_post_meta($post->ID, '_wcmp_refund_policy', true) : '';
         $_wcmp_shipping_policy = get_post_meta($post->ID, '_wcmp_shipping_policy', true) ? get_post_meta($post->ID, '_wcmp_shipping_policy', true) : '';
-        $settings_policies = get_option('wcmp_general_policies_settings_name');
-        $current_user_id = get_current_vendor_id();
         ?>
         <div id="set_policies" class="panel woocommerce_options_panel">
             <div class="options_group" >
                 <table class="form-field form-table">
                     <tbody>
                         <?php
-                        if (isset($settings_policies['is_cancellation_on'])) {
-                            if (isset($settings_policies['is_cancellation_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_cancellation_policy']))) || current_user_can('manage_woocommerce')) {
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <p><strong><?php echo __('Cancellation/Return/Exchange Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_cancallation_policy"  ><?php echo $_wcmp_cancallation_policy; ?></textarea>                     
-                                        </td>                         
-                                    </tr>                                   
-                                    <?php
-                                }
-                            }
-                        }
-                        ?>
-                        <?php
-                        if (isset($settings_policies['is_refund_on'])) {
-                            if (isset($settings_policies['is_refund_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_refund_policy']))) || current_user_can('manage_woocommerce')) {
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <p><strong><?php echo __('Refund Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_refund_policy"  ><?php echo $_wcmp_refund_policy; ?></textarea>                     
-                                        </td>                         
-                                    </tr>
-                                    <?php
-                                }
-                            }
-                        }
-                        ?>
-                        <?php
-                        if (isset($settings_policies['is_shipping_on'])) {
-                            if (isset($settings_policies['is_shipping_product_level_on'])) {
-                                if ((is_user_wcmp_vendor($current_user_id) && (isset($settings_policies['can_vendor_edit_shipping_policy']))) || current_user_can('manage_woocommerce')) {
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <p><strong><?php echo __('Shipping Policy'); ?> : </strong></p>
-                                            <textarea class="widefat" name="_wcmp_shipping_policy"  ><?php echo $_wcmp_shipping_policy; ?></textarea>                     
-                                        </td>                         
-                                    </tr>
-                                    <?php
-                                }
-                            }
-                        }
-                        do_action( 'wcmp_product_options_policy_product_data' );
+                        $WCMp->library->load_wp_fields()->dc_generate_form_field(
+                                array(
+                                    "_wcmp_shipping_policy" => array('label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_shipping_policy', 'label_for' => '_wcmp_shipping_policy', 'name' => '_wcmp_shipping_policy', 'class' => 'regular-text', 'value' => $_wcmp_shipping_policy, 'in_table' => true),
+                                    "_wcmp_refund_policy" => array('label' => __('Refund Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_refund_policy', 'label_for' => '_wcmp_refund_policy', 'name' => '_wcmp_refund_policy', 'class' => 'regular-text', 'value' => $_wcmp_refund_policy, 'in_table' => true),
+                                    "_wcmp_cancallation_policy" => array('label' => __('Cancellation/Return/Exchange Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_cancallation_policy', 'label_for' => '_wcmp_cancallation_policy', 'name' => '_wcmp_cancallation_policy', 'class' => 'regular-text', 'value' => $_wcmp_cancallation_policy, 'in_table' => true),
+                                )
+                        );
+                        do_action('wcmp_product_options_policy_product_data');
                         ?>
                     </tbody>
-                </table>            
+                </table>			
             </div>
         </div>
-
         <?php
     }
 
     function process_policies_data($post_id) {
         $post = get_post($post_id);
         if ($post->post_type == 'product') {
-            if (isset($_POST['_wcmp_enable_policy_tab'])) {
-                update_post_meta($post_id, '_wcmp_enable_policy_tab', $_POST['_wcmp_enable_policy_tab']);
-            } else {
-                update_post_meta($post_id, '_wcmp_enable_policy_tab', '');
-            }
             if (isset($_POST['_wcmp_cancallation_policy'])) {
                 update_post_meta($post_id, '_wcmp_cancallation_policy', $_POST['_wcmp_cancallation_policy']);
             }
@@ -1069,106 +1021,106 @@ class WCMp_Product {
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-                                            <td>
-                                                <div class="_product_vendors_commission_percentage">
-                                                    <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                    <span class="variable_commission_cls">' . $commission_percentage . '</span>
-                                                </div>
-                                            </td>
-                                        </tr>';
+											<td>
+												<div class="_product_vendors_commission_percentage">
+													<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
+													<span class="variable_commission_cls">' . $commission_percentage . '</span>
+												</div>
+											</td>
+										</tr>';
                 }
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-                                            <td>
-                                                <div class="_product_vendors_commission_fixed_per_trans">
-                                                    <label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                    <span class="variable_commission_cls">' . $commission_fixed_per_trans . '</span>
-                                                </div>
-                                            </td>
-                                        </tr>';
+											<td>
+												<div class="_product_vendors_commission_fixed_per_trans">
+													<label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
+													<span class="variable_commission_cls">' . $commission_fixed_per_trans . '</span>
+												</div>
+											</td>
+										</tr>';
                 }
             } else {
                 $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission_percentage">
-                                                <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
-                                            </div>
-                                        </td>
-                                    </tr>';
+										<td>
+											<div class="_product_vendors_commission_percentage">
+												<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission (percentage)', 'dc-woocommerce-multi-vendor') . ':</label>
+												<input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
+											</div>
+										</td>
+									</tr>';
                 $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission_fixed_per_trans">
-                                                <label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <input size="4" type="text" name="variable_product_vendors_commission_fixed_per_trans[' . $loop . ']" id="_product_vendors_commission_fixed_per_trans__' . $loop . '" value="' . $commission_fixed_per_trans . '" />
-                                            </div>
-                                        </td>
-                                    </tr>';
+										<td>
+											<div class="_product_vendors_commission_fixed_per_trans">
+												<label for="_product_vendors_commission_fixed_per_trans_' . $loop . '">' . __('Commission (fixed) Per Transaction', 'dc-woocommerce-multi-vendor') . ':</label>
+												<input size="4" type="text" name="variable_product_vendors_commission_fixed_per_trans[' . $loop . ']" id="_product_vendors_commission_fixed_per_trans__' . $loop . '" value="' . $commission_fixed_per_trans . '" />
+											</div>
+										</td>
+									</tr>';
             }
         } else if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage_qty') {
 
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission_percentage) && !empty($commission_percentage)) {
                     $html .= '<tr>
-                                            <td>
-                                                <div class="_product_vendors_commission_percentage">
-                                                    <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                    <span class="variable_commission_cls">' . $commission_percentage . '</span>
-                                                </div>
-                                            </td>
-                                        </tr>';
+											<td>
+												<div class="_product_vendors_commission_percentage">
+													<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
+													<span class="variable_commission_cls">' . $commission_percentage . '</span>
+												</div>
+											</td>
+										</tr>';
                 }
 
                 if (isset($commission_fixed_per_qty) && !empty($commission_fixed_per_qty)) {
                     $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission_fixed_per_qty">
-                                                <label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <span class="variable_commission_cls">' . $commission_fixed_per_qty . '</span>
-                                            </div>
-                                        </td>
-                                    </tr';
+										<td>
+											<div class="_product_vendors_commission_fixed_per_qty">
+												<label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
+												<span class="variable_commission_cls">' . $commission_fixed_per_qty . '</span>
+											</div>
+										</td>
+									</tr';
                 }
             } else {
                 $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission_percentage">
-                                                <label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
-                                            </div>
-                                        </td>
-                                    </tr>';
+										<td>
+											<div class="_product_vendors_commission_percentage">
+												<label for="_product_vendors_commission_percentage_' . $loop . '">' . __('Commission Percentage', 'dc-woocommerce-multi-vendor') . ':</label>
+												<input size="4" type="text" name="variable_product_vendors_commission_percentage[' . $loop . ']" id="_product_vendors_commission_percentage_' . $loop . '" value="' . $commission_percentage . '" />
+											</div>
+										</td>
+									</tr>';
 
                 $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission_fixed_per_qty">
-                                                <label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <input size="4" type="text" name="variable_product_vendors_commission_fixed_per_qty[' . $loop . ']" id="_product_vendors_commission_fixed_per_qty__' . $loop . '" value="' . $commission_fixed_per_qty . '" />
-                                            </div>
-                                        </td>
-                                    </tr';
+										<td>
+											<div class="_product_vendors_commission_fixed_per_qty">
+												<label for="_product_vendors_commission_fixed_per_qty_' . $loop . '">' . __('Commission Fixed per unit', 'dc-woocommerce-multi-vendor') . ':</label>
+												<input size="4" type="text" name="variable_product_vendors_commission_fixed_per_qty[' . $loop . ']" id="_product_vendors_commission_fixed_per_qty__' . $loop . '" value="' . $commission_fixed_per_qty . '" />
+											</div>
+										</td>
+									</tr';
             }
         } else {
             if (is_user_wcmp_vendor(get_current_vendor_id())) {
                 if (isset($commission) && !empty($commission)) {
                     $html .= '<tr>
-                                            <td>
-                                                <div class="_product_vendors_commission">
-                                                    <label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                    <span class="variable_commission_cls">' . $commission . '</span>
-                                                </div>
-                                            </td>
-                                        </tr>';
+											<td>
+												<div class="_product_vendors_commission">
+													<label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
+													<span class="variable_commission_cls">' . $commission . '</span>
+												</div>
+											</td>
+										</tr>';
                 }
             } else {
                 $html .= '<tr>
-                                        <td>
-                                            <div class="_product_vendors_commission">
-                                                <label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
-                                                <input size="4" type="text" name="variable_product_vendors_commission[' . $loop . ']" id="_product_vendors_commission_' . $loop . '" value="' . $commission . '" />
-                                            </div>
-                                        </td>
-                                    </tr>';
+										<td>
+											<div class="_product_vendors_commission">
+												<label for="_product_vendors_commission_' . $loop . '">' . __('Commission', 'dc-woocommerce-multi-vendor') . ':</label>
+												<input size="4" type="text" name="variable_product_vendors_commission[' . $loop . ']" id="_product_vendors_commission_' . $loop . '" value="' . $commission . '" />
+											</div>
+										</td>
+									</tr>';
             }
         }
 
@@ -1181,7 +1133,7 @@ class WCMp_Product {
      * @return void
      */
     function product_vendor_tab($tabs) {
-        global $product, $WCMp;
+        global $product;
         if ($product) {
             $vendor = get_wcmp_product_vendors($product->get_id());
             if ($vendor) {
@@ -1212,35 +1164,16 @@ class WCMp_Product {
      * @return void
      */
     function product_policy_tab($tabs) {
-        global $product, $WCMp;
+        global $product;
         if ($product) {
-            $policies_can_override_by_vendor = '';
-            $wcmp_capabilities_settings_name = get_option('wcmp_general_policies_settings_name');
-            $can_vendor_edit_policy_tab_label_field = apply_filters('can_vendor_edit_policy_tab_label_field', true);
-            $policies_settings = get_option('wcmp_general_policies_settings_name');
-            if (isset($wcmp_capabilities_settings_name['can_vendor_edit_policy_tab_label']) && $can_vendor_edit_policy_tab_label_field && ( isset($policies_settings['is_cancellation_on']) || isset($policies_settings['is_refund_on']) || isset($policies_settings['is_shipping_on']) )) {
-                $policies_can_override_by_vendor = 'Enable';
+            $policies = get_wcmp_product_policies($product->get_id());
+            if(count($policies) > 0){
+                $tabs['policies'] = array(
+                    'title' => apply_filters('wcmp_policies_tab_title', __('Policies', 'dc-woocommerce-multi-vendor')),
+                    'priority' => 30,
+                    'callback' => array($this, 'woocommerce_product_policies_tab')
+                );
             }
-            $title = __('Policies', 'dc-woocommerce-multi-vendor');
-            $product_id = $product->get_id();
-            $product_vendors = get_wcmp_product_vendors($product_id);
-            if ($product_vendors) {
-                $author_id = $product_vendors->id;
-            } else {
-                $author_id = get_post_field('post_author', $product_id);
-            }
-            $tab_title_by_vendor = get_user_meta($author_id, '_vendor_policy_tab_title', true);
-            if (isset($policies_settings['policy_tab_title']) && (!empty($policies_settings['policy_tab_title']))) {
-                $title = $policies_settings['policy_tab_title'];
-            }
-            if ($policies_can_override_by_vendor != '' && (!empty($tab_title_by_vendor))) {
-                $title = $tab_title_by_vendor;
-            }
-            $tabs['policies'] = array(
-                'title' => $title,
-                'priority' => 30,
-                'callback' => array($this, 'woocommerce_product_policies_tab')
-            );
         }
 
         return $tabs;
@@ -1252,7 +1185,7 @@ class WCMp_Product {
      * @return void
      */
     function woocommerce_product_policies_tab() {
-        global $woocommerce, $WCMp;
+        global $WCMp;
         $WCMp->template->get_template('policies_tab.php');
     }
 
@@ -1311,33 +1244,11 @@ class WCMp_Product {
      * Vendor report abuse option
      */
     function add_report_abuse_link() {
-        global $product, $WCMp;
-        $is_display = false;
-        $settings_is_display = $WCMp->vendor_caps->frontend_cap;
-        if (isset($settings_is_display['show_report_abuse'])) {
-            if ($settings_is_display['show_report_abuse'] == 'all_products') {
-                $is_display = true;
-            } else if ($settings_is_display['show_report_abuse'] == 'only_vendor_products') {
-
-                if (get_wcmp_product_vendors($product->get_id()))
-                    $is_display = true;
-            } else if ($settings_is_display['show_report_abuse'] == 'disable') {
-
-                $is_display = false;
-            }
-        } else {
-            $is_display = true;
-        }
-
-        $report_abuse_text = $WCMp->vendor_caps->frontend_cap;
-        if (isset($report_abuse_text['report_abuse_text']) && !empty($report_abuse_text['report_abuse_text'])) {
-            $display_text = $report_abuse_text['report_abuse_text'];
-        } else {
-            $display_text = __('Report Abuse', 'dc-woocommerce-multi-vendor');
-        }
-        if ($is_display) {
+        global $product;
+        if (apply_filters('wcmp_show_report_abouse_link', true, $product)) {
+            $report_abuse_text = apply_filters('wcmp_report_abuse_text', __('Report Abuse', 'dc-woocommerce-multi-vendor'), $product);
             ?>
-            <a href="#" id="report_abuse"><?php echo $display_text; ?></a><br>
+            <a href="#" id="report_abuse"><?php echo $report_abuse_text; ?></a><br>
             <div id="report_abuse_form" class="simplePopup"> 
                 <h3 class="wcmp-abuse-report-title"><?php _e('Report an abuse for product ', 'dc-woocommerce-multi-vendor') . ' ' . the_title(); ?> </h3>
                 <form action="#" method="post" id="report-abuse" class="report-abuse-form" name="report-abuse">
@@ -1370,7 +1281,7 @@ class WCMp_Product {
                         </tbody>
                     </table>
                 </form>
-            </div>                          
+            </div> 							
             <?php
         }
     }
@@ -1408,12 +1319,13 @@ class WCMp_Product {
         }
         $q->set('post__not_in', array_unique($exclude_products));
     }
+
     /**
      * Filter product on select category from WCMp_Widget_Vendor_Product_Categories widget
      * @param array $tax_query
      * @return array
      */
-    public function wcmp_filter_product_category($tax_query){
+    public function wcmp_filter_product_category($tax_query) {
         $category = filter_input(INPUT_GET, 'category');
         if (!is_tax('dc_vendor_shop') || is_null($category)) {
             return $tax_query;
@@ -1424,6 +1336,88 @@ class WCMp_Product {
             'terms' => $category
         );
         return $tax_query;
+    }
+
+    function forntend_product_edit() {
+        global $WCMp, $post;
+        $vendor = get_wcmp_product_vendors($post->ID);
+        if ($vendor && $vendor->id == get_current_vendor_id() && current_user_can('edit_products')){
+        $pro_id = $post->ID;
+        ?>
+        <div class="wcmp_fpm_buttons">
+            <?php if (current_user_can('edit_published_products')) { ?>
+                <a class="wcmp_fpm_button" href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $pro_id)); ?>">
+                    <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/edit.png" />
+                </a>
+            <?php } ?>
+            <?php if (current_user_can('delete_published_products')) { ?>
+                <span class="wcmp_fpm_button_separator">--</span>
+                <a class="wcmp_fpm_button wcmp_fpm_delete" href="#" data-proid="<?php echo $pro_id; ?>">
+                    <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/trash.png" />
+                </a>
+            <?php } ?>
+        </div>
+        <?php
+        }
+    }
+
+    function set_vendor_added_product_flag($post_ID, $post, $update) {
+        if ($post_ID && $post) {
+            $author_id = $post->post_author;
+            if (is_user_wcmp_vendor($author_id)) {
+                $already_added_product = get_user_meta($author_id, '_vendor_added_product', true);
+                if (!$already_added_product) {
+                    update_user_meta($author_id, '_vendor_added_product', 1);
+                }
+            }
+        }
+    }
+
+    function wcmp_delete_product_action() {
+        $products_url = wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'));
+        $delete_product_redirect_url = apply_filters('wcmp_vendor_redirect_after_delete_product_action', $products_url);
+        $wpnonce = isset($_REQUEST['_wpnonce']) ? $_REQUEST['_wpnonce'] : '';
+        $product_id = isset($_REQUEST['product_id']) ? (int) $_REQUEST['product_id'] : 0;
+        $vendor = get_wcmp_product_vendors($product_id);
+        if ($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_delete_product') && $product_id && get_current_user_id() == $vendor->id) {
+            if (current_user_can('delete_published_products')) {
+                wp_delete_post($product_id);
+                wc_add_notice(__('Product Deleted!', 'dc-woocommerce-multi-vendor'), 'success');
+                wp_redirect($delete_product_redirect_url);
+                exit;
+            }
+        }
+    }
+
+    /**
+     * Customer Questions and Answers tab
+     * @param array $tabs
+     * @return array
+     */
+    function wcmp_customer_questions_and_answers_tab($tabs) {
+        global $product;
+        $vendor = get_wcmp_product_vendors($product->get_id());
+        if ($vendor && is_user_logged_in() && get_current_user_id() != $vendor->id) {
+            $tabs['wcmp_customer_qna'] = array(
+                'title' => __('Questions and Answers', 'dc-woocommerce-multi-vendor'),
+                'priority' => 40,
+                'callback' => array($this, 'wcmp_customer_questions_and_answers_content')
+            );
+        }
+        return $tabs;
+    }
+
+    /**
+     * Customer Questions and Answers tab content
+     * @return html
+     */
+    function wcmp_customer_questions_and_answers_content() {
+        global $WCMp, $product;
+        $vendor = get_wcmp_product_vendors($product->get_id());
+        if ($vendor && is_user_logged_in() && get_current_user_id() != $vendor->id) {
+            $cust_qna_data = $WCMp->product_qna->get_Product_QNA($product->get_id(), "LIMIT 10");
+            $WCMp->template->get_template('wcmp-customer-qna-form.php', array('cust_qna_data' => $cust_qna_data));
+        }
     }
 
 }

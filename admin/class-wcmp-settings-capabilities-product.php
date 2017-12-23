@@ -17,6 +17,7 @@ class WCMp_Settings_Capabilities_Product {
         $this->subsection = $subsection;
         $this->options = get_option("wcmp_{$this->tab}_{$this->subsection}_settings_name");
         $this->settings_page_init();
+        $this->get_product_type_selector();
     }
 
     /**
@@ -33,22 +34,22 @@ class WCMp_Settings_Capabilities_Product {
                     "fields" => array(
                         "is_submit_product" => array('title' => __('Submit Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_submit_product', 'label_for' => 'is_submit_product', 'text' => __('Allow vendors to submit products for approval/publishing.', 'dc-woocommerce-multi-vendor'), 'name' => 'is_submit_product', 'value' => 'Enable'), // Checkbox
                         "is_published_product" => array('title' => __('Publish Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_published_product', 'label_for' => 'is_published_product', 'name' => 'is_published_product', 'text' => __('If checked, products uploaded by vendors will be directly published without admin approval.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
-                        "is_edit_delete_published_product" => array('title' => __('Edit Publish Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_edit_delete_published_product', 'label_for' => 'is_edit_delete_published_product', 'name' => 'is_edit_delete_published_product', 'text' => __('Allow vendors to Edit published products.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
+                        "is_edit_delete_published_product" => array('title' => __('Edit Publish Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_edit_delete_published_product', 'label_for' => 'is_edit_delete_published_product', 'name' => 'is_edit_delete_published_product', 'text' => __('Allow vendors to edit published products.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "is_submit_coupon" => array('title' => __('Submit Coupons', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_submit_coupon', 'label_for' => 'is_submit_coupon', 'name' => 'is_submit_coupon', 'text' => __('Allow vendors to create coupons.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "is_published_coupon" => array('title' => __('Publish Coupons', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_published_coupon', 'label_for' => 'is_published_coupon', 'name' => 'is_published_coupon', 'text' => __('If checked, coupons added by vendors will be directly published without admin approval.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
-                        "is_edit_delete_published_coupon" => array('title' => __('Edit Publish Coupons', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_edit_delete_published_coupon', 'label_for' => 'is_edit_delete_published_coupon', 'name' => 'is_edit_delete_published_coupon', 'text' => __('Allow Vendor To edit delete published shop coupons.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
+                        "is_edit_delete_published_coupon" => array('title' => __('Edit Publish Coupons', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_edit_delete_published_coupon', 'label_for' => 'is_edit_delete_published_coupon', 'name' => 'is_edit_delete_published_coupon', 'text' => __('Allow vendor to edit/delete published shop coupons.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "is_upload_files" => array('title' => __('Upload Media Files', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_upload_files', 'label_for' => 'is_upload_files', 'name' => 'is_upload_files', 'text' => __('Allow vendors to upload media files.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                     )
                 ),
-                "default_settings_section_left_pnl" => array("title" => __('Product Side Panel ', 'dc-woocommerce-multi-vendor'), // Section one
-                    "fields" => array(
-                        "inventory" => array('title' => __('Inventory', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'inventory', 'label_for' => 'inventory', 'name' => 'inventory', 'value' => 'Enable'), // Checkbox
-                        "shipping" => array('title' => __('Shipping', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'shipping', 'label_for' => 'shipping', 'name' => 'shipping', 'value' => 'Enable'), // Checkbox
-                        "linked_products" => array('title' => __('Linked Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'linked_products', 'label_for' => 'linked_products', 'name' => 'linked_products', 'value' => 'Enable'), // Checkbox
-                        "attribute" => array('title' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'attribute', 'label_for' => 'attribute', 'name' => 'attribute', 'value' => 'Enable'), // Checkbox
-                        "advanced" => array('title' => __('Advanced', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'advanced', 'label_for' => 'advanced', 'name' => 'advanced', 'value' => 'Enable'), // Checkbox
-                    )
-                ),
+//                "default_settings_section_left_pnl" => array("title" => __('Product Side Panel ', 'dc-woocommerce-multi-vendor'), // Section one
+//                    "fields" => array(
+//                        "inventory" => array('title' => __('Inventory', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'inventory', 'label_for' => 'inventory', 'name' => 'inventory', 'value' => 'Enable'), // Checkbox
+//                        "shipping" => array('title' => __('Shipping', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'shipping', 'label_for' => 'shipping', 'name' => 'shipping', 'value' => 'Enable'), // Checkbox
+//                        "linked_products" => array('title' => __('Linked Products', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'linked_products', 'label_for' => 'linked_products', 'name' => 'linked_products', 'value' => 'Enable'), // Checkbox
+//                        "attribute" => array('title' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'attribute', 'label_for' => 'attribute', 'name' => 'attribute', 'value' => 'Enable'), // Checkbox
+//                        "advanced" => array('title' => __('Advanced', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'advanced', 'label_for' => 'advanced', 'name' => 'advanced', 'value' => 'Enable'), // Checkbox
+//                    )
+//                ),
                 "default_settings_section_types" => array("title" => __('Product Types ', 'dc-woocommerce-multi-vendor'), // Section one
                     "fields" => apply_filters("wcmp_vendor_product_types", array(
                         "simple" => array('title' => __('Simple', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'simple', 'label_for' => 'simple', 'name' => 'simple', 'value' => 'Enable'), // Checkbox
@@ -64,15 +65,15 @@ class WCMp_Settings_Capabilities_Product {
                         "downloadable" => array('title' => __('Downloadable', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'downloadable', 'label_for' => 'downloadable', 'name' => 'downloadable', 'value' => 'Enable'), // Checkbox
                     )
                 ),
-                "default_settings_section_miscellaneous" => array("title" => __('Miscellaneous ', 'dc-woocommerce-multi-vendor'), // Section one sku
-                    "fields" => array(
-                        "sku" => array('title' => __('SKU', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'sku', 'label_for' => 'sku', 'name' => 'sku', 'value' => 'Enable'), // Checkbox	
-                        "taxes" => array('title' => __('Taxes', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'taxes', 'label_for' => 'taxes', 'name' => 'taxes', 'value' => 'Enable'), // Checkbox
-                        "add_comment" => array('title' => __('Add Comment', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'add_comment', 'label_for' => 'add_comment', 'name' => 'add_comment', 'value' => 'Enable'), // Checkbox
-                        "comment_box" => array('title' => __('Comment Box', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'comment_box', 'label_for' => 'comment_box', 'name' => 'comment_box', 'value' => 'Enable'), // Checkbox                                                                                                           
-                        "stylesheet" => array('title' => __('Stylesheet', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => 'stylesheet', 'label_for' => 'stylesheet', 'name' => 'stylesheet', 'cols' => 50, 'rows' => 6, 'text' => __('You can add CSS in the text area that will be loaded on the product page.', 'dc-woocommerce-multi-vendor')), // Textarea
-                    )
-                ),
+//                "default_settings_section_miscellaneous" => array("title" => __('Miscellaneous ', 'dc-woocommerce-multi-vendor'), // Section one sku
+//                    "fields" => array(
+//                        "sku" => array('title' => __('SKU', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'sku', 'label_for' => 'sku', 'name' => 'sku', 'value' => 'Enable'), // Checkbox	
+//                        "taxes" => array('title' => __('Taxes', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'taxes', 'label_for' => 'taxes', 'name' => 'taxes', 'value' => 'Enable'), // Checkbox
+//                        "add_comment" => array('title' => __('Add Comment', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'add_comment', 'label_for' => 'add_comment', 'name' => 'add_comment', 'value' => 'Enable'), // Checkbox
+//                        "comment_box" => array('title' => __('Comment Box', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'comment_box', 'label_for' => 'comment_box', 'name' => 'comment_box', 'value' => 'Enable'), // Checkbox                                                                                                           
+//                        "stylesheet" => array('title' => __('Stylesheet', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => 'stylesheet', 'label_for' => 'stylesheet', 'name' => 'stylesheet', 'cols' => 50, 'rows' => 6, 'text' => __('You can add CSS in the text area that will be loaded on the product page.', 'dc-woocommerce-multi-vendor')), // Textarea
+//                    )
+//                ),
             )
         );
 
@@ -116,21 +117,21 @@ class WCMp_Settings_Capabilities_Product {
         if(isset($input['is_edit_delete_published_coupon'])){
             $new_input['is_edit_delete_published_coupon'] = $input['is_edit_delete_published_coupon'];
         } 
-        if (isset($input['inventory'])) {
-            $new_input['inventory'] = sanitize_text_field($input['inventory']);
-        }
-        if (isset($input['shipping'])) {
-            $new_input['shipping'] = sanitize_text_field($input['shipping']);
-        }
-        if (isset($input['linked_products'])) {
-            $new_input['linked_products'] = sanitize_text_field($input['linked_products']);
-        }
-        if (isset($input['attribute'])) {
-            $new_input['attribute'] = sanitize_text_field($input['attribute']);
-        }
-        if (isset($input['advanced'])) {
-            $new_input['advanced'] = sanitize_text_field($input['advanced']);
-        }
+//        if (isset($input['inventory'])) {
+//            $new_input['inventory'] = sanitize_text_field($input['inventory']);
+//        }
+//        if (isset($input['shipping'])) {
+//            $new_input['shipping'] = sanitize_text_field($input['shipping']);
+//        }
+//        if (isset($input['linked_products'])) {
+//            $new_input['linked_products'] = sanitize_text_field($input['linked_products']);
+//        }
+//        if (isset($input['attribute'])) {
+//            $new_input['attribute'] = sanitize_text_field($input['attribute']);
+//        }
+//        if (isset($input['advanced'])) {
+//            $new_input['advanced'] = sanitize_text_field($input['advanced']);
+//        }
         if (isset($input['simple'])) {
             $new_input['simple'] = sanitize_text_field($input['simple']);
         }
@@ -149,21 +150,21 @@ class WCMp_Settings_Capabilities_Product {
         if (isset($input['downloadable'])) {
             $new_input['downloadable'] = sanitize_text_field($input['downloadable']);
         }
-        if (isset($input['sku'])) {
-            $new_input['sku'] = sanitize_text_field($input['sku']);
-        }
-        if (isset($input['taxes'])) {
-            $new_input['taxes'] = sanitize_text_field($input['taxes']);
-        }
-        if (isset($input['add_comment'])) {
-            $new_input['add_comment'] = sanitize_text_field($input['add_comment']);
-        }
-        if (isset($input['comment_box'])) {
-            $new_input['comment_box'] = sanitize_text_field($input['comment_box']);
-        }
-        if (isset($input['stylesheet'])) {
-            $new_input['stylesheet'] = sanitize_text_field($input['stylesheet']);
-        }
+//        if (isset($input['sku'])) {
+//            $new_input['sku'] = sanitize_text_field($input['sku']);
+//        }
+//        if (isset($input['taxes'])) {
+//            $new_input['taxes'] = sanitize_text_field($input['taxes']);
+//        }
+//        if (isset($input['add_comment'])) {
+//            $new_input['add_comment'] = sanitize_text_field($input['add_comment']);
+//        }
+//        if (isset($input['comment_box'])) {
+//            $new_input['comment_box'] = sanitize_text_field($input['comment_box']);
+//        }
+//        if (isset($input['stylesheet'])) {
+//            $new_input['stylesheet'] = sanitize_text_field($input['stylesheet']);
+//        }
 
         if (!$hasError) {
             add_settings_error(
@@ -171,5 +172,14 @@ class WCMp_Settings_Capabilities_Product {
             );
         }
         return apply_filters("settings_{$this->tab}_{$this->subsection}_tab_new_input", $new_input, $input);
+    }
+    
+    public function get_product_type_selector(){
+        wc_get_product_types();
+        $product_types = array();
+        foreach (wc_get_product_types() as $type => $name){
+            $product_types[$type] = array('title' => $name, 'type' => 'checkbox', 'id' => $type, 'label_for' => $type, 'name' => $type, 'value' => 'Enable');
+        }
+        return apply_filters('wcmp_vendor_product_types', $product_types);
     }
 }

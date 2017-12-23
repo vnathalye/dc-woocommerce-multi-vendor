@@ -35,10 +35,10 @@ class WCMp_Vendor {
         }
     }
 
-    public function get_reviews_and_rating($offset = 0) {
+    public function get_reviews_and_rating($offset = 0, $posts_per_page=0) {
         global $WCMp, $wpdb;
         $vendor_id = $this->id;
-        $posts_per_page = get_option('posts_per_page');
+        $posts_per_page = $posts_per_page ? $posts_per_page : get_option('posts_per_page');
         if (empty($vendor_id) || $vendor_id == '' || $vendor_id == 0) {
             return 0;
         } else {
@@ -50,6 +50,7 @@ class WCMp_Vendor {
                 'offset' => $offset,
                 'meta_key' => 'vendor_rating_id',
                 'meta_value' => $vendor_id,
+                'author__not_in' => array($this->id)
             );
             $args = apply_filters('wcmp_vendor_review_rating_args_to_fetch', $args_default);
             return get_comments($args);
@@ -142,7 +143,7 @@ class WCMp_Vendor {
      * @param mixed $key
      * @return mixed
      */
-    public function __get($key) {
+    public function __get($key) { 
         if (!$this->id) {
             return false;
         }
@@ -310,12 +311,11 @@ class WCMp_Vendor {
      */
     public function get_products($args = array()) {
         global $WCMp;
-        $products = false;
-
         $default = array(
             'post_type' => 'product',
             'post_status' => 'publish',
             'posts_per_page' => -1,
+            'author' => $this->id,
             'tax_query' => array(
                 array(
                     'taxonomy' => $WCMp->taxonomy->taxonomy_name,
@@ -326,10 +326,7 @@ class WCMp_Vendor {
         );
 
         $args = wp_parse_args($args, $default);
-
-        $products = get_posts($args);
-
-        return $products;
+        return get_posts($args);
     }
 
     /**
@@ -682,8 +679,7 @@ class WCMp_Vendor {
     public function is_shipping_enable() {
         global $WCMp;
         $is_enable = false;
-        $is_capability_shipping_tab_enable = get_wcmp_vendor_settings('shipping', 'capabilities', 'product');
-        if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($this->id, '_vendor_give_shipping', true) && $is_capability_shipping_tab_enable == 'Enable' && wc_shipping_enabled()) {
+        if ($WCMp->vendor_caps->vendor_payment_settings('give_shipping') && !get_user_meta($this->id, '_vendor_give_shipping', true) && wc_shipping_enabled()) {
             $is_enable = true;
         }
         return apply_filters('is_wcmp_vendor_shipping_enable', $is_enable);
@@ -747,7 +743,204 @@ class WCMp_Vendor {
 
         return array('body' => $body, 'items' => $items, 'product_id' => $product_id);
     }
+    
+    /**
+     * get_vendor_orders_reports_of function
+     * @access public
+     * @param report_type string
+     * @param args array()
+     * @return array of order details
+     */
+    public function get_vendor_orders_reports_of($report_type='vendor_stats',$args= array()) {
+        global $WCMp, $wpdb;
+        $today = @date('Y-m-d H:i:s');
+        $last_seven_day_date = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $reports = array();
+        switch ($report_type) {
+            case 'vendor_stats':
+                $defaults = array(
+                    'vendor_id'   => $this->id,
+                    'end_date'    => $today,
+                    'start_date'  => $last_seven_day_date,
+                    'is_trashed'  => ''
+                );
+                $args = apply_filters('get_vendor_orders_reports_of_vendor_stats_query_args', wp_parse_args( $args, $defaults ));
+                $sale_results = $wpdb->get_results( 
+                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders WHERE vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed`=%d", 
+                        $args['vendor_id'],
+                        $args['start_date'],
+                        $args['end_date'],
+                        $args['is_trashed']
+                    ) 
+                );
 
+                $item_total_week = 0;
+                $comission_total_arr = array();
+                $total_comission_week = 0;
+                $shipping_total_week = 0;
+                $tax_total_week = 0;
+                $net_balance_week = 0;
+                $vendor_sales_results = array('total_sales'=> 0, 'total_earning'=> 0, 'total_balance' => 0);
+                if($sale_results){
+                    foreach ($sale_results as $sale) { 
+                        if($sale->commission_id != 0 && $sale->commission_id != ''){ 
+                            $order_item_id_week = $sale->order_item_id;
+                            $item_total_week += get_metadata('order_item', $sale->order_item_id, '_line_total', true);
+                            if (!in_array($sale->commission_id, $comission_total_arr)) {
+                                $comission_total_arr[] = $sale->commission_id;
+                            }
+                        }
+                    }
+                }
+
+                if($comission_total_arr){
+                    foreach ($comission_total_arr as $comission_id) {
+                        $amount = get_wcmp_vendor_order_amount(array('commission_id' => $comission_id), $this->id);
+                        $total_comission_week += $amount['total'];
+                        $shipping_total_week += $amount['shipping_amount'];
+                        $tax_total_week += $amount['tax_amount'] + $amount['shipping_tax_amount'];
+                        $paid_status_week = get_metadata('post', $comission_id, '_paid_status', true);
+                        if ($paid_status_week == "unpaid") {
+                            $net_balance_week += $amount['total'];
+                        }
+                    }
+                    $item_total_week += ($shipping_total_week + $tax_total_week);
+                    $vendor_sales_results['total_sales'] = $item_total_week;
+                    $vendor_sales_results['total_earning'] = $total_comission_week;
+                    $vendor_sales_results['total_balance'] = $net_balance_week;
+                }
+                $reports = $vendor_sales_results;
+                break;
+
+            case 'pending_shipping':
+                $defaults = array(
+                    'vendor_id'   => $this->id,
+                    'end_date'    => $today,
+                    'start_date'  => $last_seven_day_date,
+                    'is_trashed'  => ''
+                );
+                $args = apply_filters('get_vendor_orders_reports_of_pending_shipping_query_args', wp_parse_args( $args, $defaults ));
+                $pending_shippings = $wpdb->get_results( 
+                    $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}wcmp_vendor_orders WHERE vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed`=%d AND `shipping_status` != 1 group by order_id order by order_id", 
+                        $args['vendor_id'],
+                        $args['start_date'],
+                        $args['end_date'],
+                        $args['is_trashed']
+                    ) 
+                );
+                $pending_shippings_arr = array();
+                if($pending_shippings){
+                    foreach ($pending_shippings as $pending_orders_item) {
+                        try {
+                            $order = wc_get_order($pending_orders_item->order_id);
+                            $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $args['vendor_id'], 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
+                            $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $args['vendor_id'], 'order_id' => $order->get_id(), 'shipping_status' => 0));
+                            $product_sku = array();
+                            $product_name = array();
+                            //$product_dimention = array();
+                            foreach ($pending_shipping_products as $pending_shipping_product) {
+                                $product = wc_get_product($pending_shipping_product->product_id);
+                                if ($product) {
+                                    $product_sku[] = $product->get_sku() ? $product->get_sku() : '<span class="na">&ndash;</span>';
+                                    $product_name[] = $product->get_title();
+                                    if ($pending_shipping_product->variation_id != 0) {
+                                        $product = wc_get_product($pending_shipping_product->variation_id);
+                                    }
+//                                    $product_dimention[] = array(
+//                                        'width' => $product->get_width() ? $product->get_width() : '&ndash;',
+//                                        'height' => $product->get_height() ? $product->get_height() : '&ndash;',
+//                                        'length' => $product->get_length() ? $product->get_length() : '&ndash;',
+//                                        'weight' => $product->get_weight() ? $product->get_weight() : '&ndash;'
+//                                    );
+                                }
+                            }
+//                            $dimentions = array();
+//                            foreach ($product_dimention as $dimension) {
+//                                $output = implode('/ ', array_map(
+//                                                function ($v, $k) {
+//                                            return sprintf("%s", $v);
+//                                        }, $dimension, array_keys($dimension)
+//                                ));
+//                                $dimentions[] = $output;
+//                            }
+                            
+                            $action_html = '';
+                            $vendor = get_current_vendor();
+                            if ($vendor->is_shipping_enable()) {
+                                $is_shipped = get_post_meta($order->get_id(), 'dc_pv_shipped', true);
+                                if (!$is_shipped) {
+                                    $action_html .= '<a href="javascript:void(0)" title="' . __('Mark as shipped', 'dc-woocommerce-multi-vendor') . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><span class="lnr lnr-rocket"></span></a> ';
+                                } else {
+                                    $action_html .= '<span title="' . __('Shipped', 'dc-woocommerce-multi-vendor') . '" class="lnr lnr-rocket"></span> ';
+                                }
+                            }
+                            $action_html = apply_filters('wcmp_dashboard_pending_shipping_widget_data_actions', $action_html, $order->get_id());
+                            $pending_shippings_arr[] = apply_filters('wcmp_vendor_pending_shipping_table_row_data',array(
+                                'order_id' => $order->get_id(),
+                                'products_name' => $product_name,
+                                'order_date' => $order->get_date_created(),
+                                //'dimentions' => $dimentions,
+                                'shipping_address' => $order->get_formatted_shipping_address(),
+                                'shipping_amount' => $pending_shipping_amount['shipping_amount'],
+                                'action' => $action_html,
+                                ),$pending_orders_item);
+                            
+                        } catch (Exception $ex) {
+
+                        }
+                    }
+                }
+                $reports = $pending_shippings_arr;
+                break;
+       
+            default:
+                $defaults = array(
+                    'vendor_id'   => $this->id,
+                    'end_date'    => $today,
+                    'start_date'  => $last_seven_day_date,
+                    'is_trashed'  => ''
+                );
+                $args = apply_filters('get_vendor_orders_reports_of_default_query_args', wp_parse_args( $args, $defaults ));
+                $vendor_orders = $wpdb->get_results( 
+                    $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders WHERE vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed`=%d", 
+                        $args['vendor_id'],
+                        $args['start_date'],
+                        $args['end_date'],
+                        $args['is_trashed']
+                    ) 
+                );
+                $reports = $vendor_orders;
+                break;
+        }
+        return $reports;
+    }
+    /**
+     * Mark as shipped vendor order 
+     * @global object $wpdb
+     * @param int $order_id
+     * @param srting $tracking_id
+     * @param string $tracking_url
+     */
+    public function set_order_shipped($order_id, $tracking_id = '', $tracking_url = ''){
+        global $wpdb;
+        $shippers = (array) get_post_meta($order_id, 'dc_pv_shipped', true);
+        if (!in_array($this->id, $shippers)) {
+            $shippers[] = $this->id;
+            $mails = WC()->mailer()->emails['WC_Email_Notify_Shipped'];
+            if (!empty($mails)) {
+                $customer_email = get_post_meta($order_id, '_billing_email', true);
+                $mails->trigger($order_id, $customer_email, $this->term_id, array('tracking_id' => $tracking_id, 'tracking_url' => $tracking_url));
+            }
+            do_action('wcmp_vendors_vendor_ship', $order_id, $this->term_id);
+            array_push($shippers, $this->id);
+            update_post_meta($order_id, 'dc_pv_shipped', $shippers);
+        }
+        $wpdb->query("UPDATE {$wpdb->prefix}wcmp_vendor_orders SET shipping_status = '1' WHERE order_id = $order_id and vendor_id = $this->id");
+        $order = wc_get_order($order_id);
+        $comment_id = $order->add_order_note('Vendor ' . $this->user_data->display_name . ' has shipped his part of order to customer. <br>Tracking Url : <a target="_blank" href="' . $tracking_url . '">' . $tracking_url . '</a><br> Tracking Id: ' . $tracking_id, '1', true);
+        add_comment_meta($comment_id, '_vendor_id', $this->id);
+    }
+    
     /**
      * Returns vendor image/banner.
      *
@@ -774,6 +967,5 @@ class WCMp_Vendor {
         
         return str_replace( array( 'https://', 'http://' ), '//', $image );
     }
-
+        
 }
-?>

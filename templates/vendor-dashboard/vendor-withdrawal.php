@@ -9,73 +9,99 @@
  * @version   2.2.0
  */
 if (!defined('ABSPATH')) {
-    // Exit if accessed directly
-    exit;
+// Exit if accessed directly
+exit;
 }
 global $woocommerce, $WCMp;
 $get_vendor_thresold = 0;
 if (isset($WCMp->vendor_caps->payment_cap['commission_threshold']) && $WCMp->vendor_caps->payment_cap['commission_threshold']) {
-    $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
+$get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 }
 ?>
-<div class="wcmp_orange_mix_txt"><?php _e('Your Threshold value for withdrawals is :', 'dc-woocommerce-multi-vendor'); ?><span><?php echo wc_price($get_vendor_thresold); ?></span> 
-    <div class="clear"></div>
+<?php if($get_vendor_thresold) : ?>
+<div class="col-md-12">
+    <blockquote>
+        <span><?php _e('Your Threshold value for withdrawals is : ', 'dc-woocommerce-multi-vendor'); ?><?php echo wc_price($get_vendor_thresold); ?></span>
+    </blockquote>
 </div>
-<div class="wcmp_headding3">
-    <h3><?php _e('Completed Orders', 'dc-woocommerce-multi-vendor'); ?></h3>
-    <p><?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 
-            <?php if ($total_orders > 6) { ?>
-                <span>
-                    <span class="wcmp_withdrawal_now_showing"> 
-    <?php echo '6'; ?>
-                    </span> 
-                        <?php _e('out of ', 'dc-woocommerce-multi-vendor'); ?><?php echo $total_orders; ?>
-                </span> 
-                <?php
-                } else {
-                    echo '<span>' . $total_orders . '</span>';
-                }
-                ?>
-    </p>
-</div>
-<form name="get_paid_form" method="post">
-    <div class="wcmp_table_holder">
-        <table class="get_paid_orders" width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr>
-                <td align="left" width="20" ><span class="input-group-addon beautiful">
-                        <input class="select_all_withdrawal" type="checkbox" >
-                    </span></td>
-                <td  align="left"><?php _e('Order ID', 'dc-woocommerce-multi-vendor'); ?></td>
-                <td align="right"><?php _e('My Earnings', 'dc-woocommerce-multi-vendor'); ?></td>
-            </tr>
-            <?php $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-items.php', array('vendor' => $vendor, 'commissions' => $commissions)); ?>
-        </table>
-    </div>
-    <div class="wcmp_table_loader">
-        <input type="hidden" id="total_orders_count" value = "<?php echo $total_orders; ?>" />
-        <?php if ($total_orders != 0) { ?>
-            <?php
-            if (isset($WCMp->vendor_caps->payment_cap['wcmp_disbursal_mode_vendor']) && $WCMp->vendor_caps->payment_cap['wcmp_disbursal_mode_vendor'] == 'Enable') {
-                $total_vendor_due = $vendor->wcmp_vendor_get_total_amount_due();
-                if ($total_vendor_due > $get_vendor_thresold) {
-                    ?>
-                    <button name="vendor_get_paid" type="submit" class="wcmp_orange_btn small"><?php _e('Request Withdrawals', 'dc-woocommerce-multi-vendor'); ?></button>
+<?php endif; ?>
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <h3 class="panel-heading"><?php _e('Completed Orders', 'dc-woocommerce-multi-vendor'); ?></h3>
+        <div class="panel-body">
+            <form method="post" name="get_paid_form">
+                <table id="vendor_withdrawal" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center"><input class="select_all_withdrawal" type="checkbox" onchange="toggleAllCheckBox(this, 'vendor_withdrawal');" /></th>
+                            <th><?php _e('Order ID', 'dc-woocommerce-multi-vendor') ?></th>
+                            <th><?php _e('Commission Amount', 'dc-woocommerce-multi-vendor') ?></th>
+                            <th><?php _e('Shipping Amount', 'dc-woocommerce-multi-vendor') ?></th>
+                            <th><?php _e('Tax Amount', 'dc-woocommerce-multi-vendor') ?></th>
+                            <th><?php _e('Total', 'dc-woocommerce-multi-vendor') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>  
+                    </tbody>
+                </table>
+                <div class="wcmp_table_loader">
+                    <input type="hidden" id="total_orders_count" value = "<?php echo count($vendor_unpaid_orders); ?>" />
+                    <?php if (count($vendor_unpaid_orders) > 0) { 
+                        if (isset($WCMp->vendor_caps->payment_cap['wcmp_disbursal_mode_vendor']) && $WCMp->vendor_caps->payment_cap['wcmp_disbursal_mode_vendor'] == 'Enable') {
+                            $total_vendor_due = $vendor->wcmp_vendor_get_total_amount_due();
+                            if ($total_vendor_due > $get_vendor_thresold) { ?>
+                            <div class="wcmp-action-container">
+                                <button name="vendor_get_paid" type="submit" class="btn btn-default"><?php _e('Request Withdrawals', 'dc-woocommerce-multi-vendor'); ?></button>
+                            </div>
                     <?php
-                }
+                            }
+                        }
+                    }
+                    ?>
+                    <div class="clear"></div>
+                </div>
+            </form>
+            <?php $vendor_payment_mode = get_user_meta($vendor->id, '_vendor_payment_mode', true);
+            if ($vendor_payment_mode == 'paypal_masspay' && wp_next_scheduled('masspay_cron_start')) { ?>
+            <div class="wcmp_admin_massege">
+                <div class="wcmp_mixed_msg"><?php _e('Your next scheduled payment date is on:', 'dc-woocommerce-multi-vendor'); ?>	<span><?php echo date('d/m/Y g:i:s A', wp_next_scheduled('masspay_cron_start')); ?></span> </div>
+            </div>
+        <?php } ?> 
+        </div>
+    </div>
+</div>
+<script>
+jQuery(document).ready(function($) {
+    var vendor_withdrawal;
+    vendor_withdrawal = $('#vendor_withdrawal').DataTable({
+        ordering  : <?php echo isset($table_init['ordering']) ? $table_init['ordering'] : 'false'; ?>,
+        searching  : <?php echo isset($table_init['searching']) ? $table_init['searching'] : 'false'; ?>,
+        processing: true,
+        serverSide: true,
+        language: {
+            "emptyTable": "<?php echo isset($table_init['emptyTable']) ? $table_init['emptyTable'] : __('No orders found!','dc-woocommerce-multi-vendor'); ?>",
+            "info": "<?php echo isset($table_init['info']) ? $table_init['info'] : __('Showing _START_ to _END_ of _TOTAL_ orders','dc-woocommerce-multi-vendor'); ?>",
+            "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? $table_init['infoEmpty'] : __('Showing 0 to 0 of 0 orders','dc-woocommerce-multi-vendor'); ?>",
+            "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? $table_init['lengthMenu'] : __('Show _MENU_ orders','dc-woocommerce-multi-vendor'); ?>",
+            "zeroRecords": "<?php echo isset($table_init['zeroRecords']) ? $table_init['zeroRecords'] : __('No matching orders found','dc-woocommerce-multi-vendor'); ?>",
+            "search": "<?php echo isset($table_init['search']) ? $table_init['search'] : __('Search:','dc-woocommerce-multi-vendor'); ?>",
+            "paginate": {
+                "next":  "<?php echo isset($table_init['next']) ? $table_init['next'] : __('Next','dc-woocommerce-multi-vendor'); ?>",
+                "previous":  "<?php echo isset($table_init['previous']) ? $table_init['previous'] : __('Previous','dc-woocommerce-multi-vendor'); ?>"
             }
-            ?>
-            <?php if ($total_orders > 6) { ?><button  data-id="6" class="wcmp_black_btn more_orders" style="float:right"><?php _e('Show More', 'dc-woocommerce-multi-vendor'); ?></button> <?php }
-}
-        ?>
-        <div class="clear"></div>
-    </div>
-</form>
-<?php
-$vendor_payment_mode = get_user_meta($vendor->id, '_vendor_payment_mode', true);
-if ($vendor_payment_mode == 'paypal_masspay' && wp_next_scheduled('masspay_cron_start')) {
-    ?>
-    <div class="wcmp_admin_massege">
-        <div class="wcmp_mixed_msg"><?php _e('Your next scheduled payment date is on:', 'dc-woocommerce-multi-vendor'); ?>	<span><?php echo date('d/m/Y g:i:s A', wp_next_scheduled('masspay_cron_start')); ?></span> </div>
-    </div>
-<?php }
-?> 
+        },
+        ajax:{
+            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_unpaid_order_vendor_withdrawal_list', 
+            type: "post", 
+        },
+        columns: [
+            { data: "select_withdrawal", className: "text-center", orderable: false },
+            { data: "order_id", orderable: false },
+            { data: "commission_amount", orderable: false },
+            { data: "shipping_amount", orderable: false },
+            { data: "tax_amount", orderable: false },
+            { data: "total", orderable: false }
+        ]
+    });
+});
+</script>

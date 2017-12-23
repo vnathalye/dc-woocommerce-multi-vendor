@@ -7,7 +7,7 @@ Tested up to: 4.8
 WC requires at least: 3.0
 WC tested up to: 3.2.0
 Requires PHP: 5.6
-Stable tag: 2.7.8
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,7 +86,7 @@ Ans. Yes, this plugin works fine with WordPress 4.6! It is also compatible for o
 = Up to which version of WooCommerce this plugin compatible with? =
 Ans. This plugin is compatible with the latest version of WooCommerce.
 = Up to which version of PHP this plugin is compatible with? =
-Ans. This plugin is tested with PHP version 5.5.
+Ans. This plugin is tested with PHP version 5.6.
 
 
 
@@ -113,12 +113,6 @@ Ans. This plugin is tested with PHP version 5.5.
 
 
 == Changelog ==
-
-= 2.7.8 = 
-* Added: Google Map API key to store location widget
-* Added: Restriction to update product title in single product multiple vendor.
-* Added: Asynchronous Mode in Paypal Payout settings.
-* Fix: Single product multiple vendor products issues.
 
 = 2.7.7 = 
 * Feature: Onboarding/setup wizard to handle basic marketplace settings and installation
@@ -306,5 +300,5 @@ Ans. This plugin is tested with PHP version 5.5.
 
 == Upgrade Notice ==
 
-= 2.7.8 =
+= 2.7.7 =
 2.7 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.

@@ -8,9 +8,11 @@ class WCMp_Gateway_Bank_Transfer extends WCMp_Payment_Gateway {
 
     public $id;
     public $message = array();
+    public $gateway_title;
 
     public function __construct() {
         $this->id = 'direct_bank';
+        $this->gateway_title = __('Bank transfer', 'dc-woocommerce-multi-vendor');
         $this->payment_gateway = $this->id;
         $this->enabled = get_wcmp_vendor_settings('payment_method_direct_bank', 'payment');
     }

@@ -46,7 +46,8 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                     }
                 }
             } else {
-                $vendors = get_wcmp_vendors(array('orderby' => $orderby, 'order' => $order));
+                $sort_type = isset($_REQUEST['vendor_sort_type']) ? $_REQUEST['vendor_sort_type'] : '';
+                $vendors = get_wcmp_vendors(apply_filters('wcmp_vendor_list_get_wcmp_vendors_args', array('orderby' => $orderby, 'order' => $order),$sort_type,$_GET));
                 foreach ($vendors as $vendor){
                     if(!in_array($vendor->id, $block_vendors)){
                         $vendor_info[$vendor->id] = array(

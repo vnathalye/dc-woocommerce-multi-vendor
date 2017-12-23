@@ -18,25 +18,28 @@ class WCMp_Endpoints {
         if (!is_admin()) {
             add_filter('query_vars', array($this, 'add_wcmp_query_vars'), 0);
             add_action('parse_request', array($this, 'wcmp_parse_request'), 0);
-            add_action( 'pre_get_posts', array( &$this, 'wcmp_pre_get_posts' ) );
+            add_action('pre_get_posts', array(&$this, 'wcmp_pre_get_posts'));
         }
         $this->init_wcmp_query_vars();
+        if (!get_option('wcmp_flushed_rewrite_rules')) {
+            flush_rewrite_rules();
+            update_option('wcmp_flushed_rewrite_rules', true);
+        }
     }
 
     /**
      * Init query vars by loading options.
      */
     public function init_wcmp_query_vars() {
-        global $WCMp;
         // Query vars to add to WP.
         $this->wcmp_query_vars = apply_filters('wcmp_endpoints_query_vars', array(
             'vendor-announcements' => array(
                 'label' => __('Vendor Announcements', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements')
             )
-            , 'shop-front' => array(
-                'label' => __('Shop Front', 'dc-woocommerce-multi-vendor'),
-                'endpoint' => get_wcmp_vendor_settings('wcmp_store_settings_endpoint', 'vendor', 'general', 'shop-front')
+            , 'storefront' => array(
+                'label' => __('Storefront', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_store_settings_endpoint', 'vendor', 'general', 'storefront')
             )
             , 'vendor-billing' => array(
                 'label' => __('Vendor Billing', 'dc-woocommerce-multi-vendor'),
@@ -54,6 +57,22 @@ class WCMp_Endpoints {
                 'label' => __('Vendor Report', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_report_endpoint', 'vendor', 'general', 'vendor-report')
             )
+            , 'add-product' => array(
+                'label' => __('Add Product', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')
+            )
+            , 'products' => array(
+                'label' => __('Products', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products')
+            )
+            , 'add-coupon' => array(
+                'label' => __('Add Coupon', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon')
+            )
+            , 'coupons' => array(
+                'label' => __('Coupons', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons')
+            )
             , 'vendor-orders' => array(
                 'label' => __('Vendor Orders', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders')
@@ -69,6 +88,10 @@ class WCMp_Endpoints {
             , 'vendor-knowledgebase' => array(
                 'label' => __('Vendor Knowledgebase', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_knowledgebase_endpoint', 'vendor', 'general', 'vendor-knowledgebase')
+            )
+            , 'vendor-report_issue' => array(
+                'label' => __('Vendor Submit Issue', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_report_issue_endpoint', 'vendor', 'general', 'vendor-report_issue')
             )
         ));
     }
@@ -131,24 +154,25 @@ class WCMp_Endpoints {
             }
         }
     }
+
     /**
      * Fix Vendor dashboard end points on home page
      * @param Object $q
      */
-    public function wcmp_pre_get_posts($q){
+    public function wcmp_pre_get_posts($q) {
         // Fix for endpoints on the homepage
-        if ( $q->is_home() && 'page' === get_option( 'show_on_front' ) && absint( get_option( 'page_on_front' ) ) !== absint( $q->get( 'page_id' ) ) ) {
-            $_query = wp_parse_args( $q->query );
-            if ( ! empty( $_query ) && array_intersect( array_keys( $_query ), array_keys( $this->wcmp_query_vars ) ) ) {
-                $q->is_page     = true;
-                $q->is_home     = false;
+        if ($q->is_home() && 'page' === get_option('show_on_front') && absint(get_option('page_on_front')) !== absint($q->get('page_id'))) {
+            $_query = wp_parse_args($q->query);
+            if (!empty($_query) && array_intersect(array_keys($_query), array_keys($this->wcmp_query_vars))) {
+                $q->is_page = true;
+                $q->is_home = false;
                 $q->is_singular = true;
-                $q->set( 'page_id', (int) get_option( 'page_on_front' ) );
-                add_filter( 'redirect_canonical', '__return_false' );
+                $q->set('page_id', (int) get_option('page_on_front'));
+                add_filter('redirect_canonical', '__return_false');
             }
         }
     }
-    
+
     public function get_current_endpoint() {
         global $wp;
         foreach ($this->wcmp_query_vars as $key => $value) {

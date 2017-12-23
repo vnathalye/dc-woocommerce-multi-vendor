@@ -84,10 +84,10 @@
 		var leftPos = (windowWidth / 2) - (popupWidth / 2);
 		if(topPos < 30) topPos = 30;
 		
-		object.css({
+		/*object.css({
 		    "position": "absolute",
 		    "top": topPos
-		});
+		});*/
 	    },			
 
 	};

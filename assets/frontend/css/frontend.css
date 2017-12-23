@@ -68,8 +68,7 @@ a.wcmp_vendor_detail{
 }
 .vendor_address label, .wcmp_vendor_rating * {
     font-size: 14px;
-    font-weight: 400;
-    line-height: 1.2;
+    font-weight: 400; 
     color: inherit;
 }
 .social_profile {
@@ -139,6 +138,12 @@ a.wcmp_vendor_detail{
     margin: 0;
 }
 .wcmp_vendor_rating p{
+    margin: 0;
+}
+.description_data table td{
+    padding: 7px;
+}
+.description_data table td label{
     margin: 0;
 }
  
@@ -326,7 +331,7 @@ a.wcmp_vendor_detail{
     margin: 16px 0 25px 0;
     font-size: 24px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-    width: calc(100% - 200px);
+    width: auto;
 }
 .wcmp_vendor_banner_template.template3 .wcmp_vendor_rating {
     margin-bottom: 4px;
@@ -367,3 +372,19 @@ a.wcmp_vendor_detail{
         font-size: 20px;
     }
 } 
+
+.wcmp_review_loader {
+	width:100%;
+	position:relative;
+	z-index:8888;
+	background-color:none;
+	opacity:0.5;
+	height:40px;
+	text-align:center;
+	display:none;
+	
+}
+.wcmp_review_loader img{	
+	margin:2px auto;	
+}
+

@@ -51,7 +51,7 @@ class WCMp_Settings_Vendor_Registration {
                                 <a href="#" ng-click="addFormField('selectbox', 'Select Box', $event)" class="button-secondary"><?php echo __('List','dc-woocommerce-multi-vendor'); ?></a>
                             </p>
                             <p class="button-controls">
-                                <a href="#" ng-click="addFormField('checkbox', 'Checkbox', $event)" class="button-secondary"><?php echo __('Check Box','dc-woocommerce-multi-vendor'); ?></a>
+                                <a href="#" ng-click="addFormField('checkbox', 'Checkbox', $event)" class="button-secondary"><?php echo __('Checkbox','dc-woocommerce-multi-vendor'); ?></a>
                             </p>
                             <p class="button-controls">
                                 <a href="#" ng-click="addFormField('recaptcha', 'Recaptcha', $event)" class="button-secondary"><?php echo __('Recaptcha','dc-woocommerce-multi-vendor'); ?></a>
@@ -61,6 +61,43 @@ class WCMp_Settings_Vendor_Registration {
                             </p> 
                             <p class="button-controls">
                                 <a href="#" ng-click="addFormField('separator', 'Section', $event)" class="button-secondary"><?php echo __('Section','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="side-sortables" class="meta-box-sortables ui-sortable">
+                    <div class="postbox" ng-class="vendorStoreFieldClass">
+                        <button ng-click="togglevendorStoreField()" aria-expanded="false" class="handlediv button-link" type="button"><span class="screen-reader-text">Toggle panel: Format</span><span aria-hidden="true" class="toggle-indicator"></span></button>
+                        <h3 class="hndl ui-sortable-handle">
+                            <span>Vendor Store Fields</span>
+                        </h3>
+                        <div class="inside">
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_description', 'Store Description', $event)" class="button-secondary"><?php echo __('Store Description','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_address_1', 'Address 1', $event)" class="button-secondary"><?php echo __('Address 1','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_address_2', 'Address 2', $event)" class="button-secondary"><?php echo __('Address 2','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_phone', 'Phone', $event)" class="button-secondary"><?php echo __('Phone','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_country', 'Country', $event)" class="button-secondary"><?php echo __('Country','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_state', 'State', $event)" class="button-secondary"><?php echo __('State','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_city', 'City', $event)" class="button-secondary"><?php echo __('City','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_postcode', 'PostCode', $event)" class="button-secondary"><?php echo __('Postcode','dc-woocommerce-multi-vendor'); ?></a>
+                            </p>
+                            <p class="button-controls">
+                                <a href="#" ng-click="addFormField('vendor_paypal_email', 'Paypal Email', $event)" class="button-secondary"><?php echo __('PayPal Email','dc-woocommerce-multi-vendor'); ?></a>
                             </p>
                         </div>
                     </div>

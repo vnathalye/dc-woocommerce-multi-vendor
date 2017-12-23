@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
 
     public $id;
+    public $gateway_title;
     public $message = array();
     private $api_username;
     private $api_password;
@@ -17,6 +18,7 @@ class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'paypal_masspay';
+        $this->gateway_title = __('Paypal masspay', 'dc-woocommerce-multi-vendor');
         $this->payment_gateway = $this->id;
         $this->enabled = get_wcmp_vendor_settings('payment_method_paypal_masspay', 'payment');
         $this->api_username = get_wcmp_vendor_settings('api_username', 'payment', 'paypal_masspay');
@@ -108,6 +110,9 @@ class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
             return $nvpResArray;
         } else {
             doProductVendorLOG(json_encode($nvpResArray));
+            if (isset($nvpResArray['L_LONGMESSAGE0'])) {
+                $this->add_commission_note($this->commissions, 'Error: ' . $nvpResArray['L_LONGMESSAGE0']);
+            }
             return false;
         }
     }

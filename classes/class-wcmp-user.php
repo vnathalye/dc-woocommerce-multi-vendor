@@ -98,7 +98,7 @@ class WCMp_User {
                 $validation_errors = new WP_Error();
                 $wcmp_vendor_registration_form_data = get_option('wcmp_vendor_registration_form_data');
                 if (isset($_POST['g-recaptcha-response']) && empty($_POST['g-recaptcha-response'])) {
-                    $validation_errors->add('recaptcha is not validate', __('Please Verify  Recaptcha', 'woocommerce'));
+                    $validation_errors->add('recaptcha is not validate', __('Please Verify  Recaptcha', 'dc-woocommerce-multi-vendor'));
                 }
                 if (isset($_FILES['wcmp_vendor_fields'])) {
                     $attacment_files = $_FILES['wcmp_vendor_fields'];
@@ -112,13 +112,13 @@ class WCMp_User {
                             }
                             foreach ($attacment_files['type'][$key] as $file_key => $file_value) {
                                 if (!in_array($file_value, $file_type)) {
-                                    $validation_errors->add('file type error', __('Please Upload valid file', 'woocommerce'));
+                                    $validation_errors->add('file type error', __('Please Upload valid file', 'dc-woocommerce-multi-vendor'));
                                 }
                             }
                             foreach ($attacment_files['size'][$key] as $file_size_key => $file_size_value) {
                                 if (!empty($wcmp_vendor_registration_form_data[$key]['fileSize'])) {
                                     if ($file_size_value > $wcmp_vendor_registration_form_data[$key]['fileSize']) {
-                                        $validation_errors->add('file size error', __('File upload limit exceeded', 'woocommerce'));
+                                        $validation_errors->add('file size error', __('File upload limit exceeded', 'dc-woocommerce-multi-vendor'));
                                     }
                                 }
                             }
@@ -504,8 +504,7 @@ class WCMp_User {
             ), // Text
                 ), $user_id);
 
-        $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
-        if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') || !$is_vendor_add_external_url_field) {
+        if (!apply_filters('is_vendor_add_external_url_field', false)) {
             unset($fields['vendor_external_store_url']);
             unset($fields['vendor_external_store_label']);
         }
@@ -626,7 +625,7 @@ class WCMp_User {
                 'class' => 'user-profile-fields regular-text'
             );
         }
-        if (isset($settings_capabilities['can_vendor_add_message_on_email_and_thankyou_page'])) {
+        if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) {
             $fields['vendor_message_to_buyers'] = array(
                 'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
@@ -976,5 +975,5 @@ class WCMp_User {
         $available_emails[] = 'vendor_new_order';
         return $available_emails;
     }
-
+    
 }

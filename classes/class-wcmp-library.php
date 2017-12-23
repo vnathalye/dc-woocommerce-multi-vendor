@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WCMp Library Class
  *
@@ -6,112 +7,199 @@
  * @package		WCMp
  * @author 		WC Marketplace
  */
- 
 class WCMp_Library {
-  
-  public $lib_path;
-  
-  public $lib_url;
-  
-  public $php_lib_path;
-  
-  public $php_lib_url;
-  
-  public $jquery_lib_path;
-  
-  public $jquery_lib_url;
 
-	public function __construct() {
-		
-	  global $WCMp;
-	  
-	  $this->lib_path = $WCMp->plugin_path . 'lib/';
+    public $lib_path;
+    public $lib_url;
+    public $php_lib_path;
+    public $php_lib_url;
+    public $jquery_lib_path;
+    public $jquery_lib_url;
+    public $bootstrap_lib_url;
+    public $jqvmap;
 
-    $this->lib_url = $WCMp->plugin_url . 'lib/';
-    
-    $this->php_lib_path = $this->lib_path . 'php/';
-    
-    $this->php_lib_url = $this->lib_url . 'php/';
-    
-    $this->jquery_lib_path = $this->lib_path . 'jquery/';
-    
-    $this->jquery_lib_url = $this->lib_url . 'jquery/';
-    
-    $this->css_lib_path = $this->lib_path . 'css/';
-    
-    $this->css_lib_url = $this->lib_url . 'css/';
-	}
-	
-	/**
-	 * PHP WP fields Library
-	*/
-	public function load_wp_fields() {
-	  global $WCMp;
-	  require_once ($this->php_lib_path . 'class-dc-wp-fields.php');
-	  $DC_WP_Fields = new WCMp_WP_Fields(); 
-	  return $DC_WP_Fields;
-	}
+    public function __construct() {
+
+        global $WCMp;
+
+        $this->lib_path = $WCMp->plugin_path . 'lib/';
+
+        $this->lib_url = $WCMp->plugin_url . 'lib/';
+
+        $this->php_lib_path = $this->lib_path . 'php/';
+
+        $this->php_lib_url = $this->lib_url . 'php/';
+
+        $this->jquery_lib_path = $this->lib_path . 'jquery/';
+
+        $this->jquery_lib_url = $this->lib_url . 'jquery/';
+
+        $this->css_lib_path = $this->lib_path . 'css/';
+
+        $this->css_lib_url = $this->lib_url . 'css/';
         
-        public function load_scss_lib(){
-            require_once ($this->php_lib_path . 'scss.inc.php');
-            $scss = new scssc();
-            return $scss;
+        $this->bootstrap_lib_url = $this->lib_url. 'bootstrap/';
+        
+        $this->jqvmap = $this->lib_url. 'jqvmap/';
+    }
+
+    /**
+     * PHP WP fields Library
+     */
+    public function load_wp_fields() {
+        require_once ($this->php_lib_path . 'class-dc-wp-fields.php');
+        $DC_WP_Fields = new WCMp_WP_Fields();
+        return $DC_WP_Fields;
+    }
+
+    public function load_wcmp_frontend_fields() {
+        require_once ($this->php_lib_path . 'class-wcmp-frontend-wp-fields.php');
+        return new WCMp_Frontend_WP_Fields();
+    }
+
+    /**
+     * Jquery qTip library
+     */
+    public function load_qtip_lib() {
+        global $WCMp;
+        wp_enqueue_script('qtip_js', $this->jquery_lib_url . 'qtip/qtip.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_style('qtip_css', $this->jquery_lib_url . 'qtip/qtip.css', array(), $WCMp->version);
+    }
+
+    /**
+     * WP Media library
+     */
+    public function load_upload_lib() {
+        global $WCMp;
+        wp_enqueue_media();
+        wp_enqueue_script('upload_js', $this->jquery_lib_url . 'upload/media-upload.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_style('upload_css', $this->jquery_lib_url . 'upload/media-upload.css', array(), $WCMp->version);
+    }
+
+    /**
+     * WP Media library
+     */
+    public function load_frontend_upload_lib() {
+        global $WCMp;
+        wp_enqueue_media();
+        wp_enqueue_script('frontend_upload_js', $this->lib_url . 'upload/media-upload.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_style('upload_css', $this->lib_url . 'upload/media-upload.css', array(), $WCMp->version);
+    }
+    
+    /**
+     * WP Media library for dashboard
+     */
+    public function load_dashboard_upload_lib() {
+        global $WCMp;
+        wp_enqueue_media();
+        wp_enqueue_script('frontend_upload_js', $this->jquery_lib_url . 'upload/frontend-media-upload.js', array('jquery'), $WCMp->version, true);
+    }
+
+    /**
+     * Jquery Accordian library
+     */
+    public function load_accordian_lib() {
+        global $WCMp;
+        wp_enqueue_script('jquery-ui-accordion');
+        wp_enqueue_style('accordian_css', '//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css', array(), $WCMp->version);
+    }
+
+    /**
+     * Select2 library
+     */
+    public function load_select2_lib() {
+        global $WCMp;
+        wp_enqueue_script('select2_js', $this->lib_url . 'select2/select2.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_style('select2_css', $this->lib_url . 'select2/select2.css', array(), $WCMp->version);
+    }
+
+    /**
+     * Jquery TinyMCE library
+     */
+    public function load_tinymce_lib() {
+        global $WCMp;
+        wp_enqueue_script('tinymce_js', '//cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.6/tinymce.min.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_script('jquery_tinymce_js', '//cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.6/jquery.tinymce.min.js', array('jquery'), $WCMp->version, true);
+    }
+
+    /**
+     * WP ColorPicker library
+     */
+    public function load_colorpicker_lib() {
+        global $WCMp;
+        wp_enqueue_script('wp-color-picker');
+        wp_enqueue_script('colorpicker_init', $this->jquery_lib_url . 'colorpicker/colorpicker.js', array('jquery', 'wp-color-picker'), $WCMp->version, true);
+        wp_enqueue_style('wp-color-picker');
+    }
+
+    /**
+     * WP DatePicker library
+     */
+    public function load_datepicker_lib() {
+        wp_enqueue_script('jquery-ui-datepicker');
+        wp_enqueue_style('jquery-ui-style');
+    }
+
+    /**
+     * Font awesome include
+     */
+    public function load_line_awesome_lib() {
+        wp_register_style('line_awesome_css', $this->css_lib_url.'line-awesome/css/line-awesome.min.css');
+        wp_enqueue_style('line_awesome_css');
+    }
+
+    /**
+     * Jquery style library
+     */
+    public function load_jquery_style_lib() {
+        if (!wp_style_is('jquery-ui-style', 'registered')) {
+            $jquery_version = isset($wp_scripts->registered['jquery-ui-core']->ver) ? $wp_scripts->registered['jquery-ui-core']->ver : '1.11.4';
+            wp_register_style('jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.min.css', array(), $jquery_version);
         }
-
-                /**
-	 * Jquery qTip library
-	*/
-	public function load_qtip_lib() {
-	  global $WCMp;
-	  wp_enqueue_script('qtip_js', $this->jquery_lib_url . 'qtip/qtip.js', array('jquery'), $WCMp->version, true);
-		wp_enqueue_style('qtip_css',  $this->jquery_lib_url . 'qtip/qtip.css', array(), $WCMp->version);
-	}
-	
-	/**
-	 * WP Media library
-	*/
-	public function load_upload_lib() {
-	  global $WCMp;
-	  wp_enqueue_media();
-	  wp_enqueue_script('upload_js', $this->jquery_lib_url . 'upload/media-upload.js', array('jquery'), $WCMp->version, true);
-	  wp_enqueue_style('upload_css',  $this->jquery_lib_url . 'upload/media-upload.css', array(), $WCMp->version);
-	}
-	
-	/**
-	 * WP ColorPicker library
-	*/
-	public function load_colorpicker_lib() {
-	  global $WCMp;
-	  wp_enqueue_script( 'wp-color-picker' );
-    wp_enqueue_script( 'colorpicker_init', $this->jquery_lib_url . 'colorpicker/colorpicker.js', array( 'jquery', 'wp-color-picker' ), $WCMp->version, true );
-    wp_enqueue_style( 'wp-color-picker' );
-	}
-	
-	/**
-	 * WP DatePicker library
-	*/
-	public function load_datepicker_lib() {
-	  global $WCMp;
-	  wp_enqueue_script('jquery-ui-datepicker');
-	  wp_enqueue_style( 'jquery-ui-style' );
-	}
-	
-	/**
-	 * Font awesome include
-	*/
-	public function font_awesome_lib() {
-	  global $WCMp;
-	  //wp_enqueue_style('font_awesome_css', $this->css_lib_url . 'font-awesome/css/font-awesome.min.css');
-	  wp_enqueue_style('font_awesome_css', 'http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css');
-	}
-
-	/**
-	 * Jquery style library
-	*/
-	public function load_jquery_style_lib() {
-	  if(!wp_style_is( 'jquery-ui-style', 'registered' )){
-	  	$jquery_version = isset( $wp_scripts->registered['jquery-ui-core']->ver ) ? $wp_scripts->registered['jquery-ui-core']->ver : '1.11.4';
-		wp_register_style( 'jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.min.css', array(), $jquery_version );
-	  }
-	}
+    }
+    
+    public function load_bootstrap_style_lib(){
+        wp_register_style('wcmp-bootstrap-style', $this->bootstrap_lib_url .'css/bootstrap.min.css', array(), '3.3.7');
+        wp_enqueue_style('wcmp-bootstrap-style');
+    }
+    
+    public function load_bootstrap_script_lib(){
+        wp_register_script('wcmp-bootstrap-script', $this->bootstrap_lib_url .'js/bootstrap.min.js', array('jquery'), '3.3.7');
+        wp_enqueue_script('wcmp-bootstrap-script');
+    }
+    
+    /**
+     * Google Map API
+     */
+    public function load_gmap_api() {
+        $api_key = get_wcmp_vendor_settings('google_api_key');
+        if ( $api_key ) {
+            wp_register_script( 'wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$api_key}&libraries=places", array('jquery') );
+            wp_enqueue_script( 'wcmp-gmaps-api');
+        }
+    }
+    
+    /**
+     * dataTable library
+     */
+    public function load_dataTable_lib() {
+        wp_register_style('wcmp-datatable-bs-style', '//cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css');
+        wp_register_script('wcmp-datatable-script', '//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', array('jquery'));
+        wp_register_script('wcmp-datatable-bs-script', '//cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js', array('jquery'));
+        wp_enqueue_style( 'wcmp-datatable-bs-style');
+        wp_enqueue_script( 'wcmp-datatable-script');
+        wp_enqueue_script( 'wcmp-datatable-bs-script');
+    }
+    
+    /**
+     * jqvmap library
+     */
+    public function load_jqvmap_script_lib(){
+        wp_register_style('wcmp-jqvmap-style', $this->jqvmap .'jqvmap.min.css', array(), '1.5.1');
+        wp_register_script('wcmp-vmap-script', $this->jqvmap .'jquery.vmap.min.js', true, '1.5.1');
+        wp_register_script('wcmp-vmap-world-script', $this->jqvmap .'maps/jquery.vmap.world.min.js', true, '1.5.1');
+        wp_enqueue_style('wcmp-jqvmap-style');
+        wp_enqueue_script('wcmp-vmap-script');
+        wp_enqueue_script('wcmp-vmap-world-script');
+    }
 }

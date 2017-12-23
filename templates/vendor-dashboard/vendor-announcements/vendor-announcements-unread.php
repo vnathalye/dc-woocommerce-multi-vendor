@@ -85,10 +85,13 @@ foreach( $posts_array as $post_element) {
 		<div class="clear"></div>
 	</div>
 	
-	<div <?php if($tab3_counter >= 6) {?> class="wcmp_hide_message" <?php }?> ><?php echo $content = apply_filters('the_content',$post_element->post_content); ?>
-	<?php $url = get_post_meta($post_element->ID, '_wcmp_vendor_notices_url', true);  if(!empty($url)) { ?>
-		<p style="text-align:right; width:100%;"><a href="<?php echo $url;?>" target="_blank" class="wcmp_black_btn_link"><?php echo __('Read More','dc-woocommerce-multi-vendor');?></a></p>
-	<?php }?>
+	<div <?php if($tab3_counter >= 6) {?> class="wcmp_hide_message" <?php }?> >
+		<div class="wcmp_anouncement-content">
+			<?php echo $content = apply_filters('the_content',$post_element->post_content); ?>
+			<?php $url = get_post_meta($post_element->ID, '_wcmp_vendor_notices_url', true);  if(!empty($url)) { ?>
+				<p style="text-align:right; width:100%;"><a href="<?php echo $url;?>" target="_blank" class="wcmp_black_btn_link"><?php echo __('Read More','dc-woocommerce-multi-vendor');?></a></p>
+			<?php }?>
+		</div>
 	</div>
 
 <?php $tab3_counter++;}
@@ -100,7 +103,7 @@ else {
 }
 ?>			
 </div>
-<div class="wcmp_mixed_txt" > <span> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?></span>   <span class="first_nav_num"><?php echo $tab3_counter_show; ?></span> <?php _e('out of','dc-woocommerce-multi-vendor');?> <span class="second_nav_num"><?php echo  $tab3_counter; ?></span>
+<div class="wcmp_mixed_txt" >
 	<?php if($tab3_counter > 6) {?>	
 	<button class="wcmp_black_btn wcmp_black_btn_msg_for_nav" style="float:right"><?php _e('Show More','dc-woocommerce-multi-vendor'); ?></button>
 	<?php }?>

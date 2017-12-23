@@ -211,7 +211,7 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             $this->field_wrapper_end($field);
         }
-        
+
         /**
          * Output a radio gruop field.
          *
@@ -228,8 +228,10 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['value'] = ( $field['value'] ) ? $field['value'] : $field['dfvalue'];
 
             $options = '';
-            foreach ($field['options'] as $key => $value) {
-                $options .= '<label title="' . esc_attr($key) . '" class="wcmp_template_list"><input class="' . esc_attr($field['class']) . '" style="display:none;" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"><span class="dashicons dashicons-unlock"></span><img src="' . $value . '" /></label><br />';
+            if (isset($field['options']) && !empty($field['options'])) {
+                foreach ($field['options'] as $key => $value) {
+                    $options .= '<label title="' . esc_attr($key) . '" class="wcmp_template_list"><input class="' . esc_attr($field['class']) . '" style="display:none;" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"><span class="dashicons dashicons-unlock"></span><img src="' . $value . '" /></label><br />';
+                }
             }
 
             $field = $this->field_wrapper_start($field);
@@ -325,7 +327,7 @@ if (!class_exists('WCMp_WP_Fields')) {
             $customStyle = isset($field['value']) ? 'display: none;' : '';
             $placeHolder = ( $field['value'] ) ? '' : 'placeHolder';
             if ($field['mime'] == 'image') {
-                $mimeProp = '<img id="' . esc_attr($field['id']) . '_display" src="' . esc_attr($field['value']) . '" width="' . absint($field['prwidth']) . '" class="' . $placeHolder . '" />';
+                $mimeProp = '<img id="' . esc_attr($field['id']) . '_display" src="' . esc_attr($field['value']) . '" width="' . absint($field['prwidth']) . '" class="' . $placeHolder . '" alt="" />';
             } else {
                 if ($field['value'])
                     $field['mime'] = pathinfo($field['value'], PATHINFO_EXTENSION);
@@ -536,7 +538,8 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['label_holder_class'] = isset($field['label_holder_class']) ? ($field['label_holder_class'] . ' ' . $field['id'] . '_label_holder') : ($field['id'] . '_label_holder');
             $field['label_for'] = isset($field['label_for']) ? ($field['label_for'] . ' ' . $field['id']) : $field['id'];
             $field['label_class'] = isset($field['label_class']) ? ($field['label_for'] . ' ' . $field['label_class']) : $field['label_for'];
-            echo '<fieldset>';
+            if (!isset($field['in_table']))
+                echo '<fieldset>';
             do_action('before_field_wrapper');
             do_action('before_field_wrapper_' . $field['id']);
 
@@ -626,7 +629,6 @@ if (!class_exists('WCMp_WP_Fields')) {
 //                do_action('after_hints_' . $field['id']);
 //                do_action('after_hints');
 //            }
-
             // Description
             if (isset($field['desc'])) {
                 do_action('before_desc');
@@ -657,7 +659,8 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             do_action('afet_field_wrapper_' . $field['id']);
             do_action('after_field_wrapper');
-            echo '</fieldset>';
+            if (!isset($field['in_table']))
+                echo '</fieldset>';
         }
 
         public function dc_generate_form_field($fields, $common_attrs = array()) {

@@ -35,8 +35,7 @@ do_action('woocommerce_email_header', $email_heading);
 </table>
 <?php
 $vendor = new WCMp_Vendor(absint($vendor_id));
-$show_cust_order_calulations_field = apply_filters('show_cust_order_calulations_field', true);
-if ($WCMp->vendor_caps->vendor_capabilities_settings('show_cust_order_calulations') && $show_cust_order_calulations_field) {
+if (apply_filters('show_cust_order_calulations_field', true)) {
     ?>
     <table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;" border="1" bordercolor="#eee">
         <?php
@@ -52,9 +51,7 @@ if ($WCMp->vendor_caps->vendor_capabilities_settings('show_cust_order_calulation
     </table>
     <?php
 }
-$show_cust_add_field = apply_filters('show_cust_add_field', true);
-$show_customer_detail = $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_add');
-if ($show_customer_detail && $show_cust_add_field) {
+if (apply_filters('show_cust_address_field', true)) {
     ?>
     <h2><?php _e('Customer Details', 'dc-woocommerce-multi-vendor'); ?></h2>
     <?php if ($order->get_billing_email()) { ?>
@@ -66,11 +63,7 @@ if ($show_customer_detail && $show_cust_add_field) {
     <?php
     }
 }
-$show_cust_billing_add_field = apply_filters('show_cust_billing_add_field', true);
-$show_cust_shipping_add_field = apply_filters('show_cust_shipping_add_field', true);
-$show_cust_billing_add = $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_billing_add');
-$show_cust_shipping_add = $WCMp->vendor_caps->vendor_capabilities_settings('show_cust_shipping_add');
-if ($show_cust_billing_add && $show_cust_billing_add_field) {
+if (apply_filters('show_cust_billing_address_field', true)) {
     ?>
     <table cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top;" border="0">
         <tr>
@@ -83,7 +76,7 @@ if ($show_cust_billing_add && $show_cust_billing_add_field) {
     <?php }
 ?>
 
-<?php if ($show_cust_shipping_add && $show_cust_shipping_add_field) { ?> 
+<?php if (apply_filters('show_cust_shipping_address_field', true)) { ?> 
     <?php if (( $shipping = $order->get_formatted_shipping_address())) { ?>
         <table cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top;" border="0">
             <tr>

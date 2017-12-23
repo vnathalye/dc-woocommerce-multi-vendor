@@ -43,7 +43,7 @@ jQuery(document).ready(function ($) {
                     $(SingleProductMultivendor+ ' .rowbody').each(function () {
                         $(this).remove();
                     });
-                    $(SingleProductMultivendor+' .rowhead').append(response);
+                    $(response).insertAfter(SingleProductMultivendor+' .rowhead');
                     var counter2 = 0;
                     var total_div2 = $(SingleProductMultivendor+ ' .rowbody').length;
                     if (parseInt(total_div2) > 4) {

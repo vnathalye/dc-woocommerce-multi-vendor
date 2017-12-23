@@ -172,7 +172,7 @@ class WCMp_Transaction {
         $transfer_charge = get_post_meta($transaction_id, 'transfer_charge', true);
         $gateway_charge = get_post_meta($transaction_id, 'gateway_charge', true);
         $transaction_mode = get_post_meta($transaction_id, 'transaction_mode', true);
-        $item_totals['date'] = array('label' => __('Date of request', 'dc-woocommerce-multi-vendor'), 'value' => get_the_date('Y-m-d', $transaction_id));
+        $item_totals['date'] = array('label' => __('Date of request', 'dc-woocommerce-multi-vendor'), 'value' => get_the_date(wc_date_format(), $transaction_id));
         $item_totals['amount'] = array('label' => __('Amount', 'dc-woocommerce-multi-vendor'), 'value' => wc_price($transaction_amount));
         if ($transfer_charge) {
             $item_totals['transfer_fee'] = array('label' => __('Transfer Fee', 'dc-woocommerce-multi-vendor'), 'value' => wc_price($transfer_charge));

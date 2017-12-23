@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
 
     public $id;
+    public $gateway_title;
     public $message = array();
     private $client_id;
     private $client_secret;
@@ -20,6 +21,7 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'paypal_payout';
+        $this->gateway_title = __('Paypal payout', 'dc-woocommerce-multi-vendor');
         $this->payment_gateway = $this->id;
         $this->enabled = get_wcmp_vendor_settings('payment_method_paypal_payout', 'payment');
         $this->client_id = get_wcmp_vendor_settings('client_id', 'payment', 'paypal_payout');
@@ -152,6 +154,7 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
                 return $result_array;
             } else {
                 doProductVendorLOG(json_encode($result_array));
+                $this->add_commission_note($this->commissions, __('Payment failed', 'dc-woocommerce-multi-vendor'));
                 return false;
             }
         }else{
@@ -160,6 +163,7 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
                 return $result_array;
             } else {
                 doProductVendorLOG(json_encode($result_array));
+                $this->add_commission_note($this->commissions, __('Payment failed', 'dc-woocommerce-multi-vendor'));
                 return false;
             }
         }

@@ -10,6 +10,7 @@
  */
 global $WCMp;
 ?>
+<div class="col-md-12">
 <input type="hidden" name="wcmp_msg_tab_to_be_refrash" id="wcmp_msg_tab_to_be_refrash" value="" />
 <input type="hidden" name="wcmp_msg_tab_to_be_refrash2" id="wcmp_msg_tab_to_be_refrash2" value="" />
 <input type="hidden" name="wcmp_msg_tab_to_be_refrash3" id="wcmp_msg_tab_to_be_refrash3" value="" />
@@ -22,7 +23,6 @@ global $WCMp;
     </ul>
     <!--...................... start tab1 .......................... -->
     <div id = "wcmp_msg_tab_1" data-element="_all">
-        <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
         <div class="msg_container" >			
             <?php
             //show all messages
@@ -33,7 +33,6 @@ global $WCMp;
     <!--...................... end of tab1 .......................... -->
     <!--...................... start tab2 .......................... -->
     <div id = "wcmp_msg_tab_2" data-element="_read">
-        <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
         <div class="msg_container" >							
             <?php
             //show read messages
@@ -44,7 +43,6 @@ global $WCMp;
     <!--...................... end of tab2 .......................... -->
     <!--...................... start tab3 .......................... -->
     <div id = "wcmp_msg_tab_3" data-element="_unread">
-        <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
         <div class="msg_container" >				
             <?php
             //show unread messages
@@ -55,7 +53,6 @@ global $WCMp;
     <!--...................... end of tab3 .......................... -->
     <!--...................... start tab4 .......................... -->
     <div id = "wcmp_msg_tab_4" data-element="_archive">
-        <div class="ajax_loader_class_msg"><img src="<?php echo $WCMp->plugin_url ?>assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>
         <div class="msg_container">				
             <?php
             //show unread messages
@@ -64,4 +61,5 @@ global $WCMp;
         </div>
     </div>
     <!--...................... end of tab4 .......................... -->
+</div>
 </div>

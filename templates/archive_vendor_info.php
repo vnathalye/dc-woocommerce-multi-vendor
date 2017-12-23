@@ -14,7 +14,7 @@ $vendor_hide_address = get_user_meta($vendor_id, '_vendor_hide_address', true);
 $vendor_hide_phone = get_user_meta($vendor_id, '_vendor_hide_phone', true);
 $vendor_hide_email = get_user_meta($vendor_id, '_vendor_hide_email', true);
 $template_class = get_wcmp_vendor_settings('wcmp_vendor_shop_template', 'vendor', 'dashboard', 'template1');
-$template_class = get_wcmp_vendor_settings('can_vendor_edit_shop_template', 'vendor', 'dashboard', false) && get_user_meta($vendor_id, '_shop_template', true) ? get_user_meta($vendor_id, '_shop_template', true) : $template_class;
+$template_class = apply_filters('can_vendor_edit_shop_template', false) && get_user_meta($vendor_id, '_shop_template', true) ? get_user_meta($vendor_id, '_shop_template', true) : $template_class;
 ?>
 <div class="vendor_description_background wcmp_vendor_banner_template <?php echo $template_class; ?>">
     <div class="wcmp_vendor_banner" style="background-image: url(<?php echo $banner; ?>); "></div>
@@ -39,8 +39,7 @@ $template_class = get_wcmp_vendor_settings('can_vendor_edit_shop_template', 'ven
                 <?php if (!empty($mobile) && $vendor_hide_phone != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="fa fa-fw fa-phone"></i><label><?php echo apply_filters('vendor_shop_page_contact', $mobile, $vendor_id); ?></label></p><?php } ?>
                 <?php if (!empty($email) && $vendor_hide_email != 'Enable') { ?><a href="mailto:<?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?>" class="wcmp_vendor_detail"><i class="fa fa-fw fa-envelope"></i><?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?></a><?php } ?>
                 <?php
-                $is_vendor_add_external_url_field = apply_filters('is_vendor_add_external_url_field', true);
-                if ($WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_add_external_url') && $is_vendor_add_external_url_field) {
+                if (apply_filters('is_vendor_add_external_url_field', true)) {
                     $external_store_url = get_user_meta($vendor_id, '_vendor_external_store_url', true);
                     $external_store_label = get_user_meta($vendor_id, '_vendor_external_store_label', true);
                     if (empty($external_store_label))

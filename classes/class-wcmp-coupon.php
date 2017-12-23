@@ -23,6 +23,8 @@ class WCMp_Coupon {
 		// Validate vendor coupon in cart and checkout
 		add_filter( 'woocommerce_coupon_is_valid', array(&$this, 'woocommerce_coupon_is_valid' ), 30, 2);
 		add_filter( 'woocommerce_coupon_is_valid_for_product', array(&$this, 'woocommerce_coupon_is_valid_for_product' ), 30, 4);
+                // coupon delete action
+                $this->wcmp_delete_coupon_action();
 	}
 	
 	/**
@@ -157,6 +159,28 @@ class WCMp_Coupon {
 		
 		return $products;
 	}
+        
+        /**
+	 * Coupon Delete actions
+	 *
+	 * @access public
+	 * @return void
+	*/	
+        function wcmp_delete_coupon_action(){
+            $coupons_url = wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'));
+            $delete_coupon_redirect_url = apply_filters('wcmp_vendor_redirect_after_delete_coupon_action', $coupons_url);
+            $wpnonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
+            $coupon_id = isset( $_REQUEST['coupon_id'] ) ? (int) $_REQUEST['coupon_id'] : 0;
+            $coupon = get_post($coupon_id);
+            if($coupon && is_user_wcmp_vendor($coupon->post_author)){
+                if ( $wpnonce && wp_verify_nonce( $wpnonce, 'wcmp_delete_coupon' ) && $coupon_id && get_current_user_id() == $coupon->post_author ) {
+                    wp_delete_post( $coupon_id );
+                    wc_add_notice(__('Coupon Deleted!', 'dc-woocommerce-multi-vendor'), 'success');
+                    wp_redirect( $delete_coupon_redirect_url );
+                    exit;
+                }
+            }
+        }
 	
 }
 ?>

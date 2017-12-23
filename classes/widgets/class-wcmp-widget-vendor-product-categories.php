@@ -10,24 +10,24 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
 
     public function __construct() {
         $this->widget_cssclass = 'wcmp woocommerce wcmp_widget_vendor_product_categories widget_product_categories';
-        $this->widget_description = __('A list or dropdown of product categories.', 'woocommerce');
+        $this->widget_description = __('A list or dropdown of product categories.', 'dc-woocommerce-multi-vendor');
         $this->widget_id = 'wcmp_vendor_product_categories';
-        $this->widget_name = __('WCMp product categories', 'woocommerce');
+        $this->widget_name = __('WCMp product categories', 'dc-woocommerce-multi-vendor');
         $this->settings = array(
             'title' => array(
                 'type' => 'text',
-                'std' => __('Vendor Product categories', 'woocommerce'),
-                'label' => __('Title', 'woocommerce'),
+                'std' => __('Vendor Product categories', 'dc-woocommerce-multi-vendor'),
+                'label' => __('Title', 'dc-woocommerce-multi-vendor'),
             ),
             'count' => array(
                 'type' => 'checkbox',
                 'std' => 1,
-                'label' => __('Show product counts', 'woocommerce'),
+                'label' => __('Show product counts', 'dc-woocommerce-multi-vendor'),
             ),
             'hide_empty' => array(
                 'type' => 'checkbox',
                 'std' => 0,
-                'label' => __('Hide empty categories', 'woocommerce'),
+                'label' => __('Hide empty categories', 'dc-woocommerce-multi-vendor'),
             ),
         );
         parent::__construct();

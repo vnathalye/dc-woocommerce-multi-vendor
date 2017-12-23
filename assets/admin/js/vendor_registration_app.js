@@ -29,6 +29,7 @@ app.service('vendor_registration_service', function () {
  */
 app.controller('postbox_menu',['$scope', 'vendor_registration_service', function ($scope, vendor_registration_service) {
     $scope.postboxClass = "";
+    $scope.vendorStoreFieldClass = "";
     var formJson = vendor_registration_service.getField();
     $scope.addFormField = function (type, label, event) {
         event.preventDefault();
@@ -162,6 +163,115 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                     cssClass: ''
                 });
                 break;
+            case 'vendor_description':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    defaultValue: '',
+                    limit : '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_address_1':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_address_2':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_phone':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_country':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_state':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_city':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_postcode':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
+            case 'vendor_paypal_email':
+                formJson.push({
+                    id: jsonLength,
+                    type: type,
+                    label: label,
+                    hidden: false,
+                    partial: type + '.html',
+                    placeholder: '',
+                    required: false,
+                    cssClass: ''
+                });
+                break;
             default :
                 formJson.push({
                     id: jsonLength,
@@ -183,6 +293,13 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
             $scope.postboxClass = "closed";
         } else {
             $scope.postboxClass = "";
+        }
+    };
+    $scope.togglevendorStoreField = function () {
+        if ($scope.vendorStoreFieldClass === "") {
+            $scope.vendorStoreFieldClass = "closed";
+        } else {
+            $scope.vendorStoreFieldClass = "";
         }
     };
 }]);

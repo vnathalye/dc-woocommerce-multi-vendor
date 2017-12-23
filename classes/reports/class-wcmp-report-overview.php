@@ -104,10 +104,12 @@ class WCMp_Report_Overview extends WC_Admin_Report {
                         $vendor_id = get_current_vendor_id();
                         $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>$vendor_id));
 
-                        foreach ($current_vendor_orders as $key => $vendor_order) { 
-                            $item = new WC_Order_Item_Product($vendor_order->order_item_id);
-                            $total_sales += $item->get_subtotal();
-                            $sales += $item->get_subtotal();
+                        foreach ($current_vendor_orders as $key => $vendor_order) {
+                            try {
+                                $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                                $total_sales += $item->get_subtotal();
+                                $sales += $item->get_subtotal();
+                            } catch (Exception $ex) {}
                         }
                         
                     }else{

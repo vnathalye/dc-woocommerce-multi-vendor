@@ -183,11 +183,14 @@ class WCMp_Report {
                         $total_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
                         $total_vendor_earnings += $vendors_orders_amount['total'];
                         $current_vendor_orders = wp_list_filter($vendors_orders, array('vendor_id'=>get_current_vendor_id()));
-                        foreach ($current_vendor_orders as $key => $vendor_order) { 
-                            $item = new WC_Order_Item_Product($vendor_order->order_item_id);
-                            $total_sales += $item->get_subtotal();
-                            $sales += $item->get_subtotal();
-                            $total_purchased_products++;
+                        foreach ($current_vendor_orders as $key => $vendor_order) {
+                            try {
+                                $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                                $total_sales += $item->get_subtotal();
+                                $sales += $item->get_subtotal();
+                                $total_purchased_products++;
+                            } catch (Exception $ex) {}
+                            
                         }
 					}
 

@@ -83,8 +83,8 @@ class WCMp_Admin_Setup_Wizard {
         $this->step = $current_step ? sanitize_key($current_step) : current(array_keys($this->steps));
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
         wp_register_script('jquery-blockui', WC()->plugin_url() . '/assets/js/jquery-blockui/jquery.blockUI' . $suffix . '.js', array('jquery'), '2.70', true);
-        wp_register_script('select2', WC()->plugin_url() . '/assets/js/select2/select2.full' . $suffix . '.js', array('jquery'), '4.0.3');
-        wp_register_script('wc-enhanced-select', WC()->plugin_url() . '/assets/js/admin/wc-enhanced-select' . $suffix . '.js', array('jquery', 'select2'), WC_VERSION);
+        wp_register_script( 'selectWoo', WC()->plugin_url() . '/assets/js/selectWoo/selectWoo.full' . $suffix . '.js', array( 'jquery' ), '1.0.0' );
+        wp_register_script('wc-enhanced-select', WC()->plugin_url() . '/assets/js/admin/wc-enhanced-select' . $suffix . '.js', array('jquery', 'selectWoo'), WC_VERSION);
         wp_localize_script('wc-enhanced-select', 'wc_enhanced_select_params', array(
             'i18n_no_matches' => _x('No matches found', 'enhanced select', 'dc-woocommerce-multi-vendor'),
             'i18n_ajax_error' => _x('Loading failed', 'enhanced select', 'dc-woocommerce-multi-vendor'),
@@ -554,20 +554,24 @@ class WCMp_Admin_Setup_Wizard {
         <form method="post" class="wc-wizard-payment-gateway-form">
             <p><?php esc_html_e('Allowed Payment Methods', 'dc-woocommerce-multi-vendor'); ?></p>
 
-            <ul class="wc-wizard-payment-gateways">
+            <ul class="wc-wizard-services wc-wizard-payment-gateways">
                         <?php foreach ($gateways as $gateway_id => $gateway): ?>
-                    <li class="wc-wizard-gateway <?php echo esc_attr($gateway['class']); ?>">
-                        <div class="wc-wizard-gateway-enable">
-                            <?php
-                            $is_enable_gateway = isset($payment_settings['payment_method_' . $gateway_id]) ? $payment_settings['payment_method_' . $gateway_id] : '';
-                            ?>
-                            <input type="checkbox" <?php checked($is_enable_gateway, 'Enable') ?> name="payment_method_<?php echo esc_attr($gateway_id); ?>" class="input-checkbox" value="Enable" />
+                    <li class="wc-wizard-service-item wc-wizard-gateway <?php echo esc_attr($gateway['class']); ?>">
+                        <div class="wc-wizard-service-name">
                             <label>
     <?php echo esc_html($gateway['label']); ?>
                             </label>
                         </div>
                         <div class="wc-wizard-gateway-description">
                     <?php echo wp_kses_post(wpautop($gateway['description'])); ?>
+                        </div>
+                        <div class="wc-wizard-service-enable">
+                            <span class="wc-wizard-service-toggle disabled">
+                                <?php
+                                $is_enable_gateway = isset($payment_settings['payment_method_' . $gateway_id]) ? $payment_settings['payment_method_' . $gateway_id] : '';
+                                ?>
+                                <input type="checkbox" <?php checked($is_enable_gateway, 'Enable') ?> name="payment_method_<?php echo esc_attr($gateway_id); ?>" class="input-checkbox" value="Enable" />
+                            </span>
                         </div>
                     </li>
 <?php endforeach; ?>

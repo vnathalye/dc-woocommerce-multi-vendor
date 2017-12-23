@@ -96,7 +96,7 @@ class WCMp_Calculate_Commission {
     public function wcmp_process_commissions($order_id) {
         global $wpdb;
         // Only process commissions once
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $processed = get_post_meta($order_id, '_commissions_processed', true);
         $order_processed = get_post_meta($order_id, '_wcmp_order_processed', true);
         if(!$order_processed){
@@ -239,7 +239,7 @@ class WCMp_Calculate_Commission {
      */
     public function get_item_commission($product_id, $variation_id, $item, $order_id, $item_id = '') {
         global $WCMp;
-        $order = new WC_Order($order_id);
+        $order = wc_get_order($order_id);
         $amount = 0;
         $commission = array();
         $product_value_total = 0;

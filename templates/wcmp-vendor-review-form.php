@@ -88,7 +88,7 @@ if (isset($queried_object->term_id) && !empty($queried_object)) {
                         $WCMp->template->get_template('review/wcmp-vendor-review.php', array('reviews_lists' => $reviews_lists, 'vendor_term_id' => $queried_object->term_id));
                         echo '</ol>';
                         if ($total_pages > 1) {
-                            echo '<div class="wcmp_review_loader"><img src="' . $WCMp->plugin_url . 'assets/images/fpd/ajax-loader.gif" alt="ajax-loader" /></div>';
+                            echo '<div class="wcmp_review_loader"><img src="' . $WCMp->plugin_url . 'assets/images/ajax-loader.gif" alt="ajax-loader" /></div>';
                             echo '<input name="loadmore" type="button" id="wcmp_review_load_more" class="submit wcmp_load_more" style="float:right;" value="Load More">';
                         }
                     }

@@ -14,192 +14,188 @@ if (!defined('ABSPATH')) {
 }
 global $woocommerce, $WCMp;
 ?>
-<div class="wcmp_mixed_txt some_line"> <span><?php _e(' Showing stats and reports for  :', 'dc-woocommerce-multi-vendor'); ?></span>
-    <?php
-    if (!empty($_POST['wcmp_start_date_order']) || !empty($_POST['wcmp_end_date_order'])) {
-        echo date('d, F Y', strtotime($_POST['wcmp_start_date_order']));
-        if (!empty($_POST['wcmp_end_date_order'])) {
-            echo ' - ' . date('d, F Y', strtotime($_POST['wcmp_end_date_order']));
-        } else
-            echo ' - ' . date('t, F Y');
-    } else {
-        echo date('F Y');
-    }
-    ?>
-    <div class="clear"></div>
-</div>
-<div class="wcmp_form1 ">
-    <p><?php _e('Select Date Range :', 'dc-woocommerce-multi-vendor'); ?></p>
-    <form name="wcmp_vendor_dashboard_orders" method="POST" >
-        <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_GET['wcmp_start_date_order']) ? $_GET['wcmp_start_date_order'] : ''; ?>" />
-        <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_GET['wcmp_end_date_order']) ? $_GET['wcmp_end_date_order'] : ''; ?>" />
-        <button class="wcmp_black_btn" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
-    </form>
-</div>
-<div class="wcmp_tab">
-    <ul>
-        <li><a href="#all" id="all_click"><?php _e('All', 'dc-woocommerce-multi-vendor'); ?></a></li>
-        <li><a href="#processing" id="processing_click" ><?php _e('Processing', 'dc-woocommerce-multi-vendor'); ?></a></li>
-        <li><a href="#completed" id="complited_click" ><?php _e('Completed', 'dc-woocommerce-multi-vendor'); ?></a></li>
-    </ul>
-    <div class="wcmp_tabbody"  id="all" >
-        <?php if (!empty($customer_orders['all'])) { ?>
-            <form name="wcmp_vendor_dashboard_all_stat_export" method="post" >
-                <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 
-                        <?php if (count($customer_orders['all']) > 6) { ?>
-                            <span>
-                                <span class="wcmp_all_now_showing"> 
-                                    <?php echo '6'; ?>
-                                </span> 
-                                out of <?php echo count($customer_orders['all']); ?>
-                            </span> 
-                            <?php
-                        } else {
-                            echo '<span>' . count($customer_orders['all']) . '</span>';
-                        }
-                        ?>
+<div class="col-md-12">
+    <!--blockquote class="panel-info">
+        <div class="wcmp_mixed_txt some_line"> <span><?php _e(' Showing stats and reports for  :', 'dc-woocommerce-multi-vendor'); ?></span>
+            <b>
+                <?php
+                if (!empty($_POST['wcmp_start_date_order']) || !empty($_POST['wcmp_end_date_order'])) {
+                    echo date('d, F Y', strtotime($_POST['wcmp_start_date_order']));
+                    if (!empty($_POST['wcmp_end_date_order'])) {
+                        echo ' - ' . date('d, F Y', strtotime($_POST['wcmp_end_date_order']));
+                    } else
+                        echo ' - ' . date('t, F Y');
+                } else {
+                    echo date('F Y');
+                }
+                ?>
+            </b>
+        </div>
+    </blockquote-->
+    <!--div class="panel panel-default">
+        <div class="panel-heading">
+            <h3><?php _e('Select Date Range', 'dc-woocommerce-multi-vendor'); ?></h3>
+        </div>
+        <div class="panel-body">
+            <form name="wcmp_vendor_dashboard_orders" method="POST" >
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : ''; ?>" />
+                        </div>
+                        <div class="col-sm-5">
+                            <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : ''; ?>" />
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
+                        </div>
+                    </div>  
                 </div>
-                <div class="wcmp_table_holder">
-                    <table width="100%" border="0" cellspacing="0" class="wcmp_order_all_table" cellpadding="0">
-                        <tr>
-                            <td align="center"  valign="top"  width="20"><span class="input-group-addon beautiful">
-                                    <input type="checkbox"  class="select_all_all" >
-                                </span></td>
-                            <td align="center" valign="top"  ><?php _e('ID', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td  align="center" valign="top" ><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?><br>
-                                <sub><?php _e('dd/mm', 'dc-woocommerce-multi-vendor'); ?></sub></td>
-                            <td align="center" class="no_display"  valign="top" > <?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?> </td>
-                            <td align="center" class="no_display" valign="top"  > <?php _e('Status', 'dc-woocommerce-multi-vendor'); ?> </td>
-                            <td align="center"  valign="top" ><?php _e('Actions', 'dc-woocommerce-multi-vendor'); ?> </td>
-                        </tr>
-                        <?php $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-orders-item.php', array('vendor' => $vendor, 'orders' => array_slice($customer_orders['all'], 0, 6), 'order_status' => 'all')); ?>
-                    </table>
-                </div>
-                <div class="wcmp_table_loader">
-                    <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
-                    if (isset($capabilities_settings['is_order_csv_export'])) {
-                        if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
-                            ?>
-                            <button type="submit" name="download_all_all_csv" class="wcmp_black_btn"><?php _e('Download CSV', 'dc-woocommerce-multi-vendor'); ?></button>
+            </form>
 
-                            <?php
-                        }
-                    }
-                    ?>
-                    <input type="hidden" id="wcmp_all_order_total_hidden" name="wcmp_submit_order_total_hidden" value="all" /> 
-                    <?php if (count($customer_orders['all']) > 6) { ?><button  value="Show" data-shown="6" data-type="all" data-total="<?php echo count($customer_orders['all']); ?>" name="wcmp_download_order_submit" class="wcmp_black_btn wcmp_download_order_submit" style="float:right"><?php _e('Show More', 'dc-woocommerce-multi-vendor'); ?></button><?php } ?>
-                    <div class="clear"></div>
+        </div>
+    </div-->
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form name="wcmp_vendor_dashboard_orders" method="POST" class="form-inline">
+                <div class="form-group">
+                    <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : date('01-m-Y'); ?>" />
+                    <span class="between">&dash;</span>
                 </div>
+                <div class="form-group">
+                    <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : date('t-m-Y'); ?>" />
+                </div>
+                <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
             </form>
-        <?php } else { ?>
-            <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 0 </span></div> 
-        <?php } ?>
-    </div>
-    <div class="wcmp_tabbody" id="processing">
-        <?php if (!empty($customer_orders['processing'])) { ?>
-            <form name="wcmp_vendor_dashboard_processing_stat_export" method="post" >
-                <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 
-                        <?php if (count($customer_orders['processing']) > 6) { ?>
-                            <span>
-                                <span class="wcmp_processing_now_showing"> 
-                                    <?php echo '6'; ?>
-                                </span> 
-                                out of <?php echo count($customer_orders['processing']); ?>
-                            </span> 
-                            <?php
-                        } else {
-                            echo '<span>' . count($customer_orders['processing']) . '</span>';
-                        }
-                        ?>
-                </div>
-                <div class="wcmp_table_holder">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="wcmp_order_processing_table">
+            <form method="post" name="wcmp_vendor_dashboard_completed_stat_export">
+                <table class="table table-striped table-bordered" id="wcmp-vendor-orders">
+                    <thead>
                         <tr>
-                            <td align="center"  valign="top"  width="20"><span class="input-group-addon beautiful">
-                                    <input type="checkbox"  class="select_all_processing" >
-                                </span></td>
-                            <td align="center" valign="top"  ><?php _e('ID', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td  align="center" valign="top" ><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?><br>
-                                <sub><?php _e('dd/mm', 'dc-woocommerce-multi-vendor'); ?></sub></td>
-                            <td align="center" class="no_display"  valign="top" ><?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td align="center" class="no_display" valign="top"  ><?php _e('Status', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td align="center"  valign="top" ><?php _e('Actions', 'dc-woocommerce-multi-vendor'); ?></td>
+                            <th class="text-center"><input type="checkbox" class="select_all_all" onchange="toggleAllCheckBox(this, 'wcmp-vendor-orders');" /></th>
+                            <th><?php _e('Order ID', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <th><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <th><?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <th><?php _e('Status', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <th><?php _e('Action', 'dc-woocommerce-multi-vendor'); ?></th>
                         </tr>
-                        <?php $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-orders-item.php', array('vendor' => $vendor, 'orders' => array_slice($customer_orders['processing'], 0, 6), 'order_status' => 'processing')); ?>
-                    </table>
-                </div>
-                <div class="wcmp_table_loader">
-                    <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
-                    if (isset($capabilities_settings['is_order_csv_export'])) {
-                        if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
-                            ?>
-                            <button type="submit" name="download_processing_all_csv" class="wcmp_black_btn"><?php _e('Download CSV', 'dc-woocommerce-multi-vendor'); ?></button>
-                            <?php
-                        }
-                    }
-                    ?>
-                    <input type="hidden" name="wcmp_submit_order_total_hidden" value="processing" />
-                    <?php if (count($customer_orders['processing']) > 6) { ?><button  value="Show" data-shown="6" data-type="processing" data-total="<?php echo count($customer_orders['processing']); ?>" name="wcmp_download_order_submit" class="wcmp_black_btn wcmp_download_order_submit" style="float:right"><?php _e('Show More', 'dc-woocommerce-multi-vendor'); ?></button><?php } ?>
-                    <div class="clear"></div>
-                </div>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            
+            <div class="wcmp-action-container">
+                <input class="btn btn-default" type="submit" name="wcmp_download_vendor_order_csv" value="<?php _e('Download CSV', 'dc-woocommerce-multi-vendor') ?>" />
+            </div>
+            <?php if (isset($_POST['wcmp_start_date_order'])) : ?>
+                <input type="hidden" name="wcmp_start_date_order" value="<?php echo $_POST['wcmp_start_date_order']; ?>" />
+            <?php endif; ?>
+            <?php if (isset($_POST['wcmp_end_date_order'])) : ?>
+                <input type="hidden" name="wcmp_end_date_order" value="<?php echo $_POST['wcmp_end_date_order']; ?>" />
+            <?php endif; ?>    
             </form>
-        <?php } else { ?>
-            <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 0 </span></div> 
-        <?php } ?>
+        </div>
     </div>
-    <div class="wcmp_tabbody" id="completed">
-        <?php if (!empty($customer_orders['completed'])) { ?>
-            <form name="wcmp_vendor_dashboard_completed_stat_export" method="post" >
-                <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 
-                        <?php if (count($customer_orders['completed']) > 6) { ?>
-                            <span>
-                                <span class="wcmp_completed_now_showing"> 
-                                    <?php echo '6'; ?>
-                                </span> 
-                                out of <?php echo count($customer_orders['completed']); ?>
-                            </span> 
-                            <?php
-                        } else {
-                            echo '<span>' . count($customer_orders['completed']) . '</span>';
-                        }
-                        ?>
-                </div>
-                <div class="wcmp_table_holder">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="wcmp_order_completed_table">
-                        <tr>
-                            <td align="center"  valign="top"  width="20"><span class="input-group-addon beautiful">
-                                    <input type="checkbox"  class="select_all_completed" >
-                                </span></td>
-                            <td align="center" valign="top"  ><?php _e('ID', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td  align="center" valign="top" ><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?><br>
-                                <sub><?php _e('dd/mm', 'dc-woocommerce-multi-vendor'); ?></sub></td>
-                            <td align="center"  class="no_display" valign="top" > <?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?> </td>
-                            <td align="center" class="no_display" valign="top"  ><?php _e('Status', 'dc-woocommerce-multi-vendor'); ?></td>
-                            <td align="center"  valign="top" ><?php _e('Actions', 'dc-woocommerce-multi-vendor'); ?></td>
-                        </tr>
-                        <?php $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-orders-item.php', array('vendor' => $vendor, 'orders' => array_slice($customer_orders['completed'], 0, 6), 'order_status' => 'completed')); ?>
-                    </table>
-                </div>
-                <div class="wcmp_table_loader">
-                    <?php
-                    $capabilities_settings = get_wcmp_vendor_settings('wcmp_capabilities_order_settings_name');
-                    if (isset($capabilities_settings['is_order_csv_export'])) {
-                        if ($capabilities_settings['is_order_csv_export'] == 'Enable') {
-                            ?>
-                            <button type="submit" name="download_completed_all_csv" class="wcmp_black_btn"><?php _e('Download CSV', 'dc-woocommerce-multi-vendor'); ?></button>
-                            <?php
-                        }
-                    }
-                    ?>
-                    <input type="hidden" name="wcmp_submit_order_total_hidden" value="completed" />
-                    <?php if (count($customer_orders['completed']) > 6) { ?><button  value="Show" data-shown="6" data-type="completed" data-total="<?php echo count($customer_orders['completed']); ?>" name="wcmp_download_order_submit" class="wcmp_black_btn wcmp_download_order_submit" style="float:right"><?php _e('Show More', 'dc-woocommerce-multi-vendor'); ?></button><?php } ?>
-                    <div class="clear"></div>
+
+    <!-- Modal -->
+    <div id="marke-as-ship-modal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <form method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><?php _e('Shipment Tracking Details', 'dc-woocommerce-multi-vendor'); ?></h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="tracking_url"><?php _e('Enter Tracking Url', 'dc-woocommerce-multi-vendor'); ?> *</label>
+                            <input type="url" class="form-control" id="email" name="tracking_url" required="">
+                        </div>
+                        <div class="form-group">
+                            <label for="tracking_id"><?php _e('Enter Tracking ID', 'dc-woocommerce-multi-vendor'); ?> *</label>
+                            <input type="text" class="form-control" id="pwd" name="tracking_id" required="">
+                        </div>
+                    </div>
+                    <input type="hidden" name="order_id" id="wcmp-marke-ship-order-id" />
+                    <?php if (isset($_POST['wcmp_start_date_order'])) : ?>
+                        <input type="hidden" name="wcmp_start_date_order" value="<?php echo $_POST['wcmp_start_date_order']; ?>" />
+                    <?php endif; ?>
+                    <?php if (isset($_POST['wcmp_end_date_order'])) : ?>
+                        <input type="hidden" name="wcmp_end_date_order" value="<?php echo $_POST['wcmp_end_date_order']; ?>" />
+                    <?php endif; ?>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" name="wcmp-submit-mark-as-ship"><?php _e('Submit', 'dc-woocommerce-multi-vendor'); ?></button>
+                    </div>
                 </div>
             </form>
-        <?php } else { ?>
-            <div class="wcmp_table_loader"> <?php _e('Showing Results', 'dc-woocommerce-multi-vendor'); ?><span> 0 </span></div> 
-        <?php } ?>
+        </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        var orders_table;
+        var statuses = [];
+        <?php 
+        $filter_by_status = apply_filters('wcmp_vendor_dashboard_order_filter_status_arr',array(
+            'all' => __('All', 'dc-woocommerce-multi-vendor'),
+            'processing' => __('Processing', 'dc-woocommerce-multi-vendor'),
+            'completed' => __('Completed', 'dc-woocommerce-multi-vendor')
+        ));
+        foreach ($filter_by_status as $key => $label) { ?>
+            obj = {};
+            obj['key'] = "<?php echo $key; ?>";
+            obj['label'] = "<?php echo $label; ?>";
+            statuses.push(obj);
+        <?php } ?>
+        orders_table = $('#wcmp-vendor-orders').DataTable({
+            processing: true,
+            serverSide: true,
+            searching: false,
+            ordering: false,
+            initComplete: function () {
+                var order_status_sel = $('<select id="filter_by_order_status" class="wcmp-filter-dtdd wcmp_filter_order_status form-control">').appendTo("#wcmp-vendor-orders_length label");
+                $(statuses).each(function () {
+                    order_status_sel.append($("<option>").attr('value', this.key).text(this.label));
+                });
+            },
+            language: {
+                emptyTable: "<?php echo __('No orders found!', 'dc-woocommerce-multi-vendor'); ?>",
+                info: "<?php echo __('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor'); ?>",
+                infoEmpty: "<?php echo __('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor'); ?>",
+                lengthMenu: "<?php echo __('Show orders _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
+                zeroRecords: "<?php echo __('No matching orders found', 'dc-woocommerce-multi-vendor'); ?>",
+                paginate: {
+                    next: "<?php echo __('Next', 'dc-woocommerce-multi-vendor'); ?>",
+                    previous: "<?php echo __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
+                }
+            },
+            ajax: {
+                url: woocommerce_params.ajax_url + '?action=wcmp_datatable_get_vendor_orders',
+                type: "post",
+                data: function (data) {
+                    data.start_date = vendor_orders_args.start_date;
+                    data.end_date = vendor_orders_args.end_date;
+                    data.order_status = $('#filter_by_order_status').val();
+                }
+            },
+            columns: [
+                {data: 'select_order', className: 'text-center'},
+                {data: 'order_id'},
+                {data: 'order_date'},
+                {data: 'vendor_earning'},
+                {data: 'order_status'},
+                {data: 'action'}
+            ]
+        });
+        $(document).on('change', '#filter_by_order_status', function () {
+            orders_table.ajax.reload();
+        });
+    });
+
+    function wcmpMarkeAsShip(self, order_id) {
+        jQuery('#wcmp-marke-ship-order-id').val(order_id);
+        jQuery('#marke-as-ship-modal').modal('show');
+    }
+</script>

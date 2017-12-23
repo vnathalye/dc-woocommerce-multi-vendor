@@ -39,7 +39,7 @@ if($is_block) {
 		<?php endif; ?>
 
 		<?php do_action( 'woocommerce_archive_description' ); 
-		$block_vendor_desc = $WCMp->vendor_caps->frontend_cap['block_vendor_desc'];
+		$block_vendor_desc = apply_filters('wcmp_blocked_vendor_text', __('Site Administrator has blocked this vendor', 'dc-woocommerce-multi-vendor'), $vendor);
 		?>
 		<p class="blocked_desc">
 			<?php echo esc_attr($block_vendor_desc); ?>

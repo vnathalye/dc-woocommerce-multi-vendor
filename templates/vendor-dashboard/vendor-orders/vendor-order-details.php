@@ -11,11 +11,15 @@
 if (!defined('ABSPATH')) {
     // Exit if accessed directly    
     exit;
-} 
+}
 global $woocommerce, $WCMp;
-$user = wp_get_current_user();
-$vendor = apply_filters('wcmp_dashboard_order_details_vendor', get_wcmp_vendor($user->ID));
-if ($vendor && $order_id) {
+$vendor = get_current_vendor();
+$order = wc_get_order($order_id);
+$vendor_items = get_wcmp_vendor_orders(array('order_id' => $order->get_id(), 'vendor_id' => $vendor->id));
+$vendor_order_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id(), 'vendor_id' => $vendor->id));
+//print_r($vendor_order_amount);die;
+$subtotal = 0;
+if ($vendor && $order_id && false) {
     $vendor_items = $vendor->get_vendor_items_from_order($order_id, $vendor->term_id);
     $order = new WC_Order($order_id);
     if ($order && sizeof($order->get_items()) > 0) {
@@ -101,8 +105,7 @@ if ($vendor && $order_id) {
         </p>
 
         <?php
-        $is_vendor_view_comment_field = apply_filters('is_vendor_view_comment_field', true);
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_view_comment') && $is_vendor_view_comment_field) {
+        if (apply_filters('is_vendor_view_comment_field', true)) {
             $vendor_comments = $order->get_customer_order_notes();
             if ($vendor_comments) {
                 ?>
@@ -110,8 +113,8 @@ if ($vendor && $order_id) {
                 <div class="wcmp_headding3">
                     <?php
                     foreach ($vendor_comments as $comment) {
-                        $comment_vendor = get_comment_meta($comment->comment_ID,'_vendor_id',true);
-                        if($comment_vendor && $comment_vendor != $vendor->id){
+                        $comment_vendor = get_comment_meta($comment->comment_ID, '_vendor_id', true);
+                        if ($comment_vendor && $comment_vendor != $vendor->id) {
                             continue;
                         }
                         $last_added = human_time_diff(strtotime($comment->comment_date_gmt), current_time('timestamp', 1));
@@ -129,8 +132,7 @@ if ($vendor && $order_id) {
         ?>
 
         <?php
-        $is_vendor_submit_comment_field = apply_filters('is_vendor_submit_comment_field', true);
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('is_vendor_submit_comment') && $is_vendor_submit_comment_field) {
+        if (apply_filters('is_vendor_submit_comment_field', true)) {
             ?>
             <div class="wcmp_headding2"><?php _e('Add Comment', 'dc-woocommerce-multi-vendor'); ?></div>
             <form method="post" name="add_comment" id="add-comment_<?php echo $order_id; ?>">
@@ -141,9 +143,9 @@ if ($vendor && $order_id) {
             </form>
         <?php } ?>
 
-        <?php if ($WCMp->vendor_caps->vendor_capabilities_settings('show_customer_dtl') && !$is_not_show_customer_dtl_field = apply_filters('is_not_show_customer_dtl_field', false)) { ?>
-           
-                <div class="wcmp_headding2"><?php _e('Customer Details', 'dc-woocommerce-multi-vendor'); ?></div>
+        <?php if (!apply_filters('hide_customer_dtl_field', false)) { ?>
+
+            <div class="wcmp_headding2"><?php _e('Customer Details', 'dc-woocommerce-multi-vendor'); ?></div>
             <div class="wcmp_headding3">
                 <dl class="customer_details">
                     <?php
@@ -162,9 +164,9 @@ if ($vendor && $order_id) {
         <?php } ?>
 
 
-        <?php if ($WCMp->vendor_caps->vendor_capabilities_settings('show_customer_billing') && !$is_not_show_customer_billing_field = apply_filters('is_not_show_customer_billing_field', false)) { ?>
+        <?php if (apply_filters('show_customer_billing_field', true)) { ?>
             <div class="col-1">
-                    <div class="wcmp_headding2"><?php _e('Billing Address', 'dc-woocommerce-multi-vendor'); ?></div>
+                <div class="wcmp_headding2"><?php _e('Billing Address', 'dc-woocommerce-multi-vendor'); ?></div>
                 <div class="wcmp_headding3">
                     <address><p>
                             <?php
@@ -178,11 +180,11 @@ if ($vendor && $order_id) {
             </div><!-- /.col-1 -->
             <?php
         }
-        if ($WCMp->vendor_caps->vendor_capabilities_settings('show_customer_shipping') && !$is_not_show_customer_shipping_field = apply_filters('is_not_show_customer_shipping_field', false)) {
+        if (apply_filters('show_customer_shipping_field', true)) {
             ?>
             <?php if (!wc_ship_to_billing_address_only() && get_option('woocommerce_calc_shipping') !== 'no') { ?>
                 <div class="col-2">
-                        <div class="wcmp_headding2"><?php _e('Shipping Address', 'dc-woocommerce-multi-vendor'); ?></div>
+                    <div class="wcmp_headding2"><?php _e('Shipping Address', 'dc-woocommerce-multi-vendor'); ?></div>
                     <div class="wcmp_headding3">
                         <address><p>
                                 <?php
@@ -203,3 +205,124 @@ if ($vendor && $order_id) {
     }
 }
 ?>
+
+
+
+
+
+<div class="col-md-12">
+    <header class="text-center">
+        <h1>Order #<?php echo $order->get_id(); ?></h1>
+    </header>
+    <div class="text-center">Order #<?php echo $order->get_id(); ?> was placed on <?php echo $order->get_date_created()->date(wc_date_format()); ?> and is currently <?php echo ucfirst($order->get_status()); ?>.</div>
+    <h2 class="text-center"><?php _e('Order Details', 'dc-woocommerce-multi-vendor'); ?></h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th><?php _e('Product', 'dc-woocommerce-multi-vendor'); ?></th>
+                <th><?php _e('Total', 'dc-woocommerce-multi-vendor'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($vendor_items as $item): $product = wc_get_product($item->product_id); $subtotal += $product->get_price(''); ?>
+                <tr>
+                    <td><?php echo $product->get_title(); ?> × <?php echo $item->quantity; ?></td>
+                    <td><?php echo wc_price($product->get_price()); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td><?php _e('Commission:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo wc_price($vendor_order_amount['commission_amount']); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('Shipping:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo wc_price($vendor_order_amount['shipping_amount']); ?> via <?php echo $order->get_shipping_method(); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('All Tax:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo wc_price($vendor_order_amount['tax_amount'] + $vendor_order_amount['shipping_tax_amount']); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('Payment method:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo $order->get_payment_method_title(); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('Total Earning:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo wc_price($vendor_order_amount['total']); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('Customer Note:', 'dc-woocommerce-multi-vendor'); ?></td>
+                <td><?php echo $order->get_customer_note(); ?></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="row">
+        <div class="col-md-12">
+            <h3><?php _e('Order notes :', 'dc-woocommerce-multi-vendor'); ?><span class="add-note-wrapper pull-right"><a data-toggle="modal" data-target="#add-order-note-modal" ><?php _e('Add Note', 'dc-woocommerce-multi-vendor'); ?></a></span></h3>
+            <ul class="list-group">
+            <?php
+            if (apply_filters('is_vendor_view_comment_field', true)) {
+                $vendor_comments = $order->get_customer_order_notes();
+                if ($vendor_comments) {
+                    foreach ($vendor_comments as $comment) {
+                        $comment_vendor = get_comment_meta($comment->comment_ID, '_vendor_id', true);
+                        if ($comment_vendor && $comment_vendor != $vendor->id) { continue; }
+                        $last_added = human_time_diff(strtotime($comment->comment_date), current_time('timestamp', 1)); ?>
+                        <li class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="pull-right">
+                                <small class="text-muted"><?php printf(__('Added %s ago', 'dc-woocommerce-multi-vendor'), $last_added); ?></small>
+                            </div>
+                            <p><?php echo $comment->comment_content; ?></p>
+                        </li>
+                    <?php }
+                } 
+            } ?>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="add-order-note-modal" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><?php _e('Add Order Note', 'dc-woocommerce-multi-vendor')?> </h4>
+                    </div>
+                    <form method="post" name="add_comment">
+                        <div class="modal-body">
+                            <?php wp_nonce_field('dc-vendor-add-order-comment','vendor_add_order_nonce'); ?>
+                            <div class="form-group">
+                                <textarea class="form-control" name="comment_text"></textarea>
+                                <input type="hidden" name="order_id" value="<?php echo $order->get_id(); ?>">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input class="btn btn-default wcmp-add-order-note" type="submit" name="wcmp_submit_comment" value="<?php _e('Add', 'dc-woocommerce-multi-vendor'); ?>">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-center"><?php _e('Billing address', 'dc-woocommerce-multi-vendor'); ?></h2>
+            <address class="text-center">
+                <?php echo ( $address = $order->get_formatted_billing_address() ) ? $address : __('N/A', 'dc-woocommerce-multi-vendor'); ?>
+                <?php if ($order->get_billing_phone()) : ?>
+                    <p class="woocommerce-customer-details--phone"><?php echo esc_html($order->get_billing_phone()); ?></p>
+                <?php endif; ?>
+                <?php if ($order->get_billing_email()) : ?>
+                    <p class="woocommerce-customer-details--email"><?php echo esc_html($order->get_billing_email()); ?></p>
+                <?php endif; ?>
+            </address>
+        </div>
+        <div class="col-md-6">
+            <h2 class="text-center"><?php _e('Shipping address', 'dc-woocommerce-multi-vendor'); ?></h2>
+            <address class="text-center">
+                <?php echo ( $address = $order->get_formatted_shipping_address() ) ? $address : __('N/A', 'dc-woocommerce-multi-vendor'); ?>
+            </address>
+        </div>
+    </div>
+</div>

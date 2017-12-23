@@ -86,9 +86,9 @@ class WCMp_Email {
 		if($plain_text) {
 			
 		}
-		else {	$can_vendor_add_message_on_email_and_thankyou_page = apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true);
+		else {	
                         $is_customer_support_details = apply_filters('is_customer_support_details', true);
-			if( get_wcmp_vendor_settings('can_vendor_add_message_on_email_and_thankyou_page', 'capabilities', 'miscellaneous') && $can_vendor_add_message_on_email_and_thankyou_page ) {
+			if(apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true) ) {
 				$WCMp->template->get_template( 'vendor_message_to_buyer.php', array( 'vendor_array'=>$vendor_array, 'capability_settings'=>$customer_support_details_settings, 'customer_support_details_settings'=>$customer_support_details_settings ));
 			}
 			elseif(get_wcmp_vendor_settings ('is_customer_support_details', 'general') == 'Enable' && $is_customer_support_details) {

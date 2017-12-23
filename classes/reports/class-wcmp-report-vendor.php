@@ -110,9 +110,11 @@ class WCMp_Report_Vendor extends WC_Admin_Report {
                 	$gross_sales += $vendors_orders_amount['total'] - $vendors_orders_amount['commission_amount'];
                 	$vendor_earning += $vendors_orders_amount['total'];
                 	foreach ($current_vendor_orders as $key => $vendor_order) { 
-                        $item = new WC_Order_Item_Product($vendor_order->order_item_id);
-                        $gross_sales += $item->get_subtotal();
-                    }
+                            try {
+                                $item = new WC_Order_Item_Product($vendor_order->order_item_id);
+                                $gross_sales += $item->get_subtotal();
+                            } catch (Exception $ex) {}
+                        }
                 
 					
 					$total_sales[$vendor_id] = $gross_sales;

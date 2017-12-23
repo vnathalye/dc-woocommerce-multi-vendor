@@ -23,19 +23,19 @@ if ($user && !in_array('dc_pending_vendor', $user->roles) && !in_array('administ
 
 if ($user && in_array('administrator', $user->roles)) {
     ?>
-    <div class="vendor_apply">
-        <p>
-            <?php _e('You have logged in as Administrator. Please log out and then view this page.', 'dc-woocommerce-multi-vendor'); ?>
-        </p>
+    <div class="container">
+        <div class="well text-center wcmp-non-vendor-notice">
+            <p><?php echo sprintf(__('You have logged in as Administrator. Please <a href="%s">log out</a> and then view this page.', 'dc-woocommerce-multi-vendor'), wc_logout_url()); ?></p>
+        </div>
     </div>
     <?php
 }
 if ($user && in_array('dc_pending_vendor', $user->roles)) {
     ?>
-    <div class="vendor_apply">
-        <p>
-            <?php _e('Congratulations! You have successfully applied as a Vendor. Please wait for further notifications from the admin.', 'dc-woocommerce-multi-vendor'); ?>
-        </p>
+    <div class="container">
+        <div class="well text-center wcmp-non-vendor-notice">
+            <p><?php _e('Congratulations! You have successfully applied as a Vendor. Please wait for further notifications from the admin.', 'dc-woocommerce-multi-vendor'); ?></p>
+        </div>
     </div>
     <?php
 }

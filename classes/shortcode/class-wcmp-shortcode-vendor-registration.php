@@ -22,8 +22,8 @@ class WCMp_Vendor_Registration_Shortcode {
      */
     public static function output($attr) {
         global $WCMp;
-        $enable_registration = get_wcmp_vendor_settings('enable_registration', 'general');
-        if (empty($enable_registration)) {
+        if (!apply_filters('is_enable_wcmp_vendor_registration', get_option('users_can_register'))) {
+            echo ' ' . __('Signup has been disabled.', 'dc-woocommerce-multi-vendor');
             return;
         }
         $frontend_style_path = $WCMp->plugin_url . 'assets/frontend/css/';

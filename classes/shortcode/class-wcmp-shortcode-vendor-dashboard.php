@@ -33,6 +33,7 @@ class WCMp_Vendor_Dashboard_Shortcode {
         } else if (!is_user_wcmp_vendor(get_current_vendor_id())) {
             $WCMp->template->get_template('shortcode/non_vendor_dashboard.php');
         } else {
+            do_action('wcmp_dashboard_setup');
             $WCMp->template->get_template('shortcode/vendor_dashboard.php');
         }
     }

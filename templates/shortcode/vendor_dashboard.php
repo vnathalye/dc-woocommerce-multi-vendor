@@ -13,22 +13,32 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $WCMp;
+
 do_action('before_wcmp_vendor_dashboard');
-wc_print_notices();
+
+//wc_print_notices();
+$WCMp->template->get_template('vendor-dashboard/dashboard-header.php');
+
+do_action('wcmp_vendor_dashboard_navigation', array());
 ?>
-<div class="wcmp_remove_div <?php echo $WCMp->endpoints->get_current_endpoint(); ?>">
-    <div class="wcmp_main_page"> 
-        <?php do_action('wcmp_vendor_dashboard_navigation', array()); ?>
-        <div class="popup-overlay"></div>
-        <div class="wcmp_main_holder toside_fix">
-            <div class="wcmp_headding1">
-                <?php do_action('wcmp_vendor_dashboard_header'); ?>
-                <div class="clear"></div>
-            </div>
-            <div class="wcmp_vendor_dashboard_content">
-                <?php do_action('wcmp_vendor_dashboard_content'); ?>
-            </div>
+<div id="page-wrapper" class="side-collapse-container">
+    <div id="current-endpoint-title-wrapper" class="current-endpoint-title-wrapper">
+        <div class="current-endpoint">
+            <?php echo $WCMp->vendor_hooks->wcmp_create_vendor_dashboard_breadcrumbs($WCMp->endpoints->get_current_endpoint()); ?>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="content-padding gray-bkg <?php echo $WCMp->endpoints->get_current_endpoint() ? $WCMp->endpoints->get_current_endpoint() : 'dashboard'; ?>">
+        <div class="notice-wrapper">
+            <?php wc_print_notices(); ?>
+        </div>
+        <div class="row">
+            <?php do_action('wcmp_vendor_dashboard_content'); ?>
         </div>
     </div>
 </div>
-<?php do_action('after_wcmp_vendor_dashboard'); ?>
+
+<?php
+$WCMp->template->get_template('vendor-dashboard/dashboard-footer.php');
+
+do_action('after_wcmp_vendor_dashboard');

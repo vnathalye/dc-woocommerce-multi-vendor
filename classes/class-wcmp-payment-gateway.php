@@ -10,6 +10,8 @@ abstract class WCMp_Payment_Gateway {
     public $enabled = 'Enable';
     /* Gateway id */
     public $payment_gateway;
+    
+    public $gateway_title = '';
     /* WCMp vendor object */
     public $vendor;
     /* array of commission ids */
@@ -44,6 +46,7 @@ abstract class WCMp_Payment_Gateway {
         if (!is_wp_error($this->transaction_id) && $this->transaction_id) {
             $this->update_meta_data($commission_status);
             $this->email_notify($commission_status);
+            $this->add_commission_note($this->commissions, sprintf(__('Commission paid via %s (ID : %s)', 'dc-woocommerce-multi-vendor'), $this->gateway_title, $this->transaction_id));
         }
     }
 
@@ -74,7 +77,7 @@ abstract class WCMp_Payment_Gateway {
         $gateway_charge = 0;
         $is_enable_gateway_charge = get_wcmp_vendor_settings('payment_gateway_charge', 'payment');
         if ($is_enable_gateway_charge == 'Enable') {
-            if(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment")){
+            if (get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment")) {
                 $gateway_charge_percent = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
                 $gateway_charge = ($this->get_transaction_total() * $gateway_charge_percent) / 100;
             }
@@ -122,6 +125,16 @@ abstract class WCMp_Payment_Gateway {
                 break;
         }
         do_action('wcmp_transaction_email_notification', $this->payment_gateway, $commission_status, $this->transaction_id, $this->vendor);
+    }
+
+    public function add_commission_note($commissions, $note = '') {
+        if(is_array($commissions)){
+            foreach ($commissions as $commission){
+                WCMp_Commission::add_commission_note($commission, $note);
+            }
+        }else{
+            WCMp_Commission::add_commission_note($commissions, $note);
+        }
     }
 
 }

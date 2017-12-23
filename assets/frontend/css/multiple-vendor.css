@@ -276,3 +276,137 @@ span.wcmp_norating {
     }
 
 }
+/* Q and A  */
+.woocommerce-wcmp_customer_qna{
+
+}
+form.customerqna-form{
+    margin: 0;
+}
+.qna-item-wrap {
+    margin-bottom: 1.25rem;
+    display: table;
+    width: 100%; 
+    padding: 3px;
+  }
+  #qna-ask-input{
+    padding: 0;
+    border: solid 1px #E4E4E4;
+    border-radius: 0;
+    background-color: #fff;
+  }
+  .qna-result-wrap{
+      margin-top: 30px;
+  }
+  #qna-ask-input input{
+      border: 0;
+      box-shadow: none;
+      width: 100%;
+      background: #fff;
+  }
+  #qna-ask-input #ask-wrap{
+      display: none;
+      padding: 10px;
+    overflow: hidden;
+    }
+  #qna-ask-input button{
+    margin: 0;
+    box-shadow: none;
+    border: 1px solid #ddd;
+    color: #666666;
+    padding: 0 15px;
+    background: #ececec;
+    float: right;
+  }
+  
+  #qna-ask-input button:hover{
+    background: #e0dfdf;
+  }
+
+  @media screen and (max-width: 480px){
+    #qna-ask-input button{
+        float: none;
+        display: table;
+        margin: 10px auto 0;
+    }
+    #qna-ask-input #ask-wrap{
+        text-align: center;
+    }
+  }
+  
+  .qna-block {
+    padding: 1rem;
+    background-color: #fff;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+  }
+  .qna-block textarea {
+    width: 100%;
+    resize: none;
+  }
+  
+  .qna-block > p{
+      font-size: 15px;
+      margin-bottom: 5px;
+  }
+  .qna-block > p.qna-answer {
+    margin-bottom: 1.25rem;
+  }
+  
+  .bottom-qna {
+    overflow: hidden;
+    margin-top: 20px;
+    color: #acb4c2;
+    font-size: 0.875rem;
+  }
+  .qna-actions {
+    float: left;
+    margin: 0px;
+    width: 100%;
+  }
+  .qna-actions li {
+    display: inline;
+    margin: -2px; 
+  }
+  .qna-actions li:first-child {
+    padding-left: 0px;
+  }
+  .qna-actions li:last-child {
+    border-right: 0px;
+  }
+  .qna-actions li{
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    border-right: 1px solid #e1e5eb;
+  } 
+  .qtn-row{
+      margin-bottom: 15px;
+  }
+  .qtn-row p{
+      margin: 0;
+      display: inline-block;
+  }
+  .qtn-row p.qtn-title-text{
+    width: 76px;
+    margin-right: 10px;
+    font-weight: 600;
+    vertical-align: top;
+  }
+  
+.qna-question, .qna-answer {
+    width: calc(100% - 90px);
+}
+#qna-result-msg{
+    background: #e4e4e4;
+    padding: 6px 10px;
+    font-size: 15px;
+}
+#qna-result-msg:empty{
+    background: none;
+    padding: 0;
+}
+.no-answer-lbl{
+    margin: 1px 0 0;
+    display: inline-block;
+}

@@ -58,13 +58,8 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         $vendors = false;
         // Only show current vendor widget when showing a vendor's product(s)
         $show_widget = false;
-        if($instance['gmap_api_key']){
-            $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
-            $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
-            wp_register_script('wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$instance['gmap_api_key']}&sensor=false&language=en", array('jquery'));
-            wp_register_script('wcmp-gmap3', $frontend_script_path . 'gmap3.min.js', array('jquery', 'wcmp-gmaps-api'), '6.0.0', false);
-        }
-
+        $WCMp->library->load_gmap_api();
+        
         if (is_tax('dc_vendor_shop')) {
             $vendor_id = get_queried_object()->term_id;
             if ($vendor_id) {
@@ -82,33 +77,17 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         }
 
         if ($show_widget && isset($vendor->id)) {
-
-            wp_enqueue_script('wcmp-gmap3');
            
-
-            $vendor_address_1 = get_user_meta($vendor->id, '_vendor_address_1', true);
-            $vendor_address_2 = get_user_meta($vendor->id, '_vendor_address_2', true);
-            $vendor_city = get_user_meta($vendor->id, '_vendor_city', true);
-            $vendor_state = get_user_meta($vendor->id, '_vendor_state', true);
-            $vendor_postcode = get_user_meta($vendor->id, '_vendor_postcode', true);
-            $vendor_country = get_user_meta($vendor->id, '_vendor_country', true);
-            $location = '';
-            if ($vendor_address_1)
-                $location = $vendor_address_1 . ' ,';
-            if ($vendor_address_2)
-                $location .= $vendor_address_2 . ' ,';
-            if ($vendor_city)
-                $location .= $vendor_city . ' ,';
-            if ($vendor_state)
-                $location .= $vendor_state . ' ,';
-            if ($vendor_postcode)
-                $location .= $vendor_postcode . ' ,';
-            if ($vendor_country)
-                $location .= $vendor_country;
+            $location = get_user_meta($vendor->id, '_store_location', true);
+            $store_lat = get_user_meta($vendor->id, '_store_lat', true);
+            $store_lng = get_user_meta($vendor->id, '_store_lng', true);
+            
             $args = array(
                 'instance' => $instance,
                 'gmaps_link' => esc_url(add_query_arg(array('q' => urlencode($location)), '//maps.google.com/')),
-                'location' => $location
+                'location' => $location,
+                'store_lat' => $store_lat,
+                'store_lng' => $store_lng
             );
 
             // Set up widget title
@@ -151,7 +130,6 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
     public function update($new_instance, $old_instance) {
         $instance = $old_instance;
         $instance['title'] = strip_tags($new_instance['title']);
-        $instance['gmap_api_key'] = strip_tags($new_instance['gmap_api_key']);
         return $instance;
     }
 
@@ -165,7 +143,6 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         global $WCMp, $woocommerce;
         $defaults = array(
             'title' => __('Store Location', 'dc-woocommerce-multi-vendor'),
-            'gmap_api_key' => __('Google Map API key', 'dc-woocommerce-multi-vendor'),
         );
 
         $instance = wp_parse_args((array) $instance, $defaults);
@@ -173,12 +150,6 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         <p>
             <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dc-woocommerce-multi-vendor') ?>:
                 <input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" class="widefat" />
-            </label>
-        </p>
-        <p>
-            <label for="<?php echo $this->get_field_id('gmap_api_key'); ?>"><?php _e('Google Map API key', 'dc-woocommerce-multi-vendor') ?>:
-                <input type="text" id="<?php echo $this->get_field_id('gmap_api_key'); ?>" name="<?php echo $this->get_field_name('gmap_api_key'); ?>" value="<?php if($instance['gmap_api_key']) echo $instance['gmap_api_key']; ?>" class="widefat" />
-                <span class="desc"><a href="https://developers.google.com/maps/documentation/javascript/get-api-key#get-an-api-key" target="_blank"><?php _e('Click here to generate key', 'dc-woocommerce-multi-vendor') ?></a> </span>
             </label>
         </p>
         <?php

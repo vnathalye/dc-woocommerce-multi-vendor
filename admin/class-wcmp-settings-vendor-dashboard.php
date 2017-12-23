@@ -36,20 +36,26 @@ class WCMp_Settings_Vendor_Dashboard {
             "ref" => &$this,
             "subsection" => "{$this->subsection}",
             "sections" => array(
-                "wcmp_vendor_color_scheme" => array("title" => __('Vendor Dashboard Color Scheme', 'dc-woocommerce-multi-vendor'), // Section one
+                "wcmp_vendor_dashboard_settings" => array("title" => __('Dashboard Settings', 'dc-woocommerce-multi-vendor'), // Section one
                     "fields" => array(
-                        "wcmp_background_color" => array('title' => __('Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#f5f5f5', 'id' => 'wcmp_background_color', 'label_for' => 'wcmp_background_color', 'name' => 'wcmp_background_color', 'hints' => __('Choose your preferred dashboard background Color.', 'dc-woocommerce-multi-vendor')),
-                        "wcmp_menu_background_color" => array('title' => __('Menu Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#dcdcdc', 'id' => 'wcmp_menu_background_color', 'label_for' => 'wcmp_menu_background_color', 'name' => 'wcmp_menu_background_color', 'hints' => __('Choose your preferred dashboard menu Background Color.', 'dc-woocommerce-multi-vendor')),
-                        "wcmp_menu_color" => array('title' => __('Menu Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#7a7a7a', 'id' => 'wcmp_menu_color', 'label_for' => 'wcmp_menu_color', 'name' => 'wcmp_menu_color', 'hints' => __('Choose your preferred dashboard menu Color.', 'dc-woocommerce-multi-vendor')),
-                        "wcmp_menu_hover_background_color" => array('title' => __('Menu Hover Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#fff', 'id' => 'wcmp_menu_hover_background_color', 'label_for' => 'wcmp_menu_hover_background_color', 'name' => 'wcmp_menu_hover_background_color', 'hints' => __('Choose your preferred dashboard menu hover Background Color.', 'dc-woocommerce-multi-vendor')),
-                        "wcmp_menu_hover_color" => array('title' => __('Menu Hover Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#fc482f', 'id' => 'wcmp_menu_hover_color', 'label_for' => 'wcmp_menu_hover_color', 'name' => 'wcmp_menu_hover_color', 'hints' => __('Choose your preferred dashboard menu hover color.', 'dc-woocommerce-multi-vendor')),
+                        "wcmp_dashboard_site_logo" => array('title' => __('Site Logo', 'dc-woocommerce-multi-vendor'), 'type' => 'upload', 'id' => 'wcmp_dashboard_site_logo', 'label_for' => 'wcmp_dashboard_site_logo', 'name' => 'wcmp_dashboard_site_logo', 'hints' => __('Used as site logo on vendor dashboard pages', 'dc-woocommerce-multi-vendor')),
+                        "google_api_key" => array('title' => __('Google Map API key', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'google_api_key', 'label_for' => 'google_api_key', 'name' => 'google_api_key', 'hints' => __('Used for vendor store maps','dc-woocommerce-multi-vendor'), 'desc' => __('<a href="https://developers.google.com/maps/documentation/javascript/get-api-key#get-an-api-key" target="_blank">Click here to generate key</a>','dc-woocommerce-multi-vendor')),
                     ),
                 ),
+//                "wcmp_vendor_color_scheme" => array("title" => __('Vendor Dashboard Color Scheme', 'dc-woocommerce-multi-vendor'), 
+//                    "fields" => array(
+//                        "wcmp_background_color" => array('title' => __('Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#f5f5f5', 'id' => 'wcmp_background_color', 'label_for' => 'wcmp_background_color', 'name' => 'wcmp_background_color', 'hints' => __('Choose your preferred dashboard background Color.', 'dc-woocommerce-multi-vendor')),
+//                        "wcmp_menu_background_color" => array('title' => __('Menu Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#dcdcdc', 'id' => 'wcmp_menu_background_color', 'label_for' => 'wcmp_menu_background_color', 'name' => 'wcmp_menu_background_color', 'hints' => __('Choose your preferred dashboard menu Background Color.', 'dc-woocommerce-multi-vendor')),
+//                        "wcmp_menu_color" => array('title' => __('Menu Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#7a7a7a', 'id' => 'wcmp_menu_color', 'label_for' => 'wcmp_menu_color', 'name' => 'wcmp_menu_color', 'hints' => __('Choose your preferred dashboard menu Color.', 'dc-woocommerce-multi-vendor')),
+//                        "wcmp_menu_hover_background_color" => array('title' => __('Menu Hover Background Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#fff', 'id' => 'wcmp_menu_hover_background_color', 'label_for' => 'wcmp_menu_hover_background_color', 'name' => 'wcmp_menu_hover_background_color', 'hints' => __('Choose your preferred dashboard menu hover Background Color.', 'dc-woocommerce-multi-vendor')),
+//                        "wcmp_menu_hover_color" => array('title' => __('Menu Hover Color', 'dc-woocommerce-multi-vendor'), 'type' => 'colorpicker', 'value' => '#fc482f', 'id' => 'wcmp_menu_hover_color', 'label_for' => 'wcmp_menu_hover_color', 'name' => 'wcmp_menu_hover_color', 'hints' => __('Choose your preferred dashboard menu hover color.', 'dc-woocommerce-multi-vendor')),
+//                    ),
+//                ),
                 'wcmp_vendor_shop_template' => array(
                     'title' => __('Vendor Shop', 'dc-woocommerce-multi-vendor'),
                     'fields' => array(
                         "wcmp_vendor_shop_template" => array('title' => __('Vendor Shop Template', 'dc-woocommerce-multi-vendor'), 'type' => 'radio_select', 'id' => 'wcmp_vendor_shop_template', 'label_for' => 'wcmp_vendor_shop_template', 'name' => 'wcmp_vendor_shop_template', 'dfvalue' => 'vendor', 'options' => $template_options, 'value' => 'template1', 'desc' => ''), // Radio
-                        "can_vendor_edit_shop_template" => array('title' => __('Vendor Can Edit', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'can_vendor_edit_shop_template', 'label_for' => 'can_vendor_edit_shop_template', 'name' => 'can_vendor_edit_shop_template', 'value' => 'Enable', 'text' => __('Allow vendors to edit the shop template.', 'dc-woocommerce-multi-vendor')), // Checkbox
+//                        "can_vendor_edit_shop_template" => array('title' => __('Vendor Can Edit', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'can_vendor_edit_shop_template', 'label_for' => 'can_vendor_edit_shop_template', 'name' => 'can_vendor_edit_shop_template', 'value' => 'Enable', 'text' => __('Allow vendors to edit the shop template.', 'dc-woocommerce-multi-vendor')), // Checkbox
                     )
                 )
             ),
@@ -66,22 +72,28 @@ class WCMp_Settings_Vendor_Dashboard {
     public function wcmp_vendor_dashboard_settings_sanitize($input) {
         $new_input = array();
         $hasError = false;
-
-        if (isset($input['wcmp_background_color'])) {
-            $new_input['wcmp_background_color'] = $input['wcmp_background_color'] != '#fbfbfb' ? $input['wcmp_background_color'] : '#f5f5f5';
+        
+        if (isset($input['wcmp_dashboard_site_logo'])) {
+            $new_input['wcmp_dashboard_site_logo'] = $input['wcmp_dashboard_site_logo'];
         }
-        if (isset($input['wcmp_menu_background_color'])) {
-            $new_input['wcmp_menu_background_color'] = $input['wcmp_menu_background_color'] != '#fbfbfb' ? $input['wcmp_menu_background_color'] : '#dcdcdc';
+        if(isset($input['google_api_key'])){
+            $new_input['google_api_key'] = $input['google_api_key'];
         }
-        if (isset($input['wcmp_menu_color'])) {
-            $new_input['wcmp_menu_color'] = $input['wcmp_menu_color'] != '#fbfbfb' ? $input['wcmp_menu_color'] : '#7a7a7a';
-        }
-        if (isset($input['wcmp_menu_hover_background_color'])) {
-            $new_input['wcmp_menu_hover_background_color'] = $input['wcmp_menu_hover_background_color'] != '#fbfbfb' ? $input['wcmp_menu_hover_background_color'] : '#fff';
-        }
-        if (isset($input['wcmp_menu_hover_color'])) {
-            $new_input['wcmp_menu_hover_color'] = $input['wcmp_menu_hover_color'] != '#fbfbfb' ? $input['wcmp_menu_hover_color'] : '#fc482f';
-        }
+//        if (isset($input['wcmp_background_color'])) {
+//            $new_input['wcmp_background_color'] = $input['wcmp_background_color'] != '#fbfbfb' ? $input['wcmp_background_color'] : '#f5f5f5';
+//        }
+//        if (isset($input['wcmp_menu_background_color'])) {
+//            $new_input['wcmp_menu_background_color'] = $input['wcmp_menu_background_color'] != '#fbfbfb' ? $input['wcmp_menu_background_color'] : '#dcdcdc';
+//        }
+//        if (isset($input['wcmp_menu_color'])) {
+//            $new_input['wcmp_menu_color'] = $input['wcmp_menu_color'] != '#fbfbfb' ? $input['wcmp_menu_color'] : '#7a7a7a';
+//        }
+//        if (isset($input['wcmp_menu_hover_background_color'])) {
+//            $new_input['wcmp_menu_hover_background_color'] = $input['wcmp_menu_hover_background_color'] != '#fbfbfb' ? $input['wcmp_menu_hover_background_color'] : '#fff';
+//        }
+//        if (isset($input['wcmp_menu_hover_color'])) {
+//            $new_input['wcmp_menu_hover_color'] = $input['wcmp_menu_hover_color'] != '#fbfbfb' ? $input['wcmp_menu_hover_color'] : '#fc482f';
+//        }
         if(isset($input['wcmp_vendor_shop_template'])){
             $new_input['wcmp_vendor_shop_template'] = sanitize_text_field($input['wcmp_vendor_shop_template']);
         }

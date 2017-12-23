@@ -38,16 +38,16 @@ class WCMp_Settings_Gneral_Customer_support_Details {
                         "csd_return_state" => array('title' => __('State', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'csd_return_state', 'label_for' => 'csd_return_state', 'name' => 'csd_return_state'), // text 
                         "csd_return_city" => array('title' => __('City', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'csd_return_city', 'label_for' => 'csd_return_city', 'name' => 'csd_return_city'), // text 
                         "csd_return_country" => array('title' => __('Country', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'csd_return_country', 'label_for' => 'csd_return_country', 'name' => 'csd_return_country'), // text 
-                        "csd_return_zipcode" => array('title' => __('ZipCode', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'csd_return_zipcode', 'label_for' => 'csd_return_zipcode', 'name' => 'csd_return_zipcode'), // text 
+                        "csd_return_zipcode" => array('title' => __('Zip Code', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'csd_return_zipcode', 'label_for' => 'csd_return_zipcode', 'name' => 'csd_return_zipcode'), // text 
                         
                     )
                 ),
-                "vendor_customer_support" => array(
-                    "title" => __('Vendor customer support', 'dc-woocommerce-multi-vendor'),
-                    'fields' => array(
-                        "can_vendor_add_customer_support_details" => array('title' => __('Vendor Shop Support', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'can_vendor_add_customer_support_details', 'label_for' => 'can_vendor_add_customer_support_details', 'name' => 'can_vendor_add_customer_support_details', 'value' => 'Enable', 'text' => __('Allow vendors to add vendor shop specific customer support details. If left blank by the vendor, the site wide customer support details would be on display.', 'dc-woocommerce-multi-vendor')), // Checkbox
-                    )
-                )
+//                "vendor_customer_support" => array(
+//                    "title" => __('Vendor customer support', 'dc-woocommerce-multi-vendor'),
+//                    'fields' => array(
+//                        "can_vendor_add_customer_support_details" => array('title' => __('Vendor Shop Support', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'can_vendor_add_customer_support_details', 'label_for' => 'can_vendor_add_customer_support_details', 'name' => 'can_vendor_add_customer_support_details', 'value' => 'Enable', 'text' => __('Allow vendors to add vendor shop specific customer support details. If left blank by the vendor, the site wide customer support details would be on display.', 'dc-woocommerce-multi-vendor')), // Checkbox
+//                    )
+//                )
             ),
         );
 
@@ -65,8 +65,8 @@ class WCMp_Settings_Gneral_Customer_support_Details {
 
         $hasError = false;
 
-        if (isset($input['can_vendor_add_customer_support_details']))
-            $new_input['can_vendor_add_customer_support_details'] = sanitize_text_field($input['can_vendor_add_customer_support_details']);
+//        if (isset($input['can_vendor_add_customer_support_details']))
+//            $new_input['can_vendor_add_customer_support_details'] = sanitize_text_field($input['can_vendor_add_customer_support_details']);
 
         if (isset($input['csd_email']))
             $new_input['csd_email'] = sanitize_text_field($input['csd_email']);
@@ -104,8 +104,9 @@ class WCMp_Settings_Gneral_Customer_support_Details {
      * Print the Section text
      */
     public function vendor_return_address_info() {
-        global $WCMp;
-        _e('Enter the store wide customer support deails here.', 'dc-woocommerce-multi-vendor');
+        echo '<div class="wcmp-section-info">';
+        _e('Enter the storewide customer support details here.', 'dc-woocommerce-multi-vendor');
+        echo '</div>';
     }
 
 }

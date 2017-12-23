@@ -15,7 +15,7 @@ global $WCMp;
 <table style="width:100%; color: #737373; border: 1px solid #e4e4e4; background:none;" border="0" cellpadding="8" cellspacing="0">
 	<tbody>
 		<?php $cc = 0;
-		if( isset( $capability_settings['can_vendor_add_customer_support_details'] ) ) {
+		if( apply_filters('wcmp_vendor_can_overwrite_customer_support', true) ) {
 			foreach ( $vendor_array as $vendor_id => $products) { 
 				$vendor_meta = get_user_meta( $vendor_id );
 				

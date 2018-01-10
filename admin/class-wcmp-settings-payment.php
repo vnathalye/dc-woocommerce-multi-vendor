@@ -8,7 +8,6 @@ class WCMp_Settings_Payment {
     private $options;
     private $tab;
     private $automatic_payment_method;
-    private $withdrawal_payment_method;
 
     /**
      * Start up
@@ -60,7 +59,7 @@ class WCMp_Settings_Payment {
                         "give_tax" => array('title' => __('Tax', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'give_taxx', 'label_for' => 'give_taxx', 'name' => 'give_tax', 'text' => __('Transfer the tax collected (per product) to the vendor. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "give_shipping" => array('title' => __('Shipping', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'give_shippingg', 'label_for' => 'give_shippingg', 'name' => 'give_shipping', 'text' => __('Transfer shipping charges collected (per product) to the vendor.', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "commission_threshold" => array('title' => __('Disbursement Threshold', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'commission_threshold', 'label_for' => 'commission_threshold', 'name' => 'commission_threshold', 'desc' => __('Threshold amount required to disburse commission.', 'dc-woocommerce-multi-vendor')), // Text
-                        "commission_threshold_time" => array('title' => __('Withdrawl Locking Period', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'id' => 'commission_threshold_time', 'label_for' => 'commission_threshold_time', 'name' => 'commission_threshold_time', 'desc' => __('Minimum time required before an individual commission is ready for withdrawal.', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'in days'), // Text
+                        "commission_threshold_time" => array('title' => __('Withdrawal Locking Period', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'id' => 'commission_threshold_time', 'label_for' => 'commission_threshold_time', 'name' => 'commission_threshold_time', 'desc' => __('Minimum time required before an individual commission is ready for withdrawal.', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'in days'), // Text
                     ),
                 ),
                 "wcmp_default_settings_section" => array("title" => __('How/When to Pay ', 'dc-woocommerce-multi-vendor'), // Section one
@@ -69,7 +68,7 @@ class WCMp_Settings_Payment {
                             ), $gateway_charge, array(
                         "choose_payment_mode_automatic_disbursal" => array('title' => __('Disbursement Schedule', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'wcmp_disbursal_mode_admin', 'label_for' => 'wcmp_disbursal_mode_admin', 'name' => 'wcmp_disbursal_mode_admin', 'text' => __('If checked, automatically vendors commission will disburse. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "payment_schedule" => array('title' => __('Set Schedule', 'dc-woocommerce-multi-vendor'), 'type' => 'radio', 'id' => 'payment_schedule', 'label_for' => 'payment_schedule', 'name' => 'payment_schedule', 'dfvalue' => 'daily', 'options' => array('weekly' => __('Weekly', 'dc-woocommerce-multi-vendor'), 'daily' => __('Daily', 'dc-woocommerce-multi-vendor'), 'monthly' => __('Monthly', 'dc-woocommerce-multi-vendor'), 'fortnightly' => __('Fortnightly', 'dc-woocommerce-multi-vendor'), 'hourly' => __('Hourly', 'dc-woocommerce-multi-vendor'))), // Radio
-                            ), array("choose_payment_mode_request_disbursal" => array('title' => __('Withdrawl Request', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'wcmp_disbursal_mode_vendor', 'label_for' => 'wcmp_disbursal_mode_vendor', 'name' => 'wcmp_disbursal_mode_vendor', 'text' => __('Vendors can request for commission withdrawal. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox                                                                            
+                            ), array("choose_payment_mode_request_disbursal" => array('title' => __('Withdrawal Request', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'wcmp_disbursal_mode_vendor', 'label_for' => 'wcmp_disbursal_mode_vendor', 'name' => 'wcmp_disbursal_mode_vendor', 'text' => __('Vendors can request for commission withdrawal. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox                                                                            
                         "commission_transfer" => array('title' => __('Withdrawal Charges', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'commission_transfer', 'label_for' => 'commission_transfer', 'name' => 'commission_transfer', 'desc' => __('Vendors will be charged this amount per withdrawal after the quota of free withdrawals is over.', 'dc-woocommerce-multi-vendor')), // Text
                         "no_of_orders" => array('title' => __('Number of Free Withdrawals', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'id' => 'no_of_orders', 'label_for' => 'no_of_orders', 'name' => 'no_of_orders', 'desc' => __('Number of free withdrawal requests.', 'dc-woocommerce-multi-vendor')), // Text                                                                                                          
                             )
@@ -87,7 +86,6 @@ class WCMp_Settings_Payment {
      * @param array $input Contains all settings fields as array keys
      */
     public function wcmp_payment_settings_sanitize($input) {
-        global $WCMp;
         $new_input = array();
         $hasError = false;
         if (isset($input['revenue_sharing_mode'])) {
@@ -146,11 +144,6 @@ class WCMp_Settings_Payment {
                 $new_input['gateway_charge_' . $key] = floatval(sanitize_text_field($input['gateway_charge_' . $key]));
             }
         }
-        foreach ($this->withdrawal_payment_method as $key => $val) {
-            if (isset($input['payment_method_' . $key])) {
-                $new_input['payment_method_' . $key] = sanitize_text_field($input['payment_method_' . $key]);
-            }
-        }
         if (isset($input['payment_schedule'])) {
             $new_input['payment_schedule'] = $input['payment_schedule'];
         }
@@ -192,7 +185,6 @@ class WCMp_Settings_Payment {
      * Print the Section text
      */
     public function revenue_sharing_mode_section_info() {
-        global $WCMp;
         echo '<div class="wcmp_payment_help">';
         _e("If you are not sure about how to setup commissions and payment options in your marketplace, kindly read this <a href='https://wc-marketplace.com/knowledgebase/setting-up-commission-and-other-payments-for-wcmp/' terget='_blank'>article</a> before proceeding.", 'dc-woocommerce-multi-vendor');
         echo '</div>';

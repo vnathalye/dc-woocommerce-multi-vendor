@@ -141,31 +141,31 @@ class WCMp_Ajax {
                 }
                 $actions['view'] = array(
                     'url' => esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $order->get_id())),
-                    'icon' => 'lnr-eye',
+                    'icon' => 'la-eye action-icon',
                     'title' => __('View', 'dc-woocommerce-multi-vendor'),
                 );
 
                 $actions['wcmp_vendor_csv_download_per_order'] = array(
                     'url' => admin_url('admin-ajax.php?action=wcmp_vendor_csv_download_per_order&order_id=' . $order->get_id() . '&nonce=' . wp_create_nonce('wcmp_vendor_csv_download_per_order')),
-                    'icon' => 'lnr-download',
+                    'icon' => 'la-download action-icon',
                     'title' => __('Download', 'dc-woocommerce-multi-vendor'),
                 );
                 if ($vendor->is_shipping_enable()) {
                     $actions['mark_ship'] = array(
                         'url' => '#',
                         'title' => $mark_ship_title,
-                        'icon' => 'lnr-rocket'
+                        'icon' => 'la-rocket action-icon'
                     );
                 }
                 $actions = apply_filters('wcmp_my_account_my_orders_actions', $actions, $order->get_id());
                 $action_html = '';
                 foreach ($actions as $key => $action) {
                     if ($key == 'mark_ship' && !$is_shipped) {
-                        $action_html .= '<a href="javascript:void(0)" title="' . $mark_ship_title . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><span class="lnr ' . $action['icon'] . '"></span></a> ';
+                        $action_html .= '<a href="javascript:void(0)" title="' . $mark_ship_title . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><span class="la ' . $action['icon'] . '"></span></a> ';
                     } else if ($key == 'mark_ship') {
-                        $action_html .= '<span title="' . $mark_ship_title . '" class="lnr ' . $action['icon'] . '"></span> ';
+                        $action_html .= '<span title="' . $mark_ship_title . '" class="la ' . $action['icon'] . '"></span> ';
                     } else {
-                        $action_html .= '<a href="' . $action['url'] . '"><span class="lnr ' . $action['icon'] . '"></span></a> ';
+                        $action_html .= '<a href="' . $action['url'] . '"><span class="la ' . $action['icon'] . '"></span></a> ';
                     }
                 }
                 $data[] = array(

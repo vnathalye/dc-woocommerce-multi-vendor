@@ -42,7 +42,7 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                         </select>
                     </div>
                 </div>
-                <div class="payment-gateway payment-gateway-paypal_masspay payment-gateway-paypal_payout">
+                <div class="payment-gateway payment-gateway-paypal_masspay payment-gateway-paypal_payout <?php echo apply_filters('wcmp_vendor_paypal_email_container_class', ''); ?>">
                     <div class="form-group">
                         <label for="vendor_paypal_email" class="control-label col-sm-3 col-md-3"><?php _e('Enter your Paypal ID', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
@@ -103,12 +103,13 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                         </div>
                     </div>
                 </div>
+                <?php do_action('wcmp_after_vendor_billing'); ?>
             </div>
         </div>
 
 
 
-        <?php do_action('wcmp_after_vendor_billing'); ?>
+        
 
         <div class="wcmp-action-container">
             <button class="btn btn-default" name="store_save_billing" ><?php _e('Save Options', 'dc-woocommerce-multi-vendor'); ?></button>

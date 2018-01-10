@@ -155,7 +155,7 @@ global $woocommerce, $WCMp;
             searching: false,
             ordering: false,
             initComplete: function () {
-                var order_status_sel = $('<select id="filter_by_order_status" class="wcmp-filter-dtdd wcmp_filter_order_status form-control">').appendTo("#wcmp-vendor-orders_length label");
+                var order_status_sel = $('<select id="filter_by_order_status" class="wcmp-filter-dtdd wcmp_filter_order_status form-control">').appendTo("#wcmp-vendor-orders_length");
                 $(statuses).each(function () {
                     order_status_sel.append($("<option>").attr('value', this.key).text(this.label));
                 });

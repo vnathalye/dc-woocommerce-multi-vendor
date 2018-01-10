@@ -35,6 +35,7 @@ class WCMp_Vendor_Hooks {
         add_filter('wcmp_vendor_dashboard_menu_vendor_withdrawal_capability', array(&$this, 'wcmp_vendor_dashboard_menu_vendor_withdrawal_capability'));
         add_filter('wcmp_vendor_dashboard_menu_vendor_shipping_capability', array(&$this, 'wcmp_vendor_dashboard_menu_vendor_shipping_capability'));
         add_action('before_wcmp_vendor_dashboard_content', array(&$this, 'before_wcmp_vendor_dashboard_content'));
+        add_action('wp', array(&$this, 'wcmp_add_theme_support'), 15);
     }
 
     /**
@@ -297,13 +298,14 @@ class WCMp_Vendor_Hooks {
         $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
         $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-        wp_enqueue_style('font-vendor_announcements', '//fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic', array(), $WCMp->version);
-        wp_enqueue_style('ui_vendor_announcements', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css', array(), $WCMp->version);
+        //wp_enqueue_style('font-vendor_announcements', '//fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic', array(), $WCMp->version);
+        //wp_enqueue_style('ui_vendor_announcements', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css', array(), $WCMp->version);
         wp_enqueue_script('jquery-ui-accordion');
         wp_enqueue_script('wcmp_new_vandor_announcements_js', $frontend_script_path . 'wcmp_vendor_announcements' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         //wp_enqueue_script('jquery');
         //wp_enqueue_script('wcmp_new_vandor_announcements_js_lib_ui', '//code.jquery.com/ui/1.10.4/jquery-ui.js', array('jquery'), $WCMp->version, true);
-        $WCMp->template->get_template('vendor-dashboard/vendor-announcements.php');
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
+        $WCMp->template->get_template('vendor-dashboard/vendor-announcements.php', array('vendor_announcements' => $vendor->get_announcements()));
     }
 
     /**
@@ -727,7 +729,6 @@ class WCMp_Vendor_Hooks {
      * @global object $WCMp
      */
     public function before_wcmp_vendor_dashboard_content($key) {
-        global $WCMp;
         $vendor = get_wcmp_vendor(get_current_vendor_id());
         if ($vendor) {
             $vendor_progress = wcmp_get_vendor_profile_completion($vendor->id);
@@ -744,6 +745,27 @@ class WCMp_Vendor_Hooks {
                 }
                 echo '</div>';
                 echo '</div>';
+            }
+        }
+    }
+    /**
+     * WCMp theme supported function
+     */
+    public function wcmp_add_theme_support(){
+        if(is_vendor_dashboard()){
+            global $wp_filter;
+            //Flatsome mobile menu support
+            remove_action('wp_footer', 'flatsome_mobile_menu', 7);
+            // Remove demo store notice
+            remove_action( 'wp_footer', 'woocommerce_demo_store' );
+            // Remove custom css
+            $wp_head_hooks = $wp_filter['wp_head']->callbacks;
+            foreach ($wp_head_hooks as $priority => $wp_head_hook){
+                foreach (array_keys($wp_head_hook) as $hook){
+                    if(strpos($hook, 'custom_css')){
+                        remove_action( 'wp_head', $hook, $priority );
+                    }
+                }
             }
         }
     }

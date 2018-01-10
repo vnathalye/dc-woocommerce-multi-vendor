@@ -26,9 +26,11 @@ jQuery(document).ready(function($){
 		if(!myparent.hasClass('oppned')) {
 			$(this).next(".msg_stat").slideDown(300);	
 			myparent.addClass('oppned');
+                        $(this).children('span').removeClass('la-angle-down').addClass('la-angle-up');
 		}
 		else {
 			myparent.removeClass('oppned');
+                        $(this).children('span').removeClass('la-angle-up').addClass('la-angle-down');
 		}
 	});		
 	jQuery("body").on("click", ".msg_stat_click", function(event){
@@ -51,6 +53,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {			
 			if(	res == 1 ) {
+                                window.location.reload();
 				element_to_be_deleted1.hide();
 				element_to_be_deleted2.hide();
 				$("#wcmp_msg_tab_to_be_refrash").val('_archive');
@@ -101,6 +104,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
+                                window.location.reload();
 				element_to_be_deleted1.hide();
 				element_parent.prepend('<li class="_wcmp_vendor_message_unread"><a href="#">'+res+'</a></li>');
 				$("#wcmp_msg_tab_to_be_refrash").val('_read');
@@ -124,6 +128,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {				
 			if(	res != 0 ) {
+                                window.location.reload();
 				element_to_be_deleted1.hide();
 				element_parent.prepend('<li class="_wcmp_vendor_message_read"><a href="#">'+res+'</a></li>');
 				$("#wcmp_msg_tab_to_be_refrash").val('_read');
@@ -152,6 +157,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {				
 			if(	res != 0 ) {
+                                window.location.reload();
 				element_to_be_deleted1.remove();
 				element_to_be_deleted2.remove();				
 				$("#wcmp_msg_tab_to_be_refrash2").val('_unread');
@@ -194,6 +200,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
+                                window.location.reload();
 				element_to_be_deleted1.remove();
 				element_to_be_deleted2.remove();				
 				$("#wcmp_msg_tab_to_be_refrash").val('_read');
@@ -237,6 +244,7 @@ jQuery(document).ready(function($){
 		}
 		$.post(woocommerce_params.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
+                                window.location.reload();
 				element_to_be_deleted1.remove();
 				element_to_be_deleted2.remove();				
 				$("#wcmp_msg_tab_to_be_refrash").val('_read');

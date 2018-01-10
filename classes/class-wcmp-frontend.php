@@ -13,7 +13,7 @@ class WCMp_Frontend {
         //enqueue scripts
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_scripts'));
         //enqueue styles
-        add_action('wp_enqueue_scripts', array(&$this, 'frontend_styles'), 99);
+        add_action('wp_enqueue_scripts', array(&$this, 'frontend_styles'), 999);
         add_action('woocommerce_archive_description', array(&$this, 'product_archive_vendor_info'), 10);
         add_filter('body_class', array(&$this, 'set_product_archive_class'));
         add_action('template_redirect', array(&$this, 'template_redirect'));
@@ -335,6 +335,7 @@ class WCMp_Frontend {
         wp_register_script('wcmp_seller_review_rating_js', $frontend_script_path . 'vendor_review_rating' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_single_product_multiple_vendors', $frontend_script_path . 'single-product-multiple-vendors' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_customer_qna_js', $frontend_script_path . 'wcmp-customer-qna' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp_custom_scroller_js', $frontend_script_path . 'jquery.mCustomScrollbar.concat.min.js', array('jquery'), $WCMp->version, true);
 
 
         if (is_vendor_dashboard()) {
@@ -347,6 +348,7 @@ class WCMp_Frontend {
             wp_enqueue_script('vendor_order_by_product_js');
             wp_enqueue_script('wcmp_seller_review_rating_js');
             wp_enqueue_script('wcmp_customer_qna_js');
+            wp_enqueue_script('wcmp_custom_scroller_js');
             wp_enqueue_script('wcmp_gchart_loader', '//www.gstatic.com/charts/loader.js');
             $vendor_review_rating_msg_array = array(
                 'rating_error_msg_txt' => __('Please rate the vendor', 'dc-woocommerce-multi-vendor'),
@@ -391,7 +393,8 @@ class WCMp_Frontend {
         $frontend_style_path = $WCMp->plugin_url . 'assets/frontend/css/';
         $frontend_style_path = str_replace(array('http:', 'https:'), '', $frontend_style_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-        if (is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true)) {
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+        if ($is_vendor_dashboard) {
             $this->wcmp_dequeue_global_style();
         }
         
@@ -400,6 +403,7 @@ class WCMp_Frontend {
         wp_register_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('vandor-dashboard-style', $frontend_style_path . 'vendor_dashboard' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
+        wp_register_style('wcmp_custom_scroller', $frontend_style_path . 'jquery.mCustomScrollbar.css', array(), $WCMp->version);
 
         if (is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())) {
             wp_enqueue_style('dashicons');
@@ -407,6 +411,7 @@ class WCMp_Frontend {
             $WCMp->library->load_bootstrap_style_lib();
             $WCMp->library->load_line_awesome_lib();
             wp_enqueue_style('vandor-dashboard-style');
+            wp_enqueue_style('wcmp_custom_scroller');
         }
         if (is_woocommerce()) {
             wp_enqueue_style('product_css');
@@ -415,6 +420,7 @@ class WCMp_Frontend {
         if (is_tax('dc_vendor_shop')) {
             wp_enqueue_style('frontend_css');
         }
+        do_action('wcmp_frontend_enqueue_scripts', $is_vendor_dashboard);
     }
 
     public function wcmp_dequeue_global_style() {

@@ -780,11 +780,13 @@ class WCMp_Vendor {
                 $shipping_total_week = 0;
                 $tax_total_week = 0;
                 $net_balance_week = 0;
+                $sale_item_count = array();
                 $vendor_sales_results = array('total_sales'=> 0, 'total_earning'=> 0, 'total_balance' => 0);
                 if($sale_results){
                     foreach ($sale_results as $sale) { 
                         if($sale->commission_id != 0 && $sale->commission_id != ''){ 
                             $order_item_id_week = $sale->order_item_id;
+                            $sale_item_count[] = $sale->quantity; 
                             $item_total_week += get_metadata('order_item', $sale->order_item_id, '_line_total', true);
                             if (!in_array($sale->commission_id, $comission_total_arr)) {
                                 $comission_total_arr[] = $sale->commission_id;
@@ -808,6 +810,7 @@ class WCMp_Vendor {
                     $vendor_sales_results['total_sales'] = $item_total_week;
                     $vendor_sales_results['total_earning'] = $total_comission_week;
                     $vendor_sales_results['total_balance'] = $net_balance_week;
+                    $vendor_sales_results['total_sales_count'] = array_sum($sale_item_count);
                 }
                 $reports = $vendor_sales_results;
                 break;
@@ -966,6 +969,63 @@ class WCMp_Vendor {
         $image = apply_filters('wcmp_vendor_get_image_src', $image);
         
         return str_replace( array( 'https://', 'http://' ), '//', $image );
+    }
+    
+    /**
+     * Get Announcements.
+     *
+     * @param int $id (default: current vendor)
+     * @param array $args
+     * @return array
+     */
+    public function get_announcements( $id = '', $args = array()) { 
+        $vendor_id = '';
+        $announcements = array();
+        if($id){
+            $vendor_id = $id;
+        }else{
+            $vendor_id = $this->id;
+        }
+        $default = array(
+            'posts_per_page'   => -1,
+            'post_type'        => 'wcmp_vendor_notice',	
+            'post_status'      => 'publish',
+            'suppress_filters' => true 
+        );
+        $args = wp_parse_args($args, $default);
+        $posts_array = get_posts( $args );
+        $dismiss_notices_ids = get_user_meta($vendor_id,'_wcmp_vendor_message_deleted', true);
+        if(!empty($dismiss_notices_ids)) {
+            $dismiss_notices_ids_array = explode(',',$dismiss_notices_ids);
+        }else {
+            $dismiss_notices_ids_array = array();
+        }
+        $readed_notices_ids = get_user_meta($vendor_id,'_wcmp_vendor_message_readed', true);
+        if(!empty($readed_notices_ids)) {
+            $readed_notices_ids_array = explode(',',$readed_notices_ids);
+        }else {
+            $readed_notices_ids_array = array();
+        }
+        if($posts_array){
+            foreach ($posts_array as $post) {
+                // deleted by vendor
+                if(!in_array($post->ID, $dismiss_notices_ids_array)){
+                    $announcements['all'][$post->ID] = $post;
+                    // readed by vendor
+                    if(in_array($post->ID, $readed_notices_ids_array)){
+                        $post->is_read = true;
+                        $announcements['read'][$post->ID] = $post;
+                    }else{
+                        $post->is_read = false;
+                        $announcements['unread'][$post->ID] = $post;
+                    }
+                }else{
+                    $post->is_read = false;
+                    $announcements['deleted'][$post->ID] = $post;
+                } 
+            }
+        }
+        return $announcements;
     }
         
 }

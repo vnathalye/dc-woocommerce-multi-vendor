@@ -30,6 +30,7 @@ function drawChart() {
                     {
                         map: 'world_en',
                         backgroundColor: false,
+                        color: '#a0a0a0',
                         colors: colors,
                         hoverOpacity: 0.7, // opacity for :hover
                         hoverColor: false,

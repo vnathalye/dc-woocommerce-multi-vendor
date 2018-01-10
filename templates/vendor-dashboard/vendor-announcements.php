@@ -19,14 +19,19 @@ global $WCMp;
         <li data-element="_all"><a href = "#wcmp_msg_tab_1"><?php _e('All', 'dc-woocommerce-multi-vendor'); ?></a></li>
         <li data-element="_read"><a href = "#wcmp_msg_tab_2"><?php _e('Read', 'dc-woocommerce-multi-vendor'); ?></a></li>
         <li data-element="_unread" ><a href = "#wcmp_msg_tab_3"><?php _e('Unread', 'dc-woocommerce-multi-vendor'); ?></a></li>
-        <li data-element="_archive"><a href = "#wcmp_msg_tab_4"><?php _e('Archive', 'dc-woocommerce-multi-vendor'); ?></a></li>
+        <li data-element="_archive"><a href = "#wcmp_msg_tab_4"><?php _e('Trash', 'dc-woocommerce-multi-vendor'); ?></a></li>
     </ul>
     <!--...................... start tab1 .......................... -->
     <div id = "wcmp_msg_tab_1" data-element="_all">
         <div class="msg_container" >			
             <?php
+            if(isset($vendor_announcements['all'])){
+                $all = $vendor_announcements['all'];
+            }else{
+                $all = array();
+            }
             //show all messages
-            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-all.php');
+            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-all.php',array('posts_array'=>$all));
             ?>			
         </div>
     </div>
@@ -35,8 +40,13 @@ global $WCMp;
     <div id = "wcmp_msg_tab_2" data-element="_read">
         <div class="msg_container" >							
             <?php
+            if(isset($vendor_announcements['read'])){
+                $read = $vendor_announcements['read'];
+            }else{
+                $read = array();
+            }
             //show read messages
-            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-read.php');
+            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-read.php',array('posts_array'=>$read));
             ?>			
         </div>
     </div>
@@ -45,8 +55,13 @@ global $WCMp;
     <div id = "wcmp_msg_tab_3" data-element="_unread">
         <div class="msg_container" >				
             <?php
+            if(isset($vendor_announcements['unread'])){
+                $unread = $vendor_announcements['unread'];
+            }else{
+                $unread = array();
+            }
             //show unread messages
-            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-unread.php');
+            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-unread.php',array('posts_array'=>$unread));
             ?>				
         </div>
     </div>
@@ -55,8 +70,13 @@ global $WCMp;
     <div id = "wcmp_msg_tab_4" data-element="_archive">
         <div class="msg_container">				
             <?php
+            if(isset($vendor_announcements['deleted'])){
+                $deleted = $vendor_announcements['deleted'];
+            }else{
+                $deleted = array();
+            }
             //show unread messages
-            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-archive.php');
+            $WCMp->template->get_template('vendor-dashboard/vendor-announcements/vendor-announcements-archive.php',array('posts_array'=>$deleted));
             ?>				
         </div>
     </div>

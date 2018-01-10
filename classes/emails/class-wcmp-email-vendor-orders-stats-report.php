@@ -63,7 +63,7 @@ class WC_Email_Vendor_Orders_Stats_Report extends WC_Email {
             $this->attachments = $attachments;
         }
         
-        $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+        return $this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
     }
     
     /**

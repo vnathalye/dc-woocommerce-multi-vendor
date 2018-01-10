@@ -46,7 +46,7 @@ abstract class WCMp_Payment_Gateway {
         if (!is_wp_error($this->transaction_id) && $this->transaction_id) {
             $this->update_meta_data($commission_status);
             $this->email_notify($commission_status);
-            $this->add_commission_note($this->commissions, sprintf(__('Commission paid via %s (ID : %s)', 'dc-woocommerce-multi-vendor'), $this->gateway_title, $this->transaction_id));
+            $this->add_commission_note($this->commissions, sprintf(__('Commission paid via %s <a href="%s">(ID : %s)</a>', 'dc-woocommerce-multi-vendor'), $this->gateway_title, get_admin_url('wcmp-transaction-details').'admin.php?page=wcmp-transaction-details&trans_id='.$this->transaction_id, $this->transaction_id));
         }
     }
 

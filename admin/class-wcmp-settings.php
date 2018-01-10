@@ -85,7 +85,8 @@ class WCMp_Settings {
         add_submenu_page('wcmp', __('Submit Issue Form', 'dc-woocommerce-multi-vendor'), __('Submit Issue', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp_beta_bug_report', array($this, 'create_wcmp_beta_bug_report_form'));
         $wcmp_todo_list = add_submenu_page('wcmp', __('To-do List', 'dc-woocommerce-multi-vendor'), __('To-do List', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-to-do', array($this, 'wcmp_to_do'));
         $wcmp_extension_page = add_submenu_page('wcmp', __('Extensions', 'dc-woocommerce-multi-vendor'), __('Extensions', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-extensions', array($this, 'wcmp_extensions'));
-
+        // transaction details page
+        add_submenu_page( null, __('Transaction Details', 'dc-woocommerce-multi-vendor'), __('Transaction Details', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-transaction-details', array($this, 'wcmp_transaction_details'));
 
         $this->tabs = $this->get_wcmp_settings_tabs();
         $this->tabsection_general = $this->get_wcmp_settings_tabsections_general();
@@ -107,6 +108,60 @@ class WCMp_Settings {
             $submenu_sort[] = $submenu['wcmp'][6];
             $submenu['wcmp'] = apply_filters('wcmp_submeu_items', $submenu_sort, $submenu['wcmp']);
         }
+    }
+    
+    public function wcmp_transaction_details(){
+        global $WCMp;
+        ?>
+        <div class="wrap blank-wrap"><h3><?php _e('Transaction Details', 'dc-woocommerce-multi-vendor'); ?></h3></div>
+        <div class="wrap wcmp-settings-wrap panel-body">
+        <?php 
+        $_is_trans_details_page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '';
+        $trans_id = isset($_REQUEST['trans_id']) ? absint($_REQUEST['trans_id']) : 0;
+        if($_is_trans_details_page == 'wcmp-transaction-details' && $trans_id != 0){
+            $transaction = get_post($trans_id);
+            if (isset($transaction->post_type) && $transaction->post_type == 'wcmp_transaction') {
+                $vendor = get_wcmp_vendor_by_term($transaction->post_author) ? get_wcmp_vendor_by_term($transaction->post_author) : get_wcmp_vendor($transaction->post_author);
+                $commission_details = $WCMp->transaction->get_transaction_item_details($trans_id);
+            ?>
+            <table class="widefat fixed striped">
+                <?php if (!empty($commission_details['header'])) { 
+                    echo '<thead><tr>';
+                    foreach ($commission_details['header'] as $header_val) {
+                        echo '<th>'.$header_val.'</th>';
+                    }
+                    echo '</tr></thead>';
+                }
+                echo '<tbody>';
+                if (!empty($commission_details['body'])) {
+                    
+                    foreach ($commission_details['body'] as $commission_detail) {
+                        echo '<tr>';
+                        foreach ($commission_detail as $details) {
+                            foreach ($details as $detail_key => $detail) {
+                                echo '<td>'.$detail.'</td>';
+                            }
+                        }
+                        echo '</tr>';
+                    }
+                    
+                }
+                if ($totals = $WCMp->transaction->get_transaction_item_totals($trans_id, $vendor)) {
+                    foreach ($totals as $total) {
+                        echo '<tr><td colspan="3" >'.$total['label'].'</td><td>'.$total['value'].'</td></tr>';
+                    }
+                }
+                echo '</tbody>';
+                ?>
+            </table>
+        <?php } else { ?>
+            <p class="wcmp_headding3"><?php echo __('Unfortunately transaction details are not found. You may try again later.', 'dc-woocommerce-multi-vendor'); ?></p>
+        <?php } 
+        }else{ ?>
+           <p class="wcmp_headding3"><?php echo __('Unfortunately transaction details are not found. You may try again later.', 'dc-woocommerce-multi-vendor'); ?></p> 
+        <?php } ?>
+        </div>
+        <?php
     }
 
     public function create_wcmp_beta_bug_report_form() {

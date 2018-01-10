@@ -35,7 +35,7 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
             <li class="dropdown login-user">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="la la-user"></i>
-                    <span><i class="lnr lnr-chevron-down"></i></span>
+                    <span><i class="la la-angle-down"></i></span>
                 </a>
                 <ul class="dropdown-menu dropdown-user dropdown-menu-right">
                     <li class="sidebar-logo">
@@ -70,7 +70,11 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
             <li class="notification-link">
                 <a href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements'))); ?>" title="announcement">
                     <i class="la la-bell"></i> <span class="hidden-sm hidden-xs">announcement</span>
-                    <span class="notification-blink"></span>
+                    <?php $vendor_announcements = $vendor->get_announcements(); 
+                    if(isset($vendor_announcements['unread']) && count($vendor_announcements['unread']) > 0){
+                        echo '<span class="notification-blink"></span>';
+                    }
+                    ?>
                 </a>
             </li>
             <li class="notification-link">

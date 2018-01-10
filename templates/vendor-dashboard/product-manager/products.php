@@ -108,7 +108,7 @@ foreach ($terms as $term) {
                 },
             },
             "initComplete": function () {
-                var product_cat_sel = $('<select id="product_cat" class="wcmp-filter-dtdd wcmp_filter_product_cat form-control">').appendTo("#product_table_length label");
+                var product_cat_sel = $('<select id="product_cat" class="wcmp-filter-dtdd wcmp_filter_product_cat form-control">').appendTo("#product_table_length");
                 product_cat_sel.append($("<option>").attr('value', '').text('<?php _e('Select a Category', 'dc-woocommerce-multi-vendor'); ?>'));
                 $(filter_by_category_list).each(function () {
                     product_cat_sel.append($("<option>").attr('value', this.key).text(this.label));

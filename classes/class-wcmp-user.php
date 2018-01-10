@@ -592,40 +592,40 @@ class WCMp_User {
             'class' => "user-profile-fields regular-text"
         ); // Text
 
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_policy_tab_label'])) {
+        if (apply_filters('wcmp_vendor_can_overwrite_policies', true) && get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
 
-            $fields['vendor_policy_tab_title'] = array(
-                'label' => __('Enter the title of Policies Tab', 'dc-woocommerce-multi-vendor'),
-                'type' => 'text',
-                'value' => $vendor->policy_tab_title,
-                'class' => 'user-profile-fields regular-text'
-            );
-        }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
+//            $fields['vendor_policy_tab_title'] = array(
+//                'label' => __('Enter the title of Policies Tab', 'dc-woocommerce-multi-vendor'),
+//                'type' => 'text',
+//                'value' => $vendor->policy_tab_title,
+//                'class' => 'user-profile-fields regular-text'
+//            );
+        //}
+        //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
             $fields['vendor_cancellation_policy'] = array(
                 'label' => __('Cancellation/Return/Exchange Policy', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->cancellation_policy,
                 'class' => 'user-profile-fields'
             );
-        }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
+        //}
+        //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
             $fields['vendor_refund_policy'] = array(
                 'label' => __('Refund Policy', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->refund_policy,
                 'class' => 'user-profile-fields'
             );
-        }
-        if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
+        //}
+        //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
             $fields['vendor_shipping_policy'] = array(
                 'label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->shipping_policy,
                 'class' => 'user-profile-fields regular-text'
             );
-        }
-        if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) {
+        //}
+        //if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) {
             $fields['vendor_message_to_buyers'] = array(
                 'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',

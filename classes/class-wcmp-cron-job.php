@@ -109,6 +109,8 @@ class WCMp_Cron_Job {
                             $report_csv = $WCMp->vendor_dashboard->generate_csv($order_data, $vendor, $args);
                             if($report_csv) $attachments[] = $report_csv;
                             if($email->trigger($vendor, $report_data, $attachments)){
+                                $email->find[ ]      = $vendor->page_title;
+                                $email->replace[ ]   = '{STORE_NAME}';
                                 if (file_exists($report_csv)) {
                                     @unlink($report_csv);
                                 }
@@ -119,11 +121,17 @@ class WCMp_Cron_Job {
                             }
                         }else{
                             $report_data['order_data'] = $order_data;
-                            if($email->trigger($vendor, $report_data, $attachments)){}
+                            if($email->trigger($vendor, $report_data, $attachments)){
+                                $email->find[ ]      = $vendor->page_title;
+                                $email->replace[ ]   = '{STORE_NAME}';
+                            }
                         }
                     }else{
                         $report_data['order_data'] = $order_data;
-                        if($email->trigger($vendor, $report_data, $attachments)){}
+                        if($email->trigger($vendor, $report_data, $attachments)){
+                            $email->find[ ]      = $vendor->page_title;
+                            $email->replace[ ]   = '{STORE_NAME}';
+                        }
                     }
                 }
             }
@@ -172,6 +180,8 @@ class WCMp_Cron_Job {
                             $report_csv = $WCMp->vendor_dashboard->generate_csv($order_data, $vendor, $args);
                             if($report_csv) $attachments[] = $report_csv;
                             if($email->trigger($vendor, $report_data, $attachments)){
+                                $email->find[ ]      = $vendor->page_title;
+                                $email->replace[ ]   = '{STORE_NAME}';
                                 if (file_exists($report_csv)) {
                                     @unlink($report_csv);
                                 }
@@ -182,11 +192,17 @@ class WCMp_Cron_Job {
                             }
                         }else{
                             $report_data['order_data'] = $order_data;
-                            if($email->trigger($vendor, $report_data, $attachments)){}
+                            if($email->trigger($vendor, $report_data, $attachments)){
+                                $email->find[ ]      = $vendor->page_title;
+                                $email->replace[ ]   = '{STORE_NAME}';
+                            }
                         }
                     }else{
                         $report_data['order_data'] = $order_data;
-                        if($email->trigger($vendor, $report_data, $attachments)){}
+                        if($email->trigger($vendor, $report_data, $attachments)){
+                            $email->find[ ]      = $vendor->page_title;
+                            $email->replace[ ]   = '{STORE_NAME}';
+                        }
                     }
                 }
             }

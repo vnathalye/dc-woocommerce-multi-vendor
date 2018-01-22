@@ -145,7 +145,7 @@ $vendor_hide_message_to_buyers = get_user_meta($vendor->id, '_vendor_hide_messag
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Store Map Location', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">  
-                            <?php $api_key = get_wcmp_vendor_settings('google_api_key', 'general');
+                            <?php $api_key = get_wcmp_vendor_settings('google_api_key');
                             if(!empty($api_key)) { ?>
                             <div class="row">
                             <div class="col-md-8">

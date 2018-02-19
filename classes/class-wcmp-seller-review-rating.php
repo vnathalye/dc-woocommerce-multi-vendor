@@ -43,8 +43,8 @@ class WCMp_Seller_Review_Rating {
                         if (is_user_wcmp_vendor($product->post_author)) {
                             $vendor = new WCMp_Vendor($product->post_author);
                             $term_id = get_user_meta($vendor->id, '_vendor_term_id', true);
-                            $term = get_term_by('id', $term_id, 'dc_vendor_shop');
-                            $term_link = get_term_link($term, 'dc_vendor_shop');
+                            $term = get_term_by('id', $term_id, $WCMp->taxonomy->taxonomy_name);
+                            $term_link = get_term_link($term, $WCMp->taxonomy->taxonomy_name);
                             $review_link = trailingslashit($term_link) . '#reviews';
                             $arr_values['vendor_review_link'] = $review_link;
                             $arr_values['shop_name'] = $vendor->user_data->display_name;
@@ -61,8 +61,8 @@ class WCMp_Seller_Review_Rating {
                     if (is_user_wcmp_vendor($product->post_author)) {
                         $vendor = new WCMp_Vendor($product->post_author);
                         $term_id = get_user_meta($vendor->id, '_vendor_term_id', true);
-                        $term = get_term_by('id', $term_id, 'dc_vendor_shop');
-                        $term_link = get_term_link($term, 'dc_vendor_shop');
+                        $term = get_term_by('id', $term_id, $WCMp->taxonomy->taxonomy_name);
+                        $term_link = get_term_link($term, $WCMp->taxonomy->taxonomy_name);
                         $review_link = trailingslashit($term_link) . '#reviews';
                         $arr_values['vendor_review_link'] = $review_link;
                         $arr_values['shop_name'] = $vendor->user_data->display_name;
@@ -81,7 +81,7 @@ class WCMp_Seller_Review_Rating {
 
     function wcmp_seller_review_rating_form() {
         global $WCMp;
-        if (is_tax('dc_vendor_shop')) {
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             $queried_object = get_queried_object();
             $WCMp->template->get_template('wcmp-vendor-review-form.php', array('queried_object' => $queried_object));
         }

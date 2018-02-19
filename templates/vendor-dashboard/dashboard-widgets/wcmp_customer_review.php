@@ -19,45 +19,52 @@ if (!$vendor) {
 $ratings = wcmp_get_vendor_review_info($vendor->term_id);
 ?>
 <div class="row">
-    <div class="col-md-12">
-        <?php echo wc_get_rating_html($ratings['avg_rating']); ?>
-    </div>
-    <div class="col-md-12 wcmp-comments">
-        <ul class="media-list">
-            <?php foreach ($vendor->get_reviews_and_rating(0, 5) as $comment): ?>
-                <li class="media">
-                    <div class="media-left pull-left">
-                        <a href="#">
-                            <?php echo get_avatar($comment->user_id, 50, '', '', array('class' => 'img-circle')); ?>
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading"><?php echo get_user_by('ID', $comment->user_id)->display_name; ?> <small><?php echo human_time_diff(strtotime($comment->comment_date)) . ' ago'; ?></small></h4>
-                        <?php echo $comment->comment_content; ?>
-                        <p><a data-toggle="modal" data-target="#commient-modal-<?php echo $comment->comment_ID ?>"><small>Reply</small></a></p>
-                        <!-- Modal -->
-                        <div class="modal fade" id="commient-modal-<?php echo $comment->comment_ID ?>" role="dialog">
-                            <div class="modal-dialog">
-
-                                <!-- Modal content-->
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Reply to <?php echo get_user_by('ID', $comment->user_id)->display_name; ?></h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <textarea class="form-control" rows="5" id="comment-content-<?php echo $comment->comment_ID; ?>" placeholder="Enter reply..."></textarea>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" data-comment_id="<?php echo $comment->comment_ID; ?>" data-vendor_id="<?php echo get_current_vendor_id(); ?>" class="btn btn-default wcmp-comment-reply">Comment</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+    <!-- <div class="col-md-12">
+        <?php //echo wc_get_rating_html($ratings['avg_rating']); ?>
+    </div> -->
+    <div class="col-md-12 wcmp-comments dash-widget-dt">
+        <table id="vendor_reviews" class="wcmp-widget-dt table" width="100%">
+            <thead>
+                <tr><th></th></tr>
+            </thead>
+            <tbody class="media-list">
+              
+            </tbody>
+        </table>
     </div>
 </div>
+
+<script>
+jQuery(document).ready(function($) {
+    var vendor_reviews;
+    vendor_reviews = $('#vendor_reviews').DataTable({
+        ordering  : false,
+        lengthChange : false,
+        pageLength : 5,
+        info:     false,
+        searching  : false,
+        processing: false,
+        serverSide: true,
+        pagingType: 'numbers',
+        language: {
+            emptyTable: '<div><?php echo __('No reviews found.', 'dc-woocommerce-multi-vendor') ?></div>'
+        },
+        preDrawCallback: function( settings ) {
+            $('#vendor_reviews thead').hide();
+            $('.dataTables_paginate').parent().removeClass('col-sm-7').addClass('col-sm-12').siblings('div').hide();
+            var info = this.api().page.info();
+            if (info.recordsTotal <= 5) {
+                $('.dataTables_paginate').parent().parent().hide();
+            }else{
+                $('.dataTables_paginate').parent().parent().show();
+            }
+        },
+        ajax:{
+            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_dashboard_reviews_data', 
+            type: "post"
+        },
+        columns: [{ className: "media" }]
+
+    });
+});
+</script>

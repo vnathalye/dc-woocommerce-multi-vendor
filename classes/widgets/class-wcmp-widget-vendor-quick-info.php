@@ -23,8 +23,8 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
 
         // Widget variable settings
         $this->widget_idbase = 'dc-vendor-quick-info';
-        $this->widget_title = __('WCMp Vendor Quick Info', 'dc-woocommerce-multi-vendor');
-        $this->widget_description = __('Add a quick info contact form in vendor\'s store page.', 'dc-woocommerce-multi-vendor');
+        $this->widget_title = __('WCMp: Contact Admin', 'dc-woocommerce-multi-vendor');
+        $this->widget_description = __('Adds a contact form on vendor\'s shop page so that customers/vendors can contact admin directly.', 'dc-woocommerce-multi-vendor');
         $this->widget_cssclass = 'widget_wcmp_quick_info';
 
         // Widget settings
@@ -79,7 +79,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
             }
         }
 
-        if (is_archive() && is_tax('dc_vendor_shop')) {
+        if (is_archive() && is_tax($WCMp->taxonomy->taxonomy_name)) {
             $show_widget = true;
         }
 
@@ -89,7 +89,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
         }
 
         if ($show_widget) {
-            if (is_tax('dc_vendor_shop')) {
+            if (is_tax($WCMp->taxonomy->taxonomy_name)) {
                 $vendor_id = get_queried_object()->term_id;
                 if ($vendor_id) {
                     $vendor = get_wcmp_vendor_by_term($vendor_id);

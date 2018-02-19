@@ -56,7 +56,7 @@ class WCMp_University {
 			'capability_type' => 'post',
 			'has_archive' => false,
 			'hierarchical' => true,
-			'supports' => array( 'title', 'editor',  'comments' ),
+			'supports' => array( 'title', 'editor' ),
 			'menu_position' => 15,
 			'menu_icon' => $WCMp->plugin_url.'/assets/images/dualcube.png'
 		);		

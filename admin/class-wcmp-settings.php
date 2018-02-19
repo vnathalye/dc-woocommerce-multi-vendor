@@ -82,7 +82,7 @@ class WCMp_Settings {
         );
         add_submenu_page('wcmp', __('Reports', 'dc-woocommerce-multi-vendor'), __('Reports', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wc-reports&tab=wcmp_vendors', '__return_false');
         $wcmp_settings_page = add_submenu_page('wcmp', __('Settings', 'dc-woocommerce-multi-vendor'), __('Settings', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-setting-admin', array($this, 'create_wcmp_settings'));
-        add_submenu_page('wcmp', __('Submit Issue Form', 'dc-woocommerce-multi-vendor'), __('Submit Issue', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp_beta_bug_report', array($this, 'create_wcmp_beta_bug_report_form'));
+        
         $wcmp_todo_list = add_submenu_page('wcmp', __('To-do List', 'dc-woocommerce-multi-vendor'), __('To-do List', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-to-do', array($this, 'wcmp_to_do'));
         $wcmp_extension_page = add_submenu_page('wcmp', __('Extensions', 'dc-woocommerce-multi-vendor'), __('Extensions', 'dc-woocommerce-multi-vendor'), 'manage_woocommerce', 'wcmp-extensions', array($this, 'wcmp_extensions'));
         // transaction details page
@@ -160,82 +160,6 @@ class WCMp_Settings {
         }else{ ?>
            <p class="wcmp_headding3"><?php echo __('Unfortunately transaction details are not found. You may try again later.', 'dc-woocommerce-multi-vendor'); ?></p> 
         <?php } ?>
-        </div>
-        <?php
-    }
-
-    public function create_wcmp_beta_bug_report_form() {
-        $attachments = array();
-        $file_name = '';
-        $target_file = '';
-        if(isset($_POST['wcmp_beta_bug_submit'])) {
-            if(isset($_POST['issue_description'])) {
-                $issue_description = $_POST['issue_description'];
-                $files = $_FILES['uploadfiles'];
-                if(isset($_FILES['uploadfiles'])){
-                    $array = array();
-                    foreach ($_FILES['uploadfiles'] as $key => $value) {
-                       $count = count($value);
-                       
-                       for($i=0;$i<$count;$i++){
-                           $array[$i][$key] = $value[$i]; 
-                       }
-                    }
-                    $attachments = array();
-                    foreach ($array as $value) {
-                        
-                    
-                        if(in_array($value['type'], wp_get_mime_types())){
-                            $file_name = mt_rand().'.'.explode(".",basename($value['name']))[1];
-                            $target_file = sys_get_temp_dir().'/'.$file_name;
-                            if (move_uploaded_file($value['tmp_name'], $target_file)){
-                                $attachments[] = $target_file;
-                            }
-                        }
-                    }
-                    $current_user = wp_get_current_user();
-                    $current_user_email = $current_user->user_email;
-                    $headers = 'From:'.$current_user_email;
-                    wp_mail( 'plugins@dualcube.com', 'WCMp 3.0 beta version bug report.', $issue_description, $headers,$attachments);
-                }
-            }
-        }
-    
-        ?>
-        
-        <div class="wrap blank-wrap"><h3><?php _e('Submit Issue Form', 'dc-woocommerce-multi-vendor'); ?></h3></div>
-        <div class="wrap wcmp-settings-wrap panel-body">
-            <form method="post" enctype="multipart/form-data" enctype="multipart/form-data" action="" class="wcmp_beta_report_issue wcmp_subtab_content">
-                <table class="form-table">
-                    <tbody>
-                        
-
-                        <tr>
-                            <th scope="row">
-                                <label for="sender_email"><b><?php _e('Description','dc-woocommerce-multi-vendor');?></b> </label>
-                            </th>
-                            <td>
-                                <fieldset>
-                                    <label class="hint-container"></label>
-                                    <textarea type="text" class="regular-text" name="issue_description"></textarea> 
-                                    <p class="description"><?php _e('Give a brief description.','dc-woocommerce-multi-vendor');?></p>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">
-                                <label for="sender_email"><b><?php _e('Screenshots','dc-woocommerce-multi-vendor');?></b> </label>
-                            </th>
-                            <td>
-                                <input type="file" name="uploadfiles[]" id="uploadfiles" size="35" class="uploadfiles" multiple/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><p class="submit"><input type="submit" name="wcmp_beta_bug_submit" id="submit" class="button button-primary" value="<?php _e('Send Issue','dc-woocommerce-multi-vendor');?>"  /></p></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
         </div>
         <?php
     }
@@ -328,7 +252,7 @@ class WCMp_Settings {
         $tabsection_vendor = apply_filters('wcmp_tabsection_vendor', array(
             'registration' => array('title' => __('Vendor Registration', 'dc-woocommerce-multi-vendor'), 'icon' => 'dashicons-media-document'),
             'general' => array('title' => __('Vendor Pages', 'dc-woocommerce-multi-vendor'), 'icon' => 'dashicons-admin-page'),
-            'dashboard' => array('title' => __('Vendor Dashboard', 'dc-woocommerce-multi-vendor'), 'icon' => 'dashicons-admin-appearance')
+            'dashboard' => array('title' => __('Vendor Frontend', 'dc-woocommerce-multi-vendor'), 'icon' => 'dashicons-admin-appearance')
         ));
         return $tabsection_vendor;
     }
@@ -441,7 +365,7 @@ class WCMp_Settings {
                 }
             }
             ?>
-            <form class='wcmp_vendors_settings <?php echo $this->is_wcmp_tab_has_subtab($tab) ? 'wcmp_subtab_content' : 'wcmp_tab_content' ?>' method="post" action="options.php">
+            <form class='wcmp_vendors_settings <?php echo $this->is_wcmp_tab_has_subtab($tab) ? 'wcmp_subtab_content' : 'wcmp_tab_content'; ?> wcmp_<?php echo $tab; ?>_<?php echo $tab_section; ?>_settings_group' method="post" action="options.php">
                 <?php
                 $tab_desc = $this->get_settings_tab_desc();
                 if (!empty($tab_desc[$tab])) {
@@ -487,7 +411,7 @@ class WCMp_Settings {
                     submit_button();
                 } else if ($tab == 'wcmp-addons') {
                     do_action("settings_page_{$tab}_tab_init", $tab);
-                } else if (isset($_GET['tab_section']) && $_GET['tab_section'] && $tab != 'general' && $tab != 'payment') {
+                } else if (isset($_GET['tab_section']) && $_GET['tab_section'] && $_GET['tab_section'] != 'general' && $tab != 'general' && $tab != 'payment') {
                     $tab_section = $_GET['tab_section'];
                     settings_fields("wcmp_{$tab}_{$tab_section}_settings_group");
                     do_action("wcmp_{$tab}_{$tab_section}_settings_before_submit");
@@ -532,9 +456,9 @@ class WCMp_Settings {
      */
     public function settings_page_init() {
         do_action('befor_settings_page_init');
-        $exclude_list = array('payment', 'registration');
         foreach ($this->tabs as $tab_id => $tab) {
             do_action("settings_page_{$tab_id}_tab_init", $tab_id);
+            $exclude_list = apply_filters('wcmp_subtab_init_exclude_list', array('payment', 'registration'), $tab_id);
             if ($this->is_wcmp_tab_has_subtab($tab_id)) {
                 foreach ($this->get_wcmp_subtabs($tab_id) as $subtab_id => $subtab) {
                     if (!in_array($subtab_id, $exclude_list)) {
@@ -815,6 +739,9 @@ class WCMp_Settings {
             case 'radio_select':
                 $callBack = 'radio_select_field_callback';
                 break;
+            case 'color_scheme_picker':
+                $callBack = 'color_scheme_picker_callback';
+                break;
 
             case 'select':
                 $callBack = 'select_field_callback';
@@ -921,6 +848,14 @@ class WCMp_Settings {
         $field['value'] = isset($this->options[$field['name']]) ? esc_attr($this->options[$field['name']]) : $field['value'];
         $field['name'] = "wcmp_{$field['tab']}_settings_name[{$field['name']}]";
         $WCMp->wcmp_wp_fields->radio_select_input($field);
+    }
+    
+    public function color_scheme_picker_callback($field){
+        global $WCMp;
+        $field['value'] = isset($field['value']) ? esc_attr($field['value']) : '';
+        $field['value'] = isset($this->options[$field['name']]) ? esc_attr($this->options[$field['name']]) : $field['value'];
+        $field['name'] = "wcmp_{$field['tab']}_settings_name[{$field['name']}]";
+        $WCMp->wcmp_wp_fields->color_scheme_picker_input($field);
     }
 
     /**

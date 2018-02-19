@@ -60,7 +60,7 @@ div.rowbody:nth-child(even){
     display: block;
 }
 .wcmp_btn_view_details{
-    background: linear-gradient(to bottom, #f78828 0px, #dd771f 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: linear-gradient(to bottom, #f78828 0, #dd771f 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
     border: 1px solid #da7532;
     border-radius: 4px;
     color: #f9f9f9;
@@ -74,7 +74,7 @@ div.rowbody:nth-child(even){
 }
 
 .wcmp_btn_view_details:hover{
-    background: linear-gradient(to bottom, #f78828 0px, #ba5400 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: linear-gradient(to bottom, #f78828 0, #ba5400 100%) repeat scroll 0 0 rgba(0, 0, 0, 0);
     color: #f9f9f9;
 }
 .wcmp_btn_add_to_cart{
@@ -153,16 +153,16 @@ span.wcmp_norating {
 }
 #tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(1),
 #tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(1){
-    width: 30%;
+    width: 30% !important;
 }
 #tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(2),
 #tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(2){
-    width: 20%;
+    width: 20% !important;
 }
 
 #tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3),
 #tab-singleproductmultivendor .row.rowbody .rowsub:nth-of-type(3){
-    width: 50%;
+    width: 50% !important;
 }
 
 #tab-singleproductmultivendor .row.rowhead .rowsub:nth-of-type(3){
@@ -339,7 +339,7 @@ form.customerqna-form{
     background-color: #fff;
     width: 100%;
     border-radius: 0;
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.15);
   }
   .qna-block textarea {
     width: 100%;
@@ -362,7 +362,7 @@ form.customerqna-form{
   }
   .qna-actions {
     float: left;
-    margin: 0px;
+    margin: 0;
     width: 100%;
   }
   .qna-actions li {
@@ -370,10 +370,10 @@ form.customerqna-form{
     margin: -2px; 
   }
   .qna-actions li:first-child {
-    padding-left: 0px;
+    padding-left: 0;
   }
   .qna-actions li:last-child {
-    border-right: 0px;
+    border-right: 0;
   }
   .qna-actions li{
     padding-right: 0.75rem;

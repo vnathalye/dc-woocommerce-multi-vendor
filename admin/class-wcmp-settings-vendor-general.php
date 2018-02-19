@@ -60,7 +60,7 @@ class WCMp_Settings_Vendor_General {
                         'wcmp_vendor_withdrawal_endpoint' => array('title' => __('Vendor Widthdrawals', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_withdrawal_endpoint', 'label_for' => 'wcmp_vendor_withdrawal_endpoint', 'name' => 'wcmp_vendor_withdrawal_endpoint', 'hints' => __('Set endpoint for vendor widthdrawals page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-withdrawal'),
                         'wcmp_transaction_details_endpoint' => array('title' => __('Transaction Details', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_transaction_details_endpoint', 'label_for' => 'wcmp_transaction_details_endpoint', 'name' => 'wcmp_transaction_details_endpoint', 'hints' => __('Set endpoint for transaction details page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'transaction-details'),
                         'wcmp_vendor_knowledgebase_endpoint' => array('title' => __('Vendor Knowledgebase', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_knowledgebase_endpoint', 'label_for' => 'wcmp_vendor_knowledgebase_endpoint', 'name' => 'wcmp_vendor_knowledgebase_endpoint', 'hints' => __('Set endpoint for vendor knowledgebase page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-knowledgebase'),
-                        'wcmp_vendor_report_issue_endpoint' => array('title' => __('Vendor Submit Issue', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_report_issue_endpoint', 'label_for' => 'wcmp_vendor_report_issue_endpoint', 'name' => 'wcmp_vendor_report_issue_endpoint', 'hints' => __('Set endpoint for vendor submit issue page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-report_issue')
+                        'wcmp_vendor_tools_endpoint' => array('title' => __('Vendor Tools', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_tools_endpoint', 'label_for' => 'wcmp_vendor_tools_endpoint', 'name' => 'wcmp_vendor_tools_endpoint', 'hints' => __('Set endpoint for vendor tools page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-tools'),
                     )
                 )
             ),
@@ -115,9 +115,8 @@ class WCMp_Settings_Vendor_General {
         if (isset($input['wcmp_vendor_knowledgebase_endpoint']) && !empty($input['wcmp_vendor_knowledgebase_endpoint'])) {
             $new_input['wcmp_vendor_knowledgebase_endpoint'] = sanitize_text_field($input['wcmp_vendor_knowledgebase_endpoint']);
         }
-        
-        if (isset($input['wcmp_vendor_report_issue_endpoint']) && !empty($input['wcmp_vendor_report_issue_endpoint'])) {
-            $new_input['wcmp_vendor_report_issue_endpoint'] = sanitize_text_field($input['wcmp_vendor_report_issue_endpoint']);
+        if (isset($input['wcmp_vendor_tools_endpoint']) && !empty($input['wcmp_vendor_tools_endpoint'])) {
+            $new_input['wcmp_vendor_tools_endpoint'] = sanitize_text_field($input['wcmp_vendor_tools_endpoint']);
         }
         
         if (isset($input['wcmp_add_product_endpoint']) && !empty($input['wcmp_add_product_endpoint'])) {

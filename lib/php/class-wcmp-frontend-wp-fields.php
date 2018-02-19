@@ -138,10 +138,11 @@ if (!class_exists('WCMp_Frontend_WP_Fields')) {
             $field['rows'] = isset($field['rows']) ? $field['rows'] : 5;
             $field['cols'] = isset($field['cols']) ? $field['cols'] : 10;
             $field['value'] = isset($field['value']) ? $field['value'] : '';
-
+            $field['settings'] = isset($field['settings']) ? $field['settings'] : array();
+            $settings = array_merge(array('textarea_name' => $field['name'], 'textarea_rows' => $field['rows']), $field['settings']);
             $field = $this->field_wrapper_start($field);
 
-            wp_editor(stripslashes($field['value']), $field['id'], $settings = array('textarea_name' => $field['name'], 'textarea_rows' => $field['rows']));
+            wp_editor(stripslashes($field['value']), $field['id'], $settings);
 
             $this->field_wrapper_end($field);
         }

@@ -76,18 +76,18 @@
         };
         $.post(woocommerce_params.ajax_url, data, function (response) {
             if (response.no_data == 0) {
-                unblock($('#cust_qna_form') );
-                setTimeout(function(){
-                    $('#ask-wrap').hide();
-                    $('#cust_question').val('');
-                    $('#qna-result-msg').html(response.message);
+//                unblock($('#cust_qna_form') );
+//                setTimeout(function(){
+//                    $('#ask-wrap').hide();
+//                    $('#cust_question').val('');
+//                    $('#qna-result-msg').html(response.message);
                     window.location.reload();
-                },3000);
+//                },3000);
             }
         });
     });
     
-    $('body').on('click', 'button.wcmp-add-qna-reply', function () {
+    $('body').on('click', 'button.wcmp-add-qna-reply', function () { 
         var key = $(this).attr('data-key');
         var reply = $('#qna-reply-'+key).val();
         if (reply === '') {
@@ -101,12 +101,13 @@
         };
         $.post(woocommerce_params.ajax_url, data, function (response) {
             if (response.no_data == 0) {
-                $('#reply-item-'+key).hide();
-                if(response.remain_data == 0){
-                    $('.customer-questions-panel').html('');
-                    $('.customer-questions-panel').html(response.msg);
-                }
-                setTimeout($('#qna-reply-modal-'+key).modal('hide'),3000);
+//                $('#reply-item-'+key).hide();
+//                if(response.remain_data == 0){
+//                    $('.customer-questions-panel').html('');
+//                    $('.customer-questions-panel').html(response.msg);
+//                }
+//                setTimeout($('#qna-reply-modal-'+key).modal('hide'),3000);
+                window.location.reload();
             }
         });
     });

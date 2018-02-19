@@ -44,6 +44,8 @@ class WCMp_User {
         // wordpress, woocommerce login redirest
         add_filter('woocommerce_login_redirect', array($this, 'wcmp_vendor_login'), 10, 2);
         add_filter('login_redirect', array($this, 'wp_wcmp_vendor_login'), 10, 3);
+        // set cookie
+        $this->set_wcmp_user_cookies();
     }
 
     /**
@@ -344,12 +346,6 @@ class WCMp_User {
                 'value' => 'Enable',
                 'class' => 'user-profile-fields'
             ),
-            "vendor_company" => array(
-                'label' => __('Company Name', 'dc-woocommerce-multi-vendor'),
-                'type' => 'text',
-                'value' => $vendor->company,
-                'class' => "user-profile-fields regular-text"
-            ), // Text
             "vendor_address_1" => array(
                 'label' => __('Address 1', 'dc-woocommerce-multi-vendor'),
                 'type' => 'text',
@@ -538,7 +534,7 @@ class WCMp_User {
         ); // Text
 
         $fields["vendor_bank_account_number"] = array(
-            'label' => __('Bank Account Name', 'dc-woocommerce-multi-vendor'),
+            'label' => __('Bank Account Number', 'dc-woocommerce-multi-vendor'),
             'type' => 'text',
             'value' => $vendor->bank_account_number,
             'class' => "user-profile-fields regular-text"
@@ -630,14 +626,6 @@ class WCMp_User {
                 'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->message_to_buyers,
-                'class' => 'user-profile-fields'
-            );
-
-            $fields['vendor_hide_message_to_buyers'] = array(
-                'label' => __('Is Message to buyer Hide From Users', 'dc-woocommerce-multi-vendor'),
-                'type' => 'checkbox',
-                'dfvalue' => $vendor->hide_message_to_buyers,
-                'value' => 'Enable',
                 'class' => 'user-profile-fields'
             );
         }
@@ -770,6 +758,7 @@ class WCMp_User {
         if (is_user_wcmp_vendor($user_object)) {
             $vendor = get_wcmp_vendor($user_object->ID);
             if ($vendor) {
+                unset($actions['view']);
                 $actions['view_vendor'] = "<a target=_blank class='view_vendor' href='" . $vendor->permalink . "'>" . __('View', 'dc-woocommerce-multi-vendor') . "</a>";
             }
         }
@@ -820,19 +809,20 @@ class WCMp_User {
      * Validate user additional fields
      */
     function validate_user_fields(&$errors, $update, &$user) {
+        global $WCMp;
         if (isset($_POST['vendor_page_slug'])) {
             if (!$update) {
-                if (term_exists(sanitize_title($_POST['vendor_page_slug']), 'dc_vendor_shop')) {
+                if (term_exists(sanitize_title($_POST['vendor_page_slug']), $WCMp->taxonomy->taxonomy_name)) {
                     $errors->add('vendor_slug_exists', __('Slug Already Exists', 'dc-woocommerce-multi-vendor'));
                 }
             } else {
                 if (is_user_wcmp_vendor($user->ID)) {
                     $vendor = get_wcmp_vendor($user->ID);
                     if (isset($vendor->term_id)) {
-                        $vendor_term = get_term($vendor->term_id, 'dc_vendor_shop');
+                        $vendor_term = get_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
                     }
                     if (isset($_POST['vendor_page_slug']) && isset($vendor_term->slug) && $vendor_term->slug != $_POST['vendor_page_slug']) {
-                        if (term_exists(sanitize_title($_POST['vendor_page_slug']), 'dc_vendor_shop')) {
+                        if (term_exists(sanitize_title($_POST['vendor_page_slug']), $WCMp->taxonomy->taxonomy_name)) {
                             $errors->add('vendor_slug_exists', __('Slug already exists', 'dc-woocommerce-multi-vendor'));
                         }
                     }
@@ -879,8 +869,6 @@ class WCMp_User {
                     delete_user_meta($user_id, '_vendor_hide_description');
                 } else if (!isset($_POST['vendor_hide_address']) && $fieldkey == 'vendor_hide_address') {
                     delete_user_meta($user_id, '_vendor_hide_address');
-                } else if (!isset($_POST['vendor_hide_message_to_buyers']) && $fieldkey == 'vendor_hide_message_to_buyers') {
-                    delete_user_meta($user_id, '_vendor_hide_message_to_buyers');
                 } else if (!isset($_POST['vendor_hide_phone']) && $fieldkey == 'vendor_hide_phone') {
                     delete_user_meta($user_id, '_vendor_hide_phone');
                 } else if (!isset($_POST['vendor_hide_email']) && $fieldkey == 'vendor_hide_email') {
@@ -975,5 +963,18 @@ class WCMp_User {
         $available_emails[] = 'vendor_new_order';
         return $available_emails;
     }
+    
+    /**
+     * WCMp set user cookies
+     */
+    public function set_wcmp_user_cookies() {
+        $current_user_id = get_current_user_id();
+        $_cookie_id = "_wcmp_user_cookie_".$current_user_id;
+        if(!isset($_COOKIE[$_cookie_id])) { 
+            setcookie( $_cookie_id, uniqid('wcmp_cookie'), time() + YEAR_IN_SECONDS, '/' );
+        }else{
+            setcookie( $_cookie_id, $_COOKIE[$_cookie_id], time() + YEAR_IN_SECONDS, '/' );
+        }
+    } 
     
 }

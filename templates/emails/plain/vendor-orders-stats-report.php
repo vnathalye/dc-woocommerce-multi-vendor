@@ -13,18 +13,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 global $WCMp;
-$t_sale = isset($report_data['stats']['total_sales']) ? $report_data['stats']['total_sales'] : 0;
-$t_earning = isset($report_data['stats']['total_earning']) ? $report_data['stats']['total_earning'] : 0;
-$t_balance = isset($report_data['stats']['total_balance']) ? $report_data['stats']['total_balance'] : 0;
-$t_transaction = isset($report_data['stats']['total_transaction']) ? $report_data['stats']['total_transaction'] : 0;
+$t_sale = isset($report_data['stats']['sales_total']) ? $report_data['stats']['sales_total'] : 0;
+$t_earning = isset($report_data['stats']['earning']) ? $report_data['stats']['earning'] : 0;
+$t_withdrawal = isset($report_data['stats']['withdrawal']) ? $report_data['stats']['withdrawal'] : 0;
+$t_orders_no = isset($report_data['stats']['orders_no']) ? $report_data['stats']['orders_no'] : 0;
 echo $email_heading . "\n\n"; 
 printf(__( 'Hello %s,<br>Your %s store orders report stats are as follows:', 'dc-woocommerce-multi-vendor' ),  $vendor->user_data->display_name, $report_data['period']); 
 echo "****************************************************\n\n";
 
 printf(__( '%s sale: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_sale));
 printf(__( '%s earning: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_earning));
-printf(__( '%s balance: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_balance));
-printf(__( '%s total transactions: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_transaction));
+printf(__( '%s withdrawal: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_withdrawal));
+printf(__( '%s no of orders: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), $t_orders_no);
 echo __( 'Period', 'dc-woocommerce-multi-vendor' ).' : '.isset($report_data['period']) ? ucfirst($report_data['period']) : '';
 echo __( 'From Date', 'dc-woocommerce-multi-vendor' ).' : '.isset($report_data['start_date']) ? $report_data['start_date'] : '';
 echo __( 'To Date', 'dc-woocommerce-multi-vendor' ).' : '.isset($report_data['end_date']) ? $report_data['end_date'] : '';

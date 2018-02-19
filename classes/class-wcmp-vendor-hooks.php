@@ -28,7 +28,7 @@ class WCMp_Vendor_Hooks {
         add_action('wcmp_vendor_dashboard_vendor-withdrawal_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_withdrawal_endpoint'));
         add_action('wcmp_vendor_dashboard_transaction-details_endpoint', array(&$this, 'wcmp_vendor_dashboard_transaction_details_endpoint'));
         add_action('wcmp_vendor_dashboard_vendor-knowledgebase_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_knowledgebase_endpoint'));
-        add_action('wcmp_vendor_dashboard_vendor-report_issue_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_report_issue_endpoint'));
+        add_action('wcmp_vendor_dashboard_vendor-tools_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_tools_endpoint'));
 
         add_filter('the_title', array(&$this, 'wcmp_vendor_dashboard_endpoint_title'));
         add_filter('wcmp_vendor_dashboard_menu_vendor_policies_capability', array(&$this, 'wcmp_vendor_dashboard_menu_vendor_policies_capability'));
@@ -56,7 +56,7 @@ class WCMp_Vendor_Hooks {
                 , 'position' => 0
                 , 'submenu' => array()
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-dashboard'
+                , 'nav_icon' => 'wcmp-font ico-dashboard-icon'
             ),
             'store-settings' => array(
                 'label' => __('Store Settings', 'dc-woocommerce-multi-vendor')
@@ -70,7 +70,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_shop_front_capability', true)
                         , 'position' => 10
                         , 'link_target' => '_self'
-                        , 'nav_icon' => 'la la-tag'
+                        , 'nav_icon' => 'wcmp-font ico-storefront-icon'
                     ),
                     'vendor-policies' => array(
                         'label' => __('Policies', 'dc-woocommerce-multi-vendor')
@@ -78,6 +78,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_policies_capability', false)
                         , 'position' => 20
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-policies-icon'
                     ),
                     'vendor-billing' => array(
                         'label' => __('Billing', 'dc-woocommerce-multi-vendor')
@@ -85,6 +86,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_billing_capability', true)
                         , 'position' => 30
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-billing-icon'
                     ),
                     'vendor-shipping' => array(
                         'label' => __('Shipping', 'dc-woocommerce-multi-vendor')
@@ -92,10 +94,11 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_shipping_capability', wc_shipping_enabled())
                         , 'position' => 40
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-shippingnew-icon'
                     )
                 )
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-gear'
+                , 'nav_icon' => 'wcmp-font ico-store-settings-icon'
             ),
             'vendor-products' => array(
                 'label' => __('Product Manager', 'dc-woocommerce-multi-vendor')
@@ -109,6 +112,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_products_capability', 'edit_products')
                         , 'position' => 10
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-product-manager-icon'
                     ),
                     'add-product' => array(
                         'label' => __('Add Product', 'dc-woocommerce-multi-vendor')
@@ -116,10 +120,11 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_add_product_capability', 'edit_products')
                         , 'position' => 20
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-add-product-icon'
                     )
                 )
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-cubes'
+                , 'nav_icon' => 'wcmp-font ico-product-manager-icon'
             ),
             'vendor-promte' => array(
                 'label' => __('Coupons', 'dc-woocommerce-multi-vendor')
@@ -133,6 +138,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_coupons_capability', 'edit_shop_coupons')
                         , 'position' => 10
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-coupons-icon'
                     ),
                     'add-coupon' => array(
                         'label' => __('Add Coupon', 'dc-woocommerce-multi-vendor')
@@ -140,10 +146,11 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_add_coupon_capability', 'edit_shop_coupons')
                         , 'position' => 20
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-addcoupon-icon'
                     )
                 )
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-tag'
+                , 'nav_icon' => 'wcmp-font ico-coupons-icon'
             ),
             'vendor-report' => array(
                 'label' => __('Stats / Reports', 'dc-woocommerce-multi-vendor')
@@ -157,10 +164,11 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_report_capability', true)
                         , 'position' => 10
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-reports-icon'
                     )
                 )
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-bar-chart'
+                , 'nav_icon' => 'wcmp-font ico-reports-icon'
             ),
             'vendor-orders' => array(
                 'label' => __('Orders', 'dc-woocommerce-multi-vendor')
@@ -169,7 +177,7 @@ class WCMp_Vendor_Hooks {
                 , 'position' => 50
                 , 'submenu' => array()
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-inbox'
+                , 'nav_icon' => 'wcmp-font ico-orders-icon'
             ),
             'vendor-payments' => array(
                 'label' => __('Payments', 'dc-woocommerce-multi-vendor')
@@ -183,6 +191,7 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_withdrawal_capability', false)
                         , 'position' => 10
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-revenue-icon'
                     ),
                     'transaction-details' => array(
                         'label' => __('History', 'dc-woocommerce-multi-vendor')
@@ -190,10 +199,11 @@ class WCMp_Vendor_Hooks {
                         , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_transaction_details_capability', true)
                         , 'position' => 20
                         , 'link_target' => '_self'
+                        , 'nav_icon' => 'wcmp-font ico-history-icon'
                     )
                 )
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-money'
+                , 'nav_icon' => 'wcmp-font ico-payments-icon'
             ),
             'vendor-knowledgebase' => array(
                 'label' => __('Knowledgebase', 'dc-woocommerce-multi-vendor')
@@ -202,16 +212,16 @@ class WCMp_Vendor_Hooks {
                 , 'position' => 70
                 , 'submenu' => array()
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-graduation-cap'
+                , 'nav_icon' => 'wcmp-font ico-knowledgebase-icon'
             ),
-            'vendor-report_issue' => array(
-                'label' => __('Report a bug', 'dc-woocommerce-multi-vendor')
-                , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_report_issue_endpoint', 'vendor', 'general', 'vendor-report_issue'))
-                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_knowledgebase_capability', true)
+            'vendor-tools' => array(
+                'label' => __('Tools', 'dc-woocommerce-multi-vendor')
+                , 'url' => wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_tools_endpoint', 'vendor', 'general', 'vendor-tools'))
+                , 'capability' => apply_filters('wcmp_vendor_dashboard_menu_vendor_tools_capability', true)
                 , 'position' => 80
                 , 'submenu' => array()
                 , 'link_target' => '_self'
-                , 'nav_icon' => 'la la-bug'
+                , 'nav_icon' => 'wcmp-font ico-tools-icon'
             )
         );
         return apply_filters('wcmp_vendor_dashboard_nav', $vendor_nav);
@@ -239,6 +249,7 @@ class WCMp_Vendor_Hooks {
             }
             do_action('after_wcmp_vendor_dashboard_content');
         }
+        $WCMp->library->load_dataTable_lib();
         $WCMp->template->get_template('vendor-dashboard/dashboard.php');
     }
 
@@ -385,13 +396,12 @@ class WCMp_Vendor_Hooks {
 
     public function wcmp_vendor_dashboard_add_product_endpoint() {
         global $WCMp, $wp;
-        $WCMp->library->load_qtip_lib();
         $WCMp->library->load_colorpicker_lib();
         $WCMp->library->load_datepicker_lib();
         $WCMp->library->load_frontend_upload_lib();
         $WCMp->library->load_accordian_lib();
         $WCMp->library->load_select2_lib();
-        $WCMp->library->load_tinymce_lib();
+
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
 
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
@@ -419,7 +429,7 @@ class WCMp_Vendor_Hooks {
         if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
             $WCMp->library->load_dataTable_lib();
             $products_table_headers = array(
-                'image' => '<span class="dashicons dashicons-format-image"></span>',
+                'image' => '<i class="wcmp-font ico-image-icon"></i>',
                 'name' => __('Product', 'dc-woocommerce-multi-vendor'),
                 'price' => __('Price', 'dc-woocommerce-multi-vendor'),
                 'stock' => __('Stock', 'dc-woocommerce-multi-vendor'),
@@ -432,6 +442,7 @@ class WCMp_Vendor_Hooks {
                 'ordering' => 'true',
                 'searching' => 'true',
                 'emptyTable' => __('No products found!', 'dc-woocommerce-multi-vendor'),
+                'processing' => __('Processing...', 'dc-woocommerce-multi-vendor'),
                 'info' => __('Showing _START_ to _END_ of _TOTAL_ products', 'dc-woocommerce-multi-vendor'),
                 'infoEmpty' => __('Showing 0 to 0 of 0 products', 'dc-woocommerce-multi-vendor'),
                 'lengthMenu' => __('Show products _MENU_', 'dc-woocommerce-multi-vendor'),
@@ -512,43 +523,39 @@ class WCMp_Vendor_Hooks {
      * @global object $WCMp
      */
     public function wcmp_vendor_dashboard_vendor_withdrawal_endpoint() {
-        global $WCMp, $wp;
-        $transaction_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'vendor-withdrawal')];
-        if (!empty($transaction_id)) {
-            $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-request.php', array('transaction_id' => $transaction_id));
-        } else {
-            $vendor = get_wcmp_vendor(get_current_vendor_id());
-            if ($vendor) {
-                $WCMp->library->load_dataTable_lib();
-                $meta_query['meta_query'] = array(
-                    array(
-                        'key' => '_paid_status',
-                        'value' => 'unpaid',
-                        'compare' => '='
-                    ),
-                    array(
-                        'key' => '_commission_vendor',
-                        'value' => absint($vendor->term_id),
-                        'compare' => '='
-                    )
-                );
-                $vendor_unpaid_orders = $vendor->get_orders(false, false, $meta_query);
-                // withdrawal table init
-                $table_init = apply_filters('wcmp_vendor_dashboard_payment_withdrawal_table_init', array(
-                    'ordering' => 'false',
-                    'searching' => 'false',
-                    'emptyTable' => __('No orders found!', 'dc-woocommerce-multi-vendor'),
-                    'info' => __('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor'),
-                    'infoEmpty' => __('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor'),
-                    'lengthMenu' => __('Show orders _MENU_', 'dc-woocommerce-multi-vendor'),
-                    'zeroRecords' => __('No matching orders found', 'dc-woocommerce-multi-vendor'),
-                    'search' => __('Search:', 'dc-woocommerce-multi-vendor'),
-                    'next' => __('Next', 'dc-woocommerce-multi-vendor'),
-                    'previous' => __('Previous', 'dc-woocommerce-multi-vendor'),
-                ));
+        global $WCMp;
+        $vendor = get_wcmp_vendor(get_current_vendor_id());
+        if ($vendor) {
+            $WCMp->library->load_dataTable_lib();
+            $meta_query['meta_query'] = array(
+                array(
+                    'key' => '_paid_status',
+                    'value' => 'unpaid',
+                    'compare' => '='
+                ),
+                array(
+                    'key' => '_commission_vendor',
+                    'value' => absint($vendor->term_id),
+                    'compare' => '='
+                )
+            );
+            $vendor_unpaid_orders = $vendor->get_orders(false, false, $meta_query);
+            // withdrawal table init
+            $table_init = apply_filters('wcmp_vendor_dashboard_payment_withdrawal_table_init', array(
+                'ordering' => 'false',
+                'searching' => 'false',
+                'emptyTable' => __('No orders found!', 'dc-woocommerce-multi-vendor'),
+                'processing' => __('Processing...', 'dc-woocommerce-multi-vendor'),
+                'info' => __('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor'),
+                'infoEmpty' => __('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor'),
+                'lengthMenu' => __('Show orders _MENU_', 'dc-woocommerce-multi-vendor'),
+                'zeroRecords' => __('No matching orders found', 'dc-woocommerce-multi-vendor'),
+                'search' => __('Search:', 'dc-woocommerce-multi-vendor'),
+                'next' => __('Next', 'dc-woocommerce-multi-vendor'),
+                'previous' => __('Previous', 'dc-woocommerce-multi-vendor'),
+            ));
 
-                $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal.php', array('vendor' => $vendor, 'vendor_unpaid_orders' => $vendor_unpaid_orders, 'table_init' => $table_init));
-            }
+            $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal.php', array('vendor' => $vendor, 'vendor_unpaid_orders' => $vendor_unpaid_orders, 'table_init' => $table_init));
         }
     }
 
@@ -557,11 +564,16 @@ class WCMp_Vendor_Hooks {
      * @global object $WCMp
      */
     public function wcmp_vendor_dashboard_transaction_details_endpoint() {
-        global $WCMp;
+        global $WCMp, $wp;
         $user_id = get_current_vendor_id();
         if (is_user_wcmp_vendor($user_id)) {
-            $WCMp->library->load_dataTable_lib();
-            $WCMp->template->get_template('vendor-dashboard/vendor-transactions.php');
+            $transaction_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'transaction-details')];
+            if (!empty($transaction_id)) {
+                $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-request.php', array('transaction_id' => $transaction_id));
+            } else {
+                $WCMp->library->load_dataTable_lib();
+                $WCMp->template->get_template('vendor-dashboard/vendor-transactions.php');
+            }
         }
     }
 
@@ -575,37 +587,32 @@ class WCMp_Vendor_Hooks {
         wp_enqueue_script('jquery-ui-accordion');
         $WCMp->template->get_template('vendor-dashboard/vendor-university.php');
     }
-
-    public function wcmp_vendor_dashboard_vendor_report_issue_endpoint() {
+    
+    /**
+     * Display Vendor Tools purging content
+     * @global object $WCMp
+     */
+    public function wcmp_vendor_dashboard_vendor_tools_endpoint() {
+        do_action('before_wcmp_vendor_purging_content');
         ?>
         <div class="col-md-12">
             <div class="panel panel-default panel-pading">
-                <div class="panel-heading"><h3><?php _e('Facing issue with WCMp 3.0 beta? Report to our developers', 'dc-woocommerce-multi-vendor'); ?></h3></div>
-                <div class="panel-body">
-                    <form method="post" enctype="multipart/form-data" enctype="multipart/form-data" action="" class="wcmp_beta_report_issue wcmp_subtab_content form-horizontal">
-                        <div class="form-group">
-                            <label class="control-label col-sm-3"><?php _e('Description', 'dc-woocommerce-multi-vendor'); ?></label>
-                            <div class=" col-md-6 col-sm-9">
-                                <textarea type="text" class="regular-text form-control" name="issue_description" placeholder="Please provide steps that we can follow to reproduce the problem." required></textarea>
-                            </div>
+                <div class="wcmp-vendor-tools panel-body">
+                    <div class="tools-item">
+                        <label class="control-label col-md-9 col-sm-6">
+                            <?php _e('Vendor Dashboard Transients', 'dc-woocommerce-multi-vendor'); ?>
+                            <p class="description"><?php _e('This tool will clear the dashboard widget transients cache.', 'dc-woocommerce-multi-vendor'); ?></p>
+                        </label>
+                        <div class="col-md-3 col-sm-6">
+                            <a class="wcmp_vendor_clear_transients btn btn-default" href="<?php echo esc_url(wp_nonce_url(add_query_arg(array('tools_action' => 'clear_all_transients'), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_clear_cache_endpoint', 'vendor', 'general', 'vendor-tools'))), 'wcmp_clear_vendor_transients')); ?>"><?php _e('Clear transients', 'dc-woocommerce-multi-vendor') ?></a>
                         </div>
-                        <div class="form-group"> 
-                            <label class="control-label col-sm-3" for="uploadfiles[]"><?php _e('Upload Screenshot(s)', 'dc-woocommerce-multi-vendor'); ?></label>
-                            <div class=" col-md-6 col-sm-9">
-                                <input class="no_input form-control" type="file" name="uploadfiles[]" id="uploadfiles" size="35" class="uploadfiles" multiple/>
-                            </div>
-                        </div>
-                        <div class="form-group"> 
-                            <div class=" col-md-12">
-                                <input type="submit" name="wcmp_beta_bug_submit" id="submit" class="btn btn-default" value="<?php _e('Submit Bug Report', 'dc-woocommerce-multi-vendor'); ?>"  />
-                            </div>
-                        </div> 
-                    </form>
+                    </div>
+                    <?php do_action('wcmp_vendor_dashboard_tools_item'); ?>
                 </div>
             </div>
         </div>
-        </
         <?php
+        do_action('after_wcmp_vendor_purging_content');
     }
 
     public function save_vendor_dashboard_data() {
@@ -625,43 +632,6 @@ class WCMp_Vendor_Hooks {
                     break;
                 case 'vendor-shipping':
                     $WCMp->vendor_dashboard->save_vendor_shipping($vendor->id, $_POST);
-                    break;
-                case 'vendor-report_issue':
-                    $attachments = array();
-                    $file_name = '';
-                    $target_file = '';
-                    if (isset($_POST['wcmp_beta_bug_submit'])) {
-                        if (isset($_POST['issue_description'])) {
-                            $issue_description = $_POST['issue_description'];
-                            $files = $_FILES['uploadfiles'];
-                            if (isset($_FILES['uploadfiles'])) {
-                                $array = array();
-                                foreach ($_FILES['uploadfiles'] as $key => $value) {
-                                    $count = count($value);
-
-                                    for ($i = 0; $i < $count; $i++) {
-                                        $array[$i][$key] = $value[$i];
-                                    }
-                                }
-                                $attachments = array();
-                                foreach ($array as $value) {
-                                    if (in_array($value['type'], wp_get_mime_types())) {
-                                        $file_name = mt_rand() . '.' . explode(".", basename($value['name']))[1];
-                                        $target_file = sys_get_temp_dir() . '/' . $file_name;
-                                        if (move_uploaded_file($value['tmp_name'], $target_file)) {
-                                            $attachments[] = $target_file;
-                                        }
-                                    }
-                                }
-                                $current_user = wp_get_current_user();
-                                $current_user_email = $current_user->user_email;
-                                $headers = 'From:' . $current_user_email;
-                                if(wp_mail('plugins@dualcube.com', 'WCMp 3.0 beta version bug report.', $issue_description, $headers, $attachments)){
-                                    wc_add_notice(__('Thanks your message has been submitted successfully', 'dc-woocommerce-multi-vendor'), 'success');
-                                }
-                            }
-                        }
-                    }
                     break;
                 default :
                     break;
@@ -735,14 +705,14 @@ class WCMp_Vendor_Hooks {
             if ($vendor_progress['progress'] < 100) {
                 echo '<div class="col-md-12">';
                 echo '<div class="panel">';
-                echo '<div class="progress" style="margin:15px;">';
-                echo '<div class="progress-bar" role="progressbar" style="width: ' . $vendor_progress['progress'] . '%;" aria-valuenow="' . $vendor_progress['progress'] . '" aria-valuemin="0" aria-valuemax="100">' . $vendor_progress['progress'] . '%</div>';
-                echo '</div>';
                 if ($vendor_progress['todo'] && is_array($vendor_progress['todo'])) {
                     $todo_link = isset($vendor_progress['todo']['link']) ? esc_url($vendor_progress['todo']['link']) : '';
                     $todo_label = isset($vendor_progress['todo']['label']) ? $vendor_progress['todo']['label'] : '';
-                    echo '<div style="margin:0 15px 15px;">' . __('To boost up your profile progress add ', 'dc-woocommerce-multi-vendor') . '<a href="' . $todo_link . '">' . $todo_label . '</a></div>';
+                    echo '<div style="margin:17px 20px 12px 20px;">' . __('To boost up your profile progress add ', 'dc-woocommerce-multi-vendor') . '<a href="' . $todo_link . '">' . $todo_label . '</a></div>';
                 }
+                echo '<div class="progress" style="margin:0 20px 20px;">';
+                echo '<div class="progress-bar" role="progressbar" style="width: ' . $vendor_progress['progress'] . '%;" aria-valuenow="' . $vendor_progress['progress'] . '" aria-valuemin="0" aria-valuemax="100">' . $vendor_progress['progress'] . '%</div>';
+                echo '</div>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -752,7 +722,7 @@ class WCMp_Vendor_Hooks {
      * WCMp theme supported function
      */
     public function wcmp_add_theme_support(){
-        if(is_vendor_dashboard()){
+        if(is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())){
             global $wp_filter;
             //Flatsome mobile menu support
             remove_action('wp_footer', 'flatsome_mobile_menu', 7);

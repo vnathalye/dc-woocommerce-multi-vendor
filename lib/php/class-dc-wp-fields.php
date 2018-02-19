@@ -133,10 +133,12 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['rows'] = isset($field['rows']) ? $field['rows'] : 5;
             $field['cols'] = isset($field['cols']) ? $field['cols'] : 10;
             $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['settings'] = isset($field['settings']) ? $field['settings'] : array();
+            $settings = array_merge(array('textarea_name' => $field['name'], 'textarea_rows' => $field['rows']), $field['settings']);
 
             $field = $this->field_wrapper_start($field);
 
-            wp_editor(stripslashes($field['value']), $field['id'], $settings = array('textarea_name' => $field['name'], 'textarea_rows' => $field['rows']));
+            wp_editor(stripslashes($field['value']), $field['id'], $settings);
 
             $this->field_wrapper_end($field);
         }
@@ -237,6 +239,48 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field = $this->field_wrapper_start($field);
 
             printf('<label id="%s" class="%s_field %s"><legend class="screen-reader-text"><span>%s</span></legend>%s</label>', esc_attr($field['id']), esc_attr($field['id']), esc_attr($field['wrapper_class']), esc_attr($field['title']), $options);
+
+            $this->field_wrapper_end($field);
+        }
+        
+        public function color_scheme_picker_input($field) {
+            $field['class'] = isset($field['class']) ? $field['class'] : 'select short';
+            $field['wrapper_class'] = isset($field['wrapper_class']) ? $field['wrapper_class'] : '';
+            $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
+            $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['dfvalue'] = isset($field['dfvalue']) ? $field['dfvalue'] : '';
+            $field['value'] = ( $field['value'] ) ? $field['value'] : $field['dfvalue'];
+
+            $options = '';
+            foreach ($field['options'] as $key => $value) {
+                $selected = ( $field['value'] == $key ) ? 'selected' : '';
+                $options .= '<div class="color-option '. $selected .'">'
+                        . '<label>'
+                        . '<input id="admin_color_'.esc_attr($key).'" class="' . esc_attr($field['class']) . '" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"> '
+                        . '<label for="admin_color_'.esc_attr($key).'">' . esc_html($value['label']) . '</label>'
+                        . '<table class="color-palette">'
+                        . '<tbody>'
+                        . '<tr>';
+                foreach ($value['color'] as $color){
+                    $options .= '<td style="background-color: '.$color.'">&nbsp;</td>';
+                }
+                $options .= '</tr>'
+                        . '</tbody>'
+                        . '</table>'
+                        .'</label>'
+                        . '</div>';
+            }
+
+            $this->field_wrapper_start($field);
+
+            printf(
+                    '
+        <div id="%s" class="%s_field %s">
+          <legend class="screen-reader-text"><span>%s</span></legend>
+            %s
+        </div>
+        ', esc_attr($field['id']), esc_attr($field['id']), esc_attr($field['wrapper_class']), esc_attr($field['title']), $options
+            );
 
             $this->field_wrapper_end($field);
         }

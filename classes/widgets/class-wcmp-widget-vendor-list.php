@@ -23,9 +23,9 @@ class DC_Widget_Vendor_List extends WP_Widget {
         global $WCMp, $wp_version;
         // Widget variable settings
         $this->widget_cssclass = 'widget_product_vendor_list';
-        $this->widget_description = __('Display a list of vendors.', 'dc-woocommerce-multi-vendor');
+        $this->widget_description = __('Display list of registered vendors on your site.', 'dc-woocommerce-multi-vendor');
         $this->widget_idbase = 'dc_product_vendors_list';
-        $this->widget_title = __('WCMp Product Vendors List', 'dc-woocommerce-multi-vendor');
+        $this->widget_title = __('WCMp: Vendors List', 'dc-woocommerce-multi-vendor');
 
         // Widget settings
         $widget_ops = array('classname' => $this->widget_cssclass, 'description' => $this->widget_description);

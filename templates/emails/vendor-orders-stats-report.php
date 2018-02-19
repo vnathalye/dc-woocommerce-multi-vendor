@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 global $WCMp;
 $text_align = is_rtl() ? 'right' : 'left';
-$t_sale = isset($report_data['stats']['total_sales']) ? $report_data['stats']['total_sales'] : 0;
-$t_earning = isset($report_data['stats']['total_earning']) ? $report_data['stats']['total_earning'] : 0;
-$t_balance = isset($report_data['stats']['total_balance']) ? $report_data['stats']['total_balance'] : 0;
-$t_transaction = isset($report_data['stats']['total_transaction']) ? $report_data['stats']['total_transaction'] : 0;
+$t_sale = isset($report_data['stats']['sales_total']) ? $report_data['stats']['sales_total'] : 0;
+$t_earning = isset($report_data['stats']['earning']) ? $report_data['stats']['earning'] : 0;
+$t_withdrawal = isset($report_data['stats']['withdrawal']) ? $report_data['stats']['withdrawal'] : 0;
+$t_orders_no = isset($report_data['stats']['orders_no']) ? $report_data['stats']['orders_no'] : 0;
 do_action( 'woocommerce_email_header', $email_heading ); ?>
 <p><?php printf(__( 'Hello %s,<br>Your %s store orders report stats are as follows:', 'dc-woocommerce-multi-vendor' ),  $vendor->user_data->display_name, $report_data['period']); ?></p>
 <div style="margin-bottom: 40px;">
@@ -26,18 +26,18 @@ do_action( 'woocommerce_email_header', $email_heading ); ?>
             <tr>
                 <th class="td" scope="col" style="text-align:<?php echo $text_align; ?>;"><?php printf(__( '%s sale:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
                 <th class="td" scope="col" style="text-align:<?php echo $text_align; ?>;"><?php printf(__( '%s earning:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
-                <th class="td" scope="col" style="text-align:<?php echo $text_align; ?>;"><?php printf(__( '%s balance:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
+                <th class="td" scope="col" style="text-align:<?php echo $text_align; ?>;"><?php printf(__( '%s withdrawal:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
             </tr>
         </thead>
         <tbody>
             <td class="td" scope="col" style="text-align:<?php echo $text_align; ?>;font-size:28px;font-weight:bold;"><?php echo wc_price($t_sale); ?></td>
             <td class="td" scope="col" style="text-align:<?php echo $text_align; ?>;font-size:28px;font-weight:bold;"><?php echo wc_price($t_earning); ?></td>
-            <td class="td" scope="col" style="text-align:<?php echo $text_align; ?>;font-size:28px;font-weight:bold;"><?php echo wc_price($t_balance); ?></td>
+            <td class="td" scope="col" style="text-align:<?php echo $text_align; ?>;font-size:28px;font-weight:bold;"><?php echo wc_price($t_withdrawal); ?></td>
         </tbody>
         <tfoot>
             <tr>
-                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php printf(__( '%s total transactions:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
-                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wc_price($t_transaction); ?></td>
+                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php printf(__( '%s no of orders:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
+                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo $t_orders_no; ?></td>
             </tr>
             <tr>
                 <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php _e( 'Period', 'dc-woocommerce-multi-vendor' ); ?></th>

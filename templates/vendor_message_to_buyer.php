@@ -18,7 +18,7 @@ global $WCMp;
         $cc = 0;
         foreach ($vendor_array as $vendor_id => $products) {
             $vendor_meta = get_user_meta($vendor_id);
-            $vendor_message_to_buyer = get_user_meta($vendor_id, '_vendor_message_to_buyers', true);
+            $vendor_message_to_buyer = apply_filters('wcmp_display_vendor_message_to_buyer', get_user_meta($vendor_id, '_vendor_message_to_buyers', true), $vendor_id);
             if (!empty($vendor_message_to_buyer) ||
                     (isset($vendor_meta['_vendor_customer_phone'][0]) && isset($vendor_meta['_vendor_customer_email'][0])) ||
                     (isset($vendor_meta['_vendor_csd_return_address1'][0]) && isset($vendor_meta['_vendor_csd_return_city'][0]) && isset($vendor_meta['_vendor_csd_return_state'][0]) && isset($vendor_meta['_vendor_csd_return_zip'][0]) )

@@ -89,9 +89,9 @@ class WCMp_Endpoints {
                 'label' => __('Vendor Knowledgebase', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_knowledgebase_endpoint', 'vendor', 'general', 'vendor-knowledgebase')
             )
-            , 'vendor-report_issue' => array(
-                'label' => __('Vendor Submit Issue', 'dc-woocommerce-multi-vendor'),
-                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_report_issue_endpoint', 'vendor', 'general', 'vendor-report_issue')
+            , 'vendor-tools' => array(
+                'label' => __('Vendor Tools', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_tools_endpoint', 'vendor', 'general', 'vendor-tools')
             )
         ));
     }
@@ -181,6 +181,16 @@ class WCMp_Endpoints {
             }
         }
         return '';
+    }
+    
+    public function get_current_endpoint_var() {
+        global $wp;
+        $endpoint_var = NULL;
+        $current_endpoint = $this->get_current_endpoint();
+        if(isset($wp->query_vars[$current_endpoint]) && !empty($wp->query_vars[$current_endpoint])){
+            $endpoint_var = $wp->query_vars[$current_endpoint];
+        }
+        return $endpoint_var;
     }
 
 }

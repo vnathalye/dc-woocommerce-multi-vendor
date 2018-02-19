@@ -24,9 +24,9 @@ class DC_Widget_Vendor_Info extends WP_Widget {
 
         // Widget variable settings
         $this->widget_idbase = 'dc_product_vendors_info';
-        $this->widget_title = __("WCMp Product Vendor's Info", 'dc-woocommerce-multi-vendor');
+        $this->widget_title = __('WCMp: Vendor\'s Quick Info', 'dc-woocommerce-multi-vendor');
         $this->widget_cssclass = 'widget_product_vendor_info';
-        $this->widget_description = __('Display selected or current product vendor info.', 'dc-woocommerce-multi-vendor');
+        $this->widget_description = __('Displays a brief info about the current product\'s vendor.', 'dc-woocommerce-multi-vendor');
 
         // Widget settings
         $widget_ops = array('classname' => $this->widget_cssclass, 'description' => $this->widget_description);
@@ -65,12 +65,12 @@ class DC_Widget_Vendor_Info extends WP_Widget {
                 $show_widget = false;
             }
         }
-        if (is_archive() && !is_tax('dc_vendor_shop')) {
+        if (is_archive() && !is_tax($WCMp->taxonomy->taxonomy_name)) {
             $show_widget = false;
         }
 
         if ($show_widget) {
-            if (is_tax('dc_vendor_shop')) {
+            if (is_tax($WCMp->taxonomy->taxonomy_name)) {
                 $vendor_id = get_queried_object()->term_id;
                 if ($vendor_id) {
                     $vendor = get_wcmp_vendor_by_term($vendor_id);

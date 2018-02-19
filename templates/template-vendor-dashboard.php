@@ -18,6 +18,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $WCMp;
+$dashboard_scheme = 'wcmp-color-scheme-'.get_wcmp_vendor_settings('vendor_color_scheme_picker', 'vendor', 'dashboard', 'outer_space_blue');
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -28,7 +29,7 @@ global $WCMp;
         <link rel="pingback" href="<?php bloginfo('pingback_url'); ?>">
         <?php wp_head(); ?>
     </head>
-    <body <?php body_class(); ?>>
+    <body <?php body_class($dashboard_scheme); ?>>
         
         <?php while (have_posts()) : the_post(); ?>
             <div id="wrapper" class="wcmp-wrapper">

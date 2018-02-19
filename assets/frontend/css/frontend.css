@@ -235,6 +235,12 @@ a.wcmp_vendor_detail{
 .wcmp_vendor_banner_template.template2  .wcmp_total_rating_number{
     float: none;
 }
+.wcmp_vendor_banner_template  .wcmp_total_rating_number + a, 
+.wcmp_vendor_banner_template  .wcmp_total_rating_number, 
+.wcmp_vendor_banner_template  .wcmp_total_rating_number + a .star-rating{
+    display: inline-block;
+    vertical-align: middle;
+}
 .wcmp_vendor_banner_template.template2 .wcmp_vendor_detail i{
     position: static;
     left: auto;

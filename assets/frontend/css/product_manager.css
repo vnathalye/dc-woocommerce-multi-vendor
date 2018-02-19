@@ -12,11 +12,6 @@ p.pro_title {
     display: inline-block;
 }
 
-.required {
-    color: red; 
-}
-
-
 #is_virtual_downloadable {
     width: 35%;
     visibility: hidden;
@@ -28,33 +23,6 @@ p.pro_title {
     vertical-align: initial;
 }
 
-input.upload_button, input.remove_button {
-    font-size: 14px;
-    padding: 10px;
-    width: 30%;
-    margin-bottom: 0;
-    vertical-align: middle !important;
-    width: 104px;
-    height: 45px;
-    border: 2px solid #d2d2d2;
-    text-align: left;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 22px auto; 
-}
-input.upload_button:focus, input.remove_button:focus {
-    outline: none;
-}
-input.upload_button:hover, input.remove_button:hover {
-    border-color: #bbb5b5;
-}
-input.upload_button{
-    background-image: url(../../images/upload-icon.png);
-}
-input.remove_button{
-    background-image: url(../../images/delete-icon.png);
-}
 #pruduct_manager_draft_button, #pruduct_manager_submit_button {
     float: right;
     margin-top: 10px;
@@ -76,11 +44,8 @@ input.remove_button{
 }
 
 .dc-wp-fields-uploader a {
-    border-bottom: 0px;
+    border-bottom: 0;
 }
-.fpm_attribute_taxonomy{
-    min-width: 241px; 
-}   
 
 @media only screen and (max-width: 640px) {
     p.pro_title {

@@ -25,7 +25,7 @@ extract( $instance );
 				echo '<p>' . $description . '</p>';
 		}?>
 
-		<form action="" method="post" id="respond" style=" padding: 0px;">
+		<form action="" method="post" id="respond" style=" padding: 0;">
 				<input type="text" class="input-text " name="quick_info[name]" value="<?php echo $current_user->display_name ?>" placeholder="<?php _e( 'Name', 'dc-woocommerce-multi-vendor' ) ?>" required/>
 				<input type="text" class="input-text " name="quick_info[subject]" value="" placeholder="<?php _e( 'Subject', 'dc-woocommerce-multi-vendor' ) ?>" required/>
 				<input type="email" class="input-text " name="quick_info[email]" value="<?php echo $current_user->user_email  ?>" placeholder="<?php _e( 'Email', 'dc-woocommerce-multi-vendor' ) ?>" required/>

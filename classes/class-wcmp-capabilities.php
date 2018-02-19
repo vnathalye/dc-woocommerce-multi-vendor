@@ -257,7 +257,7 @@ class WCMp_Capabilities {
      * @return array 
      */
     public function add_sold_by_text_cart($array, $cart_item) {
-        if (apply_filters('wcmp_sold_by_text_in_cart_chechout', true, $cart_item['product_id'])) {
+        if ('Enable' === get_wcmp_vendor_settings('sold_by_catalog', 'general') && apply_filters('wcmp_sold_by_text_in_cart_checkout', true, $cart_item['product_id'])) {
             $sold_by_text = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'), $cart_item['product_id']);
             $vendor = get_wcmp_product_vendors($cart_item['product_id']);
             if ($vendor) {
@@ -275,7 +275,7 @@ class WCMp_Capabilities {
      */
     public function wcmp_after_add_to_cart_form() {
         global $post;
-        if (apply_filters('wcmp_sold_by_text_after_cart_form', true, $post->ID)) {
+        if ('Enable' === get_wcmp_vendor_settings('sold_by_catalog', 'general') && apply_filters('wcmp_sold_by_text_after_products_shop_page', true, $post->ID)) {
             $vendor = get_wcmp_product_vendors($post->ID);
             if ($vendor) {
                 $sold_by_text = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'), $post->ID);
@@ -292,8 +292,7 @@ class WCMp_Capabilities {
      * @return void 
      */
     public function order_item_meta_2($item_id, $cart_item) {
-        global $WCMp;
-        if (apply_filters('sold_by_cart_and_checkout', true)) {
+        if ('Enable' === get_wcmp_vendor_settings('sold_by_catalog', 'general') && apply_filters('sold_by_cart_and_checkout', true)) {
             $general_cap = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'));
             $vendor = get_wcmp_product_vendors($cart_item['product_id']);
             if ($vendor) {

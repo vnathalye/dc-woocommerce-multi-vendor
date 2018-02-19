@@ -5,7 +5,23 @@ $current_vendor_id = apply_filters('wcmp_current_loggedin_vendor_id', get_curren
 
 // If vendor does not have product submission cap then show message
 if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_products')) {
-    _e('You do not have enough permission to submit a new product. Please contact site administrator.', 'dc-woocommerce-multi-vendor');
+    ?>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <?php _e('You do not have enough permission to submit a new product. Please contact site administrator.', 'dc-woocommerce-multi-vendor'); ?>
+        </div>
+    </div>
+    <?php
+    return;
+}
+if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_published_products') && !empty($pro_id)) {
+    ?>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <?php _e('Product is already published and you are not allowed to edit it now', 'dc-woocommerce-multi-vendor'); ?>
+        </div>
+    </div>
+    <?php
     return;
 }
 
@@ -363,10 +379,14 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 $product_types = array('simple' => __('Simple', 'dc-woocommerce-multi-vendor'));
             }
             $product_types = apply_filters('wcmp_product_types', $product_types);
-
+            $custom_product_type_attribute = array();
+            $disable_other_product_type = apply_filters('wcmp_disable_other_product_type', true);
+            if($disable_other_product_type){
+                $custom_product_type_attribute = array('disabled' => 'disabled');
+            }
             if (!empty($product_types)) {
                 if (!$product_id) {
-                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("product_type" => array('label' => __('Product Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => $product_types, 'class' => 'regular-select', 'label_class' => 'pro_title')));
+                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("product_type" => array('label' => __('Product Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => $product_types, 'class' => 'regular-select', 'label_class' => 'pro_title', 'attributes' => $custom_product_type_attribute)));
                     if (is_user_wcmp_vendor($current_user_id)) {
                         if ($WCMp->vendor_caps->vendor_can('virtual') || $WCMp->vendor_caps->vendor_can('downloadable')) {
                             //$WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("is_virtual_downloadable" => array('type' => 'text')));
@@ -396,12 +416,22 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
             }
             ?>
         </div>
+        <?php if($disable_other_product_type) : ?>
+            <div class="add-product-backend">
+                <p><?php _e('For other product types go to ', 'dc-woocommerce-multi-vendor'); ?><a href="<?php echo admin_url('post-new.php?post_type=product'); ?>"><?php _e('WP backend', 'dc-woocommerce-multi-vendor'); ?> <i class="wcmp-font ico-wp-backend-icon"></i></a></p>
+            </div>
+        <?php endif; ?>
 
         <div id="frontend_product_manager_accordion">
             <?php do_action('before_wcmp_fpm_template'); ?>
             <h3 class="pro_ele_head simple variable external grouped"><?php _e('General', 'dc-woocommerce-multi-vendor'); ?></h3>
             <div class="pro_ele_block simple variable external grouped">
                 <?php
+                $_wp_editor_settings = array();
+                if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
+                    $_wp_editor_settings['media_buttons'] = false;
+                }
+                $_wp_editor_settings = apply_filters('wcmp_vendor_product_manager_wp_editor_settings', $_wp_editor_settings);
                 //print_r($visibility);die;
                 $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_general', array("title" => array('label' => __('Title', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title pro_ele simple variable external grouped', 'value' => $title),
                     "sku" => array('label' => __('SKU', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => (apply_filters("product_sku_hide",false)) ? 'regular-text pro_ele simple variable external grouped vendor_hidden non-booking non-accommodation-booking non-redq_rental' : 'regular-text pro_ele simple variable external grouped non-booking non-accommodation-booking non-redq_rental', 'label_class' => (apply_filters("product_sku_hide",false)) ? 'pro_title vendor_hidden simple variable external grouped non-booking non-accommodation-booking non-redq_rental' : 'pro_title simple variable external grouped non-booking non-accommodation-booking non-redq_rental', 'value' => $sku, 'hints' => __('SKU refers to a Stock-keeping unit, a unique identifier for each distinct product and service that can be purchased.', 'dc-woocommerce-multi-vendor')),
@@ -410,8 +440,8 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     "sale_date_from" => array('label' => __('Sale Date From', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => __('From... YYYY-MM-DD', 'dc-woocommerce-multi-vendor'), 'wrapper_class' => 'pro_ele simple external non-booking non-accommodation-booking non-variable non-variable-subscription non-redq_rental non-auction','class' => 'regular-text simple external non-booking non-accommodation-booking non-variable non-variable-subscription non-redq_rental non-auction', 'label_class' => 'pro_ele pro_title simple external non-accommodation-booking non-booking non-variable non-variable-subscription non-redq_rental non-auction', 'value' => $sale_date_from),
                     "sale_date_upto" => array('label' => __('Sale Date Upto', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => __('To... YYYY-MM-DD', 'dc-woocommerce-multi-vendor'), 'wrapper_class' => 'pro_ele simple external non-booking non-accommodation-booking non-variable non-variable-subscription non-redq_rental non-auction','class' => 'regular-text simple external non-booking non-accommodation-booking non-variable non-variable-subscription non-redq_rental non-auction', 'label_class' => 'pro_ele pro_title simple external non-accommodation-booking non-booking non-variable non-variable-subscription non-redq_rental non-auction', 'value' => $sale_date_upto),
                     "visibility" => array('label' => __('Visibility', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => array('visible' => __('Catalog/Search', 'dc-woocommerce-multi-vendor'), 'catalog' => __('Catalog', 'dc-woocommerce-multi-vendor'), 'search' => __('Search', 'dc-woocommerce-multi-vendor'), 'hidden' => __('Hidden', 'dc-woocommerce-multi-vendor')), 'class' => 'regular-select pro_ele simple variable external grouped', 'label_class' => 'pro_ele pro_title simple variable external grouped', 'value' => $visibility, 'hints' => __('Choose where this product should be displayed in your catalog. The product will always be accessible directly.', 'dc-woocommerce-multi-vendor')),
-                    "excerpt" => array('label' => __('Short Description', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title grouped', 'value' => $excerpt),
-                    "description" => array('label' => __('Description', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title grouped', 'value' => $description),
+                    "excerpt" => array('label' => __('Short Description', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title grouped', 'value' => $excerpt, 'settings' => $_wp_editor_settings),
+                    "description" => array('label' => __('Description', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title grouped', 'value' => $description, 'settings' => $_wp_editor_settings),
                     "pro_id" => array('type' => 'hidden', 'value' => $product_id)
                                 ), $product_id));
   
@@ -424,13 +454,13 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 <div class="pro_ele_block simple subscription downlodable non-external non-grouped non-booking non-accommodation-booking non-variable non-variable-subscription non-redq_rental non-auction">
 
                     <?php
-                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("downloadable_files" => array('label' => __('Files', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple downlodable', 'label_class' => 'pro_title', 'value' => $downloadable_files, 'options' => array(
+                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_downloadable', array("downloadable_files" => array('label' => __('Files', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple downlodable', 'label_class' => 'pro_title', 'value' => $downloadable_files, 'options' => array(
                                 "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple downlodable', 'label_class' => 'pro_ele pro_title simple downlodable'),
                                 "file" => array('label' => __('File', 'dc-woocommerce-multi-vendor'), 'type' => 'upload', 'mime' => 'Uploads', 'class' => 'regular-text pro_ele simple downlodable', 'label_class' => 'pro_ele pro_title simple downlodable')
                             )),
                         "download_limit" => array('label' => __('Download Limit', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'value' => $download_limit, 'placeholder' => __('Unlimited', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele simple external', 'label_class' => 'pro_ele pro_title simple downlodable', 'hints' => __('Leave blank for unlimited re-downloads.', 'dc-woocommerce-multivendor')),
                         "download_expiry" => array('label' => __('Download Expiry', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'value' => $download_expiry, 'placeholder' => __('Never', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele simple external', 'label_class' => 'pro_ele pro_title simple downlodable', 'hints' => __('Enter the number of days before a download link expires, or leave blank.', 'dc-woocommerce-multivendor'))
-                    ));
+                    )));
                     ?>
 
                 </div>
@@ -439,11 +469,11 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
             <div class="pro_ele_block simple variable external grouped">
 
                 <?php
-                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("featured_img" => array('label' => __('Featured Image', 'dc-woocommerce-multi-vendor'), 'type' => 'upload', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $featured_img),
+                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_featured_images', array("featured_img" => array('label' => __('Featured Image', 'dc-woocommerce-multi-vendor'), 'type' => 'upload', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $featured_img),
                     "gallery_img" => array('label' => __('Gallery Images', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $gallery_img_urls, 'options' => array(
                             "image" => array('label' => __('Image', 'dc-woocommerce-multi-vendor'), 'type' => 'upload', 'prwidth' => 125),
                         ))
-                ));
+                )));
                 ?>
 
             </div>
@@ -509,9 +539,10 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
             <div class="pro_ele_block simple variable grouped non-external non-redq_rental non-accommodation-booking non-booking <?php if (apply_filters("vendor_product_inventory_hide",false)) echo ' vendor_hidden'; ?>">
 
                 <?php
+                $non_manage_stock_ele = 'enable' === $manage_stock ? '' : 'non_manage_stock_ele';
                 $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_inventory', array("manage_stock" => array('label' => __('Manage Stock?', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'class' => 'regular-checkbox pro_ele simple variable external manage_stock_ele non-auction', 'value' => 'enable', 'label_class' => 'pro_title checkbox_title pro_ele simple variable external manage_stock_ele non-auction', 'hints' => __('Enable stock management at product level', 'dc-woocommerce-multi-vendor'), 'dfvalue' => $manage_stock),
-                    "stock_qty" => array('label' => __('Stock Qty', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'wrapper_class' =>'pro_ele non_manage_stock_ele simple variable external non-auction','class' => 'regular-text pro_ele simple variable external non_manage_stock_ele non-auction', 'label_class' => 'pro_title pro_ele_head non_manage_stock_ele simple variable external non-auction', 'value' => $stock_qty, 'hints' => __('Stock quantity. If this is a variable product this value will be used to control stock for all variations, unless you define stock at variation level.', 'dc-woocommerce-multi-vendor')),
-                    "backorders" => array('label' => __('Allow Backorders?', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => array('no' => __('Do not Allow', 'dc-woocommerce-multi-vendor'), 'notify' => __('Allow, but notify customer', 'dc-woocommerce-multi-vendor'), 'yes' => __('Allow', 'dc-woocommerce-multi-vendor')), 'class' => 'regular-select pro_ele simple variable external non_manage_stock_ele non-auction','wrapper_class' =>'pro_ele non_manage_stock_ele simple variable external non-auction', 'label_class' => 'pro_title pro_ele_head non_manage_stock_ele simple variable external non-auction', 'value' => $backorders, 'hints' => __('If managing stock, this controls whether or not backorders are allowed. If enabled, stock quantity can go below 0.', 'dc-woocommerce-multi-vendor')),
+                    "stock_qty" => array('label' => __('Stock Qty', 'dc-woocommerce-multi-vendor'), 'type' => 'number', 'wrapper_class' =>'pro_ele '. $non_manage_stock_ele .' simple variable external non-auction','class' => 'regular-text pro_ele simple variable external '. $non_manage_stock_ele .' non-auction', 'label_class' => 'pro_title pro_ele_head '. $non_manage_stock_ele .' simple variable external non-auction', 'value' => $stock_qty, 'hints' => __('Stock quantity. If this is a variable product this value will be used to control stock for all variations, unless you define stock at variation level.', 'dc-woocommerce-multi-vendor')),
+                    "backorders" => array('label' => __('Allow Backorders?', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => array('no' => __('Do not Allow', 'dc-woocommerce-multi-vendor'), 'notify' => __('Allow, but notify customer', 'dc-woocommerce-multi-vendor'), 'yes' => __('Allow', 'dc-woocommerce-multi-vendor')), 'class' => 'regular-select pro_ele simple variable external ' . $non_manage_stock_ele .' non-auction','wrapper_class' =>'pro_ele '. $non_manage_stock_ele .' simple variable external non-auction', 'label_class' => 'pro_title pro_ele_head ' . $non_manage_stock_ele .' simple variable external non-auction', 'value' => $backorders, 'hints' => __('If managing stock, this controls whether or not backorders are allowed. If enabled, stock quantity can go below 0.', 'dc-woocommerce-multi-vendor')),
                     "stock_status" => array('label' => __('Stock Status', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => array('instock' => __('In stock', 'dc-woocommerce-multi-vendor'), 'outofstock' => __('Out of stock', 'dc-woocommerce-multi-vendor')), 'class' => 'regular-select pro_ele simple grouped non-variable-subscription non-variable', 'label_class' => 'pro_ele pro_title simple grouped non-variable-subscription non-variable', 'value' => $stock_status, 'hints' => __('Controls whether or not the product is listed as "in stock" or "out of stock" on the frontend.', 'dc-woocommerce-multi-vendor')),
                     "sold_individually" => array('label' => __('Sold Individually', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele simple variable external non-auction', 'hints' => __('Enable this to only allow one of this item to be bought in a single order', 'dc-woocommerce-multi-vendor'), 'label_class' => 'pro_title checkbox_title pro_ele simple variable external manage_stock_ele non-auction', 'dfvalue' => $sold_individually)
                                 ), $product_id));
@@ -536,10 +567,10 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 <div class="pro_ele_block simple variable <?php if (apply_filters("vendor_product_tax_hide",false)) echo ' vendor_hidden'; ?>">
 
                     <?php
-                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array(
+                    $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_tax', array(
                         "tax_status" => array('label' => __('Tax Status', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => array('taxable' => __('Taxable', 'dc-woocommerce-multi-vendor'), 'shipping' => __('Shipping only', 'dc-woocommerce-multi-vendor'), 'none' => _x('None', 'Tax status', 'dc-woocommerce-multi-vendor')), 'class' => 'regular-select pro_ele simple variable', 'label_class' => 'pro_title', 'value' => $tax_status, 'hints' => __('Define whether or not the entire product is taxable, or just the cost of shipping it.', 'dc-woocommerce-multi-vendor')),
                         "tax_class" => array('label' => __('Tax Class', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => $tax_classes_options, 'class' => 'regular-select pro_ele simple variable', 'label_class' => 'pro_title', 'value' => $tax_class, 'hints' => __('Choose a tax class for this product. Tax classes are used to apply different tax rates specific to certain types of product.', 'dc-woocommerce-multi-vendor'))
-                    ));
+                    )));
                     ?>
 
                 </div>
@@ -569,7 +600,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 </div>
           
                 <?php
-                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array(
+                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_fields_attributes', array(
                     "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
                             "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
                             "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title'),
@@ -579,7 +610,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                             "tax_name" => array('type' => 'hidden'),
                             "is_taxonomy" => array('type' => 'hidden')
                         ))
-                ));
+                )));
 
                 if (!empty($attributes_select_type)) {
                     $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('product_simple_fields_attributes', array(

@@ -27,11 +27,11 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
 ?>
 <div class="col-md-12">
     <form method="post" name="shop_settings_form" class="wcmp_billing_form">
-        <div class="panel panel-default">
+        <div class="panel panel-default pannel-outer-heading">
             <div class="panel-heading">
                 <h3><?php _e('Payment Method', 'dc-woocommerce-multi-vendor'); ?></h3>
             </div>                     
-            <div class="panel-body">
+            <div class="panel-body panel-content-padding">
                 <div class="form-group">
                     <label for="vendor_payment_mode" class="control-label col-sm-3 col-md-3"><?php _e('Choose Payment Method', 'dc-woocommerce-multi-vendor'); ?></label>
                     <div class="col-md-6 col-sm-9">
@@ -44,9 +44,9 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                 </div>
                 <div class="payment-gateway payment-gateway-paypal_masspay payment-gateway-paypal_payout <?php echo apply_filters('wcmp_vendor_paypal_email_container_class', ''); ?>">
                     <div class="form-group">
-                        <label for="vendor_paypal_email" class="control-label col-sm-3 col-md-3"><?php _e('Enter your Paypal ID', 'dc-woocommerce-multi-vendor'); ?></label>
+                        <label for="vendor_paypal_email" class="control-label col-sm-3 col-md-3"><?php _e('Paypal Email', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
-                            <input  class="form-control" type="text" name="vendor_paypal_email" value="<?php echo isset($vendor_paypal_email['value']) ? $vendor_paypal_email['value'] : ''; ?>"  placeholder="<?php _e('Enter your Paypal ID', 'dc-woocommerce-multi-vendor'); ?>">
+                            <input  class="form-control" type="text" name="vendor_paypal_email" value="<?php echo isset($vendor_paypal_email['value']) ? $vendor_paypal_email['value'] : ''; ?>"  placeholder="<?php _e('Paypal Email', 'dc-woocommerce-multi-vendor'); ?>">
                         </div>
                     </div>
                 </div>
@@ -85,12 +85,6 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="vendor_destination_currency" class="control-label col-sm-3 col-md-3"><?php _e('Destination Currency', 'dc-woocommerce-multi-vendor'); ?></label>
-                        <div class="col-md-6 col-sm-9">
-                            <input class="form-control" type="text" name="vendor_destination_currency" value="<?php echo isset($vendor_destination_currency['value']) ? $vendor_destination_currency['value'] : ''; ?>">
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label for="vendor_iban" class="control-label col-sm-3 col-md-3"><?php _e('IBAN', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="text"  name="vendor_iban" value="<?php echo isset($vendor_iban['value']) ? $vendor_iban['value'] : ''; ?>">
@@ -100,6 +94,12 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                         <label for="vendor_account_holder_name" class="control-label col-sm-3 col-md-3"><?php _e('Account Holder Name', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="text" placeholder=""  name="vendor_account_holder_name" value="<?php echo isset($vendor_account_holder_name['value']) ? $vendor_account_holder_name['value'] : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendor_bank_account_number" class="control-label col-sm-3 col-md-3"><?php _e('Account Number', 'dc-woocommerce-multi-vendor'); ?></label>
+                        <div class="col-md-6 col-sm-9">
+                            <input class="form-control" type="text" placeholder=""  name="vendor_bank_account_number" value="<?php echo isset($vendor_bank_account_number['value']) ? $vendor_bank_account_number['value'] : ''; ?>">
                         </div>
                     </div>
                 </div>

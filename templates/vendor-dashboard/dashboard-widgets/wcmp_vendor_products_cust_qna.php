@@ -16,55 +16,46 @@ global $WCMp;
 
 do_action('before_wcmp_vendor_dashboard_products_cust_qna');
 ?>
-<div class="customer-questions-panel">
-    <?php if($active_qna){
-        foreach ($active_qna as $key => $data) { 
-            $product = wc_get_product($data->product_ID);
-    ?>
-    <article id="reply-item-<?php echo $key; ?>" class="reply-item">
-        <div class="media">
-            <div class="media-left">
-                <?php echo $product->get_image(); ?>
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading qna-question">
-                    <?php echo $data->ques_details; ?>
-                </h4>
-                <time class="qna-date">
-                    <i class="la la-clock-o"></i> 
-                    <span><?php echo date("F j, Y, g:i a", strtotime($data->ques_created)); ?></span>
-                </time>
-                <p><a data-toggle="modal" data-target="#qna-reply-modal-<?php echo $key; ?>" ><small><?php _e('Reply', 'dc-woocommerce-multi-vendor')?></small></a></p>
-                <!-- Modal -->
-                <div class="modal fade" id="qna-reply-modal-<?php echo $key; ?>" role="dialog">
-                    <div class="modal-dialog">
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title"><?php _e('Product - ', 'dc-woocommerce-multi-vendor')?> <?php echo $product->get_formatted_name(); ?></h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label class="qna-question"><?php echo $data->ques_details; ?></label>
-                                    <textarea class="form-control" rows="5" id="qna-reply-<?php echo $key; ?>" placeholder="<?php _e('Post your answer...', 'dc-woocommerce-multi-vendor')?>"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" data-key="<?php echo $key; ?>" class="btn btn-default wcmp-add-qna-reply"><?php _e('Add', 'dc-woocommerce-multi-vendor')?></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    </article>
-    <?php }
-    }else{
-        echo '<article class="reply-item"><div class="col-md-12 col-md-12 col-sm-12 col-xs-12" style="text-align:center;">'.__('No customer query found.', 'dc-woocommerce-multi-vendor').'</div></article>';
-    }
-    ?>
+<div class="customer-questions-panel dash-widget-dt">
+    <table id="customer_questions" class="wcmp-widget-dt table" width="100%">
+        <thead>
+            <tr><th></th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
+<script>
+jQuery(document).ready(function($) {
+    var customer_questions;
+    customer_questions = $('#customer_questions').DataTable({
+        ordering  : false,
+        lengthChange : false,
+        pageLength : 5,
+        info:     false,
+        searching  : false,
+        processing: false,
+        serverSide: true,
+        pagingType: 'numbers',
+        language: {
+            emptyTable: '<article class="reply-item" style="border-bottom:none;"><div class="col-md-12 col-md-12 col-sm-12 col-xs-12" style="text-align:center;"><?php echo __('No customer query found.', 'dc-woocommerce-multi-vendor') ?></div></article>',
+        },
+        preDrawCallback: function( settings ) {
+            $('#customer_questions thead').hide();
+            $('.dataTables_paginate').parent().removeClass('col-sm-7').addClass('col-sm-12').siblings('div').hide();
+            var info = this.api().page.info();
+            if (info.recordsTotal <= 5) {
+                $('.dataTables_paginate').parent().parent().hide();
+            }else{
+                $('.dataTables_paginate').parent().parent().show();
+            }
+        },
+        ajax:{
+            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_dashboard_customer_questions_data', 
+            type: "post"
+        }
+    });
+});
+</script>
 <?php
 do_action('after_wcmp_vendor_dashboard_products_cust_qna');

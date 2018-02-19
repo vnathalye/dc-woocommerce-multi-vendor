@@ -24,66 +24,72 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
 ?>
 
 <!-- Top bar -->
-<div class="content-padding top-navbar white-bkg">
+<div class="top-navbar white-bkg">
     <div class="navbar navbar-default">
-        <div class="topbar-left pull-left">
-            <div class="site-logo">
-                <a href="<?php echo site_url(); ?>"><img src="<?php echo $site_logo; ?>" alt="<?php echo bloginfo(); ?>"></a>
+        <div class="topbar-left pull-left pos-rel">
+            <div class="site-logo text-center pos-middle">
+                <a href="<?php echo site_url(); ?>">
+                    <?php if($site_logo) { ?>
+                    <img src="<?php echo $site_logo; ?>" alt="<?php echo bloginfo(); ?>">
+                    <?php }else{ echo bloginfo(); } ?>
+                </a>
             </div>
         </div>
         <ul class="nav pull-right top-user-nav">
             <li class="dropdown login-user">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <i class="la la-user"></i>
-                    <span><i class="la la-angle-down"></i></span>
+                    <i class="wcmp-font ico-user-icon"></i>
+                    <span><i class="wcmp-font ico-down-arrow-icon"></i></span>
                 </a>
                 <ul class="dropdown-menu dropdown-user dropdown-menu-right">
-                    <li class="sidebar-logo">
-                        <div class="text-center">
-                            <div class="vendor-profile-pic-holder">
-                                <img src="<?php echo $vendor_logo; ?>" alt="hard crop 130 * 130" class="img-circle">
-                            </div>
-                            <h4><?php echo $vendor->user_data->display_name;; ?></h4> 
+                    <li class="sidebar-logo text-center"> 
+                        <div class="vendor-profile-pic-holder">
+                            <img src="<?php echo $vendor_logo; ?>" alt="hard crop 130 * 130">
                         </div>
+                        <h4><?php echo $vendor->user_data->display_name; ?></h4>  
                     </li> 
-                    <li class="divider marginTop-0"></li>
-                    <li><a href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_store_settings_endpoint', 'vendor', 'general', 'storefront'))); ?>"><i class="la la-pencil-square"></i> <span>Storefront</span></a>
-                    <li class="divider"></li>
-                    <li><a href="<?php echo esc_url(wp_logout_url(get_permalink(wcmp_vendor_dashboard_page_id()))); ?>"><i class="la la-sign-out"></i> <span>Logout</span></a>
-                    </li>
+                    <?php $panel_nav = $WCMp->vendor_dashboard->dashboard_header_right_panel_nav(); 
+                    if($panel_nav) : 
+                        sksort($panel_nav, 'position', true); 
+                        foreach ($panel_nav as $key => $nav):
+                            if (current_user_can($nav['capability']) || $nav['capability'] === true): ?>
+                    <li class="<?php if(!empty($nav['class'])) echo $nav['class']; ?>"><a href="<?php echo esc_url($nav['url']); ?>" target="<?php echo $nav['link_target']; ?>"><i class="<?php echo $nav['nav_icon']; ?>"></i> <span><?php echo $nav['label']; ?></span></a></li>
+                    <?php endif;
+                        endforeach;
+                    endif;
+                    ?>
+                    
+                    <?php do_action('wcmp_dashboard_header_right_vendor_dropdown'); ?>
                 </ul>
                 <!-- /.dropdown -->
             </li>
         </ul>
+        
+    <?php $header_nav = $WCMp->vendor_dashboard->dashboard_header_nav();
+    
+    if($header_nav) : 
+        sksort($header_nav, 'position', true); ?>
         <ul class="nav navbar-top-links navbar-right pull-right btm-nav-fixed">
-            <li class="notification-link">
-                <a href="<?php echo apply_filters('wcmp_vendor_shop_permalink', esc_url($vendor->permalink)); ?>" target="_blank" title="shop">
-                    <i class="la la-globe"></i> <span class="hidden-sm hidden-xs">my shop</span>
-                </a>
-            </li>
-            <li class="notification-link">
-                <a href="<?php echo apply_filters('wcmp_vendor_submit_product', esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')))); ?>" title="add product">
-                <i class="la la-cube"></i> <span class="hidden-sm hidden-xs">add product</span>
-                </a>
-            </li>
-            <?php if (apply_filters('wcmp_show_vendor_announcements', true)) : ?>
-            <li class="notification-link">
-                <a href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements'))); ?>" title="announcement">
-                    <i class="la la-bell"></i> <span class="hidden-sm hidden-xs">announcement</span>
-                    <?php $vendor_announcements = $vendor->get_announcements(); 
-                    if(isset($vendor_announcements['unread']) && count($vendor_announcements['unread']) > 0){
-                        echo '<span class="notification-blink"></span>';
-                    }
-                    ?>
-                </a>
-            </li>
-            <li class="notification-link">
-                <a href="<?php echo wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'vendor-withdrawal')); ?>" title="<?php _e('withdrawal', 'dc-woocommerce-multi-vendor'); ?>">
-                    <i class="la la-money"></i> <span class="hidden-sm hidden-xs"><?php _e('withdrawal', 'dc-woocommerce-multi-vendor'); ?></span> 
-                </a>
-            </li>
-            <?php endif; ?>
-        </ul>
+            <?php 
+            foreach ($header_nav as $key => $nav):
+                if (current_user_can($nav['capability']) || $nav['capability'] === true): ?>
+                <li class="notification-link <?php if(!empty($nav['class'])) echo $nav['class']; ?>">
+                    <a href="<?php echo esc_url($nav['url']); ?>" target="<?php echo $nav['link_target']; ?>" title="<?php echo $nav['label']; ?>">
+                        <i class="<?php echo $nav['nav_icon']; ?>"></i> <span class="hidden-sm hidden-xs"><?php echo $nav['label']; ?></span>
+                        <?php if($key == 'announcement') :
+                            $vendor_announcements = $vendor->get_announcements(); 
+                            if(isset($vendor_announcements['unread']) && count($vendor_announcements['unread']) > 0){
+                                echo '<span class="notification-blink"></span>';
+                            } 
+                        endif; ?>
+                    </a>
+                </li>
+            <?php 
+                endif;
+            endforeach;
+            ?>
+        </ul>     
+    <?php endif; ?>
         <!-- /.navbar-top-links -->
     </div>
 </div>

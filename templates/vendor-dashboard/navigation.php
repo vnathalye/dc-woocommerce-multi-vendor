@@ -24,7 +24,9 @@ do_action('wcmp_before_vendor_dashboard_navigation');
 <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
         <button data-toggle="collapse-side" data-target="#side-collapse" type="button" class="navbar-toggle pull-left larr collapsed">
-            <i class="la la-bars"></i>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
         </button>
     </div>
     <!-- /.navbar-header -->
@@ -37,7 +39,7 @@ do_action('wcmp_before_vendor_dashboard_navigation');
                             <li class="<?php if(!empty($item['submenu'])){ echo 'hasmenu';} ?>">
                                 <?php if(array_key_exists($WCMp->endpoints->get_current_endpoint(), $item['submenu'])){ $force_active = true;} else {$force_active = false;}?>
                                 <a href="<?php echo esc_url($item['url']); ?>" target="<?php echo $item['link_target'] ?>" data-menu_item="<?php echo $key ?>" class="<?php echo implode(' ', array_map('sanitize_html_class', wcmp_get_vendor_dashboard_nav_item_css_class($key, $force_active))); ?>">
-                                    <i class="<?php echo $item['nav_icon'] ?>"></i> 
+                                    <i class="<?php echo isset($item['nav_icon']) && !empty($item['nav_icon']) ? $item['nav_icon'] : 'la la-gear'; ?>"></i> 
                                     <span><?php echo esc_html($item['label']); ?></span>
                                     <?php if(!empty($item['submenu'])): ?><i class="dashicons dashicons-arrow-down-alt2"></i><?php endif; ?>
                                 </a>
@@ -46,7 +48,7 @@ do_action('wcmp_before_vendor_dashboard_navigation');
                                         <?php foreach ($item['submenu'] as $submenukey => $submenu): ?>
                                             <?php if(current_user_can($submenu['capability']) || $submenu['capability'] === true): ?>
                                                 <li>
-                                                    <a href="<?php echo esc_url($submenu['url']); ?>" target="<?php echo $submenu['link_target'] ?>" class="<?php echo implode(' ', array_map('sanitize_html_class', wcmp_get_vendor_dashboard_nav_item_css_class($submenukey))); ?>">- <?php echo esc_html($submenu['label']); ?></a>
+                                                    <a href="<?php echo esc_url($submenu['url']); ?>" target="<?php echo $submenu['link_target'] ?>" class="<?php echo implode(' ', array_map('sanitize_html_class', wcmp_get_vendor_dashboard_nav_item_css_class($submenukey))); ?>">-- <?php echo esc_html($submenu['label']); ?></a>
                                                 </li>
                                             <?php endif; ?>
                                         <?php endforeach; ?>

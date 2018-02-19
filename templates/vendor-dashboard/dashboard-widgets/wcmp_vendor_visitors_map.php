@@ -15,14 +15,12 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 do_action('before_wcmp_vendor_visitors_map');
 ?>
-<div class="panel-body">
-    <div class="row no-margin" data-sync-height>
-        <div class="col-sm-5 col-md-4 no-padding">
-            <div id="donutchart" style="width: 100%;"></div>
-        </div>
-        <div class="col-sm-7 col-md-8 no-padding">
-            <div id="vmap" style="height: 270px;"></div>
-        </div>
+<div class="vendor_visitors_map">
+    <div class="col-sm-4 col-md-3">
+        <table id="visitor_data_stats" class="table table-bordered"></table>
+    </div>
+    <div class="col-sm-8 col-md-9">
+        <div id="vmap" style="height: 270px;"></div>
     </div>
 </div>
 <?php 

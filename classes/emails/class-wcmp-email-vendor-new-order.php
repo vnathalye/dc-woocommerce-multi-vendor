@@ -72,7 +72,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
 
                     $vendor_obj = get_wcmp_vendor_by_term($vendor);
                     $vendor_email = $vendor_obj->user_data->user_email;
-                    $vendor_id = $vendor_obj->term_id;
+                    $vendor_id = $vendor_obj->id;
 
                     if ($order_id && $vendor_email) {
                         $this->object = new WC_Order($order_id);

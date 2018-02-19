@@ -20,6 +20,7 @@ do_action('before_wcmp_vendor_dashboard');
 $WCMp->template->get_template('vendor-dashboard/dashboard-header.php');
 
 do_action('wcmp_vendor_dashboard_navigation', array());
+$is_single = !is_null($WCMp->endpoints->get_current_endpoint_var()) ? '-single' : '';
 ?>
 <div id="page-wrapper" class="side-collapse-container">
     <div id="current-endpoint-title-wrapper" class="current-endpoint-title-wrapper">
@@ -28,7 +29,7 @@ do_action('wcmp_vendor_dashboard_navigation', array());
         </div>
     </div>
     <!-- /.row -->
-    <div class="content-padding gray-bkg <?php echo $WCMp->endpoints->get_current_endpoint() ? $WCMp->endpoints->get_current_endpoint() : 'dashboard'; ?>">
+    <div class="content-padding gray-bkg <?php echo $WCMp->endpoints->get_current_endpoint() ? $WCMp->endpoints->get_current_endpoint().$is_single : 'dashboard'; ?>">
         <div class="notice-wrapper">
             <?php wc_print_notices(); ?>
         </div>

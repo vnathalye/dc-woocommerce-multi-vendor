@@ -95,7 +95,7 @@ class WCMp_Notices {
 			'capability_type' => 'post',
 			'has_archive' => false,
 			'hierarchical' => true,
-			'supports' => array( 'title', 'editor', 'excerpt' ),
+			'supports' => array( 'title', 'editor' ),
 			'menu_position' => 10,
 			'menu_icon' => $WCMp->plugin_url.'/assets/images/dualcube.png'
 		);		

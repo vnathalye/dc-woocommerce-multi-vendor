@@ -10,8 +10,8 @@
     border: solid 1px #e2e2e2;
 }
 .wcmp-addon-container .addonbox .inside{
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
 .wcmp-addon-container .addonbox .hndle{
     margin: 15px 0 5px;

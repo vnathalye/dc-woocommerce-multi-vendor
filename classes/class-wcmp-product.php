@@ -18,8 +18,10 @@ class WCMp_Product {
 
     public function __construct() {
         global $WCMp;
-        add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_vendor_tab'), 30);
-        add_action('woocommerce_product_data_panels', array(&$this, 'output_vendor_tab'), 30);
+        if (!is_user_wcmp_vendor(get_current_user_id())) {
+            add_action('woocommerce_product_write_panel_tabs', array(&$this, 'add_vendor_tab'), 30);
+            add_action('woocommerce_product_data_panels', array(&$this, 'output_vendor_tab'), 30);
+        }
         add_action('save_post', array(&$this, 'process_vendor_data'));
         if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
             if (current_user_can('manage_woocommerce') || (is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_can_overwrite_policies', true))) {
@@ -41,7 +43,7 @@ class WCMp_Product {
         //}
         add_filter('wp_count_posts', array(&$this, 'vendor_count_products'), 10, 3);
         /* Related Products */
-        add_filter('woocommerce_output_related_products_args', array($this, 'related_products_args'), 15);
+        add_filter('woocommerce_product_related_posts_query', array($this, 'show_related_products'), 99, 2);
         // bulk edit vendor set
         add_action('woocommerce_product_bulk_edit_end', array($this, 'add_product_vendor'));
         add_action('woocommerce_product_bulk_edit_save', array($this, 'save_vendor_bulk_edit'));
@@ -80,6 +82,11 @@ class WCMp_Product {
         $this->wcmp_delete_product_action();
         // vendor Q & A tab
         add_filter('woocommerce_product_tabs', array(&$this, 'wcmp_customer_questions_and_answers_tab'));
+
+        add_action('product_cat_add_form_fields', array($this, 'add_product_cat_commission_fields'));
+        add_action('product_cat_edit_form_fields', array($this, 'edit_product_cat_commission_fields'), 10);
+        add_action('created_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
+        add_action('edit_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
     }
 
     public function remove_product_from_multiple_seller_mapping($post_id) {
@@ -218,9 +225,9 @@ class WCMp_Product {
                     if (isset($vendor_data->user_data->data->display_name)) {
                         $more_product_array[$i]['seller_name'] = $vendor_data->user_data->data->display_name;
                         $more_product_array[$i]['is_vendor'] = 1;
-                        $terms = get_the_terms($result, 'dc_vendor_shop');
+                        $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
                         if (!empty($terms)) {
-                            $more_product_array[$i]['shop_link'] = get_term_link($terms[0], 'dc_vendor_shop');
+                            $more_product_array[$i]['shop_link'] = get_term_link($terms[0], $WCMp->taxonomy->taxonomy_name);
                             $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($terms[0]->term_id);
                         }
                     }
@@ -299,7 +306,8 @@ class WCMp_Product {
     }
 
     function exclude_taxonomies_copy_to_draft($arr = array()) {
-        $exclude_arr = array('product_shipping_class', 'dc_vendor_shop');
+        global $WCMp;
+        $exclude_arr = array('product_shipping_class', $WCMp->taxonomy->taxonomy_name);
         $final_arr = array_merge($arr, $exclude_arr);
         return $final_arr;
     }
@@ -472,9 +480,9 @@ class WCMp_Product {
     }
 
     function product_vendor_filters_query($query) {
-        global $typenow, $wp_query;
+        global $typenow, $WCMp;
 
-        $taxonomy = 'dc_vendor_shop';
+        $taxonomy = $WCMp->taxonomy->taxonomy_name;
         $q_vars = &$query->query_vars;
         if ('product' == $typenow) {
             if (isset($q_vars['post_type']) && $q_vars['post_type'] == 'product') {
@@ -487,10 +495,10 @@ class WCMp_Product {
     }
 
     function restrict_manage_posts() {
-        global $typenow, $wp_query;
+        global $typenow, $WCMp;
 
         $post_type = 'product';
-        $taxonomy = 'dc_vendor_shop';
+        $taxonomy = $WCMp->taxonomy->taxonomy_name;
 
         if (!is_user_wcmp_vendor(get_current_vendor_id())) {
             if ('product' == $typenow) {
@@ -528,16 +536,15 @@ class WCMp_Product {
                 if (is_numeric($_REQUEST['choose_vendor_bulk'])) {
                     $vendor_term = $_REQUEST['choose_vendor_bulk'];
 
-                    $term = get_term($vendor_term, 'dc_vendor_shop');
-                    //wp_delete_object_term_relationships( $product_id, 'dc_vendor_shop' );
-                    wp_set_post_terms($product_id, $term->name, 'dc_vendor_shop', false);
+                    $term = get_term($vendor_term, $WCMp->taxonomy->taxonomy_name);
+                    wp_set_post_terms($product_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
 
                     $vendor = get_wcmp_vendor_by_term($vendor_term);
                     if (!wp_is_post_revision($product_id)) {
                         // unhook this function so it doesn't loop infinitely
                         remove_action('save_post', array($this, 'process_vendor_data'));
                         // update the post, which calls save_post again
-                        wp_update_post(array('ID' => $post_id, 'post_author' => $vendor->id));
+                        wp_update_post(array('ID' => $product_id, 'post_author' => $vendor->id));
                         // re-hook this function
                         add_action('save_post', array($this, 'process_vendor_data'));
                     }
@@ -574,34 +581,18 @@ class WCMp_Product {
      *
      * @return arg
      */
-    function related_products_args($args) {
-        global $product, $WCMp;
-        $related = false;
-        $vendor = get_wcmp_product_vendors($product->get_id());
-
-
-        if (!$vendor) {
-            return $args;
-        }
-
+    function show_related_products($query, $product_id) {
+        $vendor = get_wcmp_product_vendors($product_id);
         $related = get_wcmp_vendor_settings('show_related_products', 'general', '', 'all_related');
-
-        if (!$related) {
-            return $args;
-        } else if ('disable' == $related) {
-            return false;
+        if ('disable' == $related) {
+            return array();
         } elseif ('all_related' == $related) {
-            return $args;
+            return $query;
         } elseif ('vendors_related' == $related) {
-            $vendor_products = $vendor->get_products();
-            $vendor_product_ids = array();
-            if (!empty($vendor_products)) {
-                foreach ($vendor_products as $vendor_product) {
-                    $vendor_product_ids[] = $vendor_product->ID;
-                }
+            if ($vendor) {
+                $query['where'] .= ' AND p.post_author = ' . $vendor->id;
             }
-            $args['post__in'] = $vendor_product_ids;
-            return $args;
+            return $query;
         }
     }
 
@@ -609,7 +600,7 @@ class WCMp_Product {
      * Filter product list as per vendor
      */
     public function filter_products_list($request) {
-        global $typenow;
+        global $typenow, $WCMp;
 
         $current_user = wp_get_current_user();
 
@@ -618,7 +609,7 @@ class WCMp_Product {
             $term_id = get_user_meta($current_user->ID, '_vendor_term_id', true);
             $taxquery = array(
                 array(
-                    'taxonomy' => 'dc_vendor_shop',
+                    'taxonomy' => $WCMp->taxonomy->taxonomy_name,
                     'field' => 'id',
                     'terms' => array($term_id),
                     'operator' => 'IN'
@@ -635,6 +626,7 @@ class WCMp_Product {
      * Count vendor products
      */
     public function vendor_count_products($counts, $type, $perm) {
+        global $WCMp;
         $current_user = wp_get_current_user();
 
         if (is_user_wcmp_vendor($current_user) && 'product' == $type) {
@@ -644,7 +636,7 @@ class WCMp_Product {
                 'post_type' => $type,
                 'tax_query' => array(
                     array(
-                        'taxonomy' => 'dc_vendor_shop',
+                        'taxonomy' => $WCMp->taxonomy->taxonomy_name,
                         'field' => 'id',
                         'terms' => array($term_id),
                         'operator' => 'IN'
@@ -675,6 +667,7 @@ class WCMp_Product {
      * @return void
      */
     function on_all_status_transitions($new_status, $old_status, $post) {
+        global $WCMp;
         if ($new_status != $old_status && $post->post_status == 'pending') {
             $current_user = get_current_vendor_id();
             if ($current_user)
@@ -698,7 +691,7 @@ class WCMp_Product {
         }
         if (current_user_can('administrator') && $new_status != $old_status && $post->post_status == 'publish') {
             if (isset($_POST['choose_vendor']) && !empty($_POST['choose_vendor'])) {
-                $term = get_term($_POST['choose_vendor'], 'dc_vendor_shop');
+                $term = get_term($_POST['choose_vendor'], $WCMp->taxonomy->taxonomy_name);
                 if ($term) {
                     $vendor = get_wcmp_vendor_by_term($term->term_id);
                     $email_admin = WC()->mailer()->emails['WC_Email_Admin_Added_New_Product_to_Vendor'];
@@ -716,7 +709,7 @@ class WCMp_Product {
     function add_vendor_tab() {
         global $WCMp;
         ?>
-        <li class="vendor_icon vendor_icons"><a href="#choose_vendor"><?php _e('Vendor', 'dc-woocommerce-multi-vendor'); ?></a></li>
+        <li class="vendor_icon vendor_icons"><a href="#choose_vendor"><span><?php _e('Vendor', 'dc-woocommerce-multi-vendor'); ?></span></a></li>
         <?php
     }
 
@@ -837,9 +830,8 @@ class WCMp_Product {
     }
 
     function add_policies_tab() {
-        global $WCMp;
         ?>
-        <li class="policy_icon policy_icons"><a href="#set_policies"><?php echo apply_filters('wcmp_policies_tab_title', __('Policies', 'dc-woocommerce-multi-vendor')); ?></a></li>
+        <li class="policy_icon policy_icons"><a href="#set_policies"><span><?php echo apply_filters('wcmp_policies_tab_title', __('Policies', 'dc-woocommerce-multi-vendor')); ?></span></a></li>
         <?php
     }
 
@@ -856,9 +848,9 @@ class WCMp_Product {
                         <?php
                         $WCMp->library->load_wp_fields()->dc_generate_form_field(
                                 array(
-                                    "_wcmp_shipping_policy" => array('label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_shipping_policy', 'label_for' => '_wcmp_shipping_policy', 'name' => '_wcmp_shipping_policy', 'class' => 'regular-text', 'value' => $_wcmp_shipping_policy, 'in_table' => true),
-                                    "_wcmp_refund_policy" => array('label' => __('Refund Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_refund_policy', 'label_for' => '_wcmp_refund_policy', 'name' => '_wcmp_refund_policy', 'class' => 'regular-text', 'value' => $_wcmp_refund_policy, 'in_table' => true),
-                                    "_wcmp_cancallation_policy" => array('label' => __('Cancellation/Return/Exchange Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'id' => '_wcmp_cancallation_policy', 'label_for' => '_wcmp_cancallation_policy', 'name' => '_wcmp_cancallation_policy', 'class' => 'regular-text', 'value' => $_wcmp_cancallation_policy, 'in_table' => true),
+                                    "_wcmp_shipping_policy" => array('label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'id' => '_wcmp_shipping_policy', 'label_for' => '_wcmp_shipping_policy', 'name' => '_wcmp_shipping_policy', 'class' => 'regular-text', 'value' => $_wcmp_shipping_policy, 'in_table' => true),
+                                    "_wcmp_refund_policy" => array('label' => __('Refund Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'id' => '_wcmp_refund_policy', 'label_for' => '_wcmp_refund_policy', 'name' => '_wcmp_refund_policy', 'class' => 'regular-text', 'value' => $_wcmp_refund_policy, 'in_table' => true),
+                                    "_wcmp_cancallation_policy" => array('label' => __('Cancellation/Return/Exchange Policy', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'id' => '_wcmp_cancallation_policy', 'label_for' => '_wcmp_cancallation_policy', 'name' => '_wcmp_cancallation_policy', 'class' => 'regular-text', 'value' => $_wcmp_cancallation_policy, 'in_table' => true),
                                 )
                         );
                         do_action('wcmp_product_options_policy_product_data');
@@ -891,6 +883,7 @@ class WCMp_Product {
      * @return void
      */
     function process_vendor_data($post_id) {
+        global $WCMp;
         $post = get_post($post_id);
 
         if ($post->post_type == 'product') {
@@ -912,10 +905,10 @@ class WCMp_Product {
 
             if (isset($_POST['choose_vendor']) && !empty($_POST['choose_vendor'])) {
 
-                $term = get_term($_POST['choose_vendor'], 'dc_vendor_shop');
+                $term = get_term($_POST['choose_vendor'], $WCMp->taxonomy->taxonomy_name);
                 if ($term) {
-                    wp_delete_object_term_relationships($post_id, 'dc_vendor_shop');
-                    wp_set_post_terms($post_id, $term->slug, 'dc_vendor_shop', true);
+                    wp_delete_object_term_relationships($post_id, $WCMp->taxonomy->taxonomy_name);
+                    wp_set_post_terms($post_id, $term->slug, $WCMp->taxonomy->taxonomy_name, true);
                 }
 
                 $vendor = get_wcmp_vendor_by_term($_POST['choose_vendor']);
@@ -1167,7 +1160,7 @@ class WCMp_Product {
         global $product;
         if ($product) {
             $policies = get_wcmp_product_policies($product->get_id());
-            if(count($policies) > 0){
+            if (count($policies) > 0) {
                 $tabs['policies'] = array(
                     'title' => apply_filters('wcmp_policies_tab_title', __('Policies', 'dc-woocommerce-multi-vendor')),
                     'priority' => 30,
@@ -1194,7 +1187,7 @@ class WCMp_Product {
      * @return void
      */
     function convert_business_id_to_taxonomy_term_in_query($query) {
-        global $pagenow;
+        global $pagenow, $WCMp;
         if (is_admin()) {
             if (isset($_GET['post_type']) && $_GET['post_type'] == 'product' && $pagenow == 'edit.php') {
                 $current_user_id = get_current_vendor_id();
@@ -1206,7 +1199,7 @@ class WCMp_Product {
 
                 $taxquery = array(
                     array(
-                        'taxonomy' => 'dc_vendor_shop',
+                        'taxonomy' => $WCMp->taxonomy->taxonomy_name,
                         'field' => 'id',
                         'terms' => array($term_id),
                         'operator' => 'IN'
@@ -1225,7 +1218,7 @@ class WCMp_Product {
                     }
                     $taxquery = array(
                         array(
-                            'taxonomy' => 'dc_vendor_shop',
+                            'taxonomy' => $WCMp->taxonomy->taxonomy_name,
                             'field' => 'id',
                             'terms' => $get_block_array,
                             'operator' => 'NOT IN'
@@ -1245,7 +1238,7 @@ class WCMp_Product {
      */
     function add_report_abuse_link() {
         global $product;
-        if (apply_filters('wcmp_show_report_abouse_link', true, $product)) {
+        if (apply_filters('wcmp_show_report_abuse_link', true, $product)) {
             $report_abuse_text = apply_filters('wcmp_report_abuse_text', __('Report Abuse', 'dc-woocommerce-multi-vendor'), $product);
             ?>
             <a href="#" id="report_abuse"><?php echo $report_abuse_text; ?></a><br>
@@ -1292,8 +1285,8 @@ class WCMp_Product {
      * @param WC_Query object $q
      */
     public function woocommerce_product_query($q) {
-        global $wpdb;
-        if (is_tax('dc_vendor_shop')) {
+        global $wpdb, $WCMp;
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             return;
         }
         $exclude_products = array();
@@ -1326,8 +1319,9 @@ class WCMp_Product {
      * @return array
      */
     public function wcmp_filter_product_category($tax_query) {
+        global $WCMp;
         $category = filter_input(INPUT_GET, 'category');
-        if (!is_tax('dc_vendor_shop') || is_null($category)) {
+        if (!is_tax($WCMp->taxonomy->taxonomy_name) || is_null($category)) {
             return $tax_query;
         }
         $tax_query[] = array(
@@ -1341,23 +1335,23 @@ class WCMp_Product {
     function forntend_product_edit() {
         global $WCMp, $post;
         $vendor = get_wcmp_product_vendors($post->ID);
-        if ($vendor && $vendor->id == get_current_vendor_id() && current_user_can('edit_products')){
-        $pro_id = $post->ID;
-        ?>
-        <div class="wcmp_fpm_buttons">
-            <?php if (current_user_can('edit_published_products')) { ?>
-                <a class="wcmp_fpm_button" href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $pro_id)); ?>">
-                    <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/edit.png" />
-                </a>
-            <?php } ?>
-            <?php if (current_user_can('delete_published_products')) { ?>
-                <span class="wcmp_fpm_button_separator">--</span>
-                <a class="wcmp_fpm_button wcmp_fpm_delete" href="#" data-proid="<?php echo $pro_id; ?>">
-                    <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/trash.png" />
-                </a>
-            <?php } ?>
-        </div>
-        <?php
+        if ($vendor && $vendor->id == get_current_vendor_id() && current_user_can('edit_products') && (current_user_can('edit_published_products') || current_user_can('delete_published_products'))) {
+            $pro_id = $post->ID;
+            ?>
+            <div class="wcmp_fpm_buttons">
+                <?php if (current_user_can('edit_published_products')) { ?>
+                    <a class="wcmp_fpm_button" href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $pro_id)); ?>">
+                        <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/edit.png" />
+                    </a>
+                <?php } ?>
+                <?php if (current_user_can('delete_published_products')) { ?>
+                    <span class="wcmp_fpm_button_separator">--</span>
+                    <a class="wcmp_fpm_button wcmp_fpm_delete" href="#" data-proid="<?php echo $pro_id; ?>">
+                        <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/trash.png" />
+                    </a>
+                <?php } ?>
+            </div>
+            <?php
         }
     }
 
@@ -1417,6 +1411,96 @@ class WCMp_Product {
         if ($vendor && is_user_logged_in() && get_current_user_id() != $vendor->id) {
             $cust_qna_data = $WCMp->product_qna->get_Product_QNA($product->get_id(), "LIMIT 10");
             $WCMp->template->get_template('wcmp-customer-qna-form.php', array('cust_qna_data' => $cust_qna_data));
+        }
+    }
+
+    /**
+     * Add commission field in create new category page
+     */
+    public function add_product_cat_commission_fields() {
+        ?>
+        <?php if ('fixed' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'percent' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <div class="form-field term-display-type-wrap">
+                <label for="commision"><?php _e('Commission', 'dc-woocommerce-multi-vendor'); ?></label>
+                <input type="number" class="short" style="" name="commision" id="commision" value="" placeholder="">
+            </div>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'fixed_with_percentage_qty' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <div class="form-field term-display-type-wrap">
+                <label for="commission_percentage"><?php _e('Commission Percentage', 'dc-woocommerce-multi-vendor'); ?></label>
+                <input type="number" class="short" style="" name="commission_percentage" id="commission_percentage" value="" placeholder="">
+            </div>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <div class="form-field term-display-type-wrap">
+                <label for="fixed_with_percentage"><?php _e('Commission Fixed per transaction', 'dc-woocommerce-multi-vendor'); ?></label>
+                <input type="number" class="short" style="" name="fixed_with_percentage" id="fixed_with_percentage" value="" placeholder="">
+            </div>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage_qty' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <div class="form-field term-display-type-wrap">
+                <label for="fixed_with_percentage_qty"><?php _e('Commission Fixed per unit', 'dc-woocommerce-multi-vendor'); ?></label>
+                <input type="number" class="short" style="" name="fixed_with_percentage_qty" id="fixed_with_percentage_qty" value="" placeholder="">
+            </div>
+        <?php endif; ?>
+        <?php
+    }
+
+    /**
+     * Add commission field in edit category page
+     * @param Object $term
+     */
+    public function edit_product_cat_commission_fields($term) {
+        $commision = get_woocommerce_term_meta($term->term_id, 'commision', true);
+        $commission_percentage = get_woocommerce_term_meta($term->term_id, 'commission_percentage', true);
+        $fixed_with_percentage = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage', true);
+        $fixed_with_percentage_qty = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage_qty', true);
+        ?>
+        <?php if ('fixed' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'percent' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <tr class="form-field">
+                <th scope="row" valign="top"><label for="commision"><?php _e('Commission', 'dc-woocommerce-multi-vendor'); ?></label></th>
+                <td><input type="number" class="short" style="" name="commision" id="commision" value="<?php echo $commision; ?>" placeholder=""></td>
+            </tr>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'fixed_with_percentage_qty' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <tr class="form-field">
+                <th scope="row" valign="top"><label for="commission_percentage"><?php _e('Commission Percentage', 'dc-woocommerce-multi-vendor'); ?></label></th>
+                <td><input type="number" class="short" style="" name="commission_percentage" id="commission_percentage" value="<?php echo $commission_percentage; ?>" placeholder=""></td>
+            </tr>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <tr class="form-field">
+                <th scope="row" valign="top"><label for="fixed_with_percentage"><?php _e('Commission Fixed per transaction', 'dc-woocommerce-multi-vendor'); ?></label></th>
+                <td><input type="number" class="short" style="" name="fixed_with_percentage" id="fixed_with_percentage" value="<?php echo $fixed_with_percentage; ?>" placeholder=""></td>
+            </tr>
+        <?php endif; ?>
+        <?php if ('fixed_with_percentage_qty' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
+            <tr class="form-field">
+                <th scope="row" valign="top"><label for="fixed_with_percentage_qty"><?php _e('Commission Fixed per unit', 'dc-woocommerce-multi-vendor'); ?></label></th>
+                <td><input type="number" class="short" style="" name="fixed_with_percentage_qty" id="fixed_with_percentage_qty" value="<?php echo $fixed_with_percentage_qty; ?>" placeholder=""></td>
+            </tr>
+        <?php endif; ?>
+        <?php
+    }
+
+    /**
+     * Save commission settings for product category
+     * @param int $term_id
+     * @param int $tt_id
+     * @param string $taxonomy
+     */
+    public function save_product_cat_commission_fields($term_id, $tt_id = '', $taxonomy = '') {
+        if (isset($_POST['commision']) && 'product_cat' === $taxonomy) {
+            update_woocommerce_term_meta($term_id, 'commision', esc_attr($_POST['commision']));
+        }
+        if (isset($_POST['commission_percentage']) && 'product_cat' === $taxonomy) {
+            update_woocommerce_term_meta($term_id, 'commission_percentage', absint($_POST['commission_percentage']));
+        }
+        if (isset($_POST['fixed_with_percentage']) && 'product_cat' === $taxonomy) {
+            update_woocommerce_term_meta($term_id, 'fixed_with_percentage', esc_attr($_POST['fixed_with_percentage']));
+        }
+        if (isset($_POST['fixed_with_percentage_qty']) && 'product_cat' === $taxonomy) {
+            update_woocommerce_term_meta($term_id, 'fixed_with_percentage_qty', absint($_POST['fixed_with_percentage_qty']));
         }
     }
 

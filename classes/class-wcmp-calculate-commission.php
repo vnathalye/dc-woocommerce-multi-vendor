@@ -13,7 +13,7 @@ class WCMp_Calculate_Commission {
     private $reverse_statuses;
 
     public function __construct() {
-
+        
         // WC order complete statues
         $this->completed_statuses = apply_filters('wcmp_completed_commission_statuses', array('completed', 'processing'));
 
@@ -25,13 +25,14 @@ class WCMp_Calculate_Commission {
         // support of WooCommerce subscription plugin
         add_filter('wcs_renewal_order_meta_query', array(&$this, 'wcs_renewal_order_meta_query'), 10, 1);
     }
+
     /**
      * Remove meta key from renewal order
      * Support WooCommerce subscription plugin
      * @param string $meta_query
      * @return string
      */
-    public function wcs_renewal_order_meta_query($meta_query){
+    public function wcs_renewal_order_meta_query($meta_query) {
         $meta_query .= " AND `meta_key` NOT LIKE '_wcmp_order_processed' AND `meta_key` NOT LIKE '_commissions_processed' ";
         return $meta_query;
     }
@@ -39,7 +40,7 @@ class WCMp_Calculate_Commission {
     /**
      * Add action hook when an order is reversed
      *
-     * @author Dualcube
+     * @author WC Marketplace
      * @return void
      */
     public function wcmp_order_reverse_action() {
@@ -79,7 +80,7 @@ class WCMp_Calculate_Commission {
     /**
      * Add action hook only when an order manually updated
      *
-     * @author Dualcube
+     * @author WC Marketplace
      * @return void
      */
     public function wcmp_order_complete_action() {
@@ -99,7 +100,7 @@ class WCMp_Calculate_Commission {
         $order = wc_get_order($order_id);
         $processed = get_post_meta($order_id, '_commissions_processed', true);
         $order_processed = get_post_meta($order_id, '_wcmp_order_processed', true);
-        if(!$order_processed){
+        if (!$order_processed) {
             wcmp_process_order($order_id, $order);
         }
         $commission_ids = get_post_meta($order_id, '_commission_ids', true) ? get_post_meta($order_id, '_commission_ids', true) : array();
@@ -332,6 +333,10 @@ class WCMp_Calculate_Commission {
                     if (!empty($data['commission_val'])) {
                         return $data; // Use product commission percentage first
                     } else {
+                        $category_wise_commission = $this->get_category_wise_commission($product_id);
+                        if($category_wise_commission->commission_percentage || $category_wise_commission->fixed_with_percentage){
+                            return array('commission_val' => $category_wise_commission->commission_percentage, 'commission_fixed' => $category_wise_commission->fixed_with_percentage);
+                        }
                         $vendor_commission_percentage = 0;
                         $vendor_commission_percentage = get_user_meta($vendor->id, '_vendor_commission_percentage', true);
                         $vendor_commission_fixed_with_percentage = 0;
@@ -361,6 +366,10 @@ class WCMp_Calculate_Commission {
                     if (!empty($data['commission_val'])) {
                         return $data; // Use product commission percentage first
                     } else {
+                        $category_wise_commission = $this->get_category_wise_commission($product_id);
+                        if($category_wise_commission->commission_percentage || $category_wise_commission->fixed_with_percentage_qty){
+                            return array('commission_val' => $category_wise_commission->commission_percentage, 'commission_fixed' => $category_wise_commission->fixed_with_percentage_qty);
+                        }
                         $vendor_commission_percentage = 0;
                         $vendor_commission_fixed_with_percentage = 0;
                         $vendor_commission_percentage = get_user_meta($vendor->id, '_vendor_commission_percentage', true);
@@ -386,6 +395,9 @@ class WCMp_Calculate_Commission {
                     if (!empty($data['commission_val'])) {
                         return $data; // Use product commission percentage first
                     } else {
+                        if($category_wise_commission = $this->get_category_wise_commission($product_id)->commision){
+                            return array('commission_val' => $category_wise_commission);
+                        }
                         $vendor_commission = get_user_meta($vendor->id, '_vendor_commission', true);
                         if ($vendor_commission) {
                             return array('commission_val' => $vendor_commission); // Use vendor user commission percentage 
@@ -397,6 +409,28 @@ class WCMp_Calculate_Commission {
             }
         }
         return false;
+    }
+    /**
+     * Fetch category wise commission
+     * @param id $product_id
+     * @return Object
+     */
+    public function get_category_wise_commission($product_id = 0) {
+        $terms = get_the_terms($product_id, 'product_cat');
+        $category_wise_commission = new stdClass();
+        $category_wise_commission->commision = 0;
+        $category_wise_commission->commission_percentage = 0;
+        $category_wise_commission->fixed_with_percentage = 0;
+        $category_wise_commission->fixed_with_percentage_qty = 0;
+        if ($terms) {
+            if (1 == count($terms)) {
+                $category_wise_commission->commision = get_woocommerce_term_meta($terms[0]->term_id, 'commision', true) ? get_woocommerce_term_meta($terms[0]->term_id, 'commision', true) : 0;
+                $category_wise_commission->commission_percentage = get_woocommerce_term_meta($terms[0]->term_id, 'commission_percentage', true) ? get_woocommerce_term_meta($terms[0]->term_id, 'commission_percentage', true) : 0;
+                $category_wise_commission->fixed_with_percentage = get_woocommerce_term_meta($terms[0]->term_id, 'fixed_with_percentage', true) ? get_woocommerce_term_meta($terms[0]->term_id, 'fixed_with_percentage', true) : 0;
+                $category_wise_commission->fixed_with_percentage_qty = get_woocommerce_term_meta($terms[0]->term_id, 'fixed_with_percentage_qty', true) ? get_woocommerce_term_meta($terms[0]->term_id, 'fixed_with_percentage_qty', true) : 0;
+            }
+        }
+        return apply_filters('wcmp_category_wise_commission', $category_wise_commission, $product_id);
     }
 
 }

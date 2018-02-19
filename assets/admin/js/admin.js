@@ -159,10 +159,12 @@ jQuery(document).ready(function ($) {
     $('#payment_gateway_charge').change(function () {
         if ($(this).prop('checked')) {
             $('.payment_gateway_charge').show();
+            $('#payment_gateway_charge_type').closest('tr').show();
         } else {
             $('.payment_gateway_charge').hide();
+            $('#payment_gateway_charge_type').closest('tr').hide();
         }
-    });
+    }).change();
 
     $('.automatic_payment_method').change(function () {
         var id = $(this).attr('id');
@@ -175,5 +177,11 @@ jQuery(document).ready(function ($) {
             }
         }
     }).change();
+    
+    // For color palet
+    $('#vendor_color_scheme_picker input[type=radio]').on('change', function (){
+        $('#vendor_color_scheme_picker .color-option').removeClass('selected');
+        $(this).closest('div').addClass('selected');
+    });
     // end
 });

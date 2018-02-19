@@ -92,7 +92,7 @@ class WC_Email_Admin_New_Vendor_Account extends WC_Email {
 		ob_start();
 		wc_get_template( $this->template_html, array(
 			'email_heading'      => $this->get_heading(),
-			'user_email'         => $this->user_email,
+			'user_object'         => $this->object,
 			'blogname'           => $this->get_blogname(),
 			'sent_to_admin' => false,
 			'plain_text'    => false
@@ -110,7 +110,7 @@ class WC_Email_Admin_New_Vendor_Account extends WC_Email {
 		ob_start();
 		wc_get_template( $this->template_plain, array(
 			'email_heading'      => $this->get_heading(),
-			'user_email'         => $this->user_email,
+			'user_object'         => $this->object,
 			'blogname'           => $this->get_blogname(),
 			'sent_to_admin' => false,
 			'plain_text'    => true

@@ -1,13 +1,13 @@
 === WC Marketplace ===
-Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
+Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
-Tested up to: 4.8
+Tested up to: 4.9.4
 WC requires at least: 3.0
-WC tested up to: 3.2.0
+WC tested up to: 3.3.1
 Requires PHP: 5.6
-Stable tag: 3.0
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,8 +16,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
-> <strong>Critical update notice 2.6 (minimum requirement WooCommerce 3.0) -</strong>
-> A lot has changed in the admin dashboard. Now everything you need, gets one step closer. [Learn more](https://wc-marketplace.com/wc-marketplace-2-6/).
+> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/) before upgrading your marketplace to avoid any undesirable situations.</strong>
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 
@@ -49,7 +48,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 >
 > Our most popular addons
 >
-> - [Frontend Manager](https://wc-marketplace.com/product/wcmp-frontend-product-manager)
+> - [Advanced Frontend Manager](https://wc-marketplace.com/product/wcmp-frontend-product-manager)
 > - [Vendor Membership](https://wc-marketplace.com/product/wcmp-vendor-membership/)
 > - [Add-ons Bundle](https://wc-marketplace.com/wcmp-bundle/)
 
@@ -113,6 +112,37 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.1 - 2018-02-20 = 
+* New: All new vendor dashboard with premade widgets of actionable store insights.
+* New: Vendor store location widget.
+* New: WCMp icon font introduced for vendor frontend.
+* New: Product based Questions & Answers feature.
+* New: Admin can send weekly monthly sales report to vendor via email.
+* New: Product category wise commission introduced.
+* New: Commission transaction status logged as commission note.
+* New: Admin now gets an approve/reject vendor link in the vender registration email.
+* New: Clean slate uninstallation! Now removed WCMp's all database tables and options, no leftovers, if 'WCMP_REMOVE_ALL_DATA' set true.
+* New: WooCommerce subscription support added.
+* New: Payment gateway 'Fixed Amount' charges added.
+* UI: Easy to use admin settings panel.
+* UI: WordPress like color scheme for vendor frontend.
+* Enhancement: Vendors can now add simple products from frontend.
+* Enhancement: Vendors can now add/manage coupons from frontend.
+* Enhancement: WP Editor supports added in vendor frontend.
+* Enhancement: Single product multiple vendor support added in vendor frontend.
+* Enhancement: Vendor registration form now supports various store settings fields.
+* Tweak: WCMp images store process change to id instead of url.
+* Fixed: Product duplication title.
+* Fixed: Vendor assign on products bulk edit.
+* Fixed: Shortcode 'wcmp_products'.
+* Updated: Language file.
+
+= 2.7.8 = 
+* Added: Google Map API key to store location widget
+* Added: Restriction to update product title in single product multiple vendor.
+* Added: Asynchronous Mode in Paypal Payout settings.
+* Fix: Single product multiple vendor products issues.
 
 = 2.7.7 = 
 * Feature: Onboarding/setup wizard to handle basic marketplace settings and installation
@@ -300,5 +330,5 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 2.7.7 =
-2.7 is compatible with WooCommerce 3.0 or later. It is important to test in staging before update.
+= 3.0.1 =
+WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

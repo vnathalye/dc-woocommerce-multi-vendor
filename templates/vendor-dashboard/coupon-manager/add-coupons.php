@@ -79,7 +79,7 @@ $args = array(
     'post_mime_type' => '',
     'post_parent' => '',
     'author' => $current_user_id,
-    'post_status' => array('publish', 'pending', 'draft'),
+    'post_status' => array('publish'),
     'suppress_filters' => true
 );
 $products_array = get_posts($args);

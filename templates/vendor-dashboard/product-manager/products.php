@@ -14,13 +14,13 @@ if (!defined('ABSPATH')) {
 $vendor = get_wcmp_vendor(get_current_vendor_id());
 do_action('before_wcmp_vendor_dashboard_product_list_table');
 ?>
-<div class="col-md-12">
+<div class="col-md-12 all-products-wrapper">
     <div class="panel panel-default panel-pading">
         <div class="product_filters">
             <?php
             $statuses = apply_filters('wcmp_vendor_dashboard_product_list_filters_status', array(
                 'all' => __('All', 'dc-woocommerce-multi-vendor'),
-                'publish' => __('Publish', 'dc-woocommerce-multi-vendor'),
+                'publish' => __('Published', 'dc-woocommerce-multi-vendor'),
                 'pending' => __('Pending', 'dc-woocommerce-multi-vendor'),
                 'draft' => __('Draft', 'dc-woocommerce-multi-vendor')
             ));
@@ -97,6 +97,7 @@ foreach ($terms as $term) {
             "serverSide": true,
             "language": {
                 "emptyTable": "<?php echo isset($table_init['emptyTable']) ? $table_init['emptyTable'] : __('No products found!', 'dc-woocommerce-multi-vendor'); ?>",
+                "processing": "<?php echo isset($table_init['processing']) ? $table_init['processing'] : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
                 "info": "<?php echo isset($table_init['info']) ? $table_init['info'] : __('Showing _START_ to _END_ of _TOTAL_ products', 'dc-woocommerce-multi-vendor'); ?>",
                 "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? $table_init['infoEmpty'] : __('Showing 0 to 0 of 0 products', 'dc-woocommerce-multi-vendor'); ?>",
                 "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? $table_init['lengthMenu'] : __('Show products _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
@@ -107,12 +108,17 @@ foreach ($terms as $term) {
                     "previous": "<?php echo isset($table_init['previous']) ? $table_init['previous'] : __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
                 },
             },
-            "initComplete": function () {
+            "drawCallback": function(settings){
+                $( "#product_cat" ).detach();
+                
                 var product_cat_sel = $('<select id="product_cat" class="wcmp-filter-dtdd wcmp_filter_product_cat form-control">').appendTo("#product_table_length");
                 product_cat_sel.append($("<option>").attr('value', '').text('<?php _e('Select a Category', 'dc-woocommerce-multi-vendor'); ?>'));
                 $(filter_by_category_list).each(function () {
                     product_cat_sel.append($("<option>").attr('value', this.key).text(this.label));
                 });
+                if(settings.oAjaxData.product_cat){
+                    product_cat_sel.val(settings.oAjaxData.product_cat);
+                }
             },
             "ajax": {
                 url: woocommerce_params.ajax_url + '?action=wcmp_vendor_product_list',

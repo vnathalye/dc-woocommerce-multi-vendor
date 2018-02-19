@@ -111,8 +111,8 @@ class WCMp_Install {
             delete_option('wcmp_product_vendor_vendor_dashboard_page_id');
             delete_option('wcmp_product_vendor_vendor_page_id');
         }
-        $this->wcmp_product_vendor_plugin_create_page(esc_sql(_x('wcmp', 'page_slug', 'dc-woocommerce-multi-vendor')), 'wcmp_product_vendor_vendor_page_id', __('Vendor Dashboard', 'dc-woocommerce-multi-vendor'), '[wcmp_vendor]');
-        $this->wcmp_product_vendor_plugin_create_page(esc_sql(_x('wcmp_vendor_registration', 'page_slug', 'dc-woocommerce-multi-vendor')), 'wcmp_product_vendor_registration_page_id', __('Vendor Registration', 'dc-woocommerce-multi-vendor'), '[vendor_registration]');
+        $this->wcmp_product_vendor_plugin_create_page(esc_sql(_x('dashboard', 'page_slug', 'dc-woocommerce-multi-vendor')), 'wcmp_product_vendor_vendor_page_id', __('Vendor Dashboard', 'dc-woocommerce-multi-vendor'), '[wcmp_vendor]');
+        $this->wcmp_product_vendor_plugin_create_page(esc_sql(_x('vendor-registration', 'page_slug', 'dc-woocommerce-multi-vendor')), 'wcmp_product_vendor_registration_page_id', __('Vendor Registration', 'dc-woocommerce-multi-vendor'), '[vendor_registration]');
         $wcmp_product_vendor_vendor_page_id = get_option('wcmp_product_vendor_vendor_page_id');
         $wcmp_product_vendor_registration_page_id = get_option('wcmp_product_vendor_registration_page_id');
         update_wcmp_vendor_settings('wcmp_vendor', $wcmp_product_vendor_vendor_page_id, 'vendor', 'general');
@@ -130,7 +130,6 @@ class WCMp_Install {
         $general_settings = get_option('wcmp_general_settings_name');
         if (empty($general_settings)) {
             $general_settings = array(
-//                'enable_registration' => 'Enable',
                 'approve_vendor_manually' => 'Enable',
                 'is_policy_on' => 'Enable'
             );
@@ -143,21 +142,6 @@ class WCMp_Install {
         if (!get_wcmp_vendor_settings('is_submit_product', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('is_submit_product', 'Enable', 'capabilities', 'product');
         }
-//        if (!get_wcmp_vendor_settings('inventory', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('inventory', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('shipping', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('shipping', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('linked_products', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('linked_products', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('attribute', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('attribute', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('advanced', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('advanced', 'Enable', 'capabilities', 'product');
-//        }
         if (!get_wcmp_vendor_settings('simple', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('simple', 'Enable', 'capabilities', 'product');
         }
@@ -176,54 +160,6 @@ class WCMp_Install {
         if (!get_wcmp_vendor_settings('downloadable', 'capabilities', 'product')) {
             update_wcmp_vendor_settings('downloadable', 'Enable', 'capabilities', 'product');
         }
-//        if (!get_wcmp_vendor_settings('taxes', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('taxes', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('add_comment', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('add_comment', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('comment_box', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('comment_box', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('sku', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('sku', 'Enable', 'capabilities', 'product');
-//        }
-
-//        if (!get_wcmp_vendor_settings('is_order_csv_export', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('is_order_csv_export', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('is_show_email', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('is_show_email', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('is_vendor_view_comment', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('is_vendor_view_comment', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_cust_billing_add', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_cust_billing_add', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_cust_shipping_add', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_cust_shipping_add', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_cust_order_calulations', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_cust_order_calulations', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_customer_dtl', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_customer_dtl', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_customer_billing', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_customer_billing', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_customer_shipping', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_customer_shipping', 'Enable', 'capabilities', 'product');
-//        }
-//        if (!get_wcmp_vendor_settings('show_cust_add', 'capabilities', 'product')) {
-//            update_wcmp_vendor_settings('show_cust_add', 'Enable', 'capabilities', 'product');
-//        }
-
-//        if (!get_wcmp_vendor_settings('is_hide_option_show', 'capabilities', 'miscellaneous')) {
-//            update_wcmp_vendor_settings('is_hide_option_show', 'Enable', 'capabilities', 'miscellaneous');
-//        }
-
         $payment_settings = get_option('wcmp_payment_settings_name');
         if (empty($payment_settings)) {
             $payment_settings = array(
@@ -234,15 +170,7 @@ class WCMp_Install {
             );
             update_option('wcmp_payment_settings_name', $payment_settings);
         }
-//        $frontend_settings = get_option('wcmp_frontend_settings_name');
-//        if (empty($frontend_settings)) {
-//            $frontend_settings = array(
-////                'sold_by_cart_and_checkout' => 'Enable',
-////                'sold_by_catalog' => 'Enable',
-////                'enable_vendor_tab' => 'Enable'
-//            );
-//            update_option('wcmp_frontend_settings_name', $frontend_settings);
-//        }
+        
         if (!get_wcmp_vendor_settings('is_singleproductmultiseller', 'general')) {
             update_wcmp_vendor_settings('is_singleproductmultiseller', 'Enable', 'general');
         }
@@ -290,10 +218,13 @@ class WCMp_Install {
 		PRIMARY KEY (`ID`)
 		) $collate;";
         
-        $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_vistors_stats` (
+        $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_visitors_stats` (
 		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
-		`vendor_id` BIGINT UNSIGNED NOT NULL DEFAULT '0',
-		`ip` varchar(60) NOT NULL,
+                `vendor_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+                `user_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+                `user_cookie` varchar(255) NOT NULL,
+                `session_id` varchar(191) NOT NULL,
+                `ip` varchar(60) NOT NULL,
                 `lat` varchar(60) NOT NULL,
                 `lon` varchar(60) NOT NULL,
                 `city` text NOT NULL,
@@ -304,10 +235,13 @@ class WCMp_Install {
                 `country` text NOT NULL,
                 `isp` text NOT NULL,
                 `timezone` varchar(255) NOT NULL,
-		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
-		PRIMARY KEY (`ID`),
-                CONSTRAINT visitor_ip UNIQUE (vendor_id, ip),
+                `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
+                PRIMARY KEY (`ID`),
+                CONSTRAINT visitor UNIQUE (vendor_id, session_id),
                 KEY vendor_id (vendor_id),
+                KEY user_id (user_id),
+                KEY user_cookie (user_cookie),
+                KEY session_id (session_id),
                 KEY ip (ip)
 		) $collate;";
         

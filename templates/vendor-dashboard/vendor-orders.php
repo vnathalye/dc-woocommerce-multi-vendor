@@ -15,55 +15,19 @@ if (!defined('ABSPATH')) {
 global $woocommerce, $WCMp;
 ?>
 <div class="col-md-12">
-    <!--blockquote class="panel-info">
-        <div class="wcmp_mixed_txt some_line"> <span><?php _e(' Showing stats and reports for  :', 'dc-woocommerce-multi-vendor'); ?></span>
-            <b>
-                <?php
-                if (!empty($_POST['wcmp_start_date_order']) || !empty($_POST['wcmp_end_date_order'])) {
-                    echo date('d, F Y', strtotime($_POST['wcmp_start_date_order']));
-                    if (!empty($_POST['wcmp_end_date_order'])) {
-                        echo ' - ' . date('d, F Y', strtotime($_POST['wcmp_end_date_order']));
-                    } else
-                        echo ' - ' . date('t, F Y');
-                } else {
-                    echo date('F Y');
-                }
-                ?>
-            </b>
-        </div>
-    </blockquote-->
-    <!--div class="panel panel-default">
-        <div class="panel-heading">
-            <h3><?php _e('Select Date Range', 'dc-woocommerce-multi-vendor'); ?></h3>
-        </div>
-        <div class="panel-body">
-            <form name="wcmp_vendor_dashboard_orders" method="POST" >
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-sm-5">
-                            <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : ''; ?>" />
-                        </div>
-                        <div class="col-sm-5">
-                            <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : ''; ?>" />
-                        </div>
-                        <div class="col-sm-2">
-                            <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
-                        </div>
-                    </div>  
-                </div>
-            </form>
-
-        </div>
-    </div-->
     <div class="panel panel-default">
         <div class="panel-body">
             <form name="wcmp_vendor_dashboard_orders" method="POST" class="form-inline">
                 <div class="form-group">
-                    <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : date('01-m-Y'); ?>" />
-                    <span class="between">&dash;</span>
+                    <span class="date-inp-wrap">
+                        <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : date('01-m-Y'); ?>" />
+                    </span> 
+                    <!-- <span class="between">&dash;</span> -->
                 </div>
                 <div class="form-group">
+                    <span class="date-inp-wrap">
                     <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : date('t-m-Y'); ?>" />
+                    </span>
                 </div>
                 <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
             </form>
@@ -81,10 +45,11 @@ global $woocommerce, $WCMp;
                     </thead>
                     <tbody></tbody>
                 </table>
-            
+            <?php if(apply_filters('can_wcmp_vendor_export_orders_csv', true, get_current_vendor_id())) : ?>
             <div class="wcmp-action-container">
                 <input class="btn btn-default" type="submit" name="wcmp_download_vendor_order_csv" value="<?php _e('Download CSV', 'dc-woocommerce-multi-vendor') ?>" />
             </div>
+            <?php endif; ?>
             <?php if (isset($_POST['wcmp_start_date_order'])) : ?>
                 <input type="hidden" name="wcmp_start_date_order" value="<?php echo $_POST['wcmp_start_date_order']; ?>" />
             <?php endif; ?>
@@ -154,14 +119,23 @@ global $woocommerce, $WCMp;
             serverSide: true,
             searching: false,
             ordering: false,
-            initComplete: function () {
+            drawCallback: function (settings) {
+                $( "#filter_by_order_status" ).detach();
                 var order_status_sel = $('<select id="filter_by_order_status" class="wcmp-filter-dtdd wcmp_filter_order_status form-control">').appendTo("#wcmp-vendor-orders_length");
                 $(statuses).each(function () {
                     order_status_sel.append($("<option>").attr('value', this.key).text(this.label));
                 });
+                if(settings.oAjaxData.order_status){
+                    order_status_sel.val(settings.oAjaxData.order_status);
+                }
+                $('table.dataTable tr [type="checkbox"]').each(function(){
+                    if($(this).parent().is('span.checkbox-holder')) return;
+                    $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
+                })
             },
             language: {
                 emptyTable: "<?php echo __('No orders found!', 'dc-woocommerce-multi-vendor'); ?>",
+                processing: "<?php echo __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
                 info: "<?php echo __('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor'); ?>",
                 infoEmpty: "<?php echo __('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor'); ?>",
                 lengthMenu: "<?php echo __('Show orders _MENU_', 'dc-woocommerce-multi-vendor'); ?>",

@@ -77,7 +77,7 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    $('.wcmp-comment-reply').on('click', function () {
+    $('body').on('click','.wcmp-comment-reply', function () {
         var comment_id = $(this).data('comment_id');
         var vendor_id = $(this).data('vendor_id');
         var comment = $('#comment-content-' + comment_id).val();
@@ -93,6 +93,7 @@ jQuery(document).ready(function ($) {
         };
         $.post(wcmp_review_rating_msg.ajax_url, data, function (response) {
             if (response == 1) {
+                $('#commient-modal-'+comment_id).modal('hide');
                 setTimeout(location.reload(), 2000);
             } else {
                 

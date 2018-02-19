@@ -10,7 +10,6 @@ abstract class WCMp_Payment_Gateway {
     public $enabled = 'Enable';
     /* Gateway id */
     public $payment_gateway;
-    
     public $gateway_title = '';
     /* WCMp vendor object */
     public $vendor;
@@ -46,7 +45,7 @@ abstract class WCMp_Payment_Gateway {
         if (!is_wp_error($this->transaction_id) && $this->transaction_id) {
             $this->update_meta_data($commission_status);
             $this->email_notify($commission_status);
-            $this->add_commission_note($this->commissions, sprintf(__('Commission paid via %s <a href="%s">(ID : %s)</a>', 'dc-woocommerce-multi-vendor'), $this->gateway_title, get_admin_url('wcmp-transaction-details').'admin.php?page=wcmp-transaction-details&trans_id='.$this->transaction_id, $this->transaction_id));
+            $this->add_commission_note($this->commissions, sprintf(__('Commission paid via %s <a href="%s">(ID : %s)</a>', 'dc-woocommerce-multi-vendor'), $this->gateway_title, get_admin_url('wcmp-transaction-details') . 'admin.php?page=wcmp-transaction-details&trans_id=' . $this->transaction_id, $this->transaction_id));
         }
     }
 
@@ -77,9 +76,14 @@ abstract class WCMp_Payment_Gateway {
         $gateway_charge = 0;
         $is_enable_gateway_charge = get_wcmp_vendor_settings('payment_gateway_charge', 'payment');
         if ($is_enable_gateway_charge == 'Enable') {
+            $payment_gateway_charge_type = get_wcmp_vendor_settings('payment_gateway_charge_type', 'payment', '', 'percent');
             if (get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment")) {
-                $gateway_charge_percent = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
-                $gateway_charge = ($this->get_transaction_total() * $gateway_charge_percent) / 100;
+                $gateway_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
+                if ('percent' === $payment_gateway_charge_type) {
+                    $gateway_charge = ($this->get_transaction_total() * $gateway_charge_amount) / 100;
+                } else{
+                    $gateway_charge = floatval($gateway_charge_amount);
+                }
             }
         }
         return apply_filters('wcmp_commission_gateway_charge_amount', $gateway_charge, $this->get_transaction_total(), $this->vendor, $this->commissions, $this->payment_gateway);
@@ -128,11 +132,11 @@ abstract class WCMp_Payment_Gateway {
     }
 
     public function add_commission_note($commissions, $note = '') {
-        if(is_array($commissions)){
-            foreach ($commissions as $commission){
+        if (is_array($commissions)) {
+            foreach ($commissions as $commission) {
                 WCMp_Commission::add_commission_note($commission, $note);
             }
-        }else{
+        } else {
             WCMp_Commission::add_commission_note($commissions, $note);
         }
     }

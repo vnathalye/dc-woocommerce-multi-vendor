@@ -17,7 +17,7 @@ if ($vendor) {
     $html .= apply_filters('wcmp_before_seller_info_tab', '');
     $html .= '<h2>' . $vendor->user_data->display_name . '</h2>';
     echo $html;
-    $term_vendor = wp_get_post_terms($product->get_id(), 'dc_vendor_shop');
+    $term_vendor = wp_get_post_terms($product->get_id(), $WCMp->taxonomy->taxonomy_name);
     if (!is_wp_error($term_vendor) && !empty($term_vendor)) {
         $rating_result_array = wcmp_get_vendor_review_info($term_vendor[0]->term_id);
         if (get_wcmp_vendor_settings('is_sellerreview_varified', 'general') == 'Enable') {

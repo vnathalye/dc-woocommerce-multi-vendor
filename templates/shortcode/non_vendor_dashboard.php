@@ -14,7 +14,7 @@ global $woocommerce, $WCMp;
 $user = wp_get_current_user();
 if ($user && !in_array('dc_pending_vendor', $user->roles) && !in_array('administrator', $user->roles)) {
     add_filter('wcmp_vendor_registration_submit', function ($text) {
-        return 'Apply to become a vendor';
+        return __('Apply to become a vendor', 'dc-woocommerce-multi-vendor');
     });
     echo '<div class="woocommerce">';
     echo do_shortcode('[vendor_registration]');

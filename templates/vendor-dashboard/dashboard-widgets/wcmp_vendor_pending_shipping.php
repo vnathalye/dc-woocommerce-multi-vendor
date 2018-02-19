@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 do_action('before_wcmp_vendor_pending_shipping');
 ?>
-<table class="table">
+<table class="table table-bordered <?php echo $pending_shippings ? 'responsive-table' : 'blank-responsive-table'; ?>">
     <thead>
         <tr>
             <?php $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(
@@ -39,7 +39,7 @@ do_action('before_wcmp_vendor_pending_shipping');
         foreach ($pending_shippings as $row_key => $row) { 
             echo '<tr>';
             foreach ($row as $key => $value) { 
-                echo '<td>';
+                echo '<td><span>';
                 switch ($key) {
                     case 'order_id': 
                         echo '<a href="'.esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $value)).'">#'.$value.'</a>';
@@ -63,13 +63,13 @@ do_action('before_wcmp_vendor_pending_shipping');
                         echo $value;
                         break;
                 }
-                echo '</td>';
+                echo '</span></td>';
                 do_action('wcmp_vendor_pending_shipping_table_row', $key, $value);
             }
             echo '</tr>';
         }
     }else{
-        echo '<td colspan="6" align="center">'.__('You have no pending shipping!', 'dc-woocommerce-multi-vendor').'</td>';
+        echo '<td colspan="6" align="center"><span>'.__('You have no pending shipping!', 'dc-woocommerce-multi-vendor').'</span></td>';
     }
     ?>
     </tbody>

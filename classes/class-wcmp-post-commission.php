@@ -39,6 +39,8 @@ class WCMp_Commission {
             add_filter('bulk_actions-edit-dc_commission', array(&$this, 'register_commission_bulk_actions'));
             add_filter('handle_bulk_actions-edit-dc_commission', array(&$this, 'commission_bulk_action_handler'), 10, 3);
             add_action('admin_notices', array(&$this, 'wcmp_commission_update_notice'));
+            // Commissions delete on order deleted
+            add_action('deleted_post', array(&$this, 'wcmp_commission_delete_on_order_deleted'));
         }
     }
 
@@ -80,7 +82,7 @@ class WCMp_Commission {
             'query_var' => false,
             'rewrite' => true,
             'capability_type' => 'post',
-            'capabilities' => array('create_posts' => false, 'delete_posts' => false),
+            'capabilities' => array('create_posts' => false, 'delete_posts' => false, 'edit_others_posts' => false),
             'map_meta_cap' => true,
             'has_archive' => true,
             'hierarchical' => true,
@@ -537,7 +539,13 @@ class WCMp_Commission {
     }
 
     public function register_commission_bulk_actions($bulk_actions) {
-        unset($bulk_actions['edit']);
+        if(isset($bulk_actions['edit'])){
+            unset($bulk_actions['edit']);
+        }
+        if(isset($bulk_actions['untrash'])){
+            unset($bulk_actions['untrash']);
+        }
+        
         $bulk_actions['mark_paid'] = __('Mark paid', 'dc-woocommerce-multi-vendor');
         $bulk_actions['export'] = __('Export', 'dc-woocommerce-multi-vendor');
         return apply_filters('wcmp_commission_bulk_action', $bulk_actions);
@@ -713,6 +721,15 @@ class WCMp_Commission {
                     $wp_query->set('orderby', 'ID');
                     $wp_query->set('order', 'DESC');
                 }
+            }
+        }
+    }
+    
+    function wcmp_commission_delete_on_order_deleted($order_id){
+        $vendor_orders = get_wcmp_vendor_orders(array('order_id'=>$order_id));
+        if($vendor_orders){
+            foreach ($vendor_orders as $order) {
+                wp_delete_post( $order->commission_id, true );
             }
         }
     }

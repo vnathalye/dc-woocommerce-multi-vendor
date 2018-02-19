@@ -2,7 +2,7 @@
 /**
  * The template for displaying vendor dashboard
  *
- * Override this template by copying it to yourtheme/dc-product-vendor/cutomer_support_details_to_buyer.php
+ * Override this template by copying it to yourtheme/dc-product-vendor/customer_support_details_to_buyer.php
  *
  * @author 		WC Marketplace
  * @package 	WCMp/Templates

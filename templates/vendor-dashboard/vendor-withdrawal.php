@@ -80,6 +80,7 @@ jQuery(document).ready(function($) {
         serverSide: true,
         language: {
             "emptyTable": "<?php echo isset($table_init['emptyTable']) ? $table_init['emptyTable'] : __('No orders found!','dc-woocommerce-multi-vendor'); ?>",
+            "processing": "<?php echo isset($table_init['processing']) ? $table_init['processing'] : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
             "info": "<?php echo isset($table_init['info']) ? $table_init['info'] : __('Showing _START_ to _END_ of _TOTAL_ orders','dc-woocommerce-multi-vendor'); ?>",
             "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? $table_init['infoEmpty'] : __('Showing 0 to 0 of 0 orders','dc-woocommerce-multi-vendor'); ?>",
             "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? $table_init['lengthMenu'] : __('Show _MENU_ orders','dc-woocommerce-multi-vendor'); ?>",
@@ -89,6 +90,12 @@ jQuery(document).ready(function($) {
                 "next":  "<?php echo isset($table_init['next']) ? $table_init['next'] : __('Next','dc-woocommerce-multi-vendor'); ?>",
                 "previous":  "<?php echo isset($table_init['previous']) ? $table_init['previous'] : __('Previous','dc-woocommerce-multi-vendor'); ?>"
             }
+        },
+        drawCallback: function () {
+            $('table.dataTable tr [type="checkbox"]').each(function(){
+                if($(this).parent().is('span.checkbox-holder')) return;
+                $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
+            })
         },
         ajax:{
             url : woocommerce_params.ajax_url+'?action=wcmp_vendor_unpaid_order_vendor_withdrawal_list', 

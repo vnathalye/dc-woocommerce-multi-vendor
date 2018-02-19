@@ -327,6 +327,7 @@ class WCMp_Transaction {
                 } else if ($transaction->post_status == 'wcmp_processing') {
                     $transaction_details[$transaction->ID]['status'] = __('Processing', 'dc-woocommerce-multi-vendor');
                 }
+                $transaction_details[$transaction->ID]['post_status'] = $transaction->post_status;
                 $transaction_details[$transaction->ID]['vendor_id'] = $transaction->post_author;
                 $transaction_details[$transaction->ID]['commission'] = get_post_meta($transaction->ID, 'amount', true) + get_post_meta($transaction->ID, 'transfer_charge', true);
                 $transaction_details[$transaction->ID]['amount'] = get_post_meta($transaction->ID, 'amount', true);

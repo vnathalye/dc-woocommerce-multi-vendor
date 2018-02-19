@@ -55,10 +55,7 @@ final class WCMp {
         $this->token = WCMp_PLUGIN_TOKEN;
         $this->text_domain = WCMp_TEXT_DOMAIN;
         $this->version = WCMp_PLUGIN_VERSION;
-        $time_zone = get_option('timezone_string');
-        if (!empty($time_zone)) {
-            date_default_timezone_set($time_zone);
-        }
+        
         // Intialize WCMp Widgets
         $this->init_custom_widgets();
 
@@ -95,6 +92,10 @@ final class WCMp {
      * Initialize plugin on WP init
      */
     function init() {
+        $time_zone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option('timezone_string');
+        if (!empty($time_zone)) {
+            date_default_timezone_set($time_zone);
+        }
         if (is_user_wcmp_pending_vendor(get_current_vendor_id()) || is_user_wcmp_rejected_vendor(get_current_vendor_id()) || is_user_wcmp_vendor(get_current_vendor_id())) {
             show_admin_bar(apply_filters('wcmp_show_admin_bar', false));
         }
@@ -144,7 +145,7 @@ final class WCMp {
         // Init templates
         $this->load_class('template');
         $this->template = new WCMp_Template();
-        add_filter('template_include', array($this, 'template_loader'));
+        add_filter('template_include', array($this, 'template_loader'), 15);
         // Init vendor action class
         $this->load_class('vendor-details');
         // Init Calculate commission class
@@ -193,7 +194,8 @@ final class WCMp {
      * @return type
      */
     function template_loader($template) {
-        if (is_tax('dc_vendor_shop')) {
+        global $WCMp;
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             $template = $this->template->locate_template('taxonomy-dc_vendor_shop.php');
         }
         return $template;

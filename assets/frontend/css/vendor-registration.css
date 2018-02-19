@@ -84,8 +84,8 @@ Vendor registration css
 }
 
 .wcmp_regi_main .wcmp_regi_form_box p{
-    margin: 0px;
-    padding: 0px 5px;
+    margin: 0;
+    padding: 0 5px;
     font-size: 14px;
     color: #888899;
     line-height: 27px;

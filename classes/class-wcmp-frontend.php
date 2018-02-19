@@ -25,7 +25,7 @@ class WCMp_Frontend {
         add_action('woocommerce_register_post', array(&$this, 'wcmp_validate_extra_register_fields'), 10, 3);
         add_action('woocommerce_created_customer', array(&$this, 'wcmp_save_extra_register_fields'), 10, 3);
         // split woocommerce shipping packages
-        add_filter('woocommerce_cart_shipping_packages', array(&$this, 'wcmp_split_shipping_packages'), 10);
+        add_filter('woocommerce_cart_shipping_packages', array(&$this, 'wcmp_split_shipping_packages'), 0);
         // Rename woocommerce shipping packages
         add_filter('woocommerce_shipping_package_name', array(&$this, 'woocommerce_shipping_package_name'), 10, 3);
         // Add extra vendor_id to shipping packages
@@ -33,7 +33,7 @@ class WCMp_Frontend {
         // processed woocomerce checkout order data
         add_action('woocommerce_checkout_order_processed', array(&$this, 'wcmp_checkout_order_processed'), 30, 3);
         // store visitors stats
-        add_action('woocommerce_before_main_content', array(&$this, 'wcmp_store_visitors_stats'));
+        add_action('template_redirect', array(&$this, 'wcmp_store_visitors_stats'), 99);
     }
 
     /**
@@ -343,13 +343,13 @@ class WCMp_Frontend {
             wp_enqueue_script('jquery-ui-tabs');
             wp_enqueue_script('jquery-ui-datepicker');
             $WCMp->library->load_bootstrap_script_lib();
+            $WCMp->library->load_qtip_lib();
             wp_enqueue_script('wcmp_frontend_vdashboard_js');
             wp_enqueue_script('wcmp_new_vandor_dashboard_js');
             wp_enqueue_script('vendor_order_by_product_js');
             wp_enqueue_script('wcmp_seller_review_rating_js');
             wp_enqueue_script('wcmp_customer_qna_js');
             wp_enqueue_script('wcmp_custom_scroller_js');
-            wp_enqueue_script('wcmp_gchart_loader', '//www.gstatic.com/charts/loader.js');
             $vendor_review_rating_msg_array = array(
                 'rating_error_msg_txt' => __('Please rate the vendor', 'dc-woocommerce-multi-vendor'),
                 'review_error_msg_txt' => __('Please review your vendor and minimum 10 Character required', 'dc-woocommerce-multi-vendor'),
@@ -365,7 +365,7 @@ class WCMp_Frontend {
             wp_enqueue_script('wcmp_single_product_multiple_vendors');
             wp_enqueue_script('wcmp_customer_qna_js');
         }
-        if (is_tax('dc_vendor_shop')) {
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             $queried_object = get_queried_object();
             if (isset($queried_object->term_id) && !empty($queried_object)) {
                 $vendor = get_wcmp_vendor_by_term($queried_object->term_id);
@@ -409,15 +409,15 @@ class WCMp_Frontend {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('jquery-ui-style');
             $WCMp->library->load_bootstrap_style_lib();
-            $WCMp->library->load_line_awesome_lib();
             wp_enqueue_style('vandor-dashboard-style');
+            wp_add_inline_style('vandor-dashboard-style', get_wcmp_vendor_settings('wcmp_vendor_dashboard_custom_css', 'vendor', 'dashboard'));
             wp_enqueue_style('wcmp_custom_scroller');
         }
         if (is_woocommerce()) {
             wp_enqueue_style('product_css');
             wp_enqueue_style('multiple_vendor');
         }
-        if (is_tax('dc_vendor_shop')) {
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             wp_enqueue_style('frontend_css');
         }
         do_action('wcmp_frontend_enqueue_scripts', $is_vendor_dashboard);
@@ -425,7 +425,7 @@ class WCMp_Frontend {
 
     public function wcmp_dequeue_global_style() {
         global $wp_styles;
-        $styles_to_keep = apply_filters('wcmp_styles_to_keep', array('admin-bar', 'select2', 'dashicons'));
+        $styles_to_keep = apply_filters('wcmp_styles_to_keep', array('admin-bar', 'select2', 'dashicons', 'qtip_css'));
         // loop over all of the registered scripts
         foreach ($wp_styles->registered as $handle => $data) {
             // remove all style
@@ -441,7 +441,7 @@ class WCMp_Frontend {
      */
     public function product_archive_vendor_info() {
         global $WCMp;
-        if (is_tax('dc_vendor_shop')) {
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             // Get vendor ID
             $vendor_id = get_queried_object()->term_id;
             // Get vendor info
@@ -471,7 +471,8 @@ class WCMp_Frontend {
      * @return arr          Modified classes
      */
     public function set_product_archive_class($classes) {
-        if (is_tax('dc_vendor_shop')) {
+        global $WCMp;
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
 
             // Add generic classes
             $classes[] = 'woocommerce';
@@ -529,17 +530,20 @@ class WCMp_Frontend {
      * @since 3.0.0
      */
     public function wcmp_store_visitors_stats() {
-        global $WCMp,$wpdb;
+        global $WCMp;
         $ip_data = get_visitor_ip_data();
     	$product_vendor = false;
     	if(is_product()){
             global $post;
             $product_vendor = get_wcmp_product_vendors($post->ID);
-    	}elseif(is_tax('dc_vendor_shop')){
+    	}elseif(is_tax($WCMp->taxonomy->taxonomy_name)){
             $product_vendor = get_wcmp_vendor_by_term(get_queried_object()->term_id);
     	}
-    	if($product_vendor && $ip_data){
+    	if($product_vendor && !empty($ip_data) && isset($_COOKIE["_wcmp_user_cookie_".get_current_user_id()])){
             if($ip_data->status == 'success'){
+                $ip_data->user_id = get_current_user_id();
+                $ip_data->user_cookie = $_COOKIE["_wcmp_user_cookie_".get_current_user_id()];
+                $ip_data->session_id = session_id();
                 wcmp_save_visitor_stats($product_vendor->id, $ip_data);
             }
     	}

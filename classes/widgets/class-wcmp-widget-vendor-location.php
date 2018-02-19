@@ -24,8 +24,8 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
 
         // Widget variable settings
         $this->widget_idbase = 'dc-vendor-store-location';
-        $this->widget_title = __('WCMp Store Location', 'dc-woocommerce-multi-vendor');
-        $this->widget_description = __('Display the vendor\'s store location in Google Maps.', 'dc-woocommerce-multi-vendor');
+        $this->widget_title = __('WCMp: Vendor\'s Store Location', 'dc-woocommerce-multi-vendor');
+        $this->widget_description = __('Display the vendor\'s store location on Google Maps.', 'dc-woocommerce-multi-vendor');
         $this->widget_cssclass = 'widget_wcmp_store_location';
 
         // Widget settings
@@ -60,7 +60,7 @@ class DC_Woocommerce_Store_Location_Widget extends WP_Widget {
         $show_widget = false;
         $WCMp->library->load_gmap_api();
         
-        if (is_tax('dc_vendor_shop')) {
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             $vendor_id = get_queried_object()->term_id;
             if ($vendor_id) {
                 $vendor = get_wcmp_vendor_by_term($vendor_id);

@@ -36,7 +36,7 @@ if (defined('WCMP_REMOVE_ALL_DATA') && true === WCMP_REMOVE_ALL_DATA) {
     // Tables.
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_vendor_orders");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_products_map");
-    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_vistors_stats");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_visitors_stats");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_cust_questions");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_cust_answers");
 

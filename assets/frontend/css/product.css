@@ -41,7 +41,7 @@ form#respond input, form#respond textarea {
     width : 100%;
     margin-top : 10px;
     margin-bottom : 10px;
-    margin-left: 0px;
+    margin-left: 0;
 }
 
 form#respond #submit {

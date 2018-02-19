@@ -12,6 +12,10 @@ if (!defined('ABSPATH')) {
     exit;
 }
 ?>
+<div class="col-md-12">
+    <?php do_action('wcmp_dashboard_widget', 'full'); ?>
+</div>
+
 <div class="col-md-8">
     <?php do_action('wcmp_dashboard_widget', 'normal'); ?>
 </div>

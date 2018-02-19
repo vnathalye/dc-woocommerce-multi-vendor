@@ -63,131 +63,47 @@ jQuery(document).ready(function ($) {
     // sidebar menu 
     sibdebarToggle();
 
+    mapNavWrap();
+
+    $(document).on('change', '#wcmp_visitor_stats_date_filter', function(){        
+        mapNavWrap();
+    });
+
+    // wrapper on checkbox to design
+    $('[type="checkbox"]').each(function(){
+        $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
+    })
+ 
+
+    // table responsive
+    $( ".responsive-table" ).each(function( index ) {
+        var getTh = $(this).find('thead th');
+        var getTd = $(this).find('tbody td');
+        
+        for (var i = 0; i < getTh.length; i++){   
+            $(getTd[i]).attr('data-th', $(getTh[i]).html());
+        }
+    }); 
+
+
+
 });
 
-//.................. for checkbox ............................. 
-//function checkbox_custome_design() {
-//    jQuery('.input-group-addon.beautiful').each(function () {
-//        if (jQuery(this).find('span').hasClass('fa-check-square-o'))
-//            return;
-//        if (jQuery(this).find('span').hasClass('fa-square-o'))
-//            return;
-//
-//        var $widget = jQuery(this),
-//                $input = $widget.find('input'),
-//                type = $input.attr('type');
-//        settings = {
-//            checkbox: {
-//                on: {icon: 'fa  fa-check-square-o'},
-//                off: {icon: 'fa fa-square-o'}
-//            },
-//            radio: {
-//                on: {icon: 'fa fa-2x fa-dot-circle-o'},
-//                off: {icon: 'fa fa-2x fa-circle-o'}
-//            }
-//        };
-//
-//        $widget.prepend('<span class="' + settings[type].off.icon + '"></span>');
-//
-//        $widget.find('span').on('click', function () {
-//            $input.prop('checked', !$input.is(':checked'));
-//            updateDisplay();
-//
-//            if ($input.hasClass('select_all_all')) {
-//                if ($input.prop("checked") == true) {
-//                    jQuery('.select_all').each(function () {
-//                        jQuery(this).prop('checked', true);
-//                        jQuery(this).parents('.input-group-addon').find('.fa').removeClass('fa-square-o');
-//                        jQuery(this).parents('.input-group-addon').find('.fa').addClass('fa-check-square-o');
-//                    });
-//                } else {
-//                    jQuery('.select_all').each(function () {
-//                        jQuery(this).prop('checked', false);
-//                        jQuery(this).parents('.input-group-addon').find('.fa').removeClass('fa-check-square-o');
-//                        jQuery(this).parents('.input-group-addon').find('.fa').addClass('fa-square-o');
-//                    });
-//                }
-//            }
-//
-//            if ($input.hasClass('select_all_processing')) {
-//                if ($input.prop("checked") == true) {
-//                    jQuery('.select_processing').each(function () {
-//                        jQuery(this).prop('checked', true);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-check-square-o');
-//                    });
-//                } else {
-//                    jQuery('.select_processing').each(function () {
-//                        jQuery(this).prop('checked', false);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-check-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-square-o');
-//                    });
-//                }
-//            }
-//
-//            if ($input.hasClass('select_all_completed')) {
-//                if ($input.prop("checked") == true) {
-//                    jQuery('.select_completed').each(function () {
-//                        jQuery(this).prop('checked', true);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-check-square-o');
-//                    });
-//                } else {
-//                    jQuery('.select_completed').each(function () {
-//                        jQuery(this).prop('checked', false);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-check-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-square-o');
-//                    });
-//                }
-//            }
-//
-//            if ($input.hasClass('select_all_withdrawal')) {
-//                if ($input.prop("checked") == true) {
-//                    jQuery('.select_withdrawal').each(function () {
-//                        jQuery(this).prop('checked', true);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-check-square-o');
-//                    });
-//                } else {
-//                    jQuery('.select_withdrawal').each(function () {
-//                        jQuery(this).prop('checked', false);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-check-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-square-o');
-//                    });
-//                }
-//            }
-//
-//            if ($input.hasClass('select_all_transaction')) {
-//                if ($input.prop("checked") == true) {
-//                    jQuery('.select_transaction').each(function () {
-//                        jQuery(this).prop('checked', true);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-check-square-o');
-//                    });
-//                } else {
-//                    jQuery('.select_transaction').each(function () {
-//                        jQuery(this).prop('checked', false);
-//                        jQuery(this).parent().find('.fa').removeClass('fa-check-square-o');
-//                        jQuery(this).parent().find('.fa').addClass('fa-square-o');
-//                    });
-//                }
-//            }
-//        });
-//
-//
-//
-//        function updateDisplay() {
-//            var isChecked = $input.is(':checked') ? 'on' : 'off';
-//            $widget.find('.fa').attr('class', settings[type][isChecked].icon);
-//            //Just for desplay
-//            isChecked = $input.is(':checked') ? 'checked' : 'not Checked';
-//            $widget.closest('.input-group').find('input[type="text"]').val('Input is currently ' + isChecked)
-//
-//        }
-//
-//        updateDisplay();
-//    });
-//}
+
+var isMobile = { 
+    Android: function() { return navigator.userAgent.match(/Android/i); }, 
+    BlackBerry: function() { return navigator.userAgent.match(/BlackBerry/i); }, 
+    iOS: function() { return navigator.userAgent.match(/iPhone|iPad|iPod/i); }, 
+    Opera: function() { return navigator.userAgent.match(/Opera Mini/i); }, 
+    Windows: function() { return navigator.userAgent.match(/IEMobile/i); }, 
+    any: function() { return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows()); } };   
+
+function mapNavWrap(){
+    jQuery('.jqvmap-zoomin, .jqvmap-zoomout').wrapAll('<div class="map-nav"></div>');
+}
+
+
+
 jQuery(document).ready(function ($) {
     var window_width = $(window).width();
     if (window_width <= 640) {
@@ -225,8 +141,11 @@ jQuery(window).resize(function () {
     }
 
     // sidebar menu
-    sibdebarToggle();
-
+    jQuery(function($) {
+        if (!isMobile.any()){
+            sibdebarToggle();
+        }
+    });
 
 
 });
@@ -260,21 +179,3 @@ function toggleAllCheckBox(self, tableId) {
         jQuery('#' + tableId).find('tbody tr td input[type=checkbox]').prop('checked', false);
     }
 }
-
-// var headertext = [],
-// headers = document.querySelectorAll(".table th"),
-// tablerows = document.querySelectorAll(".table th"),
-// tablebody = document.querySelector(".table tbody");
-
-// for(var i = 0; i < headers.length; i++) {
-//     var current = headers[i];
-//     headertext.push(current.textContent.replace(/\r?\n|\r/,""));
-// } 
-// for (var i = 0, row; row = tablebody.rows[i]; i++) {
-//     for (var j = 0, col; col = row.cells[j]; j++) {
-//         col.setAttribute("data-th", headertext[j]);
-//     } 
-// }
-
-// dashboard nav depend on screen
-// function 

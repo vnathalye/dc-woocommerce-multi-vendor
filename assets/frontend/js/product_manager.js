@@ -115,11 +115,13 @@ jQuery(document).ready(function ($) {
 
     $('.manage_stock_ele').change(function () {
         if ($(this).is(':checked')) {
-            $(this).parents('.pro_ele_block').first().find('.non_manage_stock_ele').removeClass('non_stock_ele_hide');
+            $(this).parents('.pro_ele_block').first().find('.stock_qty_wrapper').removeClass('non_stock_ele_hide');
+            $(this).parents('.pro_ele_block').first().find('.backorders_wrapper').removeClass('non_stock_ele_hide');
         } else {
-            $(this).parents('.pro_ele_block').first().find('.non_manage_stock_ele').addClass('non_stock_ele_hide');
+            $(this).parents('.pro_ele_block').first().find('.stock_qty_wrapper').addClass('non_stock_ele_hide');
+            $(this).parents('.pro_ele_block').first().find('.backorders_wrapper').addClass('non_stock_ele_hide');
         }
-    }).change();
+    });
 
     /*$('.variation_manage_stock').change(function () {
         if ($(this).is(':checked')) {
@@ -197,28 +199,6 @@ jQuery(document).ready(function ($) {
         $('.pro_ele_block').addClass('pro_block_hide');
         $('.pro_ele').addClass('pro_ele_hide');
     }
-
-    $('.img_tip').each(function () {
-        $(this).qtip({
-            content: $(this).attr('data-desc'),
-            position: {
-                my: 'center left',
-                at: 'center right',
-                viewport: $(window)
-            },
-            show: {
-                event: 'mouseover',
-                solo: true,
-            },
-            hide: {
-                inactive: 6000,
-                fixed: true
-            },
-            style: {
-                classes: 'qtip-dark qtip-shadow qtip-rounded qtip-dc-css'
-            }
-        });
-    });
 
     $('.dc_datepicker').each(function () {
         $(this).datepicker({
@@ -508,7 +488,6 @@ jQuery(document).ready(function ($) {
                         addMultiInputProperty($('#attributes'));
                         resetMultiInputIndex($('#attributes'));
                         $('#product_type').change();
-
                         /*$('#attributes').find('.multi_input_block:last').each(function() {
                          $(this).find('input[data-name="is_variation"]').change(function() {
                          resetVariationsAttributes();
@@ -518,6 +497,11 @@ jQuery(document).ready(function ($) {
                         $('#attributes').find('.multi_input_block:last').find('select').select2({
                             placeholder: "Search for a attribute ..."
                         });
+                        $('#attributes').find('.multi_input_block:last').find('input[type=checkbox]').each(function(){
+                            $(this).wrap('<span class="checkbox-holder"></span>');
+                            $('.checkbox-holder').append('<i class="wcmp-font ico-uncheckbox-icon"></i>');
+                        });
+
                     }
                 }
             });
@@ -752,20 +736,20 @@ jQuery(document).ready(function ($) {
      });*/
 
     // TinyMCE intialize - Description
-    var descTinyMCE = tinymce.init({
-        selector: '#description',
-        height: 120,
-        menubar: false,
-        plugins: [
-            'advlist autolink lists link image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table contextmenu paste code'
-        ],
-        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify |  bullist numlist outdent indent | link image',
-        content_css: '//www.tinymce.com/css/codepen.min.css',
-        statusbar: false,
-        entity_encoding: "raw"
-    });
+//    var descTinyMCE = tinymce.init({
+//        selector: '#description',
+//        height: 120,
+//        menubar: false,
+//        plugins: [
+//            'advlist autolink lists link image charmap print preview anchor',
+//            'searchreplace visualblocks code fullscreen',
+//            'insertdatetime media table contextmenu paste code'
+//        ],
+//        toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify |  bullist numlist outdent indent | link image',
+//        content_css: '//www.tinymce.com/css/codepen.min.css',
+//        statusbar: false,
+//        entity_encoding: "raw"
+//    });
 
     function product_manager_form_validate() {
         $is_valid = true;
@@ -795,11 +779,13 @@ jQuery(document).ready(function ($) {
                 }
             });
             $('#product_manager_form').find(':input:disabled').removeAttr('disabled');
-            var description = tinymce.get('description').getContent({format: 'raw'});
+            var description = get_fpm_tinymce_content('description');
+            var excerpt = get_fpm_tinymce_content('excerpt');
             var data = {
                 action: 'frontend_product_manager',
                 product_manager_form: $('#product_manager_form').serialize(),
                 description: description,
+                excerpt: excerpt,
                 status: 'draft',
                 removed_variations: removed_variations,
                 removed_person_types: removed_person_types
@@ -845,11 +831,14 @@ jQuery(document).ready(function ($) {
                 }
             });
             $('#product_manager_form').find(':input:disabled').removeAttr('disabled');
-            var description = tinymce.get('description').getContent();
+            var description = get_fpm_tinymce_content('description');
+            var excerpt = get_fpm_tinymce_content('excerpt');
+
             var data = {
                 action: 'frontend_product_manager',
                 product_manager_form: $('#product_manager_form').serialize(),
                 description: description,
+                excerpt: excerpt,
                 status: 'submit',
                 removed_variations: removed_variations,
                 removed_person_types: removed_person_types
@@ -880,5 +869,18 @@ jQuery(document).ready(function ($) {
 
     function jsUcfirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
+    function get_fpm_tinymce_content(id) {
+        var content;
+        var inputid = id;
+        var editor = tinyMCE.get(inputid);
+        var textArea = jQuery('textarea#' + inputid);    
+        if (textArea.length>0 && textArea.is(':visible')) {
+            content = textArea.val();        
+        } else {
+            content = editor.getContent();
+        }    
+        return content;
     }
 });

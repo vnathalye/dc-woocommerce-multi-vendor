@@ -207,6 +207,7 @@ class WCMp_Shortcode {
             'id' => '',
             'vendor' => '',
             'columns' => '4',
+            'per_page' => get_option('posts_per_page'),
             'orderby' => 'title',
             'order' => 'asc'
                         ), $atts));
@@ -221,7 +222,7 @@ class WCMp_Shortcode {
             'ignore_sticky_posts' => 1,
             'orderby' => $orderby,
             'order' => $order,
-            'posts_per_page' => -1,
+            'posts_per_page' => $per_page,
             'meta_query' => array(
                 array(
                     'key' => '_visibility',

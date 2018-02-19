@@ -132,4 +132,86 @@ jQuery(document).ready(function($){
 		});
 		$(ajax_loader_class).hide();
 	});
+        /* vendor stats report data */
+        $("#wcmp_vendor_stats_report_filter").change(function (e) {
+            var data_stats = $(this).data('stats');
+            var stats_period = $(this).val();
+            var current_data = data_stats[stats_period];
+            $.each(current_data, function (key, value) {
+                if(key == '_wcmp_stats_table'){
+                    $.each(current_data._wcmp_stats_table, function (subkey, subvalue) {
+                        $('.'+key+'.'+subkey).html(subvalue);
+                        if(subkey == 'current_withdrawal' && current_data._raw_stats_data.current.withdrawal == 0){
+                            $('.'+key+'.'+subkey+'.withdrawal-label').html(current_data._wcmp_stats_lang_no_amount);
+                        }
+                    });
+                }else if(key == 'stats_difference'){
+                    $.each(current_data.stats_difference, function (subkey, subvalue) {
+                        $('.'+subkey).removeClass(function (index, css) {
+                            return (css.match (/\bmark-\S+/g) || []).join(' '); // removes classes that starts with "mark-"
+                        });
+                        if(subkey == '_wcmp_diff_orders_no'){
+                            current_data._wcmp_stats_lang_up = current_data._wcmp_stats_lang_up.replace('is', 'are');
+                            current_data._wcmp_stats_lang_down = current_data._wcmp_stats_lang_down.replace('is', 'are');
+                            if(subvalue > 0){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_up+Math.abs(subvalue));
+                                $('.'+subkey).addClass('mark-green');
+                            }else if(subvalue == 0){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_same);
+                                $('.'+subkey).addClass('mark-green');
+                            }else if(subvalue == 'no_data'){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_no_prev);
+                                $('.'+subkey).addClass('mark-green');
+                            }else{
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_down+Math.abs(subvalue));
+                                $('.'+subkey).addClass('mark-red');
+                            }
+                        }else{
+                            if(subvalue > 0){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_up+Math.abs(subvalue)+'%');
+                                $('.'+subkey).addClass('mark-green');
+                            }else if(subvalue == 0){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_same);
+                                $('.'+subkey).addClass('mark-green');
+                            }else if(subvalue == 'no_data'){
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_no_prev);
+                                $('.'+subkey).addClass('mark-green');
+                            }else{
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_down+Math.abs(subvalue)+'%');
+                                $('.'+subkey).addClass('mark-red');
+                            }
+                        }
+                    });
+                }else{
+                    $('.'+key).html(value);
+                }
+            });
+	}).change();
+        // dataTable wrapper class
+        $('.dataTables_wrapper').removeClass('form-inline');
+        $('.table.dataTable').removeClass('no-footer');
+        $('.table.dataTable').parent().addClass('dt-wrapper');
+        
+        // Tool-tips
+        $('.img_tip').each(function () {
+        $(this).qtip({
+            content: $(this).attr('data-desc'),
+            position: {
+                my: 'center left',
+                at: 'center right',
+                viewport: $(window)
+            },
+            show: {
+                event: 'mouseover',
+                solo: true,
+            },
+            hide: {
+                inactive: 6000,
+                fixed: true
+            },
+            style: {
+                classes: 'qtip-dark qtip-shadow qtip-rounded qtip-dc-css'
+            }
+        });
+    });
 });

@@ -17,6 +17,7 @@ class WCMp_Library {
     public $jquery_lib_url;
     public $bootstrap_lib_url;
     public $jqvmap;
+    public $dataTable_lib_url;
 
     public function __construct() {
 
@@ -41,6 +42,8 @@ class WCMp_Library {
         $this->bootstrap_lib_url = $this->lib_url. 'bootstrap/';
         
         $this->jqvmap = $this->lib_url. 'jqvmap/';
+        
+        $this->dataTable_lib_url = $this->lib_url. 'dataTable/';
     }
 
     /**
@@ -141,14 +144,6 @@ class WCMp_Library {
     }
 
     /**
-     * Font awesome include
-     */
-    public function load_line_awesome_lib() {
-        wp_register_style('line_awesome_css', $this->css_lib_url.'line-awesome/css/line-awesome.min.css');
-        wp_enqueue_style('line_awesome_css');
-    }
-
-    /**
      * Jquery style library
      */
     public function load_jquery_style_lib() {
@@ -183,9 +178,9 @@ class WCMp_Library {
      * dataTable library
      */
     public function load_dataTable_lib() {
-        wp_register_style('wcmp-datatable-bs-style', '//cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css');
-        wp_register_script('wcmp-datatable-script', '//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', array('jquery'));
-        wp_register_script('wcmp-datatable-bs-script', '//cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js', array('jquery'));
+        wp_register_style('wcmp-datatable-bs-style', $this->dataTable_lib_url.'dataTables.bootstrap.min.css');
+        wp_register_script('wcmp-datatable-script', $this->dataTable_lib_url.'jquery.dataTables.min.js', array('jquery'));
+        wp_register_script('wcmp-datatable-bs-script', $this->dataTable_lib_url.'dataTables.bootstrap.min.js', array('jquery'));
         wp_enqueue_style( 'wcmp-datatable-bs-style');
         wp_enqueue_script( 'wcmp-datatable-script');
         wp_enqueue_script( 'wcmp-datatable-bs-script');

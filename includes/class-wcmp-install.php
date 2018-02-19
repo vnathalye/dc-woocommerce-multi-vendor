@@ -19,9 +19,7 @@ class WCMp_Install {
         if (!get_option('dc_product_vendor_plugin_db_version')) {
             $this->save_default_plugin_settings();
         }
-        if(!get_option('wcmp_table_created')){
-            $this->wcmp_plugin_tables_install();
-        }
+        $this->wcmp_plugin_tables_install();
         $this->remove_other_vendors_plugin_role();
         self::register_user_role();
         if (!get_option("dc_product_vendor_plugin_page_install")) {
@@ -29,8 +27,8 @@ class WCMp_Install {
             update_option("dc_product_vendor_plugin_page_install", 1);
         }
         $this->do_wcmp_migrate();
-        if(!get_option('dc_product_vendor_plugin_installed') && apply_filters('wcmp_enable_setup_wizard', true)){
-            set_transient( '_wcmp_activation_redirect', 1, 30 );
+        if (!get_option('dc_product_vendor_plugin_installed') && apply_filters('wcmp_enable_setup_wizard', true)) {
+            set_transient('_wcmp_activation_redirect', 1, 30);
         }
         $this->do_schedule_cron_events();
     }
@@ -170,7 +168,7 @@ class WCMp_Install {
             );
             update_option('wcmp_payment_settings_name', $payment_settings);
         }
-        
+
         if (!get_wcmp_vendor_settings('is_singleproductmultiseller', 'general')) {
             update_wcmp_vendor_settings('is_singleproductmultiseller', 'Enable', 'general');
         }
@@ -217,7 +215,7 @@ class WCMp_Install {
 		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
 		PRIMARY KEY (`ID`)
 		) $collate;";
-        
+
         $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_visitors_stats` (
 		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
                 `vendor_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -244,7 +242,7 @@ class WCMp_Install {
                 KEY session_id (session_id),
                 KEY ip (ip)
 		) $collate;";
-        
+
         $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_cust_questions` (
 		`ques_ID` bigint(20) NOT NULL AUTO_INCREMENT,
 		`product_ID` BIGINT UNSIGNED NOT NULL DEFAULT '0',
@@ -254,7 +252,7 @@ class WCMp_Install {
                 `ques_vote` longtext NULL,
 		PRIMARY KEY (`ques_ID`)
 		) $collate;";
-        
+
         $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_cust_answers` (
 		`ans_ID` bigint(20) NOT NULL AUTO_INCREMENT,
 		`ques_ID` BIGINT UNSIGNED NOT NULL DEFAULT '0',
@@ -344,14 +342,14 @@ class WCMp_Install {
             'delete_products' => true
         ));
     }
-    
+
     /**
      * WCMp schedule cron events
      *
      * @access public
      * @return void
      */
-    function do_schedule_cron_events(){
+    function do_schedule_cron_events() {
         if (apply_filters('wcmp_do_schedule_cron_vendor_weekly_order_stats', true) && !wp_next_scheduled('vendor_weekly_order_stats')) {
             wp_schedule_event(time(), 'weekly', 'vendor_weekly_order_stats');
         }
@@ -359,4 +357,5 @@ class WCMp_Install {
             wp_schedule_event(time(), 'monthly', 'vendor_monthly_order_stats');
         }
     }
+
 }

@@ -91,24 +91,17 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Screenshots ==
-1. General settings: `Default commission` and other general configurables.
-2. Vendor dashboard endpoints settings.
-3. Vendor product capability settings.
-4. Frontend settings.
-5. Vendor order capability settings.
-6. Other capabilities settings.
+1. Vendor Dashboard.
+2. General settings.
+3. Vendor front-end settings.
+4. Payment settings.
+5. Capability settings.
+6. Vendor storefront settings.
 7. Vendor commissions.
-8. Admin can change vendors and set rate of commission from `Edit Product`.
-9. Vendor sales reports.
-10. Product specific sales report.
-11. Vendor dashboard.
-12. Vendor shop settings.
-13. Vendor can see their total sales report.
-14. Vendor's orders page.
-15. Customers can report abuse products.
-16. Show Multiple Seller in Single Product.
-
-
+8. Vendor sales reports.
+9. Product specific sales report.
+10. Customers can report abuse products.
+11. Show Multiple Seller in Single Product.
 
 
 == Changelog ==

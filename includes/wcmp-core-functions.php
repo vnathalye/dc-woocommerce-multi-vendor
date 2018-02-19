@@ -1395,7 +1395,7 @@ if (!function_exists('do_wcmp_data_migrate')) {
             if ($previous_plugin_version <= '2.7.7') {
                 $wpdb->delete($wpdb->prefix . 'wcmp_products_map', array('product_title' => 'AUTO-DRAFT'));
             }
-            if (version_compare('3.0.1', $previous_plugin_version, '<')) {
+            if (version_compare('2.7.8', $previous_plugin_version, '<=')) {
                 update_option('users_can_register', 1);
                 delete_option('_is_dismiss_service_notice');
                 if (apply_filters('wcmp_do_schedule_cron_vendor_weekly_order_stats', true) && !wp_next_scheduled('vendor_weekly_order_stats')) {

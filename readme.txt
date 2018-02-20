@@ -16,7 +16,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
-> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/) before upgrading your marketplace to avoid any undesirable situations.</strong>
+> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/?utm_source=WordPress&utm_medium=plugin_desc&utm_campaign=update_notice) before upgrading your marketplace to avoid any undesirable situations.</strong>
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 

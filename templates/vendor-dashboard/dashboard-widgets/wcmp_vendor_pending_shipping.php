@@ -48,7 +48,7 @@ do_action('before_wcmp_vendor_pending_shipping');
                         echo implode(' , ', $value);
                         break;
                     case 'order_date':
-                        echo wc_string_to_datetime($value)->date(wc_date_format());
+                        echo wcmp_date($value);
                         break;
 //                    case 'dimentions':
 //                        echo '('.implode(' ) , ( ', $value).' )';

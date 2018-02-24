@@ -43,6 +43,7 @@ final class WCMp {
     public $wcmp_frontend_lib;
     public $cron_job;
     public $product_qna;
+    public $commission;
 
     /**
      * Class construct
@@ -55,7 +56,7 @@ final class WCMp {
         $this->token = WCMp_PLUGIN_TOKEN;
         $this->text_domain = WCMp_TEXT_DOMAIN;
         $this->version = WCMp_PLUGIN_VERSION;
-        
+
         // Intialize WCMp Widgets
         $this->init_custom_widgets();
 
@@ -78,7 +79,7 @@ final class WCMp {
         add_filter('comments_clauses', array(&$this, 'exclude_order_comments'), 10, 1);
         add_filter('comment_feed_where', array(&$this, 'exclude_order_comments_from_feed_where'));
     }
-    
+
     public function exclude_order_comments($clauses) {
         $clauses['where'] .= ( $clauses['where'] ? ' AND ' : '' ) . " comment_type != 'commission_note' ";
         return $clauses;
@@ -92,10 +93,6 @@ final class WCMp {
      * Initialize plugin on WP init
      */
     function init() {
-        $time_zone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option('timezone_string');
-        if (!empty($time_zone)) {
-            date_default_timezone_set($time_zone);
-        }
         if (is_user_wcmp_pending_vendor(get_current_vendor_id()) || is_user_wcmp_rejected_vendor(get_current_vendor_id()) || is_user_wcmp_vendor(get_current_vendor_id())) {
             show_admin_bar(apply_filters('wcmp_show_admin_bar', false));
         }
@@ -150,7 +147,7 @@ final class WCMp {
         $this->load_class('vendor-details');
         // Init Calculate commission class
         $this->load_class('calculate-commission');
-        new WCMp_Calculate_Commission();
+        $this->commission = new WCMp_Calculate_Commission();
         // Init product vendor taxonomies
         $this->init_taxonomy();
         // Init product action class 

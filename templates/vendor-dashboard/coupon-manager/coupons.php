@@ -57,6 +57,10 @@ jQuery(document).ready(function($) {
         ajax:{
             url : woocommerce_params.ajax_url+'?action=wcmp_vendor_coupon_list', 
             type: "post", 
+            error: function(xhr, status, error) {
+                $("#coupons_table tbody").append('<tr class="odd"><td valign="top" colspan="4" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');
+                $("#coupons_table_processing").css("display","none");
+            }
         },
         createdRow: function (row, data, index) {
             $(row).addClass('vendor-coupon');

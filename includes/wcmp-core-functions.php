@@ -434,6 +434,7 @@ if (!function_exists('wcmp_action_links')) {
 
 }
 
+
 if (!function_exists('wcmp_get_all_blocked_vendors')) {
 
     /**
@@ -447,9 +448,11 @@ if (!function_exists('wcmp_get_all_blocked_vendors')) {
         $blocked_vendor = array();
         if (!empty($vendors) && is_array($vendors)) {
             foreach ($vendors as $vendor_key => $vendor) {
-                $is_block = get_user_meta($vendor->id, '_vendor_turn_off', true);
-                if (!empty($is_block) && $is_block) {
-                    $blocked_vendor[] = $vendor;
+                if (is_a($vendor, 'WCMp_Vendor')) {
+                    $is_block = get_user_meta($vendor->id, '_vendor_turn_off', true);
+                    if ($is_block) {
+                        $blocked_vendor[] = $vendor;
+                    }
                 }
             }
         }
@@ -1395,7 +1398,7 @@ if (!function_exists('do_wcmp_data_migrate')) {
             if ($previous_plugin_version <= '2.7.7') {
                 $wpdb->delete($wpdb->prefix . 'wcmp_products_map', array('product_title' => 'AUTO-DRAFT'));
             }
-            if (version_compare('2.7.8', $previous_plugin_version, '<=')) {
+            if (version_compare($previous_plugin_version, '2.7.8', '<=')) {
                 update_option('users_can_register', 1);
                 delete_option('_is_dismiss_service_notice');
                 if (apply_filters('wcmp_do_schedule_cron_vendor_weekly_order_stats', true) && !wp_next_scheduled('vendor_weekly_order_stats')) {
@@ -1467,6 +1470,14 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 }
                 if (get_wcmp_vendor_settings('sold_by_catalog', 'frontend') && get_wcmp_vendor_settings('sold_by_catalog', 'frontend') == 'Enable') {
                     update_wcmp_vendor_settings('sold_by_catalog', 'Enable', 'general');
+                }
+            }
+            if (version_compare($previous_plugin_version, '3.0.1', '<=')){
+                $vendors = get_wcmp_vendors();
+                if($vendors){
+                    foreach ($vendors as $vendor){
+                        delete_user_meta($vendor->id, 'timezone_string');
+                    }
                 }
             }
             /* Migrate commission data into table */
@@ -2496,6 +2507,60 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
             set_transient('wcmp_stats_report_data_' . $vendor->id, $stats_report_data, DAY_IN_SECONDS);
             return $stats_report_data;
         }
+    }
+
+}
+
+if (!function_exists('wcmp_date')) {
+    /**
+     * WCMp date formatter function
+     * @param DateTime $date
+     * @return date string
+     */
+    function wcmp_date($date) {
+        $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone('UTC'));
+        $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(wcmp_timezone_string()));
+        return $date->format(get_option( 'date_format' ));
+    }
+
+}
+
+
+if (!function_exists('wcmp_timezone_string')) {
+    /**
+     * WCMp timezone string
+     * @return Timezone string
+     */
+    function wcmp_timezone_string() {
+        // If site timezone string exists, return it.
+        if ($timezone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option( 'timezone_string' )) {
+            return $timezone;
+        }
+        // Get UTC offset, if it isn't set then return UTC.
+        if (0 === ( $utc_offset = intval(get_user_meta(get_current_user_id(), 'gmt_offset', true) ? get_user_meta(get_current_user_id(), 'gmt_offset', true): get_option('gmt_offset', 0)) )) {
+            return 'UTC';
+        }
+
+        // Adjust UTC offset from hours to seconds.
+        $utc_offset *= 3600;
+
+
+        // Attempt to guess the timezone string from the UTC offset.
+        if ($timezone = timezone_name_from_abbr('', $utc_offset)) {
+            return $timezone;
+        }
+
+        // Last try, guess timezone string manually.
+        foreach (timezone_abbreviations_list() as $abbr) {
+            foreach ($abbr as $city) {
+                if ((bool) date('I') === (bool) $city['dst'] && $city['timezone_id'] && intval($city['offset']) === $utc_offset) {
+                    return $city['timezone_id'];
+                }
+            }
+        }
+
+        // Fallback to wc_timezone_string.
+        return 'UTC';
     }
 
 }

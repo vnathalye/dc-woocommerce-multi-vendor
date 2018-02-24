@@ -771,6 +771,8 @@ jQuery(document).ready(function ($) {
         $is_valid = product_manager_form_validate();
 
         if ($is_valid) {
+            $(this).prop('disabled', true);
+            $("#pruduct_manager_submit_button").prop('disabled', true);
             $('#product_manager_form').block({
                 message: null,
                 overlayCSS: {
@@ -791,7 +793,8 @@ jQuery(document).ready(function ($) {
                 removed_person_types: removed_person_types
             }
             $.post(woocommerce_params.ajax_url, data, function (response) {
-                console.log(response);
+                $(this).prop('disabled', false);
+                $("#pruduct_manager_submit_button").prop('disabled', false);
                 if (response) {
                     $response_json = $.parseJSON(response);
                     if ($response_json.status) {
@@ -823,6 +826,8 @@ jQuery(document).ready(function ($) {
         $is_valid = product_manager_form_validate();
 
         if ($is_valid) {
+            $(this).prop('disabled', true);
+            $("#pruduct_manager_draft_button").prop('disabled', true);
             $('#product_manager_form').block({
                 message: null,
                 overlayCSS: {
@@ -844,6 +849,8 @@ jQuery(document).ready(function ($) {
                 removed_person_types: removed_person_types
             }
             $.post(woocommerce_params.ajax_url, data, function (response) {
+                $(this).prop('disabled', false);
+                $("#pruduct_manager_draft_button").prop('disabled', false);
                 if (response) {
                     $response_json = $.parseJSON(response);
                     if ($response_json.status) {

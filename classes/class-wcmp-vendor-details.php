@@ -868,7 +868,7 @@ class WCMp_Vendor {
                             $pending_shippings_arr[] = apply_filters('wcmp_vendor_pending_shipping_table_row_data',array(
                                 'order_id' => $order->get_id(),
                                 'products_name' => $product_name,
-                                'order_date' => $order->get_date_created(),
+                                'order_date' => wcmp_date($order->get_date_created()),
                                 //'dimentions' => $dimentions,
                                 'shipping_address' => $order->get_formatted_shipping_address(),
                                 'shipping_amount' => $pending_shipping_amount['shipping_amount'],

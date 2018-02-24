@@ -14,29 +14,7 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 ?>
 <div class="col-md-12">
-    <!--blockquote class="panel-info">
-        <div class = "wcmp_mixed_txt some_line"> <span><?php _e(' Showing stats and reports from :', 'dc-woocommerce-multi-vendor');
-        ?> </span><b><span id="display_trans_from_dt"></span>&nbsp; <?php _e('to', 'dc-woocommerce-multi-vendor');?> &nbsp;<span id="display_trans_to_dt"></span></b>
-        </div>
-    </blockquote-->
-    <!--div class="panel panel-default">
-        <div class="wcmp_form1 ">
-            <h3 class="panel-heading"><?php _e('Select Date Range', 'dc-woocommerce-multi-vendor'); ?></h3>
-            <div class="panel-body">
-                <div id="vendor_transactions_date_filter" class="row">
-                    <div class="col-sm-5">
-                        <input id="wcmp_from_date" class="form-control" name="from_date" class="pickdate gap1" placeholder="From" value ="<?php echo date('01-m-Y'); ?>"/>
-                    </div>
-                    <div class="col-sm-5">
-                        <input id="wcmp_to_date" class="form-control" name="to_date" class="pickdate" placeholder="To" value ="<?php echo date('t-m-Y'); ?>"/>
-                    </div>
-                    <div class="col-sm-2">
-                        <button type="button" name="order_export_submit" id="do_filter"  class="btn btn-default" ><?php _e('Show', 'dc-woocommerce-multi-vendor') ?></button>
-                    </div>
-                </div>              
-            </div>
-        </div>
-    </div-->
+    
     <div class="panel panel-default">
         <div class="panel-body">
             <div id="vendor_transactions_date_filter" class="form-inline datatable-date-filder">
@@ -126,6 +104,10 @@ jQuery(document).ready(function($) {
             data: function (data) {
                 data.from_date = $('#wcmp_from_date').val();
                 data.to_date = $('#wcmp_to_date').val();
+            },
+            error: function(xhr, status, error) {
+                $("#vendor_transactions tbody").append('<tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');
+                $("#vendor_transactions_processing").css("display","none");
             }
         },
         columns: [

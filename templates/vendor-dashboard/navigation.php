@@ -3,8 +3,8 @@
  * The template for displaying vendor dashboard nav
  * Override this template by copying it to yourtheme/dc-product-vendor/vendor-dashboard/navigation.php
  *
- * @author 	WC Marketplace
- * @package 	WCMp/Templates
+ * @author     WC Marketplace
+ * @package     WCMp/Templates
  * @version   2.4.5
  */
 if (!defined('ABSPATH')) {
@@ -39,9 +39,9 @@ do_action('wcmp_before_vendor_dashboard_navigation');
                             <li class="<?php if(!empty($item['submenu'])){ echo 'hasmenu';} ?>">
                                 <?php if(array_key_exists($WCMp->endpoints->get_current_endpoint(), $item['submenu'])){ $force_active = true;} else {$force_active = false;}?>
                                 <a href="<?php echo esc_url($item['url']); ?>" target="<?php echo $item['link_target'] ?>" data-menu_item="<?php echo $key ?>" class="<?php echo implode(' ', array_map('sanitize_html_class', wcmp_get_vendor_dashboard_nav_item_css_class($key, $force_active))); ?>">
-                                    <i class="<?php echo isset($item['nav_icon']) && !empty($item['nav_icon']) ? $item['nav_icon'] : 'la la-gear'; ?>"></i> 
+                                    <i class="<?php echo $item['nav_icon'] ?>"></i> 
                                     <span><?php echo esc_html($item['label']); ?></span>
-                                    <?php if(!empty($item['submenu'])): ?><i class="dashicons dashicons-arrow-down-alt2"></i><?php endif; ?>
+                                    <?php if(!empty($item['submenu'])): ?><i class="wcmp-font ico-downarrow-2-icon"></i><?php endif; ?>
                                 </a>
                                 <?php if (!empty($item['submenu']) && is_array($item['submenu'])): sksort($item['submenu'], 'position', true) ?>
                                     <ul class="nav submenu" <?php if(!in_array('active', wcmp_get_vendor_dashboard_nav_item_css_class($key, $force_active))){ echo 'style="display:none"'; }else{ echo 'style="display:block"'; } ?>>

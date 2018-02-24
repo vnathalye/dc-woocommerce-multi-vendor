@@ -2138,6 +2138,19 @@ body.admin-bar .top-navbar {
   top: 32px; }
 body.admin-bar .current-endpoint-title-wrapper, body.admin-bar .navbar-static-top {
   top: 96px; }
+body.admin-bar .wcmp-action-container {
+  top: 110px; }
+@media screen and (max-width: 782px) {
+  body.admin-bar #wpadminbar {
+    position: fixed; }
+  body.admin-bar .top-navbar {
+    top: 46px; }
+  body.admin-bar .navbar-default .navbar-toggle {
+    top: -55px; }
+  body.admin-bar .current-endpoint-title-wrapper, body.admin-bar .navbar-static-top {
+    top: 102px; }
+  body.admin-bar .wcmp-action-container {
+    top: 107px; } }
 
 .dashboard-top-content {
   background-color: #f7f8fa; }

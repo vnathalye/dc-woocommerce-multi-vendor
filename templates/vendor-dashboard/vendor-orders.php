@@ -152,6 +152,10 @@ global $woocommerce, $WCMp;
                     data.start_date = vendor_orders_args.start_date;
                     data.end_date = vendor_orders_args.end_date;
                     data.order_status = $('#filter_by_order_status').val();
+                },
+                error: function(xhr, status, error) {
+                    $("#wcmp-vendor-orders tbody").append('<tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');
+                    $("#wcmp-vendor-orders_processing").css("display","none");
                 }
             },
             columns: [

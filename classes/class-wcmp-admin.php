@@ -45,9 +45,9 @@ class WCMp_Admin {
             add_action('admin_notices', array(&$this, 'wcmp_service_page_notice'));
         }
         add_action('wp_dashboard_setup', array(&$this, 'wcmp_remove_wp_dashboard_widget'));
-        
+        add_filter('woocommerce_order_actions', array(&$this, 'woocommerce_order_actions'));
+        add_action('woocommerce_order_action_regenerate_order_commissions', array(&$this, 'regenerate_order_commissions'));
     }
-    
 
     function adding_vendor_application_meta_boxes($post_type, $post) {
         add_meta_box(
@@ -346,7 +346,7 @@ class WCMp_Admin {
         ?>
         <div style="clear: both"></div>
         <div id="dc_admin_footer">
-        <?php _e('Powered by', 'dc-woocommerce-multi-vendor'); ?> <a href="https://wc-marketplace.com/" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('WC Marketplace', 'dc-woocommerce-multi-vendor'); ?> &copy; <?php echo date('Y'); ?>
+            <?php _e('Powered by', 'dc-woocommerce-multi-vendor'); ?> <a href="https://wc-marketplace.com/" target="_blank"><img src="<?php echo $WCMp->plugin_url . 'assets/images/dualcube.png'; ?>"></a><?php _e('WC Marketplace', 'dc-woocommerce-multi-vendor'); ?> &copy; <?php echo date('Y'); ?>
         </div>
         <?php
     }
@@ -383,7 +383,7 @@ class WCMp_Admin {
     }
 
     public function wcmp_admin_menu() {
-        if(is_user_wcmp_vendor(get_current_vendor_id())){
+        if (is_user_wcmp_vendor(get_current_vendor_id())) {
             remove_menu_page('edit.php');
             remove_menu_page('edit-comments.php');
             remove_menu_page('tools.php');
@@ -524,9 +524,9 @@ class WCMp_Admin {
             <div class="round3"></div>
             <div class="round4"></div>
             <div class="wcmp_banner-content">
-                <span class="txt"><?php _e('WC Maretplace 3.0! It’s online marketplace experience at its highest level yet.', 'dc-woocommerce-multi-vendor') ?>  </span>
+                <span class="txt"><?php _e('WC Marketplace 3.0! It’s online marketplace experience at its highest level yet.', 'dc-woocommerce-multi-vendor') ?>  </span>
                 <div class="rightside">        
-                    <a href="https://wc-marketplace.com/version-highlights/?utm_source=WordPress&utm_medium=wp_admin&utm_campaign=admin_notice" target="_blank" class="wcmp_btn_service_claim_now"><?php _e('Version Highlights', 'dc-woocommerce-multi-vendor'); ?></a>
+                    <a href="https://wc-marketplace.com/version-highlights/" target="_blank" class="wcmp_btn_service_claim_now"><?php _e('Version Highlights', 'dc-woocommerce-multi-vendor'); ?></a>
                     <span class="link"><a href="https://github.com/dualcube/dc-woocommerce-multi-vendor" target="_blank"><?php _e('Lend a Hand?', 'dc-woocommerce-multi-vendor'); ?></a></span>
                     <button onclick="dismiss_servive_notice(event);" type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
                 </div>
@@ -556,6 +556,35 @@ class WCMp_Admin {
             unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_quick_press']);
             unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_primary']);
         }
+    }
+
+    public function woocommerce_order_actions($actions) {
+        $actions['regenerate_order_commissions'] = __('Regenerate order commissions', 'dc-woocommerce-multi-vendor');
+        return $actions;
+    }
+
+    /**
+     * Regenerate order commissions
+     * @param Object $order
+     * @since 3.0.2
+     */
+    public function regenerate_order_commissions($order) {
+        global $wpdb, $WCMp;
+        if(!in_array($order->get_status(), $WCMp->commission->completed_statuses)){
+            return;
+        }
+        $table_name = $wpdb->prefix.'wcmp_vendor_orders';
+        delete_post_meta($order->get_id(), '_commissions_processed');
+        delete_post_meta($order->get_id(), '_wcmp_order_processed');
+        $commission_ids = get_post_meta($order->get_id(), '_commission_ids', true) ? get_post_meta($order->get_id(), '_commission_ids', true) : array();
+        if ($commission_ids && is_array($commission_ids)) {
+            foreach ($commission_ids as $commission_id) {
+                wp_delete_post($commission_id, true);
+            }
+        }
+        delete_post_meta($order->get_id(), '_commission_ids');
+        $wpdb->delete($table_name, array('order_id' => $order->get_id()), array('%d'));
+        $WCMp->commission->wcmp_process_commissions($order->get_id());
     }
 
 }

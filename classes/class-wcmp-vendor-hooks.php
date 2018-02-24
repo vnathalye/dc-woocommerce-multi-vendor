@@ -235,7 +235,7 @@ class WCMp_Vendor_Hooks {
      */
     public function wcmp_create_vendor_dashboard_content() {
         global $wp, $WCMp;
-        foreach ($wp->query_vars as $key => $value) {
+        foreach ($wp->query_vars as $key => $value) { 
             // Ignore pagename and page param.
             if (in_array($key, array('page', 'pagename'))) {
                 continue;
@@ -698,9 +698,13 @@ class WCMp_Vendor_Hooks {
      * Generate Vendor Progress
      * @global object $WCMp
      */
-    public function before_wcmp_vendor_dashboard_content($key) {
+    public function before_wcmp_vendor_dashboard_content($key) { 
+        global $WCMp;
+        if($key !== $WCMp->endpoints->get_current_endpoint()){
+            return;
+        }
         $vendor = get_wcmp_vendor(get_current_vendor_id());
-        if ($vendor) {
+        if ($vendor && apply_filters('wcmp_vendor_dashboard_show_progress_bar', true, $vendor)) {
             $vendor_progress = wcmp_get_vendor_profile_completion($vendor->id);
             if ($vendor_progress['progress'] < 100) {
                 echo '<div class="col-md-12">';

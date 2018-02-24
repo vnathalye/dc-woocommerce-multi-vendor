@@ -45,8 +45,8 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
 <div class="col-md-12">
     <!-- <div class="wcmp_headding2 card-header"><?php _e('General', 'dc-woocommerce-multi-vendor'); ?></div> -->
     <form method="post" name="shop_settings_form" class="wcmp_shop_settings_form form-horizontal">
-<?php do_action('wcmp_before_shop_front'); ?>
-        
+        <?php do_action('wcmp_before_shop_front'); ?>
+
         <div class="panel panel-default pannel-outer-heading vendor-cover-panel">
             <div class="panel-body">
                 <div class="row">
@@ -94,11 +94,11 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                             <div class="clear"></div>
                         </div>       
                     </div>
-                     -->
+                    -->
                 </div>         
             </div>
         </div>
-        
+
         <div class="panel panel-default panel-pading pannel-outer-heading">
             <div class="panel-heading">
                 <h3><?php _e('General', 'dc-woocommerce-multi-vendor'); ?></h3>
@@ -116,15 +116,15 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                         <div class="col-md-6 col-sm-9">
                             <div class="input-group">
                                 <span class="input-group-addon" id="basic-addon3">
-<?php
-$dc_vendors_permalinks_array = get_option('dc_vendors_permalinks');
-if (isset($dc_vendors_permalinks_array['vendor_shop_base']) && !empty($dc_vendors_permalinks_array['vendor_shop_base'])) {
-    $store_slug = trailingslashit($dc_vendors_permalinks_array['vendor_shop_base']);
-} else {
-    $store_slug = trailingslashit('vendor');
-} echo $shop_page_url = trailingslashit(get_home_url());
-echo $store_slug;
-?>
+                                    <?php
+                                    $dc_vendors_permalinks_array = get_option('dc_vendors_permalinks');
+                                    if (isset($dc_vendors_permalinks_array['vendor_shop_base']) && !empty($dc_vendors_permalinks_array['vendor_shop_base'])) {
+                                        $store_slug = trailingslashit($dc_vendors_permalinks_array['vendor_shop_base']);
+                                    } else {
+                                        $store_slug = trailingslashit('vendor');
+                                    } echo $shop_page_url = trailingslashit(get_home_url());
+                                    echo $store_slug;
+                                    ?>
                                 </span>		
                                 <input class="small no_input form-control" id="basic-url" aria-describedby="basic-addon3" type="text" name="vendor_page_slug" value="<?php echo isset($vendor_page_slug['value']) ? $vendor_page_slug['value'] : ''; ?>" placeholder="<?php _e('Enter your Store Name here', 'dc-woocommerce-multi-vendor'); ?>">
                             </div>	
@@ -136,14 +136,14 @@ echo $store_slug;
                             <textarea class="no_input form-control" name="vendor_description" cols="" rows=""><?php echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea>
                         </div>
                     </div>
-<?php if (isset($vendor_message_to_buyers)) { ?>
+                    <?php if (isset($vendor_message_to_buyers)) { ?>
                         <div class="form-group">
                             <label class="control-label col-sm-3 col-md-3"><?php _e('Message to Buyers', 'dc-woocommerce-multi-vendor'); ?></label>
                             <div class="col-md-6 col-sm-9">
                                 <textarea class="no_input form-control" name="vendor_message_to_buyers" cols="" rows=""><?php echo isset($vendor_message_to_buyers['value']) ? $vendor_message_to_buyers['value'] : ''; ?></textarea>
                             </div>
                         </div>
-<?php } ?>
+                    <?php } ?>
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Phone', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
@@ -176,18 +176,18 @@ echo $store_slug;
                                 <div class="col-md-6">
                                     <input class="no_input form-control inp-btm-margin" type="text" placeholder="ZIP code" name="vendor_postcode" value="<?php echo isset($vendor_postcode['value']) ? $vendor_postcode['value'] : ''; ?>">
                                 </div>
-<?php
-if (apply_filters('is_vendor_add_external_url_field', false)) {
-    ?>
+                                <?php
+                                if (apply_filters('is_vendor_add_external_url_field', false)) {
+                                    ?>
                                     <div class="col-md-6">
                                         <input class="no_input form-control inp-btm-margin" type="text" placeholder="External store URL" name="vendor_external_store_url" value="<?php echo isset($vendor_external_store_url['value']) ? $vendor_external_store_url['value'] : ''; ?>">
                                     </div>
                                     <div class="col-md-6">
                                         <input class="no_input form-control inp-btm-margin" type="text" placeholder="External store URL Label" name="vendor_external_store_label" value="<?php echo isset($vendor_external_store_label['value']) ? $vendor_external_store_label['value'] : ''; ?>">
                                     </div>
-    <?php
-}
-?>
+                                    <?php
+                                }
+                                ?>
                             </div>
                         </div>
                     </div>
@@ -195,7 +195,7 @@ if (apply_filters('is_vendor_add_external_url_field', false)) {
                         <label for="timezone_string" class="control-label col-sm-3 col-md-3"><?php _e('Timezone', 'dc-woocommerce-multi-vendor') ?></label>
                         <div class="col-md-6 col-sm-9">
                             <?php
-                            $current_offset = get_option('gmt_offset');
+                            $current_offset = get_user_meta($vendor->id, 'gmt_offset', true);
                             $tzstring = get_user_meta($vendor->id, 'timezone_string', true);
                             // Remove old Etc mappings. Fallback to gmt_offset.
                             if (false !== strpos($tzstring, 'Etc/GMT')) {
@@ -214,16 +214,17 @@ if (apply_filters('is_vendor_add_external_url_field', false)) {
                             }
                             ?>
                             <select id="timezone_string" name="timezone_string" class="form-control" aria-describedby="timezone-description">
-                                <?php echo wp_timezone_choice( $tzstring, get_user_locale() ); ?>
+                                <?php echo wp_timezone_choice($tzstring, get_user_locale()); ?>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Store Location', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">  
-<?php $api_key = get_wcmp_vendor_settings('google_api_key');
-if (!empty($api_key)) {
-    ?>
+                            <?php
+                            $api_key = get_wcmp_vendor_settings('google_api_key');
+                            if (!empty($api_key)) {
+                                ?>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <input type="text" id="searchStoreAddress" class="store-map-address form-control" placeholder="<?php _e('Enter store location', 'dc-woocommerce-multi-vendor'); ?>">
@@ -318,9 +319,11 @@ if (!empty($api_key)) {
                                     google.maps.event.addDomListener(window, "load", initialize);
                               })(jQuery);');
                                 ?>
-                            <?php } else {
+                            <?php
+                            } else {
                                 echo __('Please contact your administrator to enable Google map feature.', 'dc-woocommerce-multi-vendor');
-                            } ?>
+                            }
+                            ?>
                         </div>
                     </div>
                     <!-- from group end -->
@@ -373,15 +376,15 @@ if (!empty($api_key)) {
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3 instagram">Instagram</label>
                         <div class="col-md-6 col-sm-9">
-                                <input class="form-control" type="url"   name="vendor_instagram" value="<?php echo isset($vendor_instagram['value']) ? $vendor_instagram['value'] : ''; ?>">
+                            <input class="form-control" type="url"   name="vendor_instagram" value="<?php echo isset($vendor_instagram['value']) ? $vendor_instagram['value'] : ''; ?>">
                         </div>  
                     </div>
-                    
+
                 </div>
             </div>
         </div>    
 
-        <?php if (apply_filters('can_vendor_edit_shop_template', false)): ?>
+<?php if (apply_filters('can_vendor_edit_shop_template', false)): ?>
             <div class="panel panel-default panel-pading">
                 <div class="panel-heading">
                     <h3><?php _e('Shop Template', 'dc-woocommerce-multi-vendor'); ?></h3>
@@ -403,13 +406,13 @@ if (!empty($api_key)) {
                                     <img src="<?php echo $template_image; ?>" />
                                 </label>
                             </li>
-                        <?php endforeach; ?>
+            <?php endforeach; ?>
                     </ul>                    
                 </div>
             </div>    
-        <?php endif; ?>
-        <?php do_action('wcmp_after_shop_front'); ?>
-        <?php do_action('other_exta_field_dcmv'); ?>
+<?php endif; ?>
+<?php do_action('wcmp_after_shop_front'); ?>
+<?php do_action('other_exta_field_dcmv'); ?>
         <div class="action_div_space"> </div>
         <div class="wcmp-action-container">
             <button type="submit" class="btn btn-default" name="store_save"><?php _e('Save Options', 'dc-woocommerce-multi-vendor'); ?></button>

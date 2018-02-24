@@ -184,6 +184,10 @@ class WCMp_Library {
         wp_enqueue_style( 'wcmp-datatable-bs-style');
         wp_enqueue_script( 'wcmp-datatable-script');
         wp_enqueue_script( 'wcmp-datatable-bs-script');
+        wp_add_inline_script( 'wcmp-datatable-script', 
+        'jQuery(document).ready(function($){
+          $.fn.dataTable.ext.errMode = "none";
+        });' );
     }
     
     /**

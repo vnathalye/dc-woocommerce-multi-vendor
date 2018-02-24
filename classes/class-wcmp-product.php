@@ -183,7 +183,7 @@ class WCMp_Product {
         global $woocommerce, $WCMp, $post, $wpdb;
         $more_product_array = array();
         $results = array();
-        $more_products = $this->get_multiple_vendors_array_for_single_product($post->ID);
+        $more_products = apply_filters('wcmp_single_product_multiple_vendor_products_array', $this->get_multiple_vendors_array_for_single_product($post->ID), $post->ID);
         $more_product_array = $more_products['more_product_array'];
         $results = $more_products['results'];
         $WCMp->template->get_template('single-product/multiple_vendors_products.php', array('results' => $results, 'more_product_array' => $more_product_array));
@@ -668,6 +668,14 @@ class WCMp_Product {
      */
     function on_all_status_transitions($new_status, $old_status, $post) {
         global $WCMp;
+        if ( 'product' !== $post->post_type || $new_status === $old_status ) {
+            return;
+        }
+        // skip for new posts and auto drafts
+        if ( 'new' === $old_status || 'auto-draft' === $old_status ) {
+            return;
+        }
+        
         if ($new_status != $old_status && $post->post_status == 'pending') {
             $current_user = get_current_vendor_id();
             if ($current_user)
@@ -1298,8 +1306,10 @@ class WCMp_Product {
                 if (count($product_ids) > 1) {
                     foreach ($product_ids as $product_id) {
                         $product = wc_get_product(absint($product_id));
-                        if ($product && $product->get_price()) {
+                        if ($product && $product->is_in_stock() && $product->get_price()) {
                             $product_array_price[$product_id] = $product->get_price();
+                        }else{
+                            $exclude_products[] = $product_id;
                         }
                     }
                 }

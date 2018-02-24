@@ -65,7 +65,7 @@ Class WCMp_Admin_Dashboard {
                                 if (isset($response['transaction_id'])) {
                                     $redirect_url = wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_transaction_details_endpoint', 'vendor', 'general', 'transaction-details'), $response['transaction_id']);
                                     $notice = $this->get_wcmp_transaction_notice($response['transaction_id']);
-                                    if(isset($notice['type'])){
+                                    if (isset($notice['type'])) {
                                         wc_add_notice($notice['message'], $notice['type']);
                                     }
                                     wp_safe_redirect($redirect_url);
@@ -90,11 +90,11 @@ Class WCMp_Admin_Dashboard {
             }
         }
     }
-    
-    public function get_wcmp_transaction_notice($transaction_id){
+
+    public function get_wcmp_transaction_notice($transaction_id) {
         $transaction = get_post($transaction_id);
         $notice = array();
-        switch ($transaction->post_status){
+        switch ($transaction->post_status) {
             case 'wcmp_processing':
                 $notice = array('type' => 'success', 'message' => __('Your withdrawal request has been sent to the admin and your commission will be disbursed shortly!', 'dc-woocommerce-multi-vendor'));
                 break;
@@ -206,8 +206,8 @@ Class WCMp_Admin_Dashboard {
                 $vendor = apply_filters('wcmp_order_details_export_vendor', $vendor);
                 $start_date = isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('01-m-Y');
                 $end_date = isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('t-m-Y');
-                $start_date = strtotime( '-1 day', strtotime($start_date));
-                $end_date = strtotime( '+1 day', strtotime($end_date));
+                $start_date = strtotime('-1 day', strtotime($start_date));
+                $end_date = strtotime('+1 day', strtotime($end_date));
                 $query = array(
                     'date_query' => array(
                         array(
@@ -410,10 +410,12 @@ Class WCMp_Admin_Dashboard {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!empty($_POST['wcmp_submit_comment'])) {
                 // verify nonce
-                if ( $_POST['vendor_add_order_nonce'] && !wp_verify_nonce( $_POST['vendor_add_order_nonce'], 'dc-vendor-add-order-comment' )) return false;
+                if ($_POST['vendor_add_order_nonce'] && !wp_verify_nonce($_POST['vendor_add_order_nonce'], 'dc-vendor-add-order-comment'))
+                    return false;
                 $vendor = get_current_vendor();
                 // Don't submit empty comments
-                if (empty($_POST['comment_text'])) return false;
+                if (empty($_POST['comment_text']))
+                    return false;
                 // Only submit if the order has the product belonging to this vendor
                 $order = wc_get_order($_POST['order_id']);
                 $comment = esc_textarea($_POST['comment_text']);
@@ -424,7 +426,7 @@ Class WCMp_Admin_Dashboard {
             }
         }
     }
-    
+
     /**
      * Vendor tools handler 
      *
@@ -437,7 +439,7 @@ Class WCMp_Admin_Dashboard {
         $tools_action = isset($_REQUEST['tools_action']) ? $_REQUEST['tools_action'] : '';
         if ($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_clear_vendor_transients') && $tools_action && $tools_action == 'clear_all_transients') {
             if (current_user_can('delete_published_products')) {
-                if($vendor->clear_all_transients($vendor->id)){
+                if ($vendor->clear_all_transients($vendor->id)) {
                     wc_add_notice(__('Vendor transients cleared!', 'dc-woocommerce-multi-vendor'), 'success');
                 }
                 wp_redirect(esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_tools_endpoint', 'vendor', 'general', 'vendor-tools'))));
@@ -546,7 +548,7 @@ Class WCMp_Admin_Dashboard {
                                         <tr>
                                             <td></td>
                                             <td>
-                                                <?php echo strip_tags($instance_field['description'], '<code>'); ?> <br><br>
+                                        <?php echo strip_tags($instance_field['description'], '<code>'); ?> <br><br>
                                             </td>
                                         </tr>
                                         <?php
@@ -557,8 +559,8 @@ Class WCMp_Admin_Dashboard {
                         ?>						
                     </tbody>
                 </table>
-                <?php do_action('wcmp_vendor_shipping_settings'); ?>
-                <?php submit_button(); ?>
+        <?php do_action('wcmp_vendor_shipping_settings'); ?>
+        <?php submit_button(); ?>
             </form>
             <br class="clear"/>
         </div>
@@ -611,7 +613,7 @@ Class WCMp_Admin_Dashboard {
             <form id="posts-filter" method="get">
 
                 <input type="hidden" name="page" value="dc-vendor-orders"/>
-                <?php $this->wcmp_vendor_order_page->display(); ?>
+        <?php $this->wcmp_vendor_order_page->display(); ?>
 
             </form>
             <div id="ajax-response"></div>
@@ -645,8 +647,8 @@ Class WCMp_Admin_Dashboard {
         ?>
         <p class="form-field dimensions_field">
             <label for="product_shipping_class"><?php _e('Shipping class', 'dc-woocommerce-multi-vendor'); ?></label>
-            <?php wp_dropdown_categories($args); ?>
-            <?php echo wc_help_tip(__('Shipping classes are used by certain shipping methods to group similar products.', 'dc-woocommerce-multi-vendor')); ?>
+        <?php wp_dropdown_categories($args); ?>
+        <?php echo wc_help_tip(__('Shipping classes are used by certain shipping methods to group similar products.', 'dc-woocommerce-multi-vendor')); ?>
         </p>
         <script type="text/javascript">
             jQuery('#product_shipping_class').closest("p").remove();
@@ -715,18 +717,18 @@ Class WCMp_Admin_Dashboard {
                         return $err_msg;
                     }
                 }
-                
-                if ($fieldkey == 'vendor_description'){
+
+                if ($fieldkey == 'vendor_description') {
                     update_user_meta($user_id, '_' . $fieldkey, $post[$fieldkey]);
-                }else{
+                } else {
                     // social url validation
-                    if(in_array($fieldkey, array('vendor_fb_profile', 'vendor_twitter_profile', 'vendor_google_plus_profile', 'vendor_linkdin_profile', 'vendor_youtube', 'vendor_instagram'))){
-                        if(!empty($post[$fieldkey]) && filter_var($post[$fieldkey], FILTER_VALIDATE_URL)) {
+                    if (in_array($fieldkey, array('vendor_fb_profile', 'vendor_twitter_profile', 'vendor_google_plus_profile', 'vendor_linkdin_profile', 'vendor_youtube', 'vendor_instagram'))) {
+                        if (!empty($post[$fieldkey]) && filter_var($post[$fieldkey], FILTER_VALIDATE_URL)) {
                             update_user_meta($user_id, '_' . $fieldkey, $post[$fieldkey]);
-                        }else{
+                        } else {
                             update_user_meta($user_id, '_' . $fieldkey, '');
                         }
-                    }else{
+                    } else {
                         update_user_meta($user_id, '_' . $fieldkey, $post[$fieldkey]);
                     }
                 }
@@ -749,7 +751,7 @@ Class WCMp_Admin_Dashboard {
                     } else {
                         wp_update_user(array('ID' => $user_id, 'display_name' => $post[$fieldkey]));
                     }
-                } 
+                }
             } else if (!isset($post['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
                 delete_user_meta($user_id, '_vendor_hide_description');
             } else if (!isset($post['vendor_hide_email']) && $fieldkey == 'vendor_hide_email') {
@@ -773,7 +775,15 @@ Class WCMp_Admin_Dashboard {
             update_user_meta($user_id, '_store_lng', $_POST['_store_lng']);
         }
         if (isset($_POST['timezone_string']) && !empty($_POST['timezone_string'])) {
+            if (!empty($_POST['timezone_string']) && preg_match('/^UTC[+-]/', $_POST['timezone_string'])) {
+                $_POST['gmt_offset'] = $_POST['timezone_string'];
+                $_POST['gmt_offset'] = preg_replace('/UTC\+?/', '', $_POST['gmt_offset']);
+                $_POST['timezone_string'] = '';
+            } else{
+                $_POST['gmt_offset'] = 0;
+            }
             update_user_meta($user_id, 'timezone_string', $_POST['timezone_string']);
+            update_user_meta($user_id, 'gmt_offset', $_POST['gmt_offset']);
         }
     }
 
@@ -811,7 +821,7 @@ Class WCMp_Admin_Dashboard {
             }
         }
     }
-    
+
     /**
      * Add vendor dashboard header navigation
      * @since 3.0.0
@@ -858,7 +868,7 @@ Class WCMp_Admin_Dashboard {
         );
         return apply_filters('wcmp_vendor_dashboard_header_nav', $header_nav);
     }
-    
+
     /**
      * Add vendor dashboard header right panel navigation
      * @since 3.0.0
@@ -900,40 +910,39 @@ Class WCMp_Admin_Dashboard {
      * Add vendor dashboard widgets
      * @since 3.0.0
      */
-    public function wcmp_dashboard_setup() { 
+    public function wcmp_dashboard_setup() {
         $vendor = get_wcmp_vendor(get_current_user_id());
         $this->wcmp_add_dashboard_widget('wcmp_vendor_stats_reports', '', array(&$this, 'wcmp_vendor_stats_reports'), 'full');
         $trans_details_widget_args = array();
-        if(apply_filters('wcmp_vendor_dashboard_menu_vendor_withdrawal_capability', false)){
-            $trans_details_widget_args['action'] = array('title' => __('Withdrawal','dc-woocommerce-multi-vendor'),'link'=> esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'vendor-withdrawal'))));
+        if (apply_filters('wcmp_vendor_dashboard_menu_vendor_withdrawal_capability', false)) {
+            $trans_details_widget_args['action'] = array('title' => __('Withdrawal', 'dc-woocommerce-multi-vendor'), 'link' => esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'vendor-withdrawal'))));
         }
-        $this->wcmp_add_dashboard_widget('wcmp_vendor_transaction_details', __('Transaction Details', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_transaction_details'), 'side', array(),$trans_details_widget_args);
+        $this->wcmp_add_dashboard_widget('wcmp_vendor_transaction_details', __('Transaction Details', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_transaction_details'), 'side', array(), $trans_details_widget_args);
         $visitor_map_filter_attr = apply_filters('wcmp_vendor_visitors_map_filter_attr', array(
             '7' => __('Last 7 days', 'dc-woocommerce-multi-vendor'),
             '30' => __('Last 30 days', 'dc-woocommerce-multi-vendor'),
         ));
         $visitor_map_filter = '<div class="widget-action-area pull-right">
             <select id="wcmp_visitor_stats_date_filter" class="form-control">';
-        if($visitor_map_filter_attr){
+        if ($visitor_map_filter_attr) {
             foreach ($visitor_map_filter_attr as $key => $value) {
-                $visitor_map_filter .= '<option value="'.$key.'">'.$value.'</option>';
+                $visitor_map_filter .= '<option value="' . $key . '">' . $value . '</option>';
             }
         }
         $visitor_map_filter .= '</select>
         </div>';
-        $this->wcmp_add_dashboard_widget('wcmp_vendor_visitors_map', __('Visitors Map', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_visitors_map'),'normal', '', array('action' => array('html' => $visitor_map_filter)) );
+        $this->wcmp_add_dashboard_widget('wcmp_vendor_visitors_map', __('Visitors Map', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_visitors_map'), 'normal', '', array('action' => array('html' => $visitor_map_filter)));
         if ($vendor->is_shipping_enable()):
             $this->wcmp_add_dashboard_widget('wcmp_vendor_pending_shipping', __('Pending Shipping', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_pending_shipping'));
         endif;
         if (current_user_can('edit_products')) {
-            $this->wcmp_add_dashboard_widget('wcmp_vendor_product_stats', __('Product Stats', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_product_stats'), 'side','',array('action' => array('title' => __('Add Product','dc-woocommerce-multi-vendor'),'link'=> esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'))))));
+            $this->wcmp_add_dashboard_widget('wcmp_vendor_product_stats', __('Product Stats', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_product_stats'), 'side', '', array('action' => array('title' => __('Add Product', 'dc-woocommerce-multi-vendor'), 'link' => esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'))))));
             $this->wcmp_add_dashboard_widget('wcmp_vendor_product_sales_report', __('Product Sales Report', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_product_sales_report'));
         }
         if (get_wcmp_vendor_settings('is_sellerreview', 'general') == 'Enable') {
             $this->wcmp_add_dashboard_widget('wcmp_customer_reviews', __('Reviews', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_customer_review'));
         }
         $this->wcmp_add_dashboard_widget('wcmp_vendor_products_cust_qna', __('Customer Questions', 'dc-woocommerce-multi-vendor'), array(&$this, 'wcmp_vendor_products_cust_qna'), 'side');
-        
     }
 
     /**
@@ -978,11 +987,11 @@ Class WCMp_Admin_Dashboard {
             return;
         }
         $wcmp_dashboard_widget = apply_filters('before_wcmp_dashboard_widget', $wcmp_dashboard_widget);
-        if($wcmp_dashboard_widget){
+        if ($wcmp_dashboard_widget) {
             foreach ($wcmp_dashboard_widget as $context => $dashboard_widget) {
                 if ($place == $context) {
                     foreach ($dashboard_widget as $widget_id => $widget) {
-                        echo '<div class="panel panel-default pannel-outer-heading wcmp-dash-widget '.$widget_id.'">';
+                        echo '<div class="panel panel-default pannel-outer-heading wcmp-dash-widget ' . $widget_id . '">';
                         $this->build_widget_header($widget['title'], $widget['args']);
                         echo '<div class="panel-body">';
                         call_user_func($widget['callback'], $widget['calback_args']);
@@ -1008,7 +1017,7 @@ Class WCMp_Admin_Dashboard {
                     <?php if (!empty($args['icon'])) : ?>
                         <span class="icon_stand dashicons-before <?php echo $args['icon']; ?>"></span>
                     <?php endif; ?>
-                    <?php echo $title; ?>
+            <?php echo $title; ?>
                 </h3>
             </div>
             <div class="clearfix"></div>
@@ -1025,17 +1034,19 @@ Class WCMp_Admin_Dashboard {
         if (!empty($args['action'])) {
             ?>
             <div class="panel-footer">
-                <?php if (isset($args['action']['link']) && isset($args['action']['title'])) { ?>
-                <a href="<?php echo $args['action']['link']; ?>" class="footer-link">
-                    <?php
-                    if (isset($args['action']['icon'])) {
-                        echo '<span class="icon_stand dashicons-before ' . $args['action']['icon'] . '"></span>';
-                    }
-                    ?>
-                    <?php echo $args['action']['title']; ?>
-                    <i class="wcmp-font ico-right-arrow-icon"></i>
-                </a>
-                <?php } if(isset($args['action']['html'])) { echo $args['action']['html']; } ?>
+                    <?php if (isset($args['action']['link']) && isset($args['action']['title'])) { ?>
+                    <a href="<?php echo $args['action']['link']; ?>" class="footer-link">
+                        <?php
+                        if (isset($args['action']['icon'])) {
+                            echo '<span class="icon_stand dashicons-before ' . $args['action']['icon'] . '"></span>';
+                        }
+                        ?>
+                <?php echo $args['action']['title']; ?>
+                        <i class="wcmp-font ico-right-arrow-icon"></i>
+                    </a>
+            <?php } if (isset($args['action']['html'])) {
+                echo $args['action']['html'];
+            } ?>
             </div>
             <div class="clearfix"></div>
             <?php
@@ -1050,7 +1061,7 @@ Class WCMp_Admin_Dashboard {
         $default_data['stats_reports_periods'] = apply_filters('wcmp_vendor_stats_reports_periods', array(
             '7' => __('Last 7 days', 'dc-woocommerce-multi-vendor'),
             '30' => __('Last 30 days', 'dc-woocommerce-multi-vendor'),
-            ));
+        ));
         $default_data['vendor_report_data'] = $vendor_report_data;
         $default_data['payment_mode'] = ucwords(str_replace('_', ' ', $vendor->payment_mode));
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_stats_reports.php', $default_data);
@@ -1147,7 +1158,7 @@ Class WCMp_Admin_Dashboard {
                 $sold_product_list[$product_id]['qty'] = $value->quantity;
                 $sold_product_list[$product_id]['item_id'] = $value->order_item_id;
                 $sold_product_list[$product_id]['order_id'] = $value->order_id;
-                
+
                 //print_r(get_items($value->order_item_id));die();
             }
         }
@@ -1157,7 +1168,7 @@ Class WCMp_Admin_Dashboard {
         foreach ($sold_product_list as $key => $value) {
             $product_id = $key;
             $product = wc_get_product($product_id);
-            if($product){
+            if ($product) {
                 $sold_product_list_sorted[$product_id]['exists'] = '1';
                 $sold_product_list_sorted[$product_id]['qty'] = $value['qty'];
                 $sold_product_list_sorted[$product_id]['name'] = $product->get_name();
@@ -1168,12 +1179,11 @@ Class WCMp_Admin_Dashboard {
                 $sold_product_list_sorted[$product_id]['exists'] = '0';
                 $sold_product_list_sorted[$product_id]['qty'] = $value['qty'];
                 $order = wc_get_order($sold_product_list[$product_id]['order_id']);
-                $abc =  $order->get_item( $sold_product_list[$product_id]['item_id'] );
+                $abc = $order->get_item($sold_product_list[$product_id]['item_id']);
                 //print_r($abc->get_name());die();
                 $sold_product_list_sorted[$product_id]['name'] = $abc->get_name();
                 $sold_product_list_sorted[$product_id]['price'] = $abc->get_price('edit');
             }
-            
         }
         //print_r($sold_product_list_sorted);die();
         //variables to send $sold_product_list_sorted
@@ -1208,7 +1218,7 @@ Class WCMp_Admin_Dashboard {
             if ($count <= 5) {
                 //$transaction_display_array[$transaction_id] = $details['total_amount'];
                 //$transaction_display_array['id'] = $transaction_id;
-                $transaction_display_array[$transaction_id]['transaction_date'] = date(wc_date_format(), strtotime($details['post_date']));
+                $transaction_display_array[$transaction_id]['transaction_date'] = wcmp_date($details['post_date']);
                 $transaction_display_array[$transaction_id]['total_amount'] = $details['total_amount'];
             }
 
@@ -1223,8 +1233,8 @@ Class WCMp_Admin_Dashboard {
         global $WCMp;
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_products_cust_qna.php');
     }
-    
-    public function wcmp_vendor_visitors_map(){
+
+    public function wcmp_vendor_visitors_map() {
         global $WCMp;
         $WCMp->library->load_jqvmap_script_lib();
         $vendor = get_current_vendor();

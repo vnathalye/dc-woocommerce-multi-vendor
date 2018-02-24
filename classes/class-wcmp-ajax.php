@@ -167,7 +167,7 @@ class WCMp_Ajax {
                 $data[] = array(
                     'select_order' => '<input type="checkbox" class="select_' . $order->get_status() . '" name="selected_orders[' . $order->get_id() . ']" value="' . $order->get_id() . '" />',
                     'order_id' => $order->get_id(),
-                    'order_date' => $order->get_date_created()->date(wc_date_format()),
+                    'order_date' => wcmp_date($order->get_date_created()),
                     'vendor_earning' => wc_price(get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()))['total']),
                     'order_status' => ucfirst($order->get_status()),
                     'action' => $action_html
@@ -2233,7 +2233,7 @@ class WCMp_Ajax {
                         $product_cats = implode(' | ', $termlist);
                     }
                     $status = ucfirst($product->get_status());
-                    if($status = 'Publish'){
+                    if($product->get_status() == 'publish'){
                         $status = __('Published', 'dc-woocommerce-multi-vendor');
                     }
 
@@ -2242,7 +2242,7 @@ class WCMp_Ajax {
                     $row ['price'] = '<td>' . $product->get_price_html() . '</td>';
                     $row ['stock'] = '<td>' . $stock_html . '</td>';
                     $row ['categories'] = '<td>' . $product_cats . '</td>';
-                    $row ['date'] = '<td>' . wc_string_to_datetime($product->get_date_created())->date(wc_date_format()) . '</td>';
+                    $row ['date'] = '<td>' . wcmp_date($product->get_date_created()) . '</td>';
                     $row ['status'] = '<td>' . $status . '</td>';
                     $data[] = $row;
                 }
@@ -2375,7 +2375,7 @@ class WCMp_Ajax {
                     $row ['coupons'] = '<a href="' . esc_url($edit_coupon_link) . '">' . get_the_title($coupon_single->ID) . '</a>'.$action_html;
                     $row ['amount'] = $coupon->get_amount();
                     $row ['uses_limit'] = $usage_count.' / '.$usage_limit;
-                    $row ['expiry_date'] = wc_string_to_datetime($coupon->get_date_expires())->date(wc_date_format());
+                    $row ['expiry_date'] = wcmp_date($coupon->get_date_expires());
                     $data[] = $row;
                 }
             }
@@ -2404,13 +2404,14 @@ class WCMp_Ajax {
             $data = array();
             if (!empty($transaction_details)) {
                 foreach ($transaction_details as $transaction_id => $detail) {
+                    $trans_post = get_post($transaction_id);
                     $order_ids = $commssion_ids = '';
                     $commission_details = get_post_meta($transaction_id, 'commission_detail', true);
                     $transfer_charge = get_post_meta($transaction_id, 'transfer_charge', true);
                     $transaction_amt = get_post_meta($transaction_id, 'amount', true) - get_post_meta($transaction_id, 'transfer_charge', true) - get_post_meta($transaction_id, 'gateway_charge', true);
                     $row = array();
                     $row ['select_transaction'] = '<input name="transaction_ids[]" value="' . $transaction_id . '"  class="select_transaction" type="checkbox" >';
-                    $row ['date'] = get_the_date(wc_date_format(), $transaction_id);
+                    $row ['date'] = wcmp_date($trans_post->post_date);
                     $row ['transaction_id'] = '<a href="' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'transaction-details'), $transaction_id)) . '">#' . $transaction_id . '</a>';
                     $row ['commission_ids'] = '#' . implode(', #', $commission_details);
                     $row ['fees'] = isset($transfer_charge) ? wc_price($transfer_charge) : wc_price(0);
@@ -2672,7 +2673,7 @@ class WCMp_Ajax {
                             <div class="media-body">
                                 <h4 class="media-heading qna-question">'.$data->ques_details.'</h4>
                                 <time class="qna-date">
-                                    <span>'.date(wc_date_format(), strtotime($data->ques_created)).'</span>
+                                    <span>'.wcmp_date($data->ques_created).'</span>
                                 </time>
                                 <a data-toggle="modal" data-target="#qna-reply-modal-'.$data->ques_ID.'" >'.__('Reply', 'dc-woocommerce-multi-vendor').'</a>
                                 <!-- Modal -->

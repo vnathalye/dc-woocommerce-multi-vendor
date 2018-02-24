@@ -39,7 +39,7 @@ $subtotal = 0;
     <div class="icon-header">
         <span><i class="wcmp-font ico-order-details-icon"></i></span>
         <h2><?php _e('Order #', 'dc-woocommerce-multi-vendor'); ?><?php echo $order->get_id(); ?></h2>
-        <h3><?php _e('was placed on', 'dc-woocommerce-multi-vendor'); ?> <?php echo $order->get_date_created()->date(wc_date_format()); ?> <?php _e('and is currently', 'dc-woocommerce-multi-vendor'); ?> <span class="<?php echo $order->get_status(); ?>" style="float:none;"><?php echo ucfirst($order->get_status()); ?>.</span></h3>
+        <h3><?php _e('was placed on', 'dc-woocommerce-multi-vendor'); ?> <?php echo wcmp_date($order->get_date_created()); ?> <?php _e('and is currently', 'dc-woocommerce-multi-vendor'); ?> <span class="<?php echo $order->get_status(); ?>" style="float:none;"><?php echo ucfirst($order->get_status()); ?>.</span></h3>
     </div>
     <div class="row">
         <div class="col-md-8">

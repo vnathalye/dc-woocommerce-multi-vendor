@@ -9,8 +9,8 @@
  */
 class WCMp_Calculate_Commission {
 
-    private $completed_statuses;
-    private $reverse_statuses;
+    public $completed_statuses;
+    public $reverse_statuses;
 
     public function __construct() {
         

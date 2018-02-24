@@ -9,7 +9,7 @@
 		foreach ($transaction_display_array as $key => $value) {
                     //print_r($value);
                     
-			echo "<li><p>".$value['transaction_date']."<span class='order-id'>#".$key."</span></p><span class='pull-right'>".wc_price($value['total_amount'])."</span></li>";	
+			echo "<li><p>".wcmp_date($value['transaction_date'])."<span class='order-id'>#".$key."</span></p><span class='pull-right'>".wc_price($value['total_amount'])."</span></li>";	
 		}?>
 	</ul>
     <?php endif; ?>

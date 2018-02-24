@@ -402,6 +402,8 @@ class WCMp_Frontend {
         wp_register_style('product_css', $frontend_style_path . 'product' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('vendor_order_by_product_css', $frontend_style_path . 'vendor_order_by_product' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('vandor-dashboard-style', $frontend_style_path . 'vendor_dashboard' . $suffix . '.css', array(), $WCMp->version);
+        // Add RTL support
+        wp_style_add_data( 'vandor-dashboard-style', 'rtl', 'replace' );
         wp_register_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('wcmp_custom_scroller', $frontend_style_path . 'jquery.mCustomScrollbar.css', array(), $WCMp->version);
 

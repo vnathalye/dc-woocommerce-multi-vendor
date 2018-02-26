@@ -527,7 +527,7 @@ class WCMp_Admin {
                 <span class="txt"><?php _e('WC Marketplace 3.0! It’s online marketplace experience at its highest level yet.', 'dc-woocommerce-multi-vendor') ?>  </span>
                 <div class="rightside">        
                     <a href="https://wc-marketplace.com/version-highlights/" target="_blank" class="wcmp_btn_service_claim_now"><?php _e('Version Highlights', 'dc-woocommerce-multi-vendor'); ?></a>
-                    <span class="link"><a href="https://github.com/dualcube/dc-woocommerce-multi-vendor" target="_blank"><?php _e('Lend a Hand?', 'dc-woocommerce-multi-vendor'); ?></a></span>
+                    <span class="link"><a href="https://wc-marketplace.com/version-highlights/?utm_source=WordPress&utm_medium=wp_admin&utm_campaign=admin_notice" target="_blank"><?php _e('Lend a Hand?', 'dc-woocommerce-multi-vendor'); ?></a></span>
                     <button onclick="dismiss_servive_notice(event);" type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
                 </div>
 

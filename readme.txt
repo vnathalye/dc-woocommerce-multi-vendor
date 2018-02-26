@@ -16,7 +16,7 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
-> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/) before upgrading your marketplace to avoid any undesirable situations.</strong>
+> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/?utm_source=WordPress&utm_medium=plugin_desc&utm_campaign=update_notice) before upgrading your marketplace to avoid any undesirable situations.</strong>
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 
@@ -91,22 +91,17 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Screenshots ==
-1. General settings: `Default commission` and other general configurables.
-2. Vendor dashboard endpoints settings.
-3. Vendor product capability settings.
-4. Frontend settings.
-5. Vendor order capability settings.
-6. Other capabilities settings.
+1. Vendor Dashboard.
+2. General settings.
+3. Vendor front-end settings.
+4. Payment settings.
+5. Capability settings.
+6. Vendor storefront settings.
 7. Vendor commissions.
-8. Admin can change vendors and set rate of commission from `Edit Product`.
-9. Vendor sales reports.
-10. Product specific sales report.
-11. Vendor dashboard.
-12. Vendor shop settings.
-13. Vendor can see their total sales report.
-14. Vendor's orders page.
-15. Customers can report abuse products.
-16. Show Multiple Seller in Single Product.
+8. Vendor sales reports.
+9. Product specific sales report.
+10. Customers can report abuse products.
+11. Show Multiple Seller in Single Product.
 
 
 

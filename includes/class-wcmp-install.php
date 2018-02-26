@@ -19,9 +19,7 @@ class WCMp_Install {
         if (!get_option('dc_product_vendor_plugin_db_version')) {
             $this->save_default_plugin_settings();
         }
-        if(!get_option('wcmp_table_created')){
-            $this->wcmp_plugin_tables_install();
-        }
+        $this->wcmp_plugin_tables_install();
         $this->remove_other_vendors_plugin_role();
         self::register_user_role();
         if (!get_option("dc_product_vendor_plugin_page_install")) {

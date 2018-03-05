@@ -74,6 +74,7 @@ class WCMp_Product {
             add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
             if (!defined('WCMP_HIDE_MULTIPLE_PRODUCT')) {
+                add_action('woocommerce_shop_loop', array(&$this, 'woocommerce_shop_loop_callback'), 5);
                 add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
             }
         }
@@ -668,14 +669,14 @@ class WCMp_Product {
      */
     function on_all_status_transitions($new_status, $old_status, $post) {
         global $WCMp;
-        if ( 'product' !== $post->post_type || $new_status === $old_status ) {
+        if ('product' !== $post->post_type || $new_status === $old_status) {
             return;
         }
         // skip for new posts and auto drafts
-        if ( 'new' === $old_status || 'auto-draft' === $old_status ) {
+        if ('new' === $old_status || 'auto-draft' === $old_status) {
             return;
         }
-        
+
         if ($new_status != $old_status && $post->post_status == 'pending') {
             $current_user = get_current_vendor_id();
             if ($current_user)
@@ -910,7 +911,7 @@ class WCMp_Product {
             if (isset($_POST['fixed_with_percentage'])) {
                 update_post_meta($post_id, '_commission_fixed_with_percentage', $_POST['fixed_with_percentage']);
             }
-
+            
             if (isset($_POST['choose_vendor']) && !empty($_POST['choose_vendor'])) {
 
                 $term = get_term($_POST['choose_vendor'], $WCMp->taxonomy->taxonomy_name);
@@ -927,6 +928,23 @@ class WCMp_Product {
                     wp_update_post(array('ID' => $post_id, 'post_author' => $vendor->id));
                     // re-hook this function
                     add_action('save_post', array($this, 'process_vendor_data'));
+                }
+            }else{
+                // vendor assign with product
+                if(is_user_wcmp_vendor(get_current_user_id())){
+                    $vendor = get_wcmp_vendor(get_current_user_id());
+                    wp_delete_object_term_relationships($post_id, $WCMp->taxonomy->taxonomy_name);
+                    $term = get_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
+                    wp_set_post_terms($post_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    $vendor = get_wcmp_vendor_by_term($vendor->term_id);
+                    if (!wp_is_post_revision($post_id)) {
+                        // unhook this function so it doesn't loop infinitely
+                        remove_action('save_post', array($this, 'process_vendor_data'));
+                        // update the post, which calls save_post again
+                        wp_update_post(array('ID' => $post_id, 'post_author' => $vendor->id));
+                        // re-hook this function
+                        add_action('save_post', array($this, 'process_vendor_data'));
+                    }
                 }
             }
 
@@ -1287,40 +1305,43 @@ class WCMp_Product {
         }
     }
 
+    public function woocommerce_shop_loop_callback($product = null) {
+        global $WCMp, $post;
+        if (is_tax($WCMp->taxonomy->taxonomy_name)) {
+            return;
+        }
+        if (!is_object($product)) {
+            global $product;
+        }
+
+        if (!is_a($product, 'WC_Product')) {
+            return;
+        }
+        $child_products = wc_get_products(array('post_parent' => $product->get_id()));
+        if ($child_products) {
+            $product_array_price[$product->get_id()] = $product->get_price();
+            foreach ($child_products as $child_product) {
+                if ($child_product->is_in_stock() && $product->get_price()) {
+                    $product_array_price[$child_product->get_id()] = $child_product->get_price();
+                }
+            }
+            $filtered_product = apply_filters('wcmp_spmv_filtered_product', array_search(min($product_array_price), $product_array_price), $product->get_id(), array_keys($product_array_price));
+            $post = get_post($filtered_product);
+            $product = wc_get_product($filtered_product);
+        }
+    }
+
     /**
      * filter shop loop for single product multiple vendor
      * @global Object $wpdb
      * @param WC_Query object $q
      */
     public function woocommerce_product_query($q) {
-        global $wpdb, $WCMp;
+        global $WCMp;
         if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             return;
         }
-        $exclude_products = array();
-        $resualts = $wpdb->get_results("SELECT `product_ids` FROM {$wpdb->prefix}wcmp_products_map");
-        if ($resualts) {
-            foreach ($resualts as $resualt) {
-                $product_ids = explode(',', $resualt->product_ids);
-                $product_array_price = array();
-                if (count($product_ids) > 1) {
-                    foreach ($product_ids as $product_id) {
-                        $product = wc_get_product(absint($product_id));
-                        if ($product && $product->is_in_stock() && $product->get_price()) {
-                            $product_array_price[$product_id] = $product->get_price();
-                        }else{
-                            $exclude_products[] = $product_id;
-                        }
-                    }
-                }
-                if ($product_array_price) {
-                    $min_product = array_search(min($product_array_price), $product_array_price);
-                    unset($product_array_price[$min_product]);
-                    $exclude_products = array_merge($exclude_products, array_keys($product_array_price));
-                }
-            }
-        }
-        $q->set('post__not_in', array_unique($exclude_products));
+        $q->set('post_parent', 0);
     }
 
     /**

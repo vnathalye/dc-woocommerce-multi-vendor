@@ -73,8 +73,8 @@ if ($products_table_headers) {
         }
         ?>
                 obj = {};
-                obj['data'] = "<?php echo $key; ?>";
-                obj['className'] = "<?php echo $key; ?>";
+                obj['data'] = '<?php echo $key; ?>';
+                obj['className'] = '<?php echo $key; ?>';
                 obj['orderable'] = <?php echo $orderable; ?>;
                 columns.push(obj);
     <?php
@@ -85,8 +85,8 @@ $terms = get_terms('product_cat', $args);
 foreach ($terms as $term) {
     ?>
             obj = {};
-            obj['key'] = "<?php echo $term->term_id; ?>";
-            obj['label'] = "<?php echo $term->name; ?>";
+            obj['key'] = '<?php echo $term->term_id; ?>';
+            obj['label'] = '<?php echo $term->name; ?>';
             filter_by_category_list.push(obj);
 <?php }
 ?>

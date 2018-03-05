@@ -47,7 +47,6 @@ class WCMp_Settings {
     }
 
     public function wcmp_settings_admin_header() {
-        // Get the current screen, and check whether we're viewing a MonsterInsights screen;
         $screen = get_current_screen();
         if (empty($screen->id) || strpos($screen->id, 'wcmp_page_wcmp-setting-admin') === false) {
             return;
@@ -348,7 +347,7 @@ class WCMp_Settings {
             }
 
             foreach ($this->tabs as $tab_id => $tab_name) {
-                $this->options = array_merge($this->options, get_option("wcmp_{$tab_id}_settings_name", array()));
+                $this->options = array_merge($this->options, (array)get_option("wcmp_{$tab_id}_settings_name", array()));
                 if ($this->is_wcmp_tab_has_subtab($tab_id)) {
                     foreach ($this->get_wcmp_subtabs($tab_id) as $subtab_id => $subtab_name) {
                         $this->options = array_merge($this->options, get_option("wcmp_{$tab_id}_{$subtab_id}_settings_name", array()));
@@ -505,6 +504,7 @@ class WCMp_Settings {
                 if (isset($section['fields'])) {
                     foreach ($section['fields'] as $fieldID => $field) {
                         if (isset($field['type'])) {
+                            $field['title'] = isset($field['title']) ? $field['title'] : '';
                             $field['tab'] = $tab_options['tab'];
                             $callbak = $this->get_field_callback_type($field['type']);
                             if (!empty($callbak)) {
@@ -590,19 +590,19 @@ class WCMp_Settings {
     public function general_tab_init($tab) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}", $WCMp->plugin_path, $WCMp->token);
-        new WCMp_Settings_Gneral($tab);
+        new WCMp_Settings_General($tab);
     }
 
     public function general_policies_tab_init($tab, $subsection) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
-        new WCMp_Settings_Gneral_Policies($tab, $subsection);
+        new WCMp_Settings_General_Policies($tab, $subsection);
     }
 
     public function general_customer_support_details_tab_init($tab, $subsection) {
         global $WCMp;
         $WCMp->admin->load_class("settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token);
-        new WCMp_Settings_Gneral_Customer_support_Details($tab, $subsection);
+        new WCMp_Settings_General_Customer_support_Details($tab, $subsection);
     }
 
     public function capabilites_product_tab_init($tab, $subsection) {
@@ -762,6 +762,10 @@ class WCMp_Settings {
             case 'multiinput':
                 $callBack = 'multiinput_callback';
                 break;
+            
+            case 'label':
+                $callBack = 'label_callback';
+                break;
 
             default:
                 $callBack = '';
@@ -792,6 +796,16 @@ class WCMp_Settings {
         $field['value'] = isset($this->options[$field['name']]) ? esc_attr($this->options[$field['name']]) : $field['value'];
         $field['name'] = "wcmp_{$field['tab']}_settings_name[{$field['name']}]";
         $WCMp->wcmp_wp_fields->text_input($field);
+    }
+    
+    /**
+     * Get the label field display
+     */
+    public function label_callback($field) {
+        global $WCMp;
+        $field['dfvalue'] = isset($field['dfvalue']) ? esc_attr($field['dfvalue']) : '';
+        $field['value'] = isset($field['value']) ? esc_attr($field['value']) : $field['dfvalue'];
+        $WCMp->wcmp_wp_fields->label_input($field);
     }
 
     /**

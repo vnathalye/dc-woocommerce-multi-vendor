@@ -1,6 +1,6 @@
 <?php
 
-class WCMp_Settings_Gneral_Policies {
+class WCMp_Settings_General_Policies {
 
     /**
      * Holds the values to be used in the fields callbacks

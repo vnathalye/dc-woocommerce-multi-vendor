@@ -173,6 +173,10 @@ final class WCMp {
         $this->init_vendor_dashboard();
         // Init vendor coupon
         $this->init_vendor_coupon();
+
+        if (!wp_next_scheduled('migrate_multivendor_table') && !get_option('multivendor_table_migrated', false)) {
+            wp_schedule_event(time(), 'hourly', 'migrate_multivendor_table');
+        }
         do_action('wcmp_init');
     }
 

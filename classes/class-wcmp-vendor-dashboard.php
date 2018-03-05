@@ -1175,19 +1175,8 @@ Class WCMp_Admin_Dashboard {
                 $sold_product_list_sorted[$product_id]['image'] = $product->get_image(array(40, 40));
                 $sold_product_list_sorted[$product_id]['price'] = $product->get_price('edit');
                 $sold_product_list_sorted[$product_id]['permalink'] = $product->get_permalink($product_id);
-            } else {
-                $sold_product_list_sorted[$product_id]['exists'] = '0';
-                $sold_product_list_sorted[$product_id]['qty'] = $value['qty'];
-                $order = wc_get_order($sold_product_list[$product_id]['order_id']);
-                $abc = $order->get_item($sold_product_list[$product_id]['item_id']);
-                //print_r($abc->get_name());die();
-                $sold_product_list_sorted[$product_id]['name'] = $abc->get_name();
-                $sold_product_list_sorted[$product_id]['price'] = $abc->get_price('edit');
             }
         }
-        //print_r($sold_product_list_sorted);die();
-        //variables to send $sold_product_list_sorted
-        //require_once(plugin_dir_path( __FILE__ ) . "wcmp_vendor_products_sold_last_week.php");
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_product_sales_report.php', array('sold_product_list_sorted' => $sold_product_list_sorted));
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-class WCMp_Settings_Gneral_Customer_support_Details {
+class WCMp_Settings_General_Customer_support_Details {
 
     /**
      * Holds the values to be used in the fields callbacks

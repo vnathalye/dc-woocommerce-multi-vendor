@@ -1,6 +1,6 @@
 <?php
 
-class WCMp_Settings_Gneral {
+class WCMp_Settings_General {
 
     /**
      * Holds the values to be used in the fields callbacks
@@ -29,7 +29,7 @@ class WCMp_Settings_Gneral {
         $settings_tab_options = array("tab" => "{$this->tab}",
             "ref" => &$this,
             "sections" => array(
-                "venor_approval_settings_section" => array("title" => '', // Section one
+                "vendor_approval_settings_section" => array("title" => '', // Section one
                     "fields" => apply_filters('wcmp_general_tab_filds', array(
 //                        "enable_registration" => array('title' => __('Vendor Registration', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'enable_registration', 'label_for' => 'enable_registration', 'text' => __('Anyone can register as vendor. Leave it unchecked if you want to keep your site an invite only marketpace.', 'dc-woocommerce-multi-vendor'), 'name' => 'enable_registration', 'value' => 'Enable'), // Checkbox
                         "approve_vendor_manually" => array('title' => __('Approve Vendors Manually', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'approve_vendor_manually', 'label_for' => 'approve_vendor_manually', 'text' => __('If left unchecked, every vendor applicant will be auto-approved, which is not a recommended setting.', 'dc-woocommerce-multi-vendor'), 'name' => 'approve_vendor_manually', 'value' => 'Enable'), // Checkbox
@@ -43,6 +43,8 @@ class WCMp_Settings_Gneral {
                         "is_policy_on" => array('title' => __('Enable Policies ', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_policy_on', 'label_for' => 'is_policy_on', 'name' => 'is_policy_on', 'value' => 'Enable', 'text' => __('If enabled a policy section will be added to single product page.', 'dc-woocommerce-multi-vendor')), // Checkbox
                         "is_customer_support_details" => array('title' => __('Enable Customer Support', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_customer_support_details', 'label_for' => 'is_customer_support_details', 'name' => 'is_customer_support_details', 'value' => 'Enable', 'text' => __('Show support channel details in "Thank You" page and new order email.', 'dc-woocommerce-multi-vendor')), // Checkbox
                         "show_related_products" => array('title' => __('Related Product Settings', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'show_related_products', 'name' => 'show_related_products', 'label_for' => 'show_related_products', 'desc' => stripslashes(__('Select related products to show on the single product page.', 'dc-woocommerce-multi-vendor')), 'options' => array('all_related' => __('Related Products from Entire Store', 'dc-woocommerce-multi-vendor'), 'vendors_related' => __("Related Products from Vendor's Store", 'dc-woocommerce-multi-vendor'), 'disable' => __('Disable', 'dc-woocommerce-multi-vendor'))), // select
+                        "is_title_tt" => array('label' => __('this is a title', 'dc-woocommerce-multi-vendor'), 'type' => 'title'),
+                        "test_manually" => array('type' => 'label', 'id' => 'test_manually', 'label_for' => 'test_manually', 'text' => __('If left unchecked, every vendor applicant will be auto-approved, which is not a recommended setting.', 'dc-woocommerce-multi-vendor'), 'name' => 'test_manually', 'value' => 'Enable'), // Checkbox
                         )
                     ),
                 ),

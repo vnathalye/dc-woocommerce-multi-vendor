@@ -47,7 +47,7 @@ if (!class_exists('WCMp_WP_Fields')) {
             $label = isset($field['label']) ? $field['label'] : '';
             echo "<h3>" . $label . "</h3>";
         }
-
+        
         /**
          * Output a text input box.
          *
@@ -84,6 +84,31 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             printf(
                     '<input type="%s" id="%s" name="%s" class="%s" value="%s" placeholder="%s" %s %s />', $field['type'], esc_attr($field['id']), esc_attr($field['name']), esc_attr($field['class']), esc_attr($this->string_wpml('' . $field['value'] . '')), esc_attr($this->string_wpml('' . $field['placeholder'] . '')), implode(' ', $custom_attributes), implode(' ', $attributes)
+            );
+            $this->field_wrapper_end($field);
+        }
+        
+        /**
+         * Output a Label input box.
+         *
+         * @access public
+         * @param array $field
+         * @return void
+         */
+        public function label_input($field) {
+            $field['class'] = isset($field['class']) ? $field['class'] : 'regular-text';
+            $field['dfvalue'] = isset($field['dfvalue']) ? $field['dfvalue'] : '';
+            $field['value'] = isset($field['value']) ? $field['value'] : $field['dfvalue'];
+            if (empty($field['value'])) {
+                $field['value'] = $field['dfvalue'];
+            }
+            $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
+            $field['type'] = isset($field['type']) ? $field['type'] : 'label';
+
+            $field = $this->field_wrapper_start($field);
+
+            printf(
+                    '<label id="%s" name="%s" class="%s" for="%s"> %s </label>', esc_attr($field['id']), esc_attr($field['name']), esc_attr($field['class']), esc_attr($field['name']), esc_attr($this->string_wpml('' . $field['value'] . ''))
             );
             $this->field_wrapper_end($field);
         }
@@ -242,7 +267,7 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             $this->field_wrapper_end($field);
         }
-        
+
         public function color_scheme_picker_input($field) {
             $field['class'] = isset($field['class']) ? $field['class'] : 'select short';
             $field['wrapper_class'] = isset($field['wrapper_class']) ? $field['wrapper_class'] : '';
@@ -254,20 +279,20 @@ if (!class_exists('WCMp_WP_Fields')) {
             $options = '';
             foreach ($field['options'] as $key => $value) {
                 $selected = ( $field['value'] == $key ) ? 'selected' : '';
-                $options .= '<div class="color-option '. $selected .'">'
+                $options .= '<div class="color-option ' . $selected . '">'
                         . '<label>'
-                        . '<input id="admin_color_'.esc_attr($key).'" class="' . esc_attr($field['class']) . '" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"> '
-                        . '<label for="admin_color_'.esc_attr($key).'">' . esc_html($value['label']) . '</label>'
+                        . '<input id="admin_color_' . esc_attr($key) . '" class="' . esc_attr($field['class']) . '" type="radio" ' . checked(esc_attr($field['value']), esc_attr($key), false) . ' value="' . esc_attr($key) . '" name="' . esc_attr($field['name']) . '"> '
+                        . '<label for="admin_color_' . esc_attr($key) . '">' . esc_html($value['label']) . '</label>'
                         . '<table class="color-palette">'
                         . '<tbody>'
                         . '<tr>';
-                foreach ($value['color'] as $color){
-                    $options .= '<td style="background-color: '.$color.'">&nbsp;</td>';
+                foreach ($value['color'] as $color) {
+                    $options .= '<td style="background-color: ' . $color . '">&nbsp;</td>';
                 }
                 $options .= '</tr>'
                         . '</tbody>'
                         . '</table>'
-                        .'</label>'
+                        . '</label>'
                         . '</div>';
             }
 
@@ -313,7 +338,15 @@ if (!class_exists('WCMp_WP_Fields')) {
 
             $options = '';
             foreach ($field['options'] as $key => $value) {
-                $options .= '<option value="' . esc_attr($key) . '" ' . selected(esc_attr($field['value']), esc_attr($key), false) . '>' . esc_html($this->string_wpml($value)) . '</option>';
+                if (is_array($value)) {
+                    $options .= '<optgroup label="' . $value['label'] . '">';
+                    foreach ($value['options'] as $key1 => $value1) {
+                        $options .= '<option value="' . esc_attr($key1) . '" ' . selected(esc_attr($field['value']), esc_attr($key1), false) . '>' . esc_html($this->string_wpml($value1)) . '</option>';
+                    }
+                    $options .= '</optgroup>';
+                } else {
+                    $options .= '<option value="' . esc_attr($key) . '" ' . selected(esc_attr($field['value']), esc_attr($key), false) . '>' . esc_html($this->string_wpml($value)) . '</option>';
+                }
             }
 
             $field = $this->field_wrapper_start($field);
@@ -558,6 +591,9 @@ if (!class_exists('WCMp_WP_Fields')) {
                                 case 'title':
                                     $this->title_input($field);
                                     break;
+                                case 'label':
+                                    $this->label_input($field);
+                                    break;
 
                                 default:
 
@@ -772,6 +808,10 @@ if (!class_exists('WCMp_WP_Fields')) {
 
                             case 'title':
                                 $this->title_input($field);
+                                break;
+                            
+                            case 'label':
+                                $this->label_input($field);
                                 break;
 
                             default:

@@ -36,9 +36,9 @@
         <?php do_action( 'woocommerce_register_form' ); ?>
         <p class="woocomerce-FormRow form-row">
             <?php 
-            $button_text = apply_filters('wcmp_vendor_registration_submit','Register');
+            $button_text = apply_filters('wcmp_vendor_registration_submit',__('Register', 'dc-woocommerce-multi-vendor'));
             ?>
-            <input type="submit" class="woocommerce-Button button" name="register" value="<?php esc_attr_e( $button_text, 'dc-woocommerce-multi-vendor' ); ?>" />
+            <input type="submit" class="woocommerce-Button button" name="register" value="<?php echo $button_text; ?>" />
         </p>
         <?php do_action('woocommerce_register_form_end'); ?>
     </form>

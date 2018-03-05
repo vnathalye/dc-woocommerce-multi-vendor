@@ -407,8 +407,8 @@ class WCMp_Vendor_Hooks {
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
             wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         }
-        wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager.css', array(), $WCMp->version);
-        wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
+        wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager'.$suffix.'.css', array(), $WCMp->version);
+        wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager'.$suffix.'.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
 
         $WCMp_fpm_messages = get_forntend_product_manager_messages();
         wp_localize_script('product_manager_js', 'product_manager_messages', $WCMp_fpm_messages);

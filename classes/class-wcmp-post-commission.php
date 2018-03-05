@@ -595,7 +595,7 @@ class WCMp_Commission {
             $commission_data = $this->get_commission($commission);
             $commission_staus = get_post_meta($commission, '_paid_status', true);
             $commission_amounts = get_wcmp_vendor_order_amount(array('vendor_id' => $commission_data->vendor->id, 'commission_id' => $commission));
-            $recipient = get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) ? get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) : $$commission_data->vendor->user_data->display_name;
+            $recipient = get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) ? get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) : $commission_data->vendor->user_data->display_name;
             $commissions_data[] = array(
                 $recipient,
                 $currency,

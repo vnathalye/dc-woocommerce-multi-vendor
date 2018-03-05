@@ -948,7 +948,7 @@ class WCMp_Vendor {
         if($id == 0){ /* if no attachment id found from attachment url */
             $image = $this->__get($type);
         }else{
-            $image_attributes = wp_get_attachment_image_src( $id, $size);
+            $image_attributes = wp_get_attachment_image_src( $id, $size, true);
             if( is_array($image_attributes) && count($image_attributes) ){
                $image = $image_attributes[0];
             }

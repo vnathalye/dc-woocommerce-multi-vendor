@@ -7,7 +7,7 @@ Tested up to: 4.9.4
 WC requires at least: 3.0
 WC tested up to: 3.3.1
 Requires PHP: 5.6
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,13 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
 > <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/?utm_source=WordPress&utm_medium=plugin_desc&utm_campaign=update_notice) before upgrading your marketplace to avoid any undesirable situations.</strong>
+
+= Highlights of WC Marketplace 3.0: =
+- Intuitive design focusing on user engagement and user experience.
+- A delight for the marketplace owners’ with improved setting panels; now you can setup your marketplace within minutes!
+- Vendors will fall in love with your marketplace. With all the new store insights at their disposal, they can drive more sales than ever.
+- Designed with developers in mind. Just dive in and you will find a hook for your development purpose.
+- Built-in support for simple products within vendor frontend, earlier premium feature.
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 
@@ -107,6 +114,12 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.2 - 2018-02-27 =
+* New: Admin can regenerate order commission from order page.
+* Fix: Vendor Timezone issue.
+* Fix: Vendor list widget image resize issue.
+* Updated: Language file.
 
 = 3.0.1 - 2018-02-20 = 
 * New: All new vendor dashboard with premade widgets of actionable store insights.

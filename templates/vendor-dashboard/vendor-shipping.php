@@ -75,7 +75,7 @@ if ($vendor_data) :
             ?>
             <?php do_action('wcmp_before_shipping_form_end_vendor_dashboard'); ?>
             <div class="wcmp-action-container">
-                <button class="wcmp_orange_btn btn btn-default" name="shipping_save">Save Options</button>
+                <button class="wcmp_orange_btn btn btn-default" name="shipping_save"><?php _e('Save Options', 'dc-woocommerce-multi-vendor'); ?></button>
             </div>
             <div class="clear"></div>
         </form>

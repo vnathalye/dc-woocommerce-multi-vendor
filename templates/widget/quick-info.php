@@ -10,7 +10,7 @@
  */
 
 global $WCMp;
-$submit_label = ! empty( $instance['submit_label'] ) ? $instance['submit_label'] : __( 'Submit', 'dc-woocommerce-multi-vendor' );
+$submit_label = isset( $instance['submit_label'] ) ? $instance['submit_label'] : __( 'Submit', 'dc-woocommerce-multi-vendor' );
 extract( $instance );
 
 ?>

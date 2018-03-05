@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-05 12:43+0000\n"
+"POT-Creation-Date: 2018-03-05 12:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -3230,7 +3230,6 @@ msgid "Approve Vendors Manually"
 msgstr ""
 
 #: admin/class-wcmp-settings-general.php:35
-#: admin/class-wcmp-settings-general.php:47
 msgid ""
 "If left unchecked, every vendor applicant will be auto-approved, which is "
 "not a recommended setting."
@@ -3297,11 +3296,7 @@ msgstr ""
 msgid "Select related products to show on the single product page."
 msgstr ""
 
-#: admin/class-wcmp-settings-general.php:46
-msgid "this is a title"
-msgstr ""
-
-#: admin/class-wcmp-settings-general.php:107
+#: admin/class-wcmp-settings-general.php:105
 msgid "General Settings Updated"
 msgstr ""
 

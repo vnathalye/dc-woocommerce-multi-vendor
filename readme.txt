@@ -1,13 +1,11 @@
 === WC Marketplace ===
-Contributors: Dualcube, greyparrots, arimghosh, dualcube_subrata, purnendu, itzmekhokan
+Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.9.4
-WC requires at least: 3.0
-WC tested up to: 3.3.1
 Requires PHP: 5.6
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +112,14 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.3 - 2018-03-08 =
+* Fix - Vendor assign from backend.
+* Fix - Commission export issue.
+* Tweak - Single product multiple vendor logic.
+* Tweak - Bootstrap JS load in vendor dashboard.
+* Updated - Language file.
+
 
 = 3.0.2 - 2018-02-27 =
 * New: Admin can regenerate order commission from order page.
@@ -338,5 +344,5 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 3.0.1 =
+= 3.0.3 =
 WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

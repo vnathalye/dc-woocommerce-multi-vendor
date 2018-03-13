@@ -15,14 +15,14 @@ global $WCMp;
 <table style="width:100%; color: #737373; border: 1px solid #e4e4e4; background:none;" border="0" cellpadding="8" cellspacing="0">
     <tbody>
         <?php
-        $cc = 0;
+        $cc = 0; 
         foreach ($vendor_array as $vendor_id => $products) {
             $vendor_meta = get_user_meta($vendor_id);
             $vendor_message_to_buyer = apply_filters('wcmp_display_vendor_message_to_buyer', get_user_meta($vendor_id, '_vendor_message_to_buyers', true), $vendor_id);
-            if (!empty($vendor_message_to_buyer) ||
-                    (isset($vendor_meta['_vendor_customer_phone'][0]) && isset($vendor_meta['_vendor_customer_email'][0])) ||
-                    (isset($vendor_meta['_vendor_csd_return_address1'][0]) && isset($vendor_meta['_vendor_csd_return_city'][0]) && isset($vendor_meta['_vendor_csd_return_state'][0]) && isset($vendor_meta['_vendor_csd_return_zip'][0]) )
-            ) {
+//            if (!empty($vendor_message_to_buyer) ||
+//                    (isset($vendor_meta['_vendor_customer_phone'][0]) && isset($vendor_meta['_vendor_customer_email'][0])) ||
+//                    (isset($vendor_meta['_vendor_csd_return_address1'][0]) && isset($vendor_meta['_vendor_csd_return_city'][0]) && isset($vendor_meta['_vendor_csd_return_state'][0]) && isset($vendor_meta['_vendor_csd_return_zip'][0]) )
+//            ) {
                 ?>
         <?php if ($cc == 0) { ?>
                     <tr>
@@ -107,7 +107,7 @@ global $WCMp;
                     </td>
                 </tr>
         <?php $cc++;
-    }
+    //}
 } ?>                           
     </tbody>
 </table>

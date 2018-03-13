@@ -261,8 +261,7 @@ class WCMp_Install {
 		`ans_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `ans_vote` longtext NULL,
 		PRIMARY KEY (`ans_ID`),
-                CONSTRAINT ques_id UNIQUE (ques_ID),
-                KEY ques_ID (ques_ID)
+                CONSTRAINT ques_id UNIQUE (ques_ID)
 		) $collate;";
 
         foreach ($create_tables_query as $create_table_query) {

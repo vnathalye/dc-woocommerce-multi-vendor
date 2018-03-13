@@ -19,15 +19,15 @@ global $WCMp;
 			foreach ( $vendor_array as $vendor_id => $products) { 
 				$vendor_meta = get_user_meta( $vendor_id );
 				
-				if( (
-						isset($vendor_meta['_vendor_customer_phone'][0]) &&  
-						isset($vendor_meta['_vendor_customer_email'][0]) && 
-						isset($vendor_meta['_vendor_csd_return_address1'][0]) && 
-						isset($vendor_meta['_vendor_csd_return_city'][0]) && 
-						isset($vendor_meta['_vendor_csd_return_state'][0]) && 
-						isset($vendor_meta['_vendor_csd_return_zip'][0]) 
-						) 
-				) {
+//				if( (
+//						isset($vendor_meta['_vendor_customer_phone'][0]) &&  
+//						isset($vendor_meta['_vendor_customer_email'][0]) && 
+//						isset($vendor_meta['_vendor_csd_return_address1'][0]) && 
+//						isset($vendor_meta['_vendor_csd_return_city'][0]) && 
+//						isset($vendor_meta['_vendor_csd_return_state'][0]) && 
+//						isset($vendor_meta['_vendor_csd_return_zip'][0]) 
+//						) 
+//				) {
 				?>
 				<?php if($cc == 0) { ?>
 					<tr>
@@ -67,7 +67,7 @@ global $WCMp;
 					
 				</tr>
 				<?php $cc++;			
-				}
+				//}
 			}
 		}
 		else {

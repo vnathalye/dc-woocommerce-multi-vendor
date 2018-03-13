@@ -1480,6 +1480,23 @@ if (!function_exists('do_wcmp_data_migrate')) {
                     }
                 }
             }
+            if (version_compare($previous_plugin_version, '3.0.3', '<=')){
+                $collate = '';
+                if ($wpdb->has_cap('collation')) {
+                    $collate = $wpdb->get_charset_collate();
+                }
+                $create_table_query = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_cust_answers` (
+		`ans_ID` bigint(20) NOT NULL AUTO_INCREMENT,
+		`ques_ID` BIGINT UNSIGNED NOT NULL DEFAULT '0',
+                `ans_details` text NOT NULL,
+		`ans_by` BIGINT UNSIGNED NOT NULL DEFAULT '0',
+		`ans_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                `ans_vote` longtext NULL,
+		PRIMARY KEY (`ans_ID`),
+                CONSTRAINT ques_id UNIQUE (ques_ID)
+		) $collate;";
+                $wpdb->query($create_table_query);
+            }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
         }
@@ -1736,6 +1753,7 @@ if (!function_exists('wcmp_process_order')) {
             $variation_id = isset($item['variation_id']) ? $item['variation_id'] : 0;
             if ($product_id) {
                 $product_vendors = get_wcmp_product_vendors($product_id);
+                $product = wc_get_product($product_id);
                 if ($product_vendors) {
                     if (isset($product_vendors->id) && is_array($vendor_shipping_array)) {
                         if (in_array($product_vendors->id, $vendor_shipping_array)) {
@@ -1743,7 +1761,7 @@ if (!function_exists('wcmp_process_order')) {
                         }
                     }
                     $shipping_amount = $shipping_tax_amount = 0;
-                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id])) {
+                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id]) && $product->needs_shipping()) {
                         $shipping_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
                         $shipping_tax_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping_tax'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
                     }
@@ -1825,9 +1843,9 @@ if (!function_exists('get_current_vendor')) {
 
 }
 
-if (!function_exists('get_forntend_product_manager_messages')) {
+if (!function_exists('get_frontend_product_manager_messages')) {
 
-    function get_forntend_product_manager_messages() {
+    function get_frontend_product_manager_messages() {
 
         $messages = array(
             'no_title' => __('Insert Product Title before submit.', 'dc-woocommerce-multi-vendor'),
@@ -1842,9 +1860,9 @@ if (!function_exists('get_forntend_product_manager_messages')) {
 
 }
 
-if (!function_exists('get_forntend_coupon_manager_messages')) {
+if (!function_exists('get_frontend_coupon_manager_messages')) {
 
-    function get_forntend_coupon_manager_messages() {
+    function get_frontend_coupon_manager_messages() {
 
         $messages = array(
             'no_title' => __('Insert Coupon Title before submit.', 'dc-woocommerce-multi-vendor'),
@@ -1971,6 +1989,12 @@ if (!function_exists('get_attachment_id_by_url')) {
                 'post_status' => 'inherit',
                 'fields' => 'ids',
                 'meta_query' => array(
+                    'relation' => 'OR',
+                    array(
+                        'value' => $file,
+                        'compare' => 'LIKE',
+                        'key' => '_wp_attached_file',
+                    ),
                     array(
                         'value' => $file,
                         'compare' => 'LIKE',

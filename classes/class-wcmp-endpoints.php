@@ -93,6 +93,10 @@ class WCMp_Endpoints {
                 'label' => __('Vendor Tools', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_tools_endpoint', 'vendor', 'general', 'vendor-tools')
             )
+            , 'products-qna' => array(
+                'label' => __('Vendor Products Q&As', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_products_qnas_endpoint', 'vendor', 'general', 'products-qna')
+            )
         ));
     }
 

@@ -466,6 +466,10 @@ class WCMp_Admin {
             wp_localize_script('wcmp-admin-product-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
             if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable' && in_array($screen->id, array('product'))) {
                 wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+                wp_localize_script('wcmp_admin_product_auto_search_js', 'wcmp_admin_product_auto_search_js_params', array(
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'search_products_nonce' => wp_create_nonce('search-products'),
+                ));
             }
         endif;
 
@@ -570,10 +574,10 @@ class WCMp_Admin {
      */
     public function regenerate_order_commissions($order) {
         global $wpdb, $WCMp;
-        if(!in_array($order->get_status(), $WCMp->commission->completed_statuses)){
+        if (!in_array($order->get_status(), $WCMp->commission->completed_statuses)) {
             return;
         }
-        $table_name = $wpdb->prefix.'wcmp_vendor_orders';
+        $table_name = $wpdb->prefix . 'wcmp_vendor_orders';
         delete_post_meta($order->get_id(), '_commissions_processed');
         delete_post_meta($order->get_id(), '_wcmp_order_processed');
         $commission_ids = get_post_meta($order->get_id(), '_commission_ids', true) ? get_post_meta($order->get_id(), '_commission_ids', true) : array();

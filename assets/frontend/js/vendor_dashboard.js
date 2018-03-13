@@ -78,10 +78,15 @@ jQuery(document).ready(function ($) {
     // table responsive
     $( ".responsive-table" ).each(function( index ) {
         var getTh = $(this).find('thead th');
-        var getTd = $(this).find('tbody td');
+        var getTr = $(this).find('tbody tr');    
+        var getTd = $(this).find('tbody td');  
         
-        for (var i = 0; i < getTh.length; i++){   
-            $(getTd[i]).attr('data-th', $(getTh[i]).html());
+        for (var tr = 0; tr < getTr.length; tr++){  
+             
+            for (var i = 0; i < getTh.length; i++){   
+                $(getTd[i + tr * getTh.length]).attr('data-th', $(getTh[i]).html());
+            }
+
         }
     }); 
 

@@ -34,9 +34,9 @@ if (isset($queried_object->term_id) && !empty($queried_object)) {
                             <?php if ($vendor->id != get_current_vendor_id()) : ?>
                                 <h3 id="reply-title" class="comment-reply-title"><?php
                                     if ($count == 0) {
-                                        echo __(sprintf('Be the first to review “%s”', $shop_name), 'dc-woocommerce-multi-vendor');
+                                        echo sprintf(__('Be the first to review “%s”', 'dc-woocommerce-multi-vendor'), $shop_name);
                                     } else {
-                                        echo __(sprintf('Add a review to “%s”', $shop_name), 'dc-woocommerce-multi-vendor');
+                                        echo sprintf(__('Add a review to “%s”', 'dc-woocommerce-multi-vendor'), $shop_name);
                                     }
                                     ?> </h3>				
                                 <form action="" method="post" id="commentform" class="comment-form" novalidate="">

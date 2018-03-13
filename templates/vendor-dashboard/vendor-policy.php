@@ -20,7 +20,7 @@ $vendor_shipping_policy = isset($vendor_shipping_policy['value']) ? $vendor_ship
 $vendor_refund_policy = isset($vendor_refund_policy['value']) ? $vendor_refund_policy['value'] : $wcmp_policy_settings['refund_policy'];
 $vendor_cancellation_policy = isset($vendor_cancellation_policy['value']) ? $vendor_cancellation_policy['value'] : $wcmp_policy_settings['cancellation_policy'];
 
-$_wp_editor_settings = array();
+$_wp_editor_settings = array('tinymce' => true);
 if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
     $_wp_editor_settings['media_buttons'] = false;
 }

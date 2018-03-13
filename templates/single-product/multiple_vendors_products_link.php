@@ -14,34 +14,45 @@
  * @package dc-woocommerce-multi-vendor/Templates
  * @version 2.3.4
  */
-global $WCMp, $post, $wpdb;
-$results_str = '';
-$searchstr = $post->post_title;
-$searchstr = str_replace("'", "", $searchstr);
-$searchstr = str_replace('"', '', $searchstr);
-$querystr = "select  * from {$wpdb->prefix}wcmp_products_map where replace(replace(product_title, '\'',''), '\"','') = '{$searchstr}'";
-$results_obj_arr = $wpdb->get_results($querystr);
-if(isset($results_obj_arr) && count($results_obj_arr) > 0 ) {
-	$results_str = $results_obj_arr[0]->product_ids;
-}
+global $WCMp, $product, $wpdb;
+//$results_str = '';
+//$searchstr = $post->post_title;
+//$searchstr = str_replace("'", "", $searchstr);
+//$searchstr = str_replace('"', '', $searchstr);
+//$querystr = "select  * from {$wpdb->prefix}wcmp_products_map where replace(replace(product_title, '\'',''), '\"','') = '{$searchstr}'";
+//$results_obj_arr = $wpdb->get_results($querystr);
+//if(isset($results_obj_arr) && count($results_obj_arr) > 0 ) {
+//	$results_str = $results_obj_arr[0]->product_ids;
+//}
+//
+//if( !empty( $results_str ) ) {
+//	$product_id_arr = explode(',',$results_str);
+//	$args = array(
+//		'posts_per_page'   => -1,
+//		'offset'           => 0,	
+//		'orderby'          => 'date',
+//		'order'            => 'DESC',	
+//		'post_type'        => 'product',	
+//		'post__in'				 => $product_id_arr,
+//		'post_status'      => 'publish',
+//		'suppress_filters' => true 
+//	);
+//	$results = get_posts( $args );
+//	if(count($results) > 1){
+//		$button_text = apply_filters('wcmp_more_vendors', __('More Vendors','dc-woocommerce-multi-vendor'));
+//		echo '<a  href="#" class="goto_more_offer_tab button">'.$button_text.'</a>';
+//	}
+//} 
 
-if( !empty( $results_str ) ) {
-	$product_id_arr = explode(',',$results_str);
-	$args = array(
-		'posts_per_page'   => -1,
-		'offset'           => 0,	
-		'orderby'          => 'date',
-		'order'            => 'DESC',	
-		'post_type'        => 'product',	
-		'post__in'				 => $product_id_arr,
-		'post_status'      => 'publish',
-		'suppress_filters' => true 
-	);
-	$results = get_posts( $args );
-	if(count($results) > 1){
-		$button_text = apply_filters('wcmp_more_vendors', __('More Vendors','dc-woocommerce-multi-vendor'));
-		echo '<a  href="#" class="goto_more_offer_tab button">'.$button_text.'</a>';
-	}
-} 
-?>
+$have_parent = $product->get_parent_id();
+$parent_product = $product->get_id();
+if($have_parent != 0){
+    $parent_product = $product->get_parent_id();
+}
+$mapped_products = wc_get_products(array('post_parent' => $parent_product, 'posts_per_page' => -1));
+$mapped_products[] = wc_get_product($parent_product);
+if($mapped_products && count($mapped_products) > 1){
+    $button_text = apply_filters('wcmp_more_vendors', __('More Vendors','dc-woocommerce-multi-vendor'));
+    echo '<a  href="#" class="goto_more_offer_tab button">'.$button_text.'</a>';
+}
 

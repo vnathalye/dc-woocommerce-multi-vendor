@@ -352,7 +352,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
     <form id="product_manager_form" class="woocommerce form-horizontal">
         <?php
         if (isset($_REQUEST['fpm_msg']) && !empty($_REQUEST['fpm_msg'])) {
-            $WCMp_fpm_messages = get_forntend_product_manager_messages();
+            $WCMp_fpm_messages = get_frontend_product_manager_messages();
             ?>
             <div class="woocommerce-message" tabindex="-1"><?php echo $WCMp_fpm_messages[$_REQUEST['fpm_msg']]; ?></div>
             <?php
@@ -427,7 +427,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
             <h3 class="pro_ele_head simple variable external grouped"><?php _e('General', 'dc-woocommerce-multi-vendor'); ?></h3>
             <div class="pro_ele_block simple variable external grouped">
                 <?php
-                $_wp_editor_settings = array();
+                $_wp_editor_settings = array('tinymce' => true);
                 if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
                     $_wp_editor_settings['media_buttons'] = false;
                 }

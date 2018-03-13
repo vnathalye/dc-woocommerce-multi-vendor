@@ -216,7 +216,7 @@ class WCMp_Cron_Job {
     public function migrate_multivendor_table() {
         global $wpdb;
         $start = get_option('wcmp_products_map_table_start', 0);
-        $length = apply_filters('wcmp_products_map_table_length', 20);
+        $length = apply_filters('wcmp_products_map_table_length', 50);
         $results = $wpdb->get_results("SELECT product_ids FROM `{$wpdb->prefix}wcmp_products_map` LIMIT {$start},{$length};");
         if ($results) {
             foreach ($results as $result) {
@@ -226,6 +226,7 @@ class WCMp_Cron_Job {
                     foreach ($product_ids as $product_id) {
                         if ($product = wc_get_product($product_id)) {
                             $product->set_parent_id($parent_id);
+                            update_post_meta($product->get_id(), '_wcmp_child_product', true);
                             $product->save();
                         }
                     }

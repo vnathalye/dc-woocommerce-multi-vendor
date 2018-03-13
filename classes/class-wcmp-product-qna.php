@@ -99,19 +99,23 @@ class WCMp_Product_QNA {
      * @param  object   $vendor      Vendor object
      * @return array               Array of objects questions
      */
-    public function get_Vendor_Questions( $vendor ) {
+    public function get_Vendor_Questions( $vendor, $unanswer = true ) {
         $vendor_questions = array();
         if($vendor && $vendor->get_products()){ 
             foreach ($vendor->get_products() as $product) { 
                 $product_questions = $this->get_Questions($product->ID, "ORDER BY ques_created DESC");
                 if($product_questions){
                     foreach ($product_questions as $question) {
-                        $_is_answer_given = $this->get_Answers($question->ques_ID);
-                        if(!$_is_answer_given){
+                        if($unanswer){
+                            $_is_answer_given = $this->get_Answer($question->ques_ID);
+                            if(!$_is_answer_given){
+                                $vendor_questions[$question->ques_ID] = $question;
+                            }
+                        }else{
                             $vendor_questions[$question->ques_ID] = $question;
                         }
                     }
-                }
+                }  
             }
         }
         return $vendor_questions;
@@ -198,13 +202,43 @@ class WCMp_Product_QNA {
      * @param  int   $product_ID      product ID
      * @return array               Array of objects questions
      */
-    public function get_Product_QNA( $product_ID, $where = '' ) {
+    public function get_Product_QNA( $product_ID, $args = '' ) {
         global $wpdb;
+        $default = array(
+            'sortby'    => 'date',
+            'sort'      => 'DESC',
+            'where'     => ''
+        );
+        $args = wp_parse_args($args, $default);
         $get_qna_sql = "SELECT * FROM {$this->question_table} AS question INNER JOIN {$this->answer_table} AS answer ON question.ques_ID = answer.ques_ID WHERE product_ID = %d ";
-        if($where){
-            $get_qna_sql .= $where;
+        if($args['sortby'] == 'date'){
+            $get_qna_sql .= "ORDER BY question.ques_created {$args['sort']} ";
+        }
+        if($args['where']){
+            $get_qna_sql .= $args['where'];
         } 
-        return $wpdb->get_results( $wpdb->prepare( $get_qna_sql, $product_ID ) );
+        $product_QNAs = $wpdb->get_results( $wpdb->prepare( $get_qna_sql, $product_ID ) );
+        if($args['sortby'] == 'vote' && $product_QNAs){
+            $votes = array();
+            foreach ($product_QNAs as $key => $qna) { 
+                $count = 0;
+                $ans_vote = maybe_unserialize($qna->ans_vote);
+                if(is_array($ans_vote)){
+                    $count = array_sum($ans_vote);
+                }
+                $product_QNAs[$key]->vote_count = $count;
+                $votes[$key] = $count;
+            }
+
+            if($args['sort']== 'ASC'){
+                array_multisort($votes, SORT_ASC, $product_QNAs);
+            }else{
+                array_multisort($votes, SORT_DESC, $product_QNAs);
+            }
+            return $product_QNAs;
+        }else{
+            return $product_QNAs;
+        }
     }
 
 }

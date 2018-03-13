@@ -100,12 +100,15 @@ class WCMp_Ajax {
         add_action('wp_ajax_wcmp_datatable_get_vendor_orders', array(&$this, 'wcmp_datatable_get_vendor_orders'));
         // Customer Q & A
         add_action('wp_ajax_wcmp_customer_ask_qna_handler', array(&$this, 'wcmp_customer_ask_qna_handler'));
+        add_action('wp_ajax_nopriv_wcmp_customer_ask_qna_handler', array(&$this, 'wcmp_customer_ask_qna_handler'));
         // dashboard vendor reviews widget
         add_action('wp_ajax_wcmp_vendor_dashboard_reviews_data', array(&$this, 'wcmp_vendor_dashboard_reviews_data'));
         // dashboard customer questions widget
         add_action('wp_ajax_wcmp_vendor_dashboard_customer_questions_data', array(&$this, 'wcmp_vendor_dashboard_customer_questions_data'));
+        // vendor products Q&As list
+        add_action('wp_ajax_wcmp_vendor_products_qna_list', array(&$this, 'wcmp_vendor_products_qna_list'));
     }
-   
+
     public function wcmp_datatable_get_vendor_orders() {
         global $wpdb, $WCMp;
         $requestData = $_REQUEST;
@@ -139,12 +142,12 @@ class WCMp_Ajax {
                     'icon' => 'ico-eye-icon action-icon',
                     'title' => __('View', 'dc-woocommerce-multi-vendor'),
                 );
-                if(apply_filters('can_wcmp_vendor_export_orders_csv', true, get_current_vendor_id())) :
-                $actions['wcmp_vendor_csv_download_per_order'] = array(
-                    'url' => admin_url('admin-ajax.php?action=wcmp_vendor_csv_download_per_order&order_id=' . $order->get_id() . '&nonce=' . wp_create_nonce('wcmp_vendor_csv_download_per_order')),
-                    'icon' => 'ico-download-icon action-icon',
-                    'title' => __('Download', 'dc-woocommerce-multi-vendor'),
-                );
+                if (apply_filters('can_wcmp_vendor_export_orders_csv', true, get_current_vendor_id())) :
+                    $actions['wcmp_vendor_csv_download_per_order'] = array(
+                        'url' => admin_url('admin-ajax.php?action=wcmp_vendor_csv_download_per_order&order_id=' . $order->get_id() . '&nonce=' . wp_create_nonce('wcmp_vendor_csv_download_per_order')),
+                        'icon' => 'ico-download-icon action-icon',
+                        'title' => __('Download', 'dc-woocommerce-multi-vendor'),
+                    );
                 endif;
                 if ($vendor->is_shipping_enable()) {
                     $actions['mark_ship'] = array(
@@ -253,12 +256,12 @@ class WCMp_Ajax {
                 $comment_id = wp_insert_comment($data);
                 if (!is_wp_error($comment_id)) {
                     // delete transient
-                    if(get_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor_id)){
+                    if (get_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor_id)) {
                         delete_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor_id);
                     }
                     // mark as replied
-                    if($comment_parent != 0 && $vendor_id){
-                        update_comment_meta( $comment_parent, '_mark_as_replied', 1 );
+                    if ($comment_parent != 0 && $vendor_id) {
+                        update_comment_meta($comment_parent, '_mark_as_replied', 1);
                     }
                     if ($rating && !empty($rating)) {
                         update_comment_meta($comment_id, 'vendor_rating', $rating);
@@ -296,7 +299,10 @@ class WCMp_Ajax {
         if ($duplicate_product && is_user_wcmp_vendor(get_current_user_id())) {
             wp_update_post(array('ID' => $duplicate_product->get_id(), 'post_author' => get_current_vendor_id()));
             wp_set_object_terms($duplicate_product->get_id(), absint(get_current_vendor()->term_id), $WCMp->taxonomy->taxonomy_name);
-            update_post_meta($duplicate_product->get_id(), '_wcmp_parent_product_id', $product->get_id());
+            //update_post_meta($duplicate_product->get_id(), '_wcmp_parent_product_id', $product->get_id());
+            $duplicate_product->set_parent_id($product->get_id());
+            update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
+            $duplicate_product->save();
             $redirect_url .= $duplicate_product->get_id();
             $response['status'] = true;
             $response['redirect_url'] = $redirect_url;
@@ -305,33 +311,55 @@ class WCMp_Ajax {
     }
 
     function wcmp_auto_suggesion_product() {
-        global $WCMp, $wpdb;
+        global $WCMp;
+        check_ajax_referer('search-products', 'security');
         $user = wp_get_current_user();
-        $searchstr = $_POST['protitle'];
-        $is_admin = $_POST['is_admin'];
-        $querystr = "select DISTINCT post_title, ID from {$wpdb->prefix}posts where post_title like '{$searchstr}%' and post_status = 'publish' and post_type = 'product' GROUP BY post_title order by post_title  LIMIT 0,10";
-        $results = $wpdb->get_results($querystr);
+        $term = wc_clean(empty($term) ? stripslashes($_REQUEST['protitle']) : $term);
+        $is_admin = $_REQUEST['is_admin'];
+
+        if (empty($term)) {
+            wp_die();
+        }
+
+        $data_store = WC_Data_Store::load('product');
+        $ids = $data_store->search_products($term, '', false);
+        
+        $include = array();
+        foreach ($ids as $id) {
+            $_product = wc_get_product($id);
+            if ($_product && $_product->get_parent_id()) {
+                $include[] = $_product->get_id();
+            }
+        }
+
+        if ($include) {
+            $ids = array_slice(array_intersect($ids, $include), 0, 10);
+        } else {
+            $ids = array();
+        }
+        $product_objects = array_map('wc_get_product', $ids);
         $html = '';
-        if (count($results) > 0) {
+        if (count($product_objects) > 0) {
             $html .= "<ul>";
-            foreach ($results as $result) {
-                $product = wc_get_product($result->ID);
-                if (is_user_wcmp_vendor($user) && $WCMp->vendor_caps->vendor_can($product->get_type())) {
-                    if ($is_admin == 'false') {
-                        $html .= "<li><a data-product_id='{$result->ID}' href='javascript:void(0)'>{$result->post_title}</a></li>";
-                    } else {
-                        $html .= "<li data-element='{$result->ID}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&singleproductmultiseller=1&post=' . $result->ID), 'woocommerce-duplicate-product_' . $result->ID) . "'>{$result->post_title}</a></li>";
+            foreach ($product_objects as $product_object) {
+                if ($product_object) {
+                    if (is_user_wcmp_vendor($user) && $WCMp->vendor_caps->vendor_can($product_object->get_type())) {
+                        if ($is_admin == 'false') {
+                            $html .= "<li><a data-product_id='{$product_object->get_id()}' href='javascript:void(0)'>" . rawurldecode($product_object->get_formatted_name()) . "</a></li>";
+                        } else {
+                            $html .= "<li data-element='{$product_object->get_id()}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&singleproductmultiseller=1&post=' . $product_object->get_id()), 'woocommerce-duplicate-product_' . $product_object->get_id()) . "'>" . rawurldecode($product_object->get_formatted_name()) . "</a></li>";
+                        }
+                    } elseif (!is_user_wcmp_vendor($user) && current_user_can('edit_products')) {
+                        $html .= "<li data-element='{$product_object->get_id()}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&singleproductmultiseller=1&post=' . $product_object->get_id()), 'woocommerce-duplicate-product_' . $product_object->get_id()) . "'>" . rawurldecode($product_object->get_formatted_name()) . "</a></li>";
                     }
-                } elseif (!is_user_wcmp_vendor($user) && current_user_can('edit_products')) {
-                    $html .= "<li data-element='{$result->ID}'><a href='" . wp_nonce_url(admin_url('edit.php?post_type=product&action=duplicate_product&singleproductmultiseller=1&post=' . $result->ID), 'woocommerce-duplicate-product_' . $result->ID) . "'>{$result->post_title}</a></li>";
                 }
             }
             $html .= "</ul>";
         } else {
             $html .= "<ul><li class='wcmp_no-suggesion'>" . __('No Suggestion found', 'dc-woocommerce-multi-vendor') . "</li></ul>";
         }
-        wp_send_json(array('html' => $html, 'results_count' => count($results)));
-        die;
+
+        wp_send_json(array('html' => $html, 'results_count' => count($product_objects)));
     }
 
     public function wcmp_dismiss_dashboard_message() {
@@ -1292,7 +1320,7 @@ class WCMp_Ajax {
                     </div>
                 </div>';
                 }
-            }else {
+            } else {
                 $html .= '<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
                     <div style="display: inline;  padding: 10px;">
                         ' . __('No Vendor Matched!', 'dc-woocommerce-multi-vendor') . '
@@ -1362,7 +1390,7 @@ class WCMp_Ajax {
                 "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
                         "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
                         "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title'),
-                        "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external', 'placeholder' => sprintf( esc_attr__( 'Enter some text, or some attributes by "%s" separating values.', 'dc-woocommerce-multi-vendor' ), WC_DELIMITER ), 'label_class' => 'pro_title'),
+                        "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external', 'placeholder' => sprintf(esc_attr__('Enter some text, or some attributes by "%s" separating values.', 'dc-woocommerce-multi-vendor'), WC_DELIMITER), 'label_class' => 'pro_title'),
                         "is_visible" => array('label' => __('Visible on the product page', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele simple variable external', 'label_class' => 'pro_title checkbox_title'),
                         "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
                         "tax_name" => array('type' => 'hidden'),
@@ -1375,7 +1403,7 @@ class WCMp_Ajax {
 
     public function generate_variation_attributes() {
 
-      
+
         $product_manager_form_data = array();
         parse_str($_POST['product_manager_form'], $product_manager_form_data);
 
@@ -1447,7 +1475,7 @@ class WCMp_Ajax {
 
         $product_manager_form_data = array();
         parse_str($_POST['product_manager_form'], $product_manager_form_data);
-        $WCMp_fpm_messages = get_forntend_product_manager_messages();
+        $WCMp_fpm_messages = get_frontend_product_manager_messages();
         $has_error = false;
         if (isset($product_manager_form_data['title']) && !empty($product_manager_form_data['title'])) {
             $is_update = false;
@@ -1478,6 +1506,8 @@ class WCMp_Ajax {
 //            if($matches){
 //                $post_content = str_replace($matches[0], '[embed]'.$matches[1].'[/embed]', $post_content);
 //            }
+            do_action('before_wcmp_frontend_product_manager_save', $product_manager_form_data);
+
             // Creating new product
             $new_product = array(
                 'post_title' => wc_clean($product_manager_form_data['title']),
@@ -1676,7 +1706,7 @@ class WCMp_Ajax {
                 // Set Product Category
 
                 if (isset($product_manager_form_data['product_cats']) && !empty($product_manager_form_data['product_cats'])) {
-                 
+
                     $is_first = true;
                     foreach ($product_manager_form_data['product_cats'] as $product_cats) {
                         if ($is_first) {
@@ -1687,10 +1717,10 @@ class WCMp_Ajax {
                         }
                     }
                 } else {
-                  
-                  wp_set_object_terms($new_product_id, array(), 'product_cat');
+
+                    wp_set_object_terms($new_product_id, array(), 'product_cat');
                 }
-                
+
 
                 // Set Product Custom Taxonomies
                 if (isset($product_manager_form_data['product_custom_taxonomies']) && !empty($product_manager_form_data['product_custom_taxonomies'])) {
@@ -1949,18 +1979,20 @@ class WCMp_Ajax {
                 if (!$has_error) {
                     if (get_post_status($new_product_id) == 'publish') {
                         if (!$has_error) {
-                            if($is_new_pro == 0){ $WCMp_fpm_messages['product_published'] = __('Product updated successfully!', 'dc-woocommerce-multi-vendor'); }
+                            if ($is_new_pro == 0) {
+                                $WCMp_fpm_messages['product_published'] = __('Product updated successfully!', 'dc-woocommerce-multi-vendor');
+                            }
                             set_transient('wcmp_fpm_product_added_msg', $WCMp_fpm_messages['product_published']);
                             $redirect_url = wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id);
-                            if(!current_user_can('edit_published_products')){
+                            if (!current_user_can('edit_published_products')) {
                                 $redirect_url = apply_filters('wcmp_vendor_products', wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products')));
                             }
-                            echo '{"status": true, "is_new": "'.$new_product_id.'", "message": "' . $WCMp_fpm_messages['product_published'] . '", "redirect": "' . esc_url($redirect_url) . '"}';
+                            echo '{"status": true, "is_new": "' . $new_product_id . '", "message": "' . $WCMp_fpm_messages['product_published'] . '", "redirect": "' . esc_url($redirect_url) . '"}';
                         }
                     } else {
                         if (!$has_error) {
                             set_transient('wcmp_fpm_product_added_msg', $WCMp_fpm_messages['product_saved']);
-                            echo '{"status": true, "is_new": "'.$new_product_id.'", "message": "' . $WCMp_fpm_messages['product_saved'] . '", "redirect": "' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id)) . '"}';
+                            echo '{"status": true, "is_new": "' . $new_product_id . '", "message": "' . $WCMp_fpm_messages['product_saved'] . '", "redirect": "' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id)) . '"}';
                         }
                     }
                 }
@@ -2016,7 +2048,7 @@ class WCMp_Ajax {
         $coupon_manager_form_data = array();
         parse_str($_POST['coupon_manager_form'], $coupon_manager_form_data);
         //print_r($coupon_manager_form_data);
-        $WCMp_fpm_coupon_messages = get_forntend_coupon_manager_messages();
+        $WCMp_fpm_coupon_messages = get_frontend_coupon_manager_messages();
         $has_error = false;
 
         if (isset($coupon_manager_form_data['title']) && !empty($coupon_manager_form_data['title'])) {
@@ -2192,7 +2224,9 @@ class WCMp_Ajax {
                     // Get actions
                     $onclick = "return confirm('" . __('Are you sure want to delete this product?', 'dc-woocommerce-multi-vendor') . "')";
                     $view_title = __('View', 'dc-woocommerce-multi-vendor');
-                    if(in_array($product->get_status(), array('draft','pending'))){ $view_title = __('Preview', 'dc-woocommerce-multi-vendor'); }
+                    if (in_array($product->get_status(), array('draft', 'pending'))) {
+                        $view_title = __('Preview', 'dc-woocommerce-multi-vendor');
+                    }
                     $actions = array(
                         'id' => sprintf(__('ID: %d', 'dc-woocommerce-multi-vendor'), $product->get_id()),
                         'edit' => '<a href="' . esc_url($edit_product_link) . '">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</a>',
@@ -2203,7 +2237,7 @@ class WCMp_Ajax {
                         unset($actions['edit']);
                         unset($actions['delete']);
                     }
-                    $actions = apply_filters('wcmp_vendor_product_list_row_actions', $actions);
+                    $actions = apply_filters('wcmp_vendor_product_list_row_actions', $actions, $product);
                     $row_actions = array();
                     foreach ($actions as $action => $link) {
                         $row_actions[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
@@ -2212,8 +2246,8 @@ class WCMp_Ajax {
                     // is in stock
                     if ($product->is_in_stock()) {
                         $stock_html = '<span class="label label-success instock">' . __('In stock', 'dc-woocommerce-multi-vendor');
-                        if ( $product->managing_stock() ) {
-                            $stock_html .= ' (' . wc_stock_amount( $product->get_stock_quantity() ) . ')';
+                        if ($product->managing_stock()) {
+                            $stock_html .= ' (' . wc_stock_amount($product->get_stock_quantity()) . ')';
                         }
                         $stock_html .= '</span>';
                     } else {
@@ -2229,12 +2263,14 @@ class WCMp_Ajax {
                             $termlist[] = $term->name;
                         }
                     }
-                    if($termlist){
+                    if ($termlist) {
                         $product_cats = implode(' | ', $termlist);
                     }
                     $status = ucfirst($product->get_status());
-                    if($product->get_status() == 'publish'){
+                    $date = '&ndash;';
+                    if ($product->get_status() == 'publish') {
                         $status = __('Published', 'dc-woocommerce-multi-vendor');
+                        $date = wcmp_date($product->get_date_created('edit'));
                     }
 
                     $row ['image'] = '<td>' . $product->get_image(apply_filters('wcmp_vendor_product_list_image_size', array(40, 40))) . '</td>';
@@ -2242,7 +2278,7 @@ class WCMp_Ajax {
                     $row ['price'] = '<td>' . $product->get_price_html() . '</td>';
                     $row ['stock'] = '<td>' . $stock_html . '</td>';
                     $row ['categories'] = '<td>' . $product_cats . '</td>';
-                    $row ['date'] = '<td>' . wcmp_date($product->get_date_created()) . '</td>';
+                    $row ['date'] = '<td>' . $date . '</td>';
                     $row ['status'] = '<td>' . $status . '</td>';
                     $data[] = $row;
                 }
@@ -2315,7 +2351,7 @@ class WCMp_Ajax {
             die;
         }
     }
-    
+
     public function wcmp_vendor_coupon_list() {
         if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
             $vendor = get_wcmp_vendor(get_current_vendor_id());
@@ -2344,9 +2380,9 @@ class WCMp_Ajax {
             $vendor_coupons = get_posts($args);
             $data = array();
             if ($vendor_coupons) {
-                foreach ($vendor_coupons as $coupon_single) { 
-                    $edit_coupon_link='';
-                    if(get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') == 'Enable'){
+                foreach ($vendor_coupons as $coupon_single) {
+                    $edit_coupon_link = '';
+                    if (get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') == 'Enable') {
                         $edit_coupon_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon'), $coupon_single->ID));
                     }
                     // Get actions
@@ -2356,7 +2392,7 @@ class WCMp_Ajax {
                         'edit' => '<a href="' . esc_url($edit_coupon_link) . '">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</a>',
                         'delete' => '<a class="couponDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_delete_coupon')) . '" onclick="' . $onclick . '">' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '</a>',
                     );
-                    if(get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') != 'Enable'){
+                    if (get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') != 'Enable') {
                         unset($actions['edit']);
                         unset($actions['delete']);
                     }
@@ -2370,11 +2406,11 @@ class WCMp_Ajax {
                     $usage_count = $coupon->get_usage_count();
                     $usage_limit = $coupon->get_usage_limit();
                     $usage_limit = $usage_limit ? $usage_limit : '&infin;';
-                    
+
                     $row = array();
-                    $row ['coupons'] = '<a href="' . esc_url($edit_coupon_link) . '">' . get_the_title($coupon_single->ID) . '</a>'.$action_html;
+                    $row ['coupons'] = '<a href="' . esc_url($edit_coupon_link) . '">' . get_the_title($coupon_single->ID) . '</a>' . $action_html;
                     $row ['amount'] = $coupon->get_amount();
-                    $row ['uses_limit'] = $usage_count.' / '.$usage_limit;
+                    $row ['uses_limit'] = $usage_count . ' / ' . $usage_limit;
                     $row ['expiry_date'] = wcmp_date($coupon->get_date_expires());
                     $data[] = $row;
                 }
@@ -2429,154 +2465,195 @@ class WCMp_Ajax {
             die;
         }
     }
-    
+
     /**
      * Customer Questions and Answers data handler
      */
     public function wcmp_customer_ask_qna_handler() {
         global $WCMp, $wpdb;
-        $handler = isset( $_POST['handler'] ) ? $_POST['handler'] : '';
+        $handler = isset($_POST['handler']) ? $_POST['handler'] : '';
         $msg = '';
         $no_data = '';
         $qna_data = '';
         $remain_data = '';
-        
-        if($handler == 'submit'){
+        $redirect = '';
+
+        if ($handler == 'submit') {
             $qna_form_data = array();
             parse_str($_POST['customer_qna_data'], $qna_form_data);
-            $wpnonce = isset( $qna_form_data['cust_qna_nonce'] ) ? $qna_form_data['cust_qna_nonce'] : '';
-            $product_id = isset( $qna_form_data['product_ID'] ) ? (int) $qna_form_data['product_ID'] : 0;
-            $cust_id = isset( $qna_form_data['cust_ID'] ) ? (int) $qna_form_data['cust_ID'] : 0;
-            $cust_question = isset( $qna_form_data['cust_question'] ) ? sanitize_text_field($qna_form_data['cust_question']) : '';
-            $vendor = get_wcmp_product_vendors( $product_id );
+            $wpnonce = isset($qna_form_data['cust_qna_nonce']) ? $qna_form_data['cust_qna_nonce'] : '';
+            $product_id = isset($qna_form_data['product_ID']) ? (int) $qna_form_data['product_ID'] : 0;
+            $cust_id = isset($qna_form_data['cust_ID']) ? (int) $qna_form_data['cust_ID'] : 0;
+            $cust_question = isset($qna_form_data['cust_question']) ? sanitize_text_field($qna_form_data['cust_question']) : '';
+            $vendor = get_wcmp_product_vendors($product_id);
+            $redirect = get_permalink($product_id);
             $customer = wp_get_current_user();
             $cust_qna = array();
-            if ( $wpnonce && wp_verify_nonce( $wpnonce, 'wcmp_customer_qna_form_submit' ) && $product_id && $cust_question) {
+            if ($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_customer_qna_form_submit') && $product_id && $cust_question) {
                 $result = $WCMp->product_qna->createQuestion(array(
                     'product_ID' => $product_id,
-                    'ques_details' => $cust_question,
+                    'ques_details' => sanitize_text_field($cust_question),
                     'ques_by' => $cust_id,
-                    'ques_created' => date( 'Y-m-d H:i:s',current_time( 'timestamp' )),
+                    'ques_created' => date('Y-m-d H:i:s', current_time('timestamp')),
                     'ques_vote' => ''
                 ));
-                if($result){
+                if ($result) {
                     //delete transient
                     if (get_transient('wcmp_customer_qna_for_vendor_' . $vendor->id)) {
                         delete_transient('wcmp_customer_qna_for_vendor_' . $vendor->id);
                     }
                     $no_data = 0;
-                    $msg = __("Your question submitted successfully!", 'dc-woocommerce-multi-vendor'); 
+                    $msg = __("Your question submitted successfully!", 'dc-woocommerce-multi-vendor');
                     wc_add_notice($msg, 'success');
                 }
             }
-        }elseif ($handler == 'search') {
-            $keyword = isset( $_POST['keyword'] ) ? $_POST['keyword'] : '';
-            $product_id = isset( $_POST['product_ID'] ) ? $_POST['product_ID'] : 0;
+        } elseif ($handler == 'search') {
+            $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+            $product_id = isset($_POST['product_ID']) ? $_POST['product_ID'] : 0;
             $product = wc_get_product($product_id);
-            if($product){
+            if ($product) {
                 //$vendor = get_wcmp_product_vendors( $product->get_id() );
-                $qnas_data = $WCMp->product_qna->get_Product_QNA($product->get_id());
-                if($keyword){
+                $qnas_data = $WCMp->product_qna->get_Product_QNA($product->get_id(),array('sortby'=>'vote'));
+                if ($keyword) {
                     $qnas_data = array_filter($qnas_data, function($data) use ($keyword) {
                         return ( strpos(strtolower($data->ques_details), $keyword) !== false );
                     });
                 }
-                if($qnas_data){
+                if ($qnas_data) {
                     foreach ($qnas_data as $qna) {
-                        $qna_data .='<div class="qna-item-wrap item-'.$qna->ques_ID.'">
-                            <div class="qna-block">
-                                <p class="qna-question"><b>Q: '. $qna->ques_details.'</b></p>
-                                <p class="qna-answer"><b>A: </b>'.$qna->ans_details.'</p>
-                                <div class="bottom-qna">
-                                    <ul class="qna-actions">';
+                        $qna_data .= '<div class="qna-item-wrap item-' . $qna->ques_ID . '">
+                        <div class="qna-block">
+                            <div class="qna-vote">';
                                 $count = 0;
                                 $ans_vote = maybe_unserialize($qna->ans_vote);
-                                if(is_array($ans_vote)){
+                                if (is_array($ans_vote)) {
                                     $count = array_sum($ans_vote);
                                 }
-                                if(is_user_logged_in()){
-                                    $qna_data .='<li class="vote">
-                                    <a href="" title="'.__('Give a thumbs up', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'">&#9650;</a>
+                                $qna_data .= '<div class="vote">';
+                                if (is_user_logged_in()) {
+                                    if($ans_vote && array_key_exists(get_current_user_id(), $ans_vote)) {
+                                        if($ans_vote[get_current_user_id()] > 0){
+                                            $qna_data .= '<a href="javascript:void(0)" title="'.__('You already gave a thumbs up.', 'dc-woocommerce-multi-vendor').'" class="give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
                                     <span class="vote-count">'.$count.'</span>
-                                    <a href="" title="'. __('Give a thumbs down', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'">&#9660;</a>
-                                </li>';
-                                }else{
-                                    $qna_data .='<li class="vote">&#9650;<span class="vote-count">'.$count.'</span>&#9660;</li>';
+                                    <a href="" title="'.__('Give a thumbs down', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                                        }else{
+                                            $qna_data .= '<a href="" title="'.__('Give a thumbs up', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
+                                    <span class="vote-count">'.$count.'</span>
+                                    <a href="javascript:void(0)" title="'.__('You already gave a thumbs down.', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                                        }
+                                    }else{
+                                        $qna_data .= '<a href="" title="'.__('Give a thumbs up', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
+                                    <span class="vote-count">'.$count.'</span>
+                                    <a href="" title="'.__('Give a thumbs down', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                                    }
+                                } else {
+                                $qna_data .= '<a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-like"></i></a><span class="vote-count">'.$count.'</span><a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-dislike"></i></a>';
                                 }
-                        $qna_data .='<li class="qna-user">'.get_userdata($qna->ans_by)->display_name.'</li>
-                                        <li class="qna-date">'.date("F j, Y, g:i a",strtotime($qna->ans_created)).'</li> 
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>';
+                                $qna_data .= '</div></div>'
+                                    . '<div class="qtn-content">'
+                                    . '<div class="qtn-row">'
+                                    . '<p class="qna-question">'
+                                    . '<span>'.__('Q: ', 'dc-woocommerce-multi-vendor').'</span>' . $qna->ques_details . '</p>'
+                                    . '</div>'
+                                    . '<div class="qtn-row">'
+                                    . '<p class="qna-answer">'
+                                    . '<span>'.__('A: ', 'dc-woocommerce-multi-vendor').'</span>' . $qna->ans_details . '</p>'
+                                    . '</div>'
+                                    . '<div class="bottom-qna">'
+                                    . '<ul class="qna-info">';
+                                
+                            $qna_data .= '<li class="qna-user">' . get_userdata($qna->ans_by)->display_name . '</li>'
+                                    . '<li class="qna-date">' . date("F j, Y, g:i a", strtotime($qna->ans_created)) . '</li>'
+                                    . '</ul>'
+                                    . '</div>'
+                                    . '</div></div></div>';
+                    }
+                    if(count($qnas_data) > 4){
+                        $qna_data .='<div class="qna-item-wrap load-more-qna"><a href="" class="load-more-btn button" style="width:100%;text-align:center;">'.__('Load More', 'dc-woocommerce-multi-vendor').'</a></div>';
                     }
                 }
             }
-            if(empty($qna_data)){
-                $msg = __("No data found.", 'dc-woocommerce-multi-vendor'); 
+            if (empty($qna_data)) {
+                if (!is_user_logged_in()) {
+                    $msg = __("You are not logged in.", 'dc-woocommerce-multi-vendor');
+                }
                 $no_data = 1;
             }
-        }elseif ($handler == 'answer'){
-            $ques_ID = isset( $_POST['key'] ) ? $_POST['key'] : '';
-            $reply = isset( $_POST['reply'] ) ? sanitize_textarea_field($_POST['reply']) : '';
+        } elseif ($handler == 'answer') {
+            $ques_ID = isset($_POST['key']) ? $_POST['key'] : '';
+            $reply = isset($_POST['reply']) ? sanitize_textarea_field($_POST['reply']) : '';
             $vendor = get_wcmp_vendor(get_current_user_id());
-            if($vendor && $reply && $ques_ID){
+            if ($vendor && $reply && $ques_ID) {
                 $result = $WCMp->product_qna->createAnswer(array(
                     'ques_ID' => $ques_ID,
-                    'ans_details' => $reply,
+                    'ans_details' => sanitize_textarea_field($reply),
                     'ans_by' => $vendor->id,
-                    'ans_created' => date( 'Y-m-d H:i:s',current_time( 'timestamp' )),
+                    'ans_created' => date('Y-m-d H:i:s', current_time('timestamp')),
                     'ans_vote' => ''
                 ));
-                if($result){
+                if ($result) {
                     //delete transient
                     if (get_transient('wcmp_customer_qna_for_vendor_' . $vendor->id)) {
                         delete_transient('wcmp_customer_qna_for_vendor_' . $vendor->id);
                     }
                     $remain_data = count($WCMp->product_qna->get_Vendor_Questions($vendor));
-                    if($remain_data == 0){
+                    if ($remain_data == 0) {
                         $msg = __('No more customer query found.', 'dc-woocommerce-multi-vendor');
-                    }else{
+                    } else {
                         $msg = '';
                     }
                     $qna_data = '';
                     $no_data = 0;
-                }else{
+                } else {
                     $no_data = 1;
                 }
             }
-        }elseif ($handler == 'vote_answer') {
-            $ans_ID = isset( $_POST['ans_ID'] ) ? (int)$_POST['ans_ID'] : '';
-            $vote_type = isset( $_POST['vote'] ) ? $_POST['vote'] : '';
+        } elseif ($handler == 'vote_answer') {
+            $ans_ID = isset($_POST['ans_ID']) ? (int) $_POST['ans_ID'] : '';
+            $vote_type = isset($_POST['vote']) ? $_POST['vote'] : '';
             $ans_row = $WCMp->product_qna->get_Answer($ans_ID);
+            $ques_row = $WCMp->product_qna->get_Question($ans_row->ques_ID);
             $vote = maybe_unserialize($ans_row->ans_vote);
-            if(!$vote){
+            $redirect = get_permalink($ques_row->product_ID);
+            if (!$vote) {
                 $vote = array();
             }
-            if($ans_ID && $vote_type && is_user_logged_in() && !array_key_exists(get_current_user_id(),$vote)){
-                if($vote_type == 'up'){
+            if ($ans_ID && $vote_type && is_user_logged_in()) {
+                if ($vote_type == 'up') {
                     $vote[get_current_user_id()] = +1;
-                }else{
+                } else {
                     $vote[get_current_user_id()] = -1;
                 }
                 $result = $WCMp->product_qna->updateAnswer($ans_ID, array('ans_vote' => maybe_serialize($vote)));
-                if($result){
+                if ($result) {
                     $qna_data = '';
-                    $msg = __("Thanks for your vote!", 'dc-woocommerce-multi-vendor'); 
+                    $msg = __("Thanks for your vote!", 'dc-woocommerce-multi-vendor');
                     $no_data = 0;
                     wc_add_notice($msg, 'success');
-                }else{
+                } else {
                     $no_data = 1;
                 }
-            }else{
-                $msg = __("You already voted the answer.", 'dc-woocommerce-multi-vendor'); 
-                wc_add_notice($msg, 'notice');
+            }
+        } elseif ($handler == 'update_answer') {
+            $result = false;
+            $ans_ID = isset($_POST['key']) ? (int) $_POST['key'] : '';
+            $answer = isset($_POST['answer']) ? $_POST['answer'] : '';
+            if($ans_ID){
+                $result = $WCMp->product_qna->updateAnswer($ans_ID, array('ans_details' => sanitize_textarea_field($answer)));
+            }
+            if ($result) {
+                $qna_data = '';
+                $msg = __("Answer updated successfully!", 'dc-woocommerce-multi-vendor');
+                $no_data = 0;
+                wc_add_notice($msg, 'success');
+            } else {
+                $no_data = 1;
             }
         }
-        wp_send_json(array('no_data' => $no_data, 'message' => $msg, 'data' => $qna_data,'remain_data'=>$remain_data));
+        wp_send_json(array('no_data' => $no_data, 'message' => $msg, 'data' => $qna_data, 'remain_data' => $remain_data, 'redirect'=>$redirect, 'is_user'=>is_user_logged_in()));
         die();
     }
-    
+
     public function wcmp_vendor_dashboard_reviews_data() {
         $vendor = get_current_vendor();
         $requestData = $_REQUEST;
@@ -2584,58 +2661,58 @@ class WCMp_Ajax {
         $vendor_reviews_total = array();
         if (get_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor->id)) {
             $vendor_reviews_total = get_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor->id);
-        }else{
+        } else {
             $query = array('meta_query' => array(
-                'relation' => 'AND',
-                array(
-                    'key' => 'vendor_rating_id',
-                    'value' => $vendor->id,
-                    'compare' => '=',
-                ),
-                array(
-                    'key' => '_mark_as_replied',
-                    'value' => 1,
-                    'compare' => 'NOT EXISTS',
-                )
+                    'relation' => 'AND',
+                    array(
+                        'key' => 'vendor_rating_id',
+                        'value' => $vendor->id,
+                        'compare' => '=',
+                    ),
+                    array(
+                        'key' => '_mark_as_replied',
+                        'value' => 1,
+                        'compare' => 'NOT EXISTS',
+                    )
             ));
             $vendor_reviews_total = $vendor->get_reviews_and_rating(0, '', $query);
             set_transient('wcmp_dashboard_reviews_for_vendor_' . $vendor->id, $vendor_reviews_total);
         }
         //$vendor_reviews_total = $vendor->get_reviews_and_rating(0, -1, $query);
         //$vendor_reviews = $vendor->get_reviews_and_rating($requestData['start'], $requestData['length'], $query);
-        if($vendor_reviews_total){
+        if ($vendor_reviews_total) {
             $vendor_reviews = array_slice($vendor_reviews_total, $requestData['start'], $requestData['length']);
             foreach ($vendor_reviews as $comment) :
                 $row = '';
                 $row = '<div class="media-left pull-left">   
-                        <a href="#">'.get_avatar($comment->user_id, 50, '', '').'</a>
+                        <a href="#">' . get_avatar($comment->user_id, 50, '', '') . '</a>
                     </div>
                     <div class="media-body">
-                        <h4 class="media-heading">'.get_user_by('ID', $comment->user_id)->display_name.' -- <small>'.human_time_diff(strtotime($comment->comment_date)) . __(' ago', 'dc-woocommerce-multi-vendor').'</small></h4>
-                        <p>'.$comment->comment_content.'</p>
-                        <a data-toggle="modal" data-target="#commient-modal-'. $comment->comment_ID.'">'.__('Reply', 'dc-woocommerce-multi-vendor').'</a>
+                        <h4 class="media-heading">' . get_user_by('ID', $comment->user_id)->display_name . ' -- <small>' . human_time_diff(strtotime($comment->comment_date)) . __(' ago', 'dc-woocommerce-multi-vendor') . '</small></h4>
+                        <p>' . $comment->comment_content . '</p>
+                        <a data-toggle="modal" data-target="#commient-modal-' . $comment->comment_ID . '">' . __('Reply', 'dc-woocommerce-multi-vendor') . '</a>
                         <!-- Modal -->
-                        <div class="modal fade" id="commient-modal-'.$comment->comment_ID.'" role="dialog">
+                        <div class="modal fade" id="commient-modal-' . $comment->comment_ID . '" role="dialog">
                             <div class="modal-dialog">
 
                                 <!-- Modal content-->
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">'.__('Reply to ', 'dc-woocommerce-multi-vendor').get_user_by('ID', $comment->user_id)->display_name.'</h4>
+                                        <h4 class="modal-title">' . __('Reply to ', 'dc-woocommerce-multi-vendor') . get_user_by('ID', $comment->user_id)->display_name . '</h4>
                                     </div>
                                     <div class="wcmp-widget-modal modal-body">
-                                            <textarea class="form-control" rows="5" id="comment-content-'.$comment->comment_ID.'" placeholder="'.__('Enter reply...', 'dc-woocommerce-multi-vendor').'"></textarea>
+                                            <textarea class="form-control" rows="5" id="comment-content-' . $comment->comment_ID . '" placeholder="' . __('Enter reply...', 'dc-woocommerce-multi-vendor') . '"></textarea>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" data-comment_id="'.$comment->comment_ID.'" data-vendor_id="'.get_current_vendor_id().'" class="btn btn-default wcmp-comment-reply">'.__('Comment', 'dc-woocommerce-multi-vendor').'</button>
+                                        <button type="button" data-comment_id="' . $comment->comment_ID . '" data-vendor_id="' . get_current_vendor_id() . '" class="btn btn-default wcmp-comment-reply">' . __('Comment', 'dc-woocommerce-multi-vendor') . '</button>
                                     </div>
                                 </div>
 
                             </div>
                         </div>
                     </div>';
-                
+
                 $data[] = array($row);
             endforeach;
         }
@@ -2648,7 +2725,7 @@ class WCMp_Ajax {
         wp_send_json($json_data);
         die;
     }
-    
+
     public function wcmp_vendor_dashboard_customer_questions_data() {
         global $WCMp;
         $vendor = get_current_vendor();
@@ -2657,40 +2734,40 @@ class WCMp_Ajax {
         $active_qna_total = array();
         if (get_transient('wcmp_customer_qna_for_vendor_' . $vendor->id)) {
             $active_qna_total = get_transient('wcmp_customer_qna_for_vendor_' . $vendor->id);
-        }else{
+        } else {
             $active_qna_total = $WCMp->product_qna->get_Vendor_Questions($vendor);
             set_transient('wcmp_customer_qna_for_vendor_' . $vendor->id, $active_qna_total);
         }
-        if($active_qna_total){
+        if ($active_qna_total) {
             $active_qna = array_slice($active_qna_total, $requestData['start'], $requestData['length']);
-            if($active_qna){
+            if ($active_qna) {
                 foreach ($active_qna as $key => $data) :
                     $product = wc_get_product($data->product_ID);
                     $row = '';
-                    $row = '<article id="reply-item-'.$data->ques_ID.'" class="reply-item">
+                    $row = '<article id="reply-item-' . $data->ques_ID . '" class="reply-item">
                         <div class="media">
-                            <!-- <div class="media-left">'.$product->get_image().'</div> -->
+                            <!-- <div class="media-left">' . $product->get_image() . '</div> -->
                             <div class="media-body">
-                                <h4 class="media-heading qna-question">'.$data->ques_details.'</h4>
+                                <h4 class="media-heading qna-question">' . $data->ques_details . '</h4>
                                 <time class="qna-date">
-                                    <span>'.wcmp_date($data->ques_created).'</span>
+                                    <span>' . wcmp_date($data->ques_created) . '</span>
                                 </time>
-                                <a data-toggle="modal" data-target="#qna-reply-modal-'.$data->ques_ID.'" >'.__('Reply', 'dc-woocommerce-multi-vendor').'</a>
+                                <a data-toggle="modal" data-target="#qna-reply-modal-' . $data->ques_ID . '" >' . __('Reply', 'dc-woocommerce-multi-vendor') . '</a>
                                 <!-- Modal -->
-                                <div class="modal fade" id="qna-reply-modal-'.$data->ques_ID.'" role="dialog">
+                                <div class="modal fade" id="qna-reply-modal-' . $data->ques_ID . '" role="dialog">
                                     <div class="modal-dialog">
                                         <!-- Modal content-->
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <h4 class="modal-title">'.__('Product - ', 'dc-woocommerce-multi-vendor').' '.$product->get_formatted_name().'</h4>
+                                                <h4 class="modal-title">' . __('Product - ', 'dc-woocommerce-multi-vendor') . ' ' . $product->get_formatted_name() . '</h4>
                                             </div>
                                             <div class="wcmp-widget-modal modal-body">
-                                                    <label class="qna-question">'.$data->ques_details.'</label>
-                                                    <textarea class="form-control" rows="5" id="qna-reply-'.$data->ques_ID.'" placeholder="'.__('Post your answer...', 'dc-woocommerce-multi-vendor').'"></textarea>
+                                                    <label class="qna-question">' . stripslashes($data->ques_details) . '</label>
+                                                    <textarea class="form-control" rows="5" id="qna-reply-' . $data->ques_ID . '" placeholder="' . __('Post your answer...', 'dc-woocommerce-multi-vendor') . '"></textarea>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" data-key="'.$data->ques_ID.'" class="btn btn-default wcmp-add-qna-reply">'.__('Add', 'dc-woocommerce-multi-vendor').'</button>
+                                                <button type="button" data-key="' . $data->ques_ID . '" class="btn btn-default wcmp-add-qna-reply">' . __('Add', 'dc-woocommerce-multi-vendor') . '</button>
                                             </div>
                                         </div>
                                     </div>
@@ -2700,7 +2777,7 @@ class WCMp_Ajax {
                     </article>';
 
                     $data_html[] = array($row);
-                endforeach; 
+                endforeach;
             }
         }
 
@@ -2713,4 +2790,121 @@ class WCMp_Ajax {
         wp_send_json($json_data);
         die;
     }
+    
+    public function wcmp_vendor_products_qna_list() {
+        global $WCMp;
+        $requestData = $_REQUEST;
+        $vendor = get_current_vendor();
+        // filter by status
+        if (isset($requestData['qna_status']) && $requestData['qna_status'] == 'all' && $requestData['qna_status'] != '') {
+            $vendor_questions_n_answers = $WCMp->product_qna->get_Vendor_Questions($vendor, false);
+        }else{
+            $vendor_questions_n_answers = $WCMp->product_qna->get_Vendor_Questions($vendor, true);
+        }
+        // filter by products
+        if(isset($requestData['qna_products']) && is_array($requestData['qna_products'])){
+            if($vendor_questions_n_answers){
+                foreach ($vendor_questions_n_answers as $key => $qna_ques) { 
+                    if(!in_array($qna_ques->product_ID, $requestData['qna_products'])){
+                        unset($vendor_questions_n_answers[$key]);
+                    }
+                }
+            }
+        }
+        $vendor_qnas = array_slice($vendor_questions_n_answers, $requestData['start'], $requestData['length']);
+        $data = array();
+
+        if($vendor_qnas){
+            // filter by vote
+            if($requestData['order'][0]['dir'] != 'asc'){
+                $votes = array();
+                foreach ($vendor_qnas as $key => $qna_ques) { 
+                    $count = 0;
+                    $have_answer = $WCMp->product_qna->get_Answer($qna_ques->ques_ID);
+                    if($have_answer){
+                        $ans_vote = maybe_unserialize($have_answer->ans_vote);
+                        if(is_array($ans_vote)){
+                            $count = array_sum($ans_vote);
+                        }
+                        $vendor_qnas[$key]->vote_count = $count;
+                        $votes[$key] = $count;
+                    }else{
+                        $vendor_qnas[$key]->vote_count = $count;
+                        $votes[$key] = $count;
+                    }
+                }
+                array_multisort($votes, SORT_DESC, $vendor_qnas);
+            }
+
+            foreach ($vendor_qnas as $question) {
+                $product = wc_get_product($question->product_ID);
+                if($product){
+                    $have_answer = $WCMp->product_qna->get_Answer($question->ques_ID);
+                    $details = '';
+                    $status = '';
+                    $vote = '&ndash;';
+                    if(!$have_answer){
+                        $status = '<span class="unanswered label label-default">'.__('Unanswered', 'dc-woocommerce-multi-vendor').'</span>';
+                        $details .= '<div class="wcmp-question-details-modal modal-body">
+                                        <textarea class="form-control" rows="5" id="qna-reply-' . $question->ques_ID . '" placeholder="' . __('Post your answer...', 'dc-woocommerce-multi-vendor') . '"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" data-key="' . $question->ques_ID . '" class="btn btn-default wcmp-add-qna-reply">' . __('Add', 'dc-woocommerce-multi-vendor') . '</button>
+                                    </div>';
+                    }else{
+                        $status = '<span class="answered label label-info">'.__('Answered', 'dc-woocommerce-multi-vendor').'</span>';
+                        $ans_vote = maybe_unserialize($have_answer->ans_vote);
+                        if(is_array($ans_vote)){
+                            $vote = array_sum($ans_vote);
+                            if($vote > 0){
+                                $vote = '<span class="label label-success">'.$vote.'</span>';
+                            }else{
+                                $vote = '<span class="label label-danger">'.$vote.'</span>';
+                            }
+                        }
+                        if(apply_filters('wcmp_vendor_can_modify_qna_answer', false)){
+                            $details .= '<div class="wcmp-question-details-modal modal-body">
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer->ans_ID . '">'.stripslashes($have_answer->ans_details).'</textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" data-key="' . $have_answer->ans_ID . '" class="btn btn-default wcmp-update-qna-answer">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</button>
+                                    </div>';
+                        }else{
+                            $details .= '<div class="wcmp-question-details-modal modal-body">
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer->ans_ID . '" disabled>'.stripslashes($have_answer->ans_details).'</textarea>
+                                    </div>';
+                        }
+                    }
+                    $data[] = array(
+                        'qnas' => '<a data-toggle="modal" data-target="#question-details-modal-' . $question->ques_ID . '" data-ques="'.$question->ques_ID.'" class="question-details">'.stripslashes($question->ques_details).'</a>'
+                                . '<!-- Modal -->
+                                <div class="modal fade" id="question-details-modal-' . $question->ques_ID . '" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">' . stripslashes($question->ques_details) . '</h4>
+                                            </div>
+                                            '.$details.'
+                                        </div>
+                                    </div>
+                                </div>',
+                        'product' => $product->get_title(),
+                        'date' => wcmp_date($question->ques_created),
+                        'vote' => $vote,
+                        'status' => $status
+                    );
+                }
+            }
+        }
+        $json_data = array(
+            "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+            "recordsTotal" => intval(count($vendor_questions_n_answers)), // total number of records
+            "recordsFiltered" => intval(count($vendor_questions_n_answers)), // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data" => $data   // total data array
+        );
+        wp_send_json($json_data);
+    }
+
 }

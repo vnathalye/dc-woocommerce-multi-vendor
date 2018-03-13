@@ -86,7 +86,7 @@ foreach ($terms as $term) {
     ?>
             obj = {};
             obj['key'] = '<?php echo $term->term_id; ?>';
-            obj['label'] = '<?php echo $term->name; ?>';
+            obj['label'] = '<?php echo addslashes($term->name); ?>';
             filter_by_category_list.push(obj);
 <?php }
 ?>

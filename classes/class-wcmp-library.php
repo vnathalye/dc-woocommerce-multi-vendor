@@ -38,12 +38,12 @@ class WCMp_Library {
         $this->css_lib_path = $this->lib_path . 'css/';
 
         $this->css_lib_url = $this->lib_url . 'css/';
-        
-        $this->bootstrap_lib_url = $this->lib_url. 'bootstrap/';
-        
-        $this->jqvmap = $this->lib_url. 'jqvmap/';
-        
-        $this->dataTable_lib_url = $this->lib_url. 'dataTable/';
+
+        $this->bootstrap_lib_url = $this->lib_url . 'bootstrap/';
+
+        $this->jqvmap = $this->lib_url . 'jqvmap/';
+
+        $this->dataTable_lib_url = $this->lib_url . 'dataTable/';
     }
 
     /**
@@ -88,7 +88,7 @@ class WCMp_Library {
         wp_enqueue_script('frontend_upload_js', $this->lib_url . 'upload/media-upload.js', array('jquery'), $WCMp->version, true);
         wp_enqueue_style('upload_css', $this->lib_url . 'upload/media-upload.css', array(), $WCMp->version);
     }
-    
+
     /**
      * WP Media library for dashboard
      */
@@ -152,53 +152,55 @@ class WCMp_Library {
             wp_register_style('jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.min.css', array(), $jquery_version);
         }
     }
-    
-    public function load_bootstrap_style_lib(){
-        wp_register_style('wcmp-bootstrap-style', $this->bootstrap_lib_url .'css/bootstrap.min.css', array(), '3.3.7');
+
+    public function load_bootstrap_style_lib() {
+        wp_register_style('wcmp-bootstrap-style', $this->bootstrap_lib_url . 'css/bootstrap.min.css', array(), '3.3.7');
         wp_enqueue_style('wcmp-bootstrap-style');
     }
-    
-    public function load_bootstrap_script_lib(){
-        wp_register_script('wcmp-bootstrap-script', $this->bootstrap_lib_url .'js/bootstrap.min.js', array('jquery'), '3.3.7');
-        wp_enqueue_script('wcmp-bootstrap-script');
+
+    public function load_bootstrap_script_lib() {
+        wp_register_script('wcmp-bootstrap-script', $this->bootstrap_lib_url . 'js/bootstrap.min.js', array('jquery'), '3.3.7');
+        if (!defined('WCMP_UNLOAD_BOOTSTRAP_LIB')) {
+            wp_enqueue_script('wcmp-bootstrap-script');
+        }
     }
-    
+
     /**
      * Google Map API
      */
     public function load_gmap_api() {
         $api_key = get_wcmp_vendor_settings('google_api_key');
-        if ( $api_key ) {
-            wp_register_script( 'wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$api_key}&libraries=places", array('jquery') );
-            wp_enqueue_script( 'wcmp-gmaps-api');
+        if ($api_key) {
+            wp_register_script('wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$api_key}&libraries=places", array('jquery'));
+            wp_enqueue_script('wcmp-gmaps-api');
         }
     }
-    
+
     /**
      * dataTable library
      */
     public function load_dataTable_lib() {
-        wp_register_style('wcmp-datatable-bs-style', $this->dataTable_lib_url.'dataTables.bootstrap.min.css');
-        wp_register_script('wcmp-datatable-script', $this->dataTable_lib_url.'jquery.dataTables.min.js', array('jquery'));
-        wp_register_script('wcmp-datatable-bs-script', $this->dataTable_lib_url.'dataTables.bootstrap.min.js', array('jquery'));
-        wp_enqueue_style( 'wcmp-datatable-bs-style');
-        wp_enqueue_script( 'wcmp-datatable-script');
-        wp_enqueue_script( 'wcmp-datatable-bs-script');
-        wp_add_inline_script( 'wcmp-datatable-script', 
-        'jQuery(document).ready(function($){
+        wp_register_style('wcmp-datatable-bs-style', $this->dataTable_lib_url . 'dataTables.bootstrap.min.css');
+        wp_register_script('wcmp-datatable-script', $this->dataTable_lib_url . 'jquery.dataTables.min.js', array('jquery'));
+        wp_register_script('wcmp-datatable-bs-script', $this->dataTable_lib_url . 'dataTables.bootstrap.min.js', array('jquery'));
+        wp_enqueue_style('wcmp-datatable-bs-style');
+        wp_enqueue_script('wcmp-datatable-script');
+        wp_enqueue_script('wcmp-datatable-bs-script');
+        wp_add_inline_script('wcmp-datatable-script', 'jQuery(document).ready(function($){
           $.fn.dataTable.ext.errMode = "none";
-        });' );
+        });');
     }
-    
+
     /**
      * jqvmap library
      */
-    public function load_jqvmap_script_lib(){
-        wp_register_style('wcmp-jqvmap-style', $this->jqvmap .'jqvmap.min.css', array(), '1.5.1');
-        wp_register_script('wcmp-vmap-script', $this->jqvmap .'jquery.vmap.min.js', true, '1.5.1');
-        wp_register_script('wcmp-vmap-world-script', $this->jqvmap .'maps/jquery.vmap.world.min.js', true, '1.5.1');
+    public function load_jqvmap_script_lib() {
+        wp_register_style('wcmp-jqvmap-style', $this->jqvmap . 'jqvmap.min.css', array(), '1.5.1');
+        wp_register_script('wcmp-vmap-script', $this->jqvmap . 'jquery.vmap.min.js', true, '1.5.1');
+        wp_register_script('wcmp-vmap-world-script', $this->jqvmap . 'maps/jquery.vmap.world.min.js', true, '1.5.1');
         wp_enqueue_style('wcmp-jqvmap-style');
         wp_enqueue_script('wcmp-vmap-script');
         wp_enqueue_script('wcmp-vmap-world-script');
     }
+
 }

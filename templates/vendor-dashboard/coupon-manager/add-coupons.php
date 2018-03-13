@@ -89,7 +89,7 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
     <form id="coupon_manager_form" class="form-horizontal">
         <?php
         if (isset($_REQUEST['fpm_msg']) && !empty($_REQUEST['fpm_msg'])) {
-            $WCMp_fpm_coupon_messages = get_forntend_coupon_manager_messages();
+            $WCMp_fpm_coupon_messages = get_frontend_coupon_manager_messages();
             ?>
             <div class="woocommerce-message" tabindex="-1"><?php echo $WCMp_fpm_coupon_messages[$_REQUEST['fpm_msg']]; ?></div>
             <?php

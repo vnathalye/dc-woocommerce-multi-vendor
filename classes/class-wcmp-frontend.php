@@ -11,7 +11,7 @@ class WCMp_Frontend {
 
     public function __construct() {
         //enqueue scripts
-        add_action('wp_enqueue_scripts', array(&$this, 'frontend_scripts'), 999);
+        add_action('wp_enqueue_scripts', array(&$this, 'frontend_scripts'));
         //enqueue styles
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_styles'), 999);
         add_action('woocommerce_archive_description', array(&$this, 'product_archive_vendor_info'), 10);
@@ -342,14 +342,6 @@ class WCMp_Frontend {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-tabs');
             wp_enqueue_script('jquery-ui-datepicker');
-            
-            // dequeue global bootstrap script
-            foreach( $wp_scripts->registered as $script ) {
-                if ((stristr($script->src, 'bootstrap.min.js') !== FALSE ||stristr($script->src, 'bootstrap.js') != FALSE) && wp_script_is($script->handle, $list = 'enqueued')) {
-                    wp_deregister_script($script->handle);
-                    wp_dequeue_script($script->handle);
-                }
-            }
 
             $WCMp->library->load_bootstrap_script_lib();
             $WCMp->library->load_qtip_lib();

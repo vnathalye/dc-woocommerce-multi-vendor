@@ -29,6 +29,7 @@ class WCMp_Vendor_Hooks {
         add_action('wcmp_vendor_dashboard_transaction-details_endpoint', array(&$this, 'wcmp_vendor_dashboard_transaction_details_endpoint'));
         add_action('wcmp_vendor_dashboard_vendor-knowledgebase_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_knowledgebase_endpoint'));
         add_action('wcmp_vendor_dashboard_vendor-tools_endpoint', array(&$this, 'wcmp_vendor_dashboard_vendor_tools_endpoint'));
+        add_action('wcmp_vendor_dashboard_products-qna_endpoint', array(&$this, 'wcmp_vendor_dashboard_products_qna_endpoint'));
 
         add_filter('the_title', array(&$this, 'wcmp_vendor_dashboard_endpoint_title'));
         add_filter('wcmp_vendor_dashboard_menu_vendor_policies_capability', array(&$this, 'wcmp_vendor_dashboard_menu_vendor_policies_capability'));
@@ -235,7 +236,7 @@ class WCMp_Vendor_Hooks {
      */
     public function wcmp_create_vendor_dashboard_content() {
         global $wp, $WCMp;
-        foreach ($wp->query_vars as $key => $value) { 
+        foreach ($wp->query_vars as $key => $value) {
             // Ignore pagename and page param.
             if (in_array($key, array('page', 'pagename'))) {
                 continue;
@@ -406,16 +407,20 @@ class WCMp_Vendor_Hooks {
 
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
             wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_localize_script('wcmp_admin_product_auto_search_js', 'wcmp_admin_product_auto_search_js_params', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'search_products_nonce' => wp_create_nonce('search-products'),
+            ));
         }
-        wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager'.$suffix.'.css', array(), $WCMp->version);
-        wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager'.$suffix.'.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
+        wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager' . $suffix . '.css', array(), $WCMp->version);
+        wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager' . $suffix . '.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
 
-        $WCMp_fpm_messages = get_forntend_product_manager_messages();
+        $WCMp_fpm_messages = get_frontend_product_manager_messages();
         wp_localize_script('product_manager_js', 'product_manager_messages', $WCMp_fpm_messages);
         $pro_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')];
         if ($pro_id) {
-            $wcmp_have_parent_product_id = get_post_meta($pro_id, '_wcmp_parent_product_id', true);
-            if ($wcmp_have_parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
+            $product = wc_get_product($pro_id);
+            if ($product->get_parent_id('edit') && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
                 wp_add_inline_script('product_manager_js', '(function ($) { 
                   $("#product_manager_form #title").prop("disabled", true);
               })(jQuery)');
@@ -464,7 +469,7 @@ class WCMp_Vendor_Hooks {
         $WCMp->library->load_select2_lib();
         wp_enqueue_script('coupon_manager_js', $WCMp->plugin_url . 'assets/frontend/js/coupon_manager.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
 
-        $WCMp_fpm_messages = get_forntend_coupon_manager_messages();
+        $WCMp_fpm_messages = get_frontend_coupon_manager_messages();
         wp_localize_script('coupon_manager_js', 'coupon_manager_messages', $WCMp_fpm_messages);
         $coupon_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon')];
         $WCMp->template->get_template('vendor-dashboard/coupon-manager/add-coupons.php', array('couponid' => $coupon_id));
@@ -587,7 +592,7 @@ class WCMp_Vendor_Hooks {
         wp_enqueue_script('jquery-ui-accordion');
         $WCMp->template->get_template('vendor-dashboard/vendor-university.php');
     }
-    
+
     /**
      * Display Vendor Tools purging content
      * @global object $WCMp
@@ -613,6 +618,19 @@ class WCMp_Vendor_Hooks {
         </div>
         <?php
         do_action('after_wcmp_vendor_purging_content');
+    }
+    
+    /**
+     * Display Vendor Products Q&As content
+     * @global object $WCMp
+     */
+    public function wcmp_vendor_dashboard_products_qna_endpoint() {
+        global $WCMp;
+        if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
+            $WCMp->library->load_dataTable_lib();
+            $WCMp->library->load_select2_lib();
+            $WCMp->template->get_template('vendor-dashboard/vendor-products-qna.php');
+        }
     }
 
     public function save_vendor_dashboard_data() {
@@ -698,9 +716,9 @@ class WCMp_Vendor_Hooks {
      * Generate Vendor Progress
      * @global object $WCMp
      */
-    public function before_wcmp_vendor_dashboard_content($key) { 
+    public function before_wcmp_vendor_dashboard_content($key) {
         global $WCMp;
-        if($key !== $WCMp->endpoints->get_current_endpoint()){
+        if ($key !== $WCMp->endpoints->get_current_endpoint()) {
             return;
         }
         $vendor = get_wcmp_vendor(get_current_vendor_id());
@@ -722,22 +740,23 @@ class WCMp_Vendor_Hooks {
             }
         }
     }
+
     /**
      * WCMp theme supported function
      */
-    public function wcmp_add_theme_support(){
-        if(is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())){
+    public function wcmp_add_theme_support() {
+        if (is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())) {
             global $wp_filter;
             //Flatsome mobile menu support
             remove_action('wp_footer', 'flatsome_mobile_menu', 7);
             // Remove demo store notice
-            remove_action( 'wp_footer', 'woocommerce_demo_store' );
+            remove_action('wp_footer', 'woocommerce_demo_store');
             // Remove custom css
             $wp_head_hooks = $wp_filter['wp_head']->callbacks;
-            foreach ($wp_head_hooks as $priority => $wp_head_hook){
-                foreach (array_keys($wp_head_hook) as $hook){
-                    if(strpos($hook, 'custom_css')){
-                        remove_action( 'wp_head', $hook, $priority );
+            foreach ($wp_head_hooks as $priority => $wp_head_hook) {
+                foreach (array_keys($wp_head_hook) as $hook) {
+                    if (strpos($hook, 'custom_css')) {
+                        remove_action('wp_head', $hook, $priority);
                     }
                 }
             }

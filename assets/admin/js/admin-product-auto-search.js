@@ -1,4 +1,4 @@
-/* global ajaxurl */
+/* global ajaxurl, wcmp_admin_product_auto_search_js_params */
 
 (function ($) {
     var block = function( $node ) {
@@ -29,7 +29,7 @@
         // This is the easiest way to have default options.
         var settings = $.extend({
             // These are the defaults.
-            ajaxurl : '',
+            ajaxurl : wcmp_admin_product_auto_search_js_params.ajax_url,
             is_admin : true
         }, options);
         var title = this[0].value;
@@ -48,6 +48,7 @@
                     block($_this.parents('form'));
                     var data = {
                         action: 'wcmp_auto_search_product',
+                        security: wcmp_admin_product_auto_search_js_params.search_products_nonce,
                         protitle: strtitle,
                         is_admin : settings.is_admin
                     };

@@ -61,6 +61,7 @@ class WCMp_Settings_Vendor_General {
                         'wcmp_transaction_details_endpoint' => array('title' => __('Transaction Details', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_transaction_details_endpoint', 'label_for' => 'wcmp_transaction_details_endpoint', 'name' => 'wcmp_transaction_details_endpoint', 'hints' => __('Set endpoint for transaction details page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'transaction-details'),
                         'wcmp_vendor_knowledgebase_endpoint' => array('title' => __('Vendor Knowledgebase', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_knowledgebase_endpoint', 'label_for' => 'wcmp_vendor_knowledgebase_endpoint', 'name' => 'wcmp_vendor_knowledgebase_endpoint', 'hints' => __('Set endpoint for vendor knowledgebase page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-knowledgebase'),
                         'wcmp_vendor_tools_endpoint' => array('title' => __('Vendor Tools', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_tools_endpoint', 'label_for' => 'wcmp_vendor_tools_endpoint', 'name' => 'wcmp_vendor_tools_endpoint', 'hints' => __('Set endpoint for vendor tools page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-tools'),
+                        'wcmp_vendor_products_qnas_endpoint' => array('title' => __('Vendor Products Q&As', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_products_qnas_endpoint', 'label_for' => 'wcmp_vendor_products_qnas_endpoint', 'name' => 'wcmp_vendor_products_qnas_endpoint', 'hints' => __('Set endpoint for vendor products Q&As page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'products-qna'),
                     )
                 )
             ),
@@ -130,6 +131,9 @@ class WCMp_Settings_Vendor_General {
         }
         if (isset($input['wcmp_coupons_endpoint']) && !empty($input['wcmp_coupons_endpoint'])) {
             $new_input['wcmp_coupons_endpoint'] = sanitize_text_field($input['wcmp_coupons_endpoint']);
+        }
+        if (isset($input['wcmp_show_products_qnas_endpoint']) && !empty($input['wcmp_show_products_qnas_endpoint'])) {
+            $new_input['wcmp_show_products_qnas_endpoint'] = sanitize_text_field($input['wcmp_show_products_qnas_endpoint']);
         }
         if (!$hasError) {
             add_settings_error(

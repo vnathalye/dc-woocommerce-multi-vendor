@@ -69,7 +69,7 @@ $subtotal = 0;
                             </tr>
                             <tr>
                                 <td><?php _e('Shipping:', 'dc-woocommerce-multi-vendor'); ?></td>
-                                <td><?php echo wc_price($vendor_order_amount['shipping_amount']); ?> via <?php echo $order->get_shipping_method(); ?></td>
+                                <td><?php echo wc_price($vendor_order_amount['shipping_amount']); ?><?php _e(' via ', 'dc-woocommerce-multi-vendor'); ?><?php echo $order->get_shipping_method(); ?></td>
                             </tr>
                             <tr>
                                 <td><?php _e('All Tax:', 'dc-woocommerce-multi-vendor'); ?></td>

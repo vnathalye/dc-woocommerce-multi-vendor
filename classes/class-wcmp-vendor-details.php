@@ -804,13 +804,13 @@ class WCMp_Vendor {
                         }
                     }
                     $item_total_week += ($shipping_total_week + $tax_total_week);
-                    $vendor_sales_results['sales_total'] = number_format($item_total_week, 0);
-                    $vendor_sales_results['earning'] = number_format($total_comission_week, 0);
-                    $vendor_sales_results['withdrawal'] = number_format($net_withdrawal_balance, 0);
+                    $vendor_sales_results['sales_total'] = $item_total_week;
+                    $vendor_sales_results['earning'] = $total_comission_week;
+                    $vendor_sales_results['withdrawal'] = $net_withdrawal_balance;
                     $where = "created BETWEEN '{$args['start_date']}' AND '{$args['end_date']}' AND ";
                     $visitor_data = wcmp_get_visitor_stats($this->id, $where);
                     $vendor_sales_results['traffic_no'] = count($visitor_data);
-                    $vendor_sales_results['coupon_total'] = number_format($discount_amount, 0);
+                    $vendor_sales_results['coupon_total'] = $discount_amount;
                     $vendor_sales_results['orders_no'] = count($com_orders);
                 }
 
@@ -845,7 +845,7 @@ class WCMp_Vendor {
                             //$product_dimention = array();
                             foreach ($pending_shipping_products as $pending_shipping_product) {
                                 $product = wc_get_product($pending_shipping_product->product_id);
-                                if ($product) {
+                                if ($product && $product->needs_shipping()) {
                                     $product_sku[] = $product->get_sku() ? $product->get_sku() : '<span class="na">&ndash;</span>';
                                     $product_name[] = $product->get_title();
                                     if ($pending_shipping_product->variation_id != 0) {
@@ -853,6 +853,8 @@ class WCMp_Vendor {
                                     }
                                 }
                             }
+                            if(empty($product_name))                                
+                                continue;
                             
                             $action_html = '';
                             $vendor = get_current_vendor();

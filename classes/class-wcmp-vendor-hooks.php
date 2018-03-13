@@ -341,6 +341,9 @@ class WCMp_Vendor_Hooks {
         global $WCMp;
         $vendor = get_wcmp_vendor(get_current_vendor_id());
         $user_array = $WCMp->user->get_vendor_fields($vendor->id);
+        if(!wp_script_is( 'tiny_mce', 'enqueued' )){
+            wp_enqueue_editor();
+        }
         $WCMp->template->get_template('vendor-dashboard/vendor-policy.php', $user_array);
     }
 
@@ -411,6 +414,10 @@ class WCMp_Vendor_Hooks {
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'search_products_nonce' => wp_create_nonce('search-products'),
             ));
+        }
+
+        if(!wp_script_is( 'tiny_mce', 'enqueued' )){
+            wp_enqueue_editor();
         }
         wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager' . $suffix . '.css', array(), $WCMp->version);
         wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager' . $suffix . '.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);

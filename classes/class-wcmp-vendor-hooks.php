@@ -405,7 +405,7 @@ class WCMp_Vendor_Hooks {
         $WCMp->library->load_frontend_upload_lib();
         $WCMp->library->load_accordian_lib();
         $WCMp->library->load_select2_lib();
-
+        
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
 
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
@@ -415,7 +415,7 @@ class WCMp_Vendor_Hooks {
                 'search_products_nonce' => wp_create_nonce('search-products'),
             ));
         }
-
+        
         if(!wp_script_is( 'tiny_mce', 'enqueued' )){
             wp_enqueue_editor();
         }

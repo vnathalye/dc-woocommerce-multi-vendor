@@ -1728,9 +1728,11 @@ if (!function_exists('wcmp_process_order')) {
      * @param int $order_id
      * @param WC_Order object $order
      */
-    function wcmp_process_order($order_id, $order) {
+    function wcmp_process_order($order_id, $order = null) {
         global $wpdb;
-        if (get_post_meta($order_id, '_wcmp_order_processed', true)) {
+        if(!$order)
+            $order = wc_get_order($order_id);
+        if (get_post_meta($order_id, '_wcmp_order_processed', true) && !$order) {
             return;
         }
         $vendor_shipping_array = get_post_meta($order_id, 'dc_pv_shipped', true);
@@ -2115,12 +2117,12 @@ if (!function_exists('get_visitor_ip_data')) {
             $service_endpoint = 'http://ip-api.com/json/%s';
             $response = wp_safe_remote_get(sprintf($service_endpoint, $ip_address), array('timeout' => 2));
             if (!is_wp_error($response) && $response['body']) {
-                set_transient('wcmp_' . $ip_address, json_decode($response['body']));
+                set_transient('wcmp_' . $ip_address, json_decode($response['body']), 2 * MONTH_IN_SECONDS);
                 return json_decode($response['body']);
             } else {
                 $data = new stdClass();
                 $data->status = 'error';
-                set_transient('wcmp_' . $ip_address, $data);
+                set_transient('wcmp_' . $ip_address, $data, 2 * MONTH_IN_SECONDS);
                 return $data;
             }
         }

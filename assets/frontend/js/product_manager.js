@@ -881,13 +881,20 @@ jQuery(document).ready(function ($) {
     function get_fpm_tinymce_content(id) {
         var content;
         var inputid = id;
-        var editor = tinyMCE.get(inputid);
-        var textArea = jQuery('textarea#' + inputid);    
-        if (textArea.length>0 && textArea.is(':visible')) {
-            content = textArea.val();        
-        } else {
-            content = editor.getContent();
-        }    
+        if(typeof tinyMCE == 'undefined'){
+            var textArea = jQuery('textarea#' + inputid);    
+            if (textArea.length>0 && textArea.is(':visible')) {
+                content = textArea.val();        
+            }  
+        }else{
+            var editor = tinyMCE.get(inputid);
+            var textArea = jQuery('textarea#' + inputid);    
+            if (textArea.length>0 && textArea.is(':visible')) {
+                content = textArea.val();        
+            } else {
+                content = editor.getContent();
+            } 
+        }     
         return content;
     }
 });

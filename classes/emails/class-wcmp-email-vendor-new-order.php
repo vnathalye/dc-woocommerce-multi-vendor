@@ -17,7 +17,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
      * @extends 	WC_Email
      */
     class WC_Email_Vendor_New_Order extends WC_Email {
-
+        public $order;
         /**
          * Constructor
          */
@@ -27,8 +27,8 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
             $this->title = __('Vendor New order', 'dc-woocommerce-multi-vendor');
             $this->description = __('New order notification emails are sent when order is processing.', 'dc-woocommerce-multi-vendor');
 
-            $this->heading = __('New Vendor Order', 'dc-woocommerce-multi-vendor');
-            $this->subject = __('[{site_title}] New vendor order ({order_number}) - {order_date}', 'dc-woocommerce-multi-vendor');
+            //$this->heading = __('New Vendor Order', 'dc-woocommerce-multi-vendor');
+            //$this->subject = __('[{site_title}] New vendor order ({order_number}) - {order_date}', 'dc-woocommerce-multi-vendor');
 
             $this->template_html = 'emails/vendor-new-order.php';
             $this->template_plain = 'emails/plain/vendor-new-order.php';
@@ -45,7 +45,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
          * @return string
          */
         public function get_default_subject() {
-            return __('[{site_title}] New vendor order ({order_number}) - {order_date}', 'dc-woocommerce-multi-vendor');
+            return apply_filters('wcmp_vendor_new_order_email_subject', __('[{site_title}] New vendor order ({order_number}) - {order_date}', 'dc-woocommerce-multi-vendor'), $this->object);
         }
 
         /**
@@ -55,7 +55,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
          * @return string
          */
         public function get_default_heading() {
-            return __('New vendor order', 'dc-woocommerce-multi-vendor');
+            return apply_filters('wcmp_vendor_new_order_email_heading', __('New vendor order', 'dc-woocommerce-multi-vendor'), $this->object);
         }
 
         /**
@@ -75,13 +75,13 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
                     $vendor_id = $vendor_obj->id;
 
                     if ($order_id && $vendor_email) {
-                        $this->object = new WC_Order($order_id);
+                        $this->order = wc_get_order($order_id);
 
                         $this->find[] = '{order_date}';
-                        $this->replace[] = date_i18n(wc_date_format(), strtotime($this->object->get_date_created()));
+                        $this->replace[] = date_i18n(wc_date_format(), strtotime($this->order->get_date_created()));
 
                         $this->find[] = '{order_number}';
-                        $this->replace[] = $this->object->get_order_number();
+                        $this->replace[] = $this->order->get_order_number();
                         $this->vendor_email = $vendor_email;
                         $this->vendor_id = $vendor_id;
                         $this->recipient = $vendor_email;
@@ -106,7 +106,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
             return wc_get_template_html($this->template_html, array(
                 'email_heading' => $this->get_heading(),
                 'vendor_id' => $this->vendor_id,
-                'order' => $this->object,
+                'order' => $this->order,
                 'blogname' => $this->get_blogname(),
                 'sent_to_admin' => false,
                 'plain_text' => false
@@ -123,7 +123,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
             return wc_get_template_html($this->template_plain, array(
                 'email_heading' => $this->get_heading(),
                 'vendor_id' => $this->vendor_id,
-                'order' => $this->object,
+                'order' => $this->order,
                 'blogname' => $this->get_blogname(),
                 'sent_to_admin' => false,
                 'plain_text' => true
@@ -148,14 +148,14 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
                 'subject' => array(
                     'title' => __('Subject', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
-                    'description' => sprintf(__('This controls the email subject line. Leave it blank to use the default subject: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->subject),
+                    'description' => sprintf(__('This controls the email subject line. Leave it blank to use the default subject: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->get_default_subject()),
                     'placeholder' => '',
                     'default' => ''
                 ),
                 'heading' => array(
                     'title' => __('Email Heading', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
-                    'description' => sprintf(__('This controls the main heading contained within the email notification. Leave it blank to use the default heading: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->heading),
+                    'description' => sprintf(__('This controls the main heading contained within the email notification. Leave it blank to use the default heading: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->get_default_heading()),
                     'placeholder' => '',
                     'default' => ''
                 ),
@@ -175,6 +175,5 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
         }
 
     }
-
-    
+  
     endif;

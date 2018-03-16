@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-14 13:02+0000\n"
+"POT-Creation-Date: 2018-03-13 11:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -75,7 +75,7 @@ msgid "Payment Method"
 msgstr ""
 
 #: includes/wcmp-core-functions.php:1924 classes/class-wcmp-report.php:97
-#: classes/class-wcmp-vendor-hooks.php:445 classes/class-wcmp-ajax.php:2157
+#: classes/class-wcmp-vendor-hooks.php:438 classes/class-wcmp-ajax.php:2157
 #: classes/class-wcmp-post-commission.php:447 admin/class-wcmp-settings.php:261
 #: templates/vendor-dashboard/vendor-products-qna.php:37
 #: templates/emails/vendor-new-order.php:24
@@ -186,59 +186,59 @@ msgstr ""
 msgid "Vendor"
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:35
-#: templates/vendor_message_to_buyer.php:30
+#: templates/customer_support_details_to_buyer.php:34
+#: templates/vendor_message_to_buyer.php:29
 msgid "Vendor Details"
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:41
-#: templates/vendor_message_to_buyer.php:36
+#: templates/customer_support_details_to_buyer.php:40
+#: templates/vendor_message_to_buyer.php:35
 #: classes/class-wcmp-vendor-dashboard.php:259
 #: admin/class-wcmp-settings-to_do_list.php:80
 #: admin/class-wcmp-settings-to_do_list.php:119
 msgid "Vendor Name"
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:43
-#: templates/vendor_message_to_buyer.php:38
+#: templates/customer_support_details_to_buyer.php:42
+#: templates/vendor_message_to_buyer.php:37
 #: admin/class-wcmp-settings-to_do_list.php:120
 #: templates/vendor-dashboard/dashboard/vendor-dasboard-pending-shipping-items-header.php:16
 #: templates/vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php:23
 msgid "Product Name"
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:46
-#: templates/customer_support_details_to_buyer.php:82
-#: templates/vendor_message_to_buyer.php:45
-#: templates/vendor_message_to_buyer.php:72
+#: templates/customer_support_details_to_buyer.php:45
+#: templates/customer_support_details_to_buyer.php:81
+#: templates/vendor_message_to_buyer.php:44
+#: templates/vendor_message_to_buyer.php:71
 #: templates/vendor-dashboard/vendor-policy.php:65
 msgid "Customer Support Details"
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:48
-#: templates/customer_support_details_to_buyer.php:84
-#: templates/vendor_message_to_buyer.php:47
-#: templates/vendor_message_to_buyer.php:74 classes/class-wcmp-email.php:114
+#: templates/customer_support_details_to_buyer.php:47
+#: templates/customer_support_details_to_buyer.php:83
+#: templates/vendor_message_to_buyer.php:46
+#: templates/vendor_message_to_buyer.php:73 classes/class-wcmp-email.php:114
 #: classes/class-wcmp-email.php:181
 msgid "Email : "
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:53
-#: templates/customer_support_details_to_buyer.php:89
-#: templates/vendor_message_to_buyer.php:52
-#: templates/vendor_message_to_buyer.php:79 classes/class-wcmp-email.php:121
+#: templates/customer_support_details_to_buyer.php:52
+#: templates/customer_support_details_to_buyer.php:88
+#: templates/vendor_message_to_buyer.php:51
+#: templates/vendor_message_to_buyer.php:78 classes/class-wcmp-email.php:121
 #: classes/class-wcmp-email.php:191
 msgid "Phone : "
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:56
-#: templates/customer_support_details_to_buyer.php:92
-#: templates/vendor_message_to_buyer.php:55
-#: templates/vendor_message_to_buyer.php:82
+#: templates/customer_support_details_to_buyer.php:55
+#: templates/customer_support_details_to_buyer.php:91
+#: templates/vendor_message_to_buyer.php:54
+#: templates/vendor_message_to_buyer.php:81
 msgid "Return Address "
 msgstr ""
 
-#: templates/customer_support_details_to_buyer.php:77
+#: templates/customer_support_details_to_buyer.php:76
 msgid "Customer Support Details & Product Return Address"
 msgstr ""
 
@@ -310,7 +310,7 @@ msgstr ""
 msgid "You are not logged in"
 msgstr ""
 
-#: templates/vendor_message_to_buyer.php:31 templates/widget/quick-info.php:32
+#: templates/vendor_message_to_buyer.php:30 templates/widget/quick-info.php:32
 msgid "Message"
 msgstr ""
 
@@ -668,29 +668,29 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:372
+#: classes/class-wcmp-vendor-hooks.php:369
 msgid "Sorry you are not authorized for this pages. Please contact with admin."
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:446 classes/class-wcmp-ajax.php:2158
+#: classes/class-wcmp-vendor-hooks.php:439 classes/class-wcmp-ajax.php:2158
 #: templates/single-product/multiple_vendors_products.php:28
 #: templates/emails/vendor-notify-shipped.php:30
 #: templates/vendor-dashboard/product-manager/add-product.php:438
 msgid "Price"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:447 classes/class-wcmp-ajax.php:2159
+#: classes/class-wcmp-vendor-hooks.php:440 classes/class-wcmp-ajax.php:2159
 msgid "Stock"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:448 classes/class-wcmp-ajax.php:2160
+#: classes/class-wcmp-vendor-hooks.php:441 classes/class-wcmp-ajax.php:2160
 #: templates/vendor-dashboard/product-manager/add-product.php:483
 #: templates/vendor-dashboard/product-manager/add-product.php:494
 #: templates/vendor-dashboard/product-manager/add-product.php:494
 msgid "Categories"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:449
+#: classes/class-wcmp-vendor-hooks.php:442
 #: classes/class-wcmp-vendor-dashboard.php:140 classes/class-wcmp-ajax.php:2161
 #: classes/class-wcmp-vendor-order-page.php:85 classes/class-wcmp-admin.php:116
 #: templates/vendor-dashboard/vendor-orders.php:40
@@ -700,7 +700,7 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:450 classes/class-wcmp-ajax.php:2162
+#: classes/class-wcmp-vendor-hooks.php:443 classes/class-wcmp-ajax.php:2162
 #: classes/class-wcmp-post-commission.php:450
 #: classes/class-wcmp-post-transaction.php:254
 #: templates/vendor-dashboard/vendor-orders.php:42
@@ -708,13 +708,13 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:456
+#: classes/class-wcmp-vendor-hooks.php:449
 #: templates/vendor-dashboard/product-manager/products.php:99
 msgid "No products found!"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:457
-#: classes/class-wcmp-vendor-hooks.php:560
+#: classes/class-wcmp-vendor-hooks.php:450
+#: classes/class-wcmp-vendor-hooks.php:553
 #: templates/vendor-dashboard/vendor-orders.php:138
 #: templates/vendor-dashboard/vendor-transactions.php:83
 #: templates/vendor-dashboard/vendor-withdrawal.php:83
@@ -723,105 +723,102 @@ msgstr ""
 msgid "Processing..."
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:458
+#: classes/class-wcmp-vendor-hooks.php:451
 #: templates/vendor-dashboard/product-manager/products.php:101
 msgid "Showing _START_ to _END_ of _TOTAL_ products"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:459
+#: classes/class-wcmp-vendor-hooks.php:452
 #: templates/vendor-dashboard/product-manager/products.php:102
 msgid "Showing 0 to 0 of 0 products"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:460
+#: classes/class-wcmp-vendor-hooks.php:453
 #: templates/vendor-dashboard/product-manager/products.php:103
 msgid "Show products _MENU_"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:461
+#: classes/class-wcmp-vendor-hooks.php:454
 #: templates/vendor-dashboard/product-manager/products.php:104
 msgid "No matching products found"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:462
-#: classes/class-wcmp-vendor-hooks.php:565
-#: templates/vendor-dashboard/vendor-transactions.php:88
+#: classes/class-wcmp-vendor-hooks.php:455
+#: classes/class-wcmp-vendor-hooks.php:558
 #: templates/vendor-dashboard/vendor-withdrawal.php:88
 #: templates/vendor-dashboard/vendor-products-qna.php:77
 #: templates/vendor-dashboard/product-manager/products.php:105
 msgid "Search:"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:463
-#: classes/class-wcmp-vendor-hooks.php:566
+#: classes/class-wcmp-vendor-hooks.php:456
+#: classes/class-wcmp-vendor-hooks.php:559
 #: templates/vendor-dashboard/vendor-orders.php:144
-#: templates/vendor-dashboard/vendor-transactions.php:90
 #: templates/vendor-dashboard/vendor-withdrawal.php:90
 #: templates/vendor-dashboard/vendor-products-qna.php:79
 #: templates/vendor-dashboard/product-manager/products.php:107
 msgid "Next"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:464
-#: classes/class-wcmp-vendor-hooks.php:567
+#: classes/class-wcmp-vendor-hooks.php:457
+#: classes/class-wcmp-vendor-hooks.php:560
 #: templates/vendor-dashboard/vendor-orders.php:145
-#: templates/vendor-dashboard/vendor-transactions.php:91
 #: templates/vendor-dashboard/vendor-withdrawal.php:91
 #: templates/vendor-dashboard/vendor-products-qna.php:80
 #: templates/vendor-dashboard/product-manager/products.php:108
 msgid "Previous"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:515
+#: classes/class-wcmp-vendor-hooks.php:508
 msgid "Order is marked as shipped."
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:559
+#: classes/class-wcmp-vendor-hooks.php:552
 #: templates/vendor-dashboard/vendor-orders.php:137
 #: templates/vendor-dashboard/vendor-withdrawal.php:82
 msgid "No orders found!"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:561
+#: classes/class-wcmp-vendor-hooks.php:554
 #: templates/vendor-dashboard/vendor-orders.php:139
 #: templates/vendor-dashboard/vendor-withdrawal.php:84
 msgid "Showing _START_ to _END_ of _TOTAL_ orders"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:562
+#: classes/class-wcmp-vendor-hooks.php:555
 #: templates/vendor-dashboard/vendor-orders.php:140
 #: templates/vendor-dashboard/vendor-withdrawal.php:85
 msgid "Showing 0 to 0 of 0 orders"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:563
+#: classes/class-wcmp-vendor-hooks.php:556
 #: templates/vendor-dashboard/vendor-orders.php:141
 msgid "Show orders _MENU_"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:564
+#: classes/class-wcmp-vendor-hooks.php:557
 #: templates/vendor-dashboard/vendor-orders.php:142
 #: templates/vendor-dashboard/vendor-withdrawal.php:87
 msgid "No matching orders found"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:615
+#: classes/class-wcmp-vendor-hooks.php:608
 msgid "Vendor Dashboard Transients"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:616
+#: classes/class-wcmp-vendor-hooks.php:609
 msgid "This tool will clear the dashboard widget transients cache."
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:619
+#: classes/class-wcmp-vendor-hooks.php:612
 msgid "Clear transients"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:653
+#: classes/class-wcmp-vendor-hooks.php:646
 msgid "All Options Saved"
 msgstr ""
 
-#: classes/class-wcmp-vendor-hooks.php:740
+#: classes/class-wcmp-vendor-hooks.php:733
 msgid "To boost up your profile progress add "
 msgstr ""
 
@@ -1077,7 +1074,7 @@ msgstr ""
 msgid "Product Sales Report"
 msgstr ""
 
-#: classes/class-wcmp-vendor-dashboard.php:943 templates/review/rating.php:26
+#: classes/class-wcmp-vendor-dashboard.php:943
 msgid "Reviews"
 msgstr ""
 
@@ -2127,16 +2124,6 @@ msgstr ""
 msgid "Orders Marked as shipped."
 msgstr ""
 
-#: classes/class-wcmp-vendor-order-page.php:184
-#: classes/class-wcmp-vendor-details.php:932
-msgid "Vendor "
-msgstr ""
-
-#: classes/class-wcmp-vendor-order-page.php:184
-#: classes/class-wcmp-vendor-details.php:932
-msgid " has shipped his part of order to customer."
-msgstr ""
-
 #: classes/class-wcmp-vendor-order-page.php:235
 msgid "CPF"
 msgstr ""
@@ -2374,14 +2361,6 @@ msgstr ""
 
 #: classes/class-wcmp-vendor-details.php:659
 msgid "Total:"
-msgstr ""
-
-#: classes/class-wcmp-vendor-details.php:932
-msgid "Tracking Url : "
-msgstr ""
-
-#: classes/class-wcmp-vendor-details.php:932
-msgid "Tracking Id : "
 msgstr ""
 
 #: admin/class-wcmp-settings-notices.php:30
@@ -3716,7 +3695,7 @@ msgid "All"
 msgstr ""
 
 #: templates/vendor-dashboard/vendor-orders.php:157
-#: templates/vendor-dashboard/vendor-transactions.php:118
+#: templates/vendor-dashboard/vendor-transactions.php:109
 #: templates/vendor-dashboard/vendor-withdrawal.php:104
 #: templates/vendor-dashboard/vendor-products-qna.php:105
 #: templates/vendor-dashboard/product-manager/products.php:131
@@ -3736,22 +3715,6 @@ msgstr ""
 
 #: templates/vendor-dashboard/vendor-transactions.php:82
 msgid "Sorry. No transactions are available."
-msgstr ""
-
-#: templates/vendor-dashboard/vendor-transactions.php:84
-msgid "Showing _START_ to _END_ of _TOTAL_ transactions"
-msgstr ""
-
-#: templates/vendor-dashboard/vendor-transactions.php:85
-msgid "Showing 0 to 0 of 0 transactions"
-msgstr ""
-
-#: templates/vendor-dashboard/vendor-transactions.php:86
-msgid "Show _MENU_ transactions"
-msgstr ""
-
-#: templates/vendor-dashboard/vendor-transactions.php:87
-msgid "No matching transactions found"
 msgstr ""
 
 #: templates/vendor-dashboard/vendor-university.php:54
@@ -3990,10 +3953,6 @@ msgstr ""
 msgid "out of 5"
 msgstr ""
 
-#: templates/review/rating.php:26
-msgid "Review"
-msgstr ""
-
 #: templates/review/rating.php:34 templates/review/rating_vendor_lists.php:31
 #: templates/review/rating-vendor-tab.php:31
 #, php-format
@@ -4034,15 +3993,15 @@ msgid "Show in Google Maps"
 msgstr ""
 
 #: templates/widget/quick-info.php:30
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:164
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:149
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:174
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:146
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:129
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:157
 #: classes/emails/class-wcmp-email-vendor-new-order.php:149
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:165
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:139
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:160
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:146
-#: classes/emails/class-wcmp-email-vendor-transaction.php:147
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:144
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:119
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:140
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:126
+#: classes/emails/class-wcmp-email-vendor-transaction.php:126
 msgid "Subject"
 msgstr ""
 
@@ -4544,147 +4503,147 @@ msgstr ""
 msgid "Hide empty categories"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:34
+#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:33
 msgid "Approved Vendor Account"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:35
-#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:35
+#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:34
+#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:34
 msgid ""
 "Vendor new account emails are sent when site admin approves a pending vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:98
-#: classes/emails/class-wcmp-email-vendor-new-account.php:98
-#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:98
+#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:39
+#: classes/emails/class-wcmp-email-vendor-new-account.php:39
+#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:39
 msgid "Your account on {site_title}"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:108
-#: classes/emails/class-wcmp-email-vendor-new-account.php:108
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:99
-#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:108
+#: classes/emails/class-wcmp-email-approved-vendor-new-account.php:40
+#: classes/emails/class-wcmp-email-vendor-new-account.php:40
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:40
+#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:40
 msgid "Welcome to {site_title}"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:36
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:35
 msgid "New Vendor Product By Admin"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:37
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:36
 msgid ""
 "New order emails are sent when a new product is assigned to a vendor by the "
 "admin"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:96
-msgid "[{blogname}] Admin has assigned new product to You- {product_name}"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:106
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:110
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:38
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:38
 msgid "New product submitted: {product_name}"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:158
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:143
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:161
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:39
+msgid "[{blogname}] Admin has assigned new product to You- {product_name}"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:140
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:123
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:144
 #: classes/emails/class-wcmp-email-vendor-new-order.php:143
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:152
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:133
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:154
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:140
-#: classes/emails/class-wcmp-email-vendor-transaction.php:141
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:131
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:113
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:134
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:120
+#: classes/emails/class-wcmp-email-vendor-transaction.php:120
 msgid "Enable/Disable"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:160
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:163
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:142
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:146
 #: classes/emails/class-wcmp-email-vendor-new-order.php:145
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:154
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:156
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:133
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:136
 msgid "Enable this email notification."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:166
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:151
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:176
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:148
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:131
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:159
 #: classes/emails/class-wcmp-email-vendor-new-order.php:151
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:167
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:141
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:162
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:148
-#: classes/emails/class-wcmp-email-vendor-transaction.php:149
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:146
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:121
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:142
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:128
+#: classes/emails/class-wcmp-email-vendor-transaction.php:128
 #, php-format
 msgid ""
 "This controls the email subject line. Leave it blank to use the default "
 "subject: <code>%s</code>."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:171
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:156
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:181
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:153
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:136
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:164
 #: classes/emails/class-wcmp-email-vendor-new-order.php:156
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:172
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:146
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:167
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:153
-#: classes/emails/class-wcmp-email-vendor-transaction.php:154
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:151
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:126
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:147
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:133
+#: classes/emails/class-wcmp-email-vendor-transaction.php:133
 msgid "Email Heading"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:173
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:183
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:155
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:166
 #: classes/emails/class-wcmp-email-vendor-new-order.php:158
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:174
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:169
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:153
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:149
 #, php-format
 msgid ""
 "This controls the main heading contained within the email notification. "
 "Leave it blank to use the default heading: <code>%s</code>."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:178
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:163
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:188
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:160
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:143
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:171
 #: classes/emails/class-wcmp-email-vendor-new-order.php:163
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:179
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:153
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:174
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:160
-#: classes/emails/class-wcmp-email-vendor-transaction.php:161
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:158
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:133
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:154
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:140
+#: classes/emails/class-wcmp-email-vendor-transaction.php:140
 msgid "Email Type"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:180
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:190
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:162
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:173
 #: classes/emails/class-wcmp-email-vendor-new-order.php:165
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:181
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:176
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:160
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:156
 msgid "Choose which format of email to be sent."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:184
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:194
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:166
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:177
 #: classes/emails/class-wcmp-email-vendor-new-order.php:169
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:185
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:180
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:164
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:160
 msgid "Plain Text"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:185
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:195
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:167
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:178
 #: classes/emails/class-wcmp-email-vendor-new-order.php:170
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:186
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:181
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:165
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:161
 msgid "HTML"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:186
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:196
+#: classes/emails/class-wcmp-email-admin-added-new-product-to-vendor.php:168
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:179
 #: classes/emails/class-wcmp-email-vendor-new-order.php:171
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:187
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:182
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:166
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:162
 msgid "Multipart"
 msgstr ""
 
@@ -4696,75 +4655,75 @@ msgstr ""
 msgid "New commissions withdrawal request have been submitted."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:79
-msgid "[{site_title}] Commission Widthdrawal Request"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:89
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:32
 msgid "New Commission Withdrawal Request"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:145
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:135
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:142
-#: classes/emails/class-wcmp-email-vendor-transaction.php:143
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:33
+msgid "[{site_title}] Commission Widthdrawal Request"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:125
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:115
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:122
+#: classes/emails/class-wcmp-email-vendor-transaction.php:122
 msgid "Enable notification for this email"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:158
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:148
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:155
-#: classes/emails/class-wcmp-email-vendor-transaction.php:156
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:138
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:128
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:135
+#: classes/emails/class-wcmp-email-vendor-transaction.php:135
 #, php-format
 msgid ""
 "This controls the main heading contained in the email notification. Leave it "
 "blank to use the default heading: <code>%s</code>."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:165
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:155
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:162
-#: classes/emails/class-wcmp-email-vendor-transaction.php:163
+#: classes/emails/class-wcmp-email-admin-withdrawal-request.php:145
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:135
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:142
+#: classes/emails/class-wcmp-email-vendor-transaction.php:142
 msgid "Choose format for the email that will be sent."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:36
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:35
 msgid "New Vendor Product"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:37
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:36
 msgid ""
 "Notification emails are sent when a new product is submitted by a vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:83
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:39
+msgid "[{blogname}] New product submitted by {vendor_name} - {product_name}"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:81
 msgid "New Vendor Coupon"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:84
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:82
 msgid ""
 "Notification emails are sent when a new coupon is submitted by a vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:86
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:84
 msgid "New coupon submitted: {product_name}"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:87
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:85
 msgid "[{blogname}] New coupon submitted by {vendor_name} - {product_name}"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:100
-msgid "[{blogname}] New product submitted by {vendor_name} - {product_name}"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:167
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:158
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:150
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:137
 msgid "Recipient(s)"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-product-added.php:169
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:160
+#: classes/emails/class-wcmp-email-vendor-new-product-added.php:152
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:139
 #, php-format
 msgid ""
 "Enter recipient(s) (comma separated) for this email. Defaults to <code>"
@@ -4779,6 +4738,11 @@ msgstr ""
 msgid "New order notification emails are sent when order is processing."
 msgstr ""
 
+#: classes/emails/class-wcmp-email-vendor-new-order.php:30
+msgid "New Vendor Order"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-vendor-new-order.php:31
 #: classes/emails/class-wcmp-email-vendor-new-order.php:48
 msgid "[{site_title}] New vendor order ({order_number}) - {order_date}"
 msgstr ""
@@ -4787,24 +4751,24 @@ msgstr ""
 msgid "New vendor order"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:27
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:26
 msgid "Admin New Vendor Account"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:28
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:27
 msgid "New emails are sent when a user applies to be a vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:93
-msgid "[{site_title}] New Vendor Account"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:103
-#: classes/emails/class-wcmp-email-vendor-new-account.php:34
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:29
+#: classes/emails/class-wcmp-email-vendor-new-account.php:33
 msgid "New Vendor Account"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-account.php:35
+#: classes/emails/class-wcmp-email-admin-new-vendor-account.php:30
+msgid "[{site_title}] New Vendor Account"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-vendor-new-account.php:34
 msgid ""
 "Vendor new account emails are sent when a customer signs up via the checkout "
 "or My Account page."
@@ -4820,24 +4784,24 @@ msgstr ""
 msgid "New commissions have been credited to vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:71
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:32
+msgid " Transaction Details"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:33
 msgid ""
 "[{site_title}] The transaction you requested was successfully completed."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-new-commission-transaction.php:81
-msgid " Transaction Details"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:34
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:33
 msgid "Notify as Shipped."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:35
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:34
 msgid "Confirm customer that vendor has shipped the order."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:89
+#: classes/emails/class-wcmp-email-vendor-notify-shipped.php:39
 msgid "Your Order on {site_title} has been Shipped"
 msgstr ""
 
@@ -4849,24 +4813,24 @@ msgstr ""
 msgid "New commissions withdrawal request have been submitted by vendor."
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:78
-msgid "[{site_title}] Commission Payment Request"
-msgstr ""
-
-#: classes/emails/class-wcmp-email-vendor-direct-bank.php:88
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:32
 msgid "Vendor's Commission Requests"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:34
+#: classes/emails/class-wcmp-email-vendor-direct-bank.php:33
+msgid "[{site_title}] Commission Payment Request"
+msgstr ""
+
+#: classes/emails/class-wcmp-email-rejected-vendor-new-account.php:33
 msgid "Rejected Vendor Account"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-transaction.php:77
-msgid "[{site_title}] New Transaction"
+#: classes/emails/class-wcmp-email-vendor-transaction.php:32
+msgid "Vendor's New Transaction"
 msgstr ""
 
-#: classes/emails/class-wcmp-email-vendor-transaction.php:87
-msgid "Vendor's New Transaction"
+#: classes/emails/class-wcmp-email-vendor-transaction.php:33
+msgid "[{site_title}] New Transaction"
 msgstr ""
 
 #: classes/emails/class-wcmp-email-vendor-orders-stats-report.php:31

@@ -17,6 +17,7 @@ global $WCMp;
         <?php
         $cc = 0; 
         foreach ($vendor_array as $vendor_id => $products) {
+            if(is_user_wcmp_vendor($vendor_id)){
             $vendor_meta = get_user_meta($vendor_id);
             $vendor_message_to_buyer = apply_filters('wcmp_display_vendor_message_to_buyer', get_user_meta($vendor_id, '_vendor_message_to_buyers', true), $vendor_id);
 //            if (!empty($vendor_message_to_buyer) ||
@@ -107,7 +108,7 @@ global $WCMp;
                     </td>
                 </tr>
         <?php $cc++;
-    //}
+    }
 } ?>                           
     </tbody>
 </table>

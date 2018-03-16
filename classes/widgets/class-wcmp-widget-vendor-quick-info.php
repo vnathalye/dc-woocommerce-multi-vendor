@@ -83,7 +83,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
             $show_widget = true;
         }
 
-        $hide_from_guests = isset($instance['hide_from_guests']) ? true : false;
+        $hide_from_guests = isset($instance['hide_from_guests']) ? $instance['hide_from_guests'] : false;
         if ($hide_from_guests) {
             $show_widget = is_user_logged_in();
         }
@@ -142,7 +142,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
         $instance = $old_instance;
         $instance['title'] = isset($new_instance['title']) ? strip_tags($new_instance['title']) : '';
         $instance['description'] = isset($new_instance['description']) ? strip_tags($new_instance['description']) : '';
-        $instance['hide_from_guests'] = isset($new_instance['hide_from_guests']) ? true : false;
+        $instance['hide_from_guests'] = isset($new_instance['hide_from_guests']) ? $new_instance['hide_from_guests'] : false;
         $instance['submit_label'] = isset($new_instance['submit_label']) ? strip_tags($new_instance['submit_label']) : __('Submit', 'dc-woocommerce-multi-vendor');
         return $instance;
     }
@@ -207,6 +207,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
             $admin_email = get_option('admin_email');
             $headers[] = "From: {$from} <{$from_email}>";
             $headers[] = "Cc: Admin <{$admin_email}>";
+            $headers[] = "Reply-To: {$from} <{$from_email}>";
 
             /* === Send Mail === */
             $check = wp_mail($to, $subject, $message, $headers);

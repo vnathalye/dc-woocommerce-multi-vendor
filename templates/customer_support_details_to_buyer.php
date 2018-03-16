@@ -17,6 +17,7 @@ global $WCMp;
 		<?php $cc = 0;
 		if( apply_filters('wcmp_vendor_can_overwrite_customer_support', true) ) {
 			foreach ( $vendor_array as $vendor_id => $products) { 
+                            if(is_user_wcmp_vendor($vendor_id)){
 				$vendor_meta = get_user_meta( $vendor_id );
 				
 //				if( (
@@ -67,7 +68,7 @@ global $WCMp;
 					
 				</tr>
 				<?php $cc++;			
-				//}
+				}
 			}
 		}
 		else {

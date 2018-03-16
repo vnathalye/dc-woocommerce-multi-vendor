@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 $rating = round($rating_val_array['avg_rating'], 1);
 $count = intval($rating_val_array['total_rating']);
-$review_text = $count > 1 ? 'Reviews' : 'Review';
+$review_text = $count > 1 ? __('Reviews', 'dc-woocommerce-multi-vendor') : __('Review', 'dc-woocommerce-multi-vendor');
 ?> 
 <div style="clear:both; width:100%;"></div> 
 <?php if ($count > 0) { ?>

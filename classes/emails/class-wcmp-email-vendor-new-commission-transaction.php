@@ -29,8 +29,8 @@ if (!class_exists('WC_Email_Vendor_Commission_Transactions')) :
             $this->title = __('Transactions (for Vendor)', 'dc-woocommerce-multi-vendor');
             $this->description = __('New commissions have been credited to vendor.', 'dc-woocommerce-multi-vendor');
 
-            $this->heading = __(' Transaction Details', 'dc-woocommerce-multi-vendor');
-            $this->subject = __('[{site_title}] The transaction you requested was successfully completed.', 'dc-woocommerce-multi-vendor');
+            //$this->heading = __(' Transaction Details', 'dc-woocommerce-multi-vendor');
+            //$this->subject = __('[{site_title}] The transaction you requested was successfully completed.', 'dc-woocommerce-multi-vendor');
 
             $this->template_base = $WCMp->plugin_path . 'templates/';
             $this->template_html = 'emails/vendor-commissions-transaction.php';
@@ -58,7 +58,29 @@ if (!class_exists('WC_Email_Vendor_Commission_Transactions')) :
             $this->commissions = $commissions;
             $this->transaction_id = $trans_id;
             $this->recipient = $this->vendor->user_data->user_email;
-            $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
+            if ( $this->is_enabled() && $this->get_recipient() ) {
+                $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
+            }
+        }
+        
+        /**
+         * Get email subject.
+         *
+         * @access  public
+         * @return string
+         */
+        public function get_default_subject() {
+            return apply_filters('wcmp_vendor_commissions_transaction_email_subject', __('[{site_title}] The transaction you requested was successfully completed.', 'dc-woocommerce-multi-vendor'), $this->object);
+        }
+
+        /**
+         * Get email heading.
+         *
+         * @access  public
+         * @return string
+         */
+        public function get_default_heading() {
+            return apply_filters('wcmp_vendor_commissions_transaction_email_heading', __(' Transaction Details', 'dc-woocommerce-multi-vendor'), $this->object);
         }
 
         /**
@@ -118,14 +140,14 @@ if (!class_exists('WC_Email_Vendor_Commission_Transactions')) :
                 'subject' => array(
                     'title' => __('Subject', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
-                    'description' => sprintf(__('This controls the email subject line. Leave it blank to use the default subject: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->subject),
+                    'description' => sprintf(__('This controls the email subject line. Leave it blank to use the default subject: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->get_default_subject()),
                     'placeholder' => '',
                     'default' => ''
                 ),
                 'heading' => array(
                     'title' => __('Email Heading', 'dc-woocommerce-multi-vendor'),
                     'type' => 'text',
-                    'description' => sprintf(__('This controls the main heading contained in the email notification. Leave it blank to use the default heading: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->heading),
+                    'description' => sprintf(__('This controls the main heading contained in the email notification. Leave it blank to use the default heading: <code>%s</code>.', 'dc-woocommerce-multi-vendor'), $this->get_default_heading()),
                     'placeholder' => '',
                     'default' => ''
                 ),

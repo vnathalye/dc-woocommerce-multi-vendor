@@ -86,6 +86,7 @@ class WCMp_Library {
         global $WCMp;
         wp_enqueue_media();
         wp_enqueue_script('frontend_upload_js', $this->lib_url . 'upload/media-upload.js', array('jquery'), $WCMp->version, true);
+        wp_localize_script('frontend_upload_js', 'media_upload_params', array('media_title' => __('Choose Media', 'dc-woocommerce-multi-vendor')));
         wp_enqueue_style('upload_css', $this->lib_url . 'upload/media-upload.css', array(), $WCMp->version);
     }
 
@@ -95,7 +96,7 @@ class WCMp_Library {
     public function load_dashboard_upload_lib() {
         global $WCMp;
         wp_enqueue_media();
-        wp_enqueue_script('frontend_upload_js', $this->jquery_lib_url . 'upload/frontend-media-upload.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_script('frontend_dash_upload_js', $this->jquery_lib_url . 'upload/frontend-media-upload.js', array('jquery'), $WCMp->version, true);
     }
 
     /**

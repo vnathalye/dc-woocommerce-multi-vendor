@@ -27,9 +27,6 @@ if (!class_exists('WC_Email_Admin_New_Vendor_Account')) :
             $this->title = __('Admin New Vendor Account', 'dc-woocommerce-multi-vendor');
             $this->description = __('New emails are sent when a user applies to be a vendor.', 'dc-woocommerce-multi-vendor');
 
-            //$this->heading = __('New Vendor Account', 'dc-woocommerce-multi-vendor');
-            //$this->subject = __('[{site_title}] New Vendor Account', 'dc-woocommerce-multi-vendor');
-
             $this->template_html = 'emails/admin-new-vendor-account.php';
             $this->template_plain = 'emails/plain/admin-new-vendor-account.php';
             $this->template_base = $WCMp->plugin_path . 'templates/';
@@ -61,26 +58,6 @@ if (!class_exists('WC_Email_Admin_New_Vendor_Account')) :
                 return;
 
             $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
-        }
-
-        /**
-         * get_subject function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_subject() {
-            return apply_filters('woocommerce_email_subject_admin_new_vendor', $this->format_string($this->subject), $this->object);
-        }
-
-        /**
-         * get_heading function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_heading() {
-            return apply_filters('woocommerce_email_heading_admin_new_vendor', $this->format_string($this->heading), $this->object);
         }
         
         /**

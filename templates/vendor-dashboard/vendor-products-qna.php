@@ -33,7 +33,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
         <table id="vendor_products_qna_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
                 <tr>
-                    <th><?php _e('Q&As', 'dc-woocommerce-multi-vendor'); ?></th>
+                    <th><?php _e('Customer questions', 'dc-woocommerce-multi-vendor'); ?></th>
                     <th><?php _e('Product', 'dc-woocommerce-multi-vendor'); ?></th>
                     <th><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?></th>
                     <th><?php _e('Vote', 'dc-woocommerce-multi-vendor'); ?></th>
@@ -58,8 +58,8 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
         ));
         foreach ($filter_by_status as $key => $label) { ?>
             obj = {};
-            obj['key'] = "<?php echo $key; ?>";
-            obj['label'] = "<?php echo $label; ?>";
+            obj['key'] = "<?php echo trim($key); ?>";
+            obj['label'] = "<?php echo trim($label); ?>";
             statuses.push(obj);
         <?php } ?>
         qna_table = $('#vendor_products_qna_table').DataTable({
@@ -68,20 +68,21 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
             processing: true,
             serverSide: true,
             language: {
-                emptyTable: "<?php echo __('No products Q&As found!', 'dc-woocommerce-multi-vendor'); ?>",
-                processing: "<?php echo __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
-                info: "<?php echo __('Showing _START_ to _END_ of _TOTAL_ products Q&As', 'dc-woocommerce-multi-vendor'); ?>",
-                infoEmpty: "<?php echo __('Showing 0 to 0 of 0 products Q&As', 'dc-woocommerce-multi-vendor'); ?>",
-                lengthMenu: "<?php echo __('Show products Q&As _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
-                zeroRecords: "<?php echo __('No matching products Q&As found', 'dc-woocommerce-multi-vendor'); ?>",
-                search: "<?php echo __('Search:', 'dc-woocommerce-multi-vendor'); ?>",
+                emptyTable: "<?php echo trim(__('No customer questions found!', 'dc-woocommerce-multi-vendor')); ?>",
+                processing: "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
+                info: "<?php echo trim(__('Showing _START_ to _END_ of _TOTAL_ questions', 'dc-woocommerce-multi-vendor')); ?>",
+                infoEmpty: "<?php echo trim(__('Showing 0 to 0 of 0 questions', 'dc-woocommerce-multi-vendor')); ?>",
+                lengthMenu: "<?php echo trim(__('Number of rows _MENU_', 'dc-woocommerce-multi-vendor')); ?>",
+                zeroRecords: "<?php echo trim(__('No matching customer questions found', 'dc-woocommerce-multi-vendor')); ?>",
+                search: "<?php echo trim(__('Search:', 'dc-woocommerce-multi-vendor')); ?>",
                 paginate: {
-                    next: "<?php echo __('Next', 'dc-woocommerce-multi-vendor'); ?>",
-                    previous: "<?php echo __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
+                    next: "<?php echo trim(__('Next', 'dc-woocommerce-multi-vendor')); ?>",
+                    previous: "<?php echo trim(__('Previous', 'dc-woocommerce-multi-vendor')); ?>"
                 }
             },
             drawCallback: function(settings){
                 $( "#filter_by_qna_status" ).detach();
+                $('thead tr th.cust_qnas').removeClass('sorting_asc');
                 var qna_status_sel = $('<select id="filter_by_qna_status" class="wcmp-filter-dtdd wcmp_filter_qna_status form-control">').appendTo("#vendor_products_qna_table_length");
                 $(statuses).each(function () {
                     qna_status_sel.append($("<option>").attr('value', this.key).text(this.label));
@@ -107,7 +108,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
                 }
             },
             columns: [
-                {data: 'qnas', orderable:false},
+                {data: 'qnas', orderable:false, className: 'cust_qnas'},
                 {data: 'product', orderable:false},
                 {data: 'date', orderable:false},
                 {data: 'vote', orderable:true},
@@ -124,7 +125,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
             qna_table.ajax.reload();
         });
         $("#show_qna_by_products").select2({
-            placeholder: '<?php _e('Choose product...', 'dc-woocommerce-multi-vendor');?>'
+            placeholder: '<?php echo trim(__('Choose product...', 'dc-woocommerce-multi-vendor'));?>'
         });
     });
 

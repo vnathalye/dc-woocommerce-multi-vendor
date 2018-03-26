@@ -48,11 +48,16 @@ jQuery(document).ready(function($) {
         processing: true,
         serverSide: true,
         language: {
-            "emptyTable": "<?php echo __('No coupons found!','dc-woocommerce-multi-vendor'); ?>",
-            "info": "<?php echo __('Showing _START_ to _END_ of _TOTAL_ coupons','dc-woocommerce-multi-vendor'); ?>",
-            "infoEmpty": "<?php echo __('Showing 0 to 0 of 0 coupons','dc-woocommerce-multi-vendor'); ?>",
-            "lengthMenu": "<?php echo __('Show coupons _MENU_','dc-woocommerce-multi-vendor'); ?>",
-            "zeroRecords": "<?php echo __('No matching coupons found','dc-woocommerce-multi-vendor'); ?>"
+            emptyTable: "<?php echo trim(__('No coupons found!','dc-woocommerce-multi-vendor')); ?>",
+            processing: "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
+            info: "<?php echo trim(__('Showing _START_ to _END_ of _TOTAL_ coupons','dc-woocommerce-multi-vendor')); ?>",
+            infoEmpty: "<?php echo trim(__('Showing 0 to 0 of 0 coupons','dc-woocommerce-multi-vendor')); ?>",
+            lengthMenu: "<?php echo trim(__('Number of rows _MENU_','dc-woocommerce-multi-vendor')); ?>",
+            zeroRecords: "<?php echo trim(__('No matching coupons found','dc-woocommerce-multi-vendor')); ?>",
+            paginate: {
+                next: "<?php echo trim(__('Next', 'dc-woocommerce-multi-vendor')); ?>",
+                previous: "<?php echo trim(__('Previous', 'dc-woocommerce-multi-vendor')); ?>"
+            }
         },
         ajax:{
             url : woocommerce_params.ajax_url+'?action=wcmp_vendor_coupon_list', 

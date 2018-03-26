@@ -13,66 +13,93 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $WCMp;
+$vendor = get_current_vendor();
 do_action('before_wcmp_vendor_pending_shipping');
 ?>
 <table class="table table-bordered <?php echo $pending_shippings ? 'responsive-table' : 'blank-responsive-table'; ?>">
+<?php if($default_headers){ ?>
     <thead>
         <tr>
-            <?php $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(
-                'order_id' => __('Order ID', 'dc-woocommerce-multi-vendor'),
-                'products_name' => __('Product Name', 'dc-woocommerce-multi-vendor'),
-                'order_date' => __('Order Date', 'dc-woocommerce-multi-vendor'),
-                //'dimentions' => __('L/B/H/W', 'dc-woocommerce-multi-vendor'),
-                'shipping_address' => __('Address', 'dc-woocommerce-multi-vendor'),
-                'shipping_amount' => __('Charges', 'dc-woocommerce-multi-vendor'),
-                'action' => __('Action', 'dc-woocommerce-multi-vendor'),
-            ));
-            foreach ($default_headers as $key => $value) {
-                echo '<th>'.$value.'</th>';
-            }
+            <?php 
+                foreach ($default_headers as $key => $value) {
+                    echo '<th>'.$value.'</th>';
+                }
             ?>
         </tr>
     </thead>
     <tbody>
     <?php 
     if($pending_shippings){
-        foreach ($pending_shippings as $row_key => $row) { 
-            echo '<tr>';
-            foreach ($row as $key => $value) { 
-                echo '<td><span>';
-                switch ($key) {
-                    case 'order_id': 
-                        echo '<a href="'.esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $value)).'">#'.$value.'</a>';
-                        break;
-                    case 'products_name': 
-                        echo implode(' , ', $value);
-                        break;
-                    case 'order_date':
-                        echo wcmp_date($value);
-                        break;
-//                    case 'dimentions':
-//                        echo '('.implode(' ) , ( ', $value).' )';
-//                        break;
-                    case 'shipping_address':
-                        echo $value;
-                        break;
-                    case 'shipping_amount':
-                        echo wc_price($value);
-                        break;
-                    case 'action':
-                        echo $value;
-                        break;
+        foreach ($pending_shippings as $pending_orders_item) { 
+            try {
+                echo '<tr>';
+                $order = wc_get_order($pending_orders_item->order_id);
+                $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
+                $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0));
+                $product_sku = array();
+                $product_name = array();
+                //$product_dimention = array();
+                foreach ($pending_shipping_products as $pending_shipping_product) {
+                    $product = wc_get_product($pending_shipping_product->product_id);
+                    if ($product && $product->needs_shipping()) {
+                        $product_sku[] = $product->get_sku() ? $product->get_sku() : '<span class="na">&ndash;</span>';
+                        $product_name[] = $product->get_title();
+                        if ($pending_shipping_product->variation_id != 0) {
+                            $product = wc_get_product($pending_shipping_product->variation_id);
+                        }
+                    }
                 }
-                echo '</span></td>';
-                do_action('wcmp_vendor_pending_shipping_table_row', $key, $value);
+                if(empty($product_name))                                
+                    continue;
+
+                $action_html = '';
+                if ($vendor->is_shipping_enable()) {
+                    $is_shipped = (array) get_post_meta($order->get_id(), 'dc_pv_shipped', true);
+                    if (!in_array($vendor->id, $is_shipped)) {
+                        $action_html .= '<a href="javascript:void(0)" title="' . __('Mark as shipped', 'dc-woocommerce-multi-vendor') . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><i class="wcmp-font ico-shippingnew-icon action-icon"></i></a> ';
+                    } else {
+                        $action_html .= '<i title="' . __('Shipped', 'dc-woocommerce-multi-vendor') . '" class="wcmp-font ico-shipping-icon"></i> ';
+                    }
+                }
+                $action_html = apply_filters('wcmp_dashboard_pending_shipping_widget_data_actions', $action_html, $order->get_id());
+                foreach ($default_headers as $key => $value) {
+                    echo '<td><span class="'.$key.'">';
+                    switch ($key) {
+                        case 'order_id': 
+                            echo '<a href="'.esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $order->get_id())).'">#'.$order->get_id().'</a>';
+                            break;
+                        case 'products_name': 
+                            echo implode(' , ', $product_name);
+                            break;
+                        case 'order_date': 
+                            echo wcmp_date($order->get_date_created());
+                            break;
+                        case 'shipping_address': 
+                            echo $order->get_formatted_shipping_address();
+                            break;
+                        case 'shipping_amount': 
+                            echo wc_price($pending_shipping_amount['shipping_amount']);
+                            break;
+                        case 'action':
+                            echo $action_html;
+                            break;
+                    }
+                    do_action('wcmp_vendor_pending_shipping_table_row', $key, $pending_orders_item, $order);
+                    do_action('wcmp_vendor_pending_shipping_table_row_column_data', $key, $pending_orders_item, $order);
+                    echo '</span></td>';
+                }
+                echo '</tr>';
+
+            } catch (Exception $ex) {
+
             }
-            echo '</tr>';
         }
     }else{
-        echo '<td colspan="6" align="center"><span>'.__('You have no pending shipping!', 'dc-woocommerce-multi-vendor').'</span></td>';
+        echo '<td colspan="'.count($default_headers).'" align="center"><span>'.__('You have no pending shipping!', 'dc-woocommerce-multi-vendor').'</span></td>';
     }
     ?>
     </tbody>
+<?php } ?>
 </table>
  <!-- Modal -->
 <div id="marke-as-ship-modal" class="modal fade" role="dialog">

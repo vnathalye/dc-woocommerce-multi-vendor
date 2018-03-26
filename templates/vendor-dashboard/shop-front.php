@@ -161,29 +161,29 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                         <div class="col-md-6 col-sm-9">                      
                             <div class="row">
                                 <div class="col-md-12">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="Address line 1" name="vendor_address_1"  value="<?php echo isset($vendor_address_1['value']) ? $vendor_address_1['value'] : ''; ?>">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="Address line 2" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('Address line 1', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_address_1"  value="<?php echo isset($vendor_address_1['value']) ? $vendor_address_1['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('Address line 2', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="Country" name="vendor_country" value="<?php echo isset($vendor_country['value']) ? $vendor_country['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('Country', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_country" value="<?php echo isset($vendor_country['value']) ? $vendor_country['value'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin"  type="text" placeholder="State"  name="vendor_state" value="<?php echo isset($vendor_state['value']) ? $vendor_state['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin"  type="text" placeholder="<?php _e('State', 'dc-woocommerce-multi-vendor'); ?>"  name="vendor_state" value="<?php echo isset($vendor_state['value']) ? $vendor_state['value'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="City"  name="vendor_city" value="<?php echo isset($vendor_city['value']) ? $vendor_city['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('City', 'dc-woocommerce-multi-vendor'); ?>"  name="vendor_city" value="<?php echo isset($vendor_city['value']) ? $vendor_city['value'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="ZIP code" name="vendor_postcode" value="<?php echo isset($vendor_postcode['value']) ? $vendor_postcode['value'] : ''; ?>">
+                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('ZIP code', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_postcode" value="<?php echo isset($vendor_postcode['value']) ? $vendor_postcode['value'] : ''; ?>">
                                 </div>
                                 <?php
                                 if (apply_filters('is_vendor_add_external_url_field', false)) {
                                     ?>
                                     <div class="col-md-6">
-                                        <input class="no_input form-control inp-btm-margin" type="text" placeholder="External store URL" name="vendor_external_store_url" value="<?php echo isset($vendor_external_store_url['value']) ? $vendor_external_store_url['value'] : ''; ?>">
+                                        <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('External store URL', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_external_store_url" value="<?php echo isset($vendor_external_store_url['value']) ? $vendor_external_store_url['value'] : ''; ?>">
                                     </div>
                                     <div class="col-md-6">
-                                        <input class="no_input form-control inp-btm-margin" type="text" placeholder="External store URL Label" name="vendor_external_store_label" value="<?php echo isset($vendor_external_store_label['value']) ? $vendor_external_store_label['value'] : ''; ?>">
+                                        <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('External store URL Label', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_external_store_label" value="<?php echo isset($vendor_external_store_label['value']) ? $vendor_external_store_label['value'] : ''; ?>">
                                     </div>
                                     <?php
                                 }
@@ -321,7 +321,7 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                                 ?>
                             <?php
                             } else {
-                                echo __('Please contact your administrator to enable Google map feature.', 'dc-woocommerce-multi-vendor');
+                                echo trim(__('Please contact your administrator to enable Google map feature.', 'dc-woocommerce-multi-vendor'));
                             }
                             ?>
                         </div>
@@ -339,42 +339,42 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                 <div class="wcmp_media_block">
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 facebook">Facebook</label>
+                        <label class="control-label col-sm-3 col-md-3 facebook"><?php _e('Facebook', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"   name="vendor_fb_profile" value="<?php echo isset($vendor_fb_profile['value']) ? $vendor_fb_profile['value'] : ''; ?>">
                         </div>  
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 twitter">Twitter</label>
+                        <label class="control-label col-sm-3 col-md-3 twitter"><?php _e('Twitter', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"   name="vendor_twitter_profile" value="<?php echo isset($vendor_twitter_profile['value']) ? $vendor_twitter_profile['value'] : ''; ?>">
                         </div>  
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 linkedin">LinkedIn</label>
+                        <label class="control-label col-sm-3 col-md-3 linkedin"><?php _e('LinkedIn', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"  name="vendor_linkdin_profile" value="<?php echo isset($vendor_linkdin_profile['value']) ? $vendor_linkdin_profile['value'] : ''; ?>">
                         </div>  
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 google-plus">Google Plus</label>
+                        <label class="control-label col-sm-3 col-md-3 google-plus"><?php _e('Google Plus', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"   name="vendor_google_plus_profile" value="<?php echo isset($vendor_google_plus_profile['value']) ? $vendor_google_plus_profile['value'] : ''; ?>">
                         </div>  
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 youtube">YouTube</label>
+                        <label class="control-label col-sm-3 col-md-3 youtube"><?php _e('YouTube', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"   name="vendor_youtube" value="<?php echo isset($vendor_youtube['value']) ? $vendor_youtube['value'] : ''; ?>">
                         </div>  
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label col-sm-3 col-md-3 instagram">Instagram</label>
+                        <label class="control-label col-sm-3 col-md-3 instagram"><?php _e('Instagram', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="form-control" type="url"   name="vendor_instagram" value="<?php echo isset($vendor_instagram['value']) ? $vendor_instagram['value'] : ''; ?>">
                         </div>  

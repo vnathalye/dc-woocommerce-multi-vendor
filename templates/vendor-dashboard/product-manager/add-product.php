@@ -800,7 +800,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                                             break;
 
                                         case 'date':
-                                            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array($field_group_field['meta_key'] => array('label' => $field_group_field['name'], 'desc' => $field_group_field['description'], 'name' => 'wpcf[' . $field_group_field['meta_key'] . ']', 'type' => 'text', 'placeholder' => 'YYYY-MM-DD', 'class' => 'regular-text pro_ele dc_datepicker simple variable external grouped booking', 'label_class' => 'pro_title', 'value' => $field_value)));
+                                            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array($field_group_field['meta_key'] => array('label' => $field_group_field['name'], 'desc' => $field_group_field['description'], 'name' => 'wpcf[' . $field_group_field['meta_key'] . ']', 'type' => 'text', 'placeholder' => __('YYYY-MM-DD', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele dc_datepicker simple variable external grouped booking', 'label_class' => 'pro_title', 'value' => $field_value)));
                                             break;
 
                                         case 'timepicker':

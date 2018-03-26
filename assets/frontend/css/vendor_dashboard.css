@@ -623,7 +623,6 @@ table.table-bordered {
     border-left: 0 !important; }
     table.table-bordered tr th:before {
       content: '';
-      content: '';
       position: absolute;
       width: 1px;
       height: calc(100% - 12px);
@@ -633,8 +632,6 @@ table.table-bordered {
       bottom: 0;
       margin: auto;
       z-index: 1; }
-    table.table-bordered tr th:last-child:before {
-      display: none; }
   table.table-bordered thead th {
     vertical-align: middle; }
 @-moz-document url-prefix() {
@@ -1612,6 +1609,9 @@ span.delete a {
     padding-left: 15px; }
 
 /** ------------------------ Message and unversity section css end ----------------------  **/
+@media screen and (max-width: 768px) {
+  .side-collapse.in {
+    opacity: 0; } }
 .navbar-default {
   border: none;
   position: relative; }
@@ -2423,6 +2423,32 @@ table.table.product_sold_last_week .product_sold_last_week_name_class img {
 .wcmp_vendor_products_cust_qna .customer-questions-panel #customer_questions td {
   padding: 0; }
 
+.vendor-products-qna-filters .form-group {
+  max-width: 330px;
+  vertical-align: top;
+  min-width: 200px; }
+.vendor-products-qna-filters .select2-container--default.select2-container--focus .select2-selection--multiple {
+  border-color: #c5c5c5; }
+.vendor-products-qna-filters .select2-container .select2-selection.select2-selection--multiple {
+  min-height: 34px; }
+.vendor-products-qna-filters #show_qna_by_products_btn {
+  margin-left: 6px; }
+.vendor-products-qna-filters .select2-container .select2-search--inline {
+  margin-top: 7px; }
+.vendor-products-qna-filters .select2-container .select2-selection.select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+  margin-top: 5px; }
+.vendor-products-qna-filters li + li.select2-search.select2-search--inline input.select2-search__field {
+  width: 0.75em !important; }
+
+#vendor_products_qna_table span.unanswered.label-default {
+  font-size: 12px;
+  background-color: #f8dda7;
+  color: #94660c; }
+#vendor_products_qna_table span.answered.label-success {
+  font-size: 12px;
+  background-color: #c6e1c6;
+  color: #5b841b; }
+
 .wcmp_vendor_product_stats .wcmp_product_stats_wrap .p_stats_data {
   margin-top: 10px;
   padding-top: 10px;
@@ -2506,8 +2532,6 @@ table.table.product_sold_last_week .product_sold_last_week_name_class img {
 
 table.dataTable tr th.sorting_asc {
   padding-right: 10px !important; }
-  table.dataTable tr th.sorting_asc:after {
-    display: none; }
 
 .wcmp_customer_reviews .wcmp-comments {
   clear: both; }

@@ -589,6 +589,11 @@ class WCMp_User {
         ); // Text
 
         if (apply_filters('wcmp_vendor_can_overwrite_policies', true) && get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable') {
+            $_wp_editor_settings = array('tinymce' => true);
+            if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
+                $_wp_editor_settings['media_buttons'] = false;
+            }
+            $_wp_editor_settings = apply_filters('wcmp_vendor_policies_wp_editor_settings', $_wp_editor_settings);
 
 //            $fields['vendor_policy_tab_title'] = array(
 //                'label' => __('Enter the title of Policies Tab', 'dc-woocommerce-multi-vendor'),
@@ -600,7 +605,7 @@ class WCMp_User {
         //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_cancellation_policy']) && isset($policies_settings['is_cancellation_on'])) {
             $fields['vendor_cancellation_policy'] = array(
                 'label' => __('Cancellation/Return/Exchange Policy', 'dc-woocommerce-multi-vendor'),
-                'type' => 'textarea',
+                'type' => 'wpeditor',
                 'value' => $vendor->cancellation_policy,
                 'class' => 'user-profile-fields'
             );
@@ -608,17 +613,19 @@ class WCMp_User {
         //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_refund_policy']) && isset($policies_settings['is_refund_on'])) {
             $fields['vendor_refund_policy'] = array(
                 'label' => __('Refund Policy', 'dc-woocommerce-multi-vendor'),
-                'type' => 'textarea',
+                'type' => 'wpeditor',
                 'value' => $vendor->refund_policy,
-                'class' => 'user-profile-fields'
+                'class' => 'user-profile-fields',
+                'settings' => $_wp_editor_settings
             );
         //}
         //if (get_wcmp_vendor_settings('is_policy_on', 'general') == 'Enable' && isset($policies_settings['can_vendor_edit_shipping_policy']) && isset($policies_settings['is_shipping_on'])) {
             $fields['vendor_shipping_policy'] = array(
                 'label' => __('Shipping Policy', 'dc-woocommerce-multi-vendor'),
-                'type' => 'textarea',
+                'type' => 'wpeditor',
                 'value' => $vendor->shipping_policy,
-                'class' => 'user-profile-fields regular-text'
+                'class' => 'user-profile-fields regular-text',
+                'settings' => $_wp_editor_settings
             );
         //}
         //if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) {
@@ -626,7 +633,8 @@ class WCMp_User {
                 'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
                 'type' => 'textarea',
                 'value' => $vendor->message_to_buyers,
-                'class' => 'user-profile-fields'
+                'class' => 'user-profile-fields',
+                'settings' => $_wp_editor_settings
             );
         }
         $user = wp_get_current_user();
@@ -694,7 +702,7 @@ class WCMp_User {
             }
         }
 
-        return $fields;
+        return apply_filters('wcmp_vendor_user_fields', $fields, $vendor->id);
     }
 
     /**
@@ -863,7 +871,7 @@ class WCMp_User {
                     } elseif ($fieldkey == 'vendor_description') {
                         update_user_meta($user_id, '_' . $fieldkey, $_POST[$fieldkey]);
                     } else {
-                        update_user_meta($user_id, '_' . $fieldkey, wc_clean($_POST[$fieldkey]));
+                        update_user_meta($user_id, '_' . $fieldkey, $_POST[$fieldkey]);
                     }
                 } else if (!isset($_POST['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
                     delete_user_meta($user_id, '_vendor_hide_description');

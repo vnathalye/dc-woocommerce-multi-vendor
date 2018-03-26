@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
         serverSide: true,
         pagingType: 'numbers',
         language: {
-            emptyTable: '<div><?php echo __('No reviews found.', 'dc-woocommerce-multi-vendor') ?></div>'
+            emptyTable: '<div><?php echo trim(__('No reviews found.', 'dc-woocommerce-multi-vendor')); ?></div>'
         },
         preDrawCallback: function( settings ) {
             $('#vendor_reviews thead').hide();

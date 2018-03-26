@@ -89,7 +89,7 @@ class WCMp_Cron_Job {
                         $vendor_weekly_stats['total_transaction'] = array_sum(wp_list_pluck($transaction_details, 'total_amount'));
                     }
                     $report_data = array(
-                        'period' => 'weekly',
+                        'period' => __('weekly', 'dc-woocommerce-multi-vendor'),
                         'start_date' => date('Y-m-d', strtotime('-7 days')),
                         'end_date' => @date('Y-m-d'),
                         'stats' => $vendor_weekly_stats,
@@ -161,7 +161,7 @@ class WCMp_Cron_Job {
                         $vendor_monthly_stats['total_transaction'] = array_sum(wp_list_pluck($transaction_details, 'total_amount'));
                     }
                     $report_data = array(
-                        'period' => 'monthly',
+                        'period' => __('monthly', 'dc-woocommerce-multi-vendor'),
                         'start_date' => date('Y-m-d', strtotime('-30 days')),
                         'end_date' => @date('Y-m-d'),
                         'stats' => $vendor_monthly_stats,

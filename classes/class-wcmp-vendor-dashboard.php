@@ -1085,7 +1085,16 @@ Class WCMp_Admin_Dashboard {
             'is_trashed' => ''
         ));
         $pending_shippings = $vendor->get_vendor_orders_reports_of('pending_shipping', $args);
-        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('pending_shippings' => $pending_shippings));
+        $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(
+                'order_id' => __('Order ID', 'dc-woocommerce-multi-vendor'),
+                'products_name' => __('Product Name', 'dc-woocommerce-multi-vendor'),
+                'order_date' => __('Order Date', 'dc-woocommerce-multi-vendor'),
+                //'dimentions' => __('L/B/H/W', 'dc-woocommerce-multi-vendor'),
+                'shipping_address' => __('Address', 'dc-woocommerce-multi-vendor'),
+                'shipping_amount' => __('Charges', 'dc-woocommerce-multi-vendor'),
+                'action' => __('Action', 'dc-woocommerce-multi-vendor'),
+            ));
+        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('pending_shippings' => $pending_shippings, 'default_headers' => $default_headers));
     }
 
     public function wcmp_customer_review() {

@@ -892,7 +892,9 @@ jQuery(document).ready(function ($) {
             if (textArea.length>0 && textArea.is(':visible')) {
                 content = textArea.val();        
             } else {
-                content = editor.getContent();
+                //content = editor.getContent();
+                tinyMCE.triggerSave();
+                content = textArea.val();
             } 
         }     
         return content;

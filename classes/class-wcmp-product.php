@@ -248,11 +248,11 @@ class WCMp_Product {
                         if (isset($vendor_data->user_data->data->display_name)) {
                             $more_product_array[$i]['seller_name'] = $vendor_data->user_data->data->display_name;
                             $more_product_array[$i]['is_vendor'] = 1;
-                            $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
-                            if (!empty($terms)) {
-                                $more_product_array[$i]['shop_link'] = get_term_link($terms[0], $WCMp->taxonomy->taxonomy_name);
-                                $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($terms[0]->term_id);
-                            }
+//                            $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
+//                            if (!empty($terms)) {
+                                $more_product_array[$i]['shop_link'] = $vendor_data->permalink;
+                                $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($vendor_data->term_id);
+                            //}
                         }
                     } else {
                         $more_product_array[$i]['seller_name'] = $other_user->data->display_name;
@@ -661,6 +661,8 @@ class WCMp_Product {
 
             $args = array(
                 'post_type' => $type,
+                'posts_per_page' => -1,
+                'author' => $current_user->ID,
                 'tax_query' => array(
                     array(
                         'taxonomy' => $WCMp->taxonomy->taxonomy_name,

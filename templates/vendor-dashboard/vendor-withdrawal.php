@@ -21,7 +21,7 @@ $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 <?php if($get_vendor_thresold) : ?>
 <div class="col-md-12">
     <blockquote>
-        <span><?php _e('Your Threshold value for withdrawals is : ', 'dc-woocommerce-multi-vendor'); ?><?php echo wc_price($get_vendor_thresold); ?></span>
+        <span><?php _e('Your Threshold value for withdrawals is :', 'dc-woocommerce-multi-vendor'); ?> <?php echo wc_price($get_vendor_thresold); ?></span>
     </blockquote>
 </div>
 <?php endif; ?>
@@ -74,21 +74,21 @@ $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 jQuery(document).ready(function($) {
     var vendor_withdrawal;
     vendor_withdrawal = $('#vendor_withdrawal').DataTable({
-        ordering  : <?php echo isset($table_init['ordering']) ? $table_init['ordering'] : 'false'; ?>,
-        searching  : <?php echo isset($table_init['searching']) ? $table_init['searching'] : 'false'; ?>,
+        ordering  : <?php echo isset($table_init['ordering']) ? trim($table_init['ordering']) : 'false'; ?>,
+        searching  : <?php echo isset($table_init['searching']) ? trim($table_init['searching']) : 'false'; ?>,
         processing: true,
         serverSide: true,
         language: {
-            "emptyTable": "<?php echo isset($table_init['emptyTable']) ? $table_init['emptyTable'] : __('No orders found!','dc-woocommerce-multi-vendor'); ?>",
-            "processing": "<?php echo isset($table_init['processing']) ? $table_init['processing'] : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
-            "info": "<?php echo isset($table_init['info']) ? $table_init['info'] : __('Showing _START_ to _END_ of _TOTAL_ orders','dc-woocommerce-multi-vendor'); ?>",
-            "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? $table_init['infoEmpty'] : __('Showing 0 to 0 of 0 orders','dc-woocommerce-multi-vendor'); ?>",
-            "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? $table_init['lengthMenu'] : __('Show _MENU_ orders','dc-woocommerce-multi-vendor'); ?>",
-            "zeroRecords": "<?php echo isset($table_init['zeroRecords']) ? $table_init['zeroRecords'] : __('No matching orders found','dc-woocommerce-multi-vendor'); ?>",
-            "search": "<?php echo isset($table_init['search']) ? $table_init['search'] : __('Search:','dc-woocommerce-multi-vendor'); ?>",
+            "emptyTable": "<?php echo isset($table_init['emptyTable']) ? trim($table_init['emptyTable']) : __('No orders found!','dc-woocommerce-multi-vendor'); ?>",
+            "processing": "<?php echo isset($table_init['processing']) ? trim($table_init['processing']) : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
+            "info": "<?php echo isset($table_init['info']) ? trim($table_init['info']) : __('Showing _START_ to _END_ of _TOTAL_ orders','dc-woocommerce-multi-vendor'); ?>",
+            "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? trim($table_init['infoEmpty']) : __('Showing 0 to 0 of 0 orders','dc-woocommerce-multi-vendor'); ?>",
+            "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? trim($table_init['lengthMenu']) : __('Number of rows _MENU_','dc-woocommerce-multi-vendor'); ?>",
+            "zeroRecords": "<?php echo isset($table_init['zeroRecords']) ? trim($table_init['zeroRecords']) : __('No matching orders found','dc-woocommerce-multi-vendor'); ?>",
+            "search": "<?php echo isset($table_init['search']) ? trim($table_init['search']) : __('Search:','dc-woocommerce-multi-vendor'); ?>",
             "paginate": {
-                "next":  "<?php echo isset($table_init['next']) ? $table_init['next'] : __('Next','dc-woocommerce-multi-vendor'); ?>",
-                "previous":  "<?php echo isset($table_init['previous']) ? $table_init['previous'] : __('Previous','dc-woocommerce-multi-vendor'); ?>"
+                "next":  "<?php echo isset($table_init['next']) ? trim($table_init['next']) : __('Next','dc-woocommerce-multi-vendor'); ?>",
+                "previous":  "<?php echo isset($table_init['previous']) ? trim($table_init['previous']) : __('Previous','dc-woocommerce-multi-vendor'); ?>"
             }
         },
         drawCallback: function () {

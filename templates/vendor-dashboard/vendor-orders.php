@@ -110,8 +110,8 @@ global $woocommerce, $WCMp;
         ));
         foreach ($filter_by_status as $key => $label) { ?>
             obj = {};
-            obj['key'] = "<?php echo $key; ?>";
-            obj['label'] = "<?php echo $label; ?>";
+            obj['key'] = "<?php echo trim($key); ?>";
+            obj['label'] = "<?php echo trim($label); ?>";
             statuses.push(obj);
         <?php } ?>
         orders_table = $('#wcmp-vendor-orders').DataTable({
@@ -134,15 +134,15 @@ global $woocommerce, $WCMp;
                 })
             },
             language: {
-                emptyTable: "<?php echo __('No orders found!', 'dc-woocommerce-multi-vendor'); ?>",
-                processing: "<?php echo __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
-                info: "<?php echo __('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor'); ?>",
-                infoEmpty: "<?php echo __('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor'); ?>",
-                lengthMenu: "<?php echo __('Show orders _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
-                zeroRecords: "<?php echo __('No matching orders found', 'dc-woocommerce-multi-vendor'); ?>",
+                emptyTable: "<?php echo trim(__('No orders found!', 'dc-woocommerce-multi-vendor')); ?>",
+                processing: "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
+                info: "<?php echo trim(__('Showing _START_ to _END_ of _TOTAL_ orders', 'dc-woocommerce-multi-vendor')); ?>",
+                infoEmpty: "<?php echo trim(__('Showing 0 to 0 of 0 orders', 'dc-woocommerce-multi-vendor')); ?>",
+                lengthMenu: "<?php echo trim(__('Number of rows _MENU_', 'dc-woocommerce-multi-vendor')); ?>",
+                zeroRecords: "<?php echo trim(__('No matching orders found', 'dc-woocommerce-multi-vendor')); ?>",
                 paginate: {
-                    next: "<?php echo __('Next', 'dc-woocommerce-multi-vendor'); ?>",
-                    previous: "<?php echo __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
+                    next: "<?php echo trim(__('Next', 'dc-woocommerce-multi-vendor')); ?>",
+                    previous: "<?php echo trim(__('Previous', 'dc-woocommerce-multi-vendor')); ?>"
                 }
             },
             ajax: {

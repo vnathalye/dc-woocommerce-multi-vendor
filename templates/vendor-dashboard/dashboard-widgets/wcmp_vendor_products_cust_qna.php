@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
         serverSide: true,
         pagingType: 'numbers',
         language: {
-            emptyTable: '<article class="reply-item" style="border-bottom:none;"><div class="col-md-12 col-md-12 col-sm-12 col-xs-12" style="text-align:center;"><?php echo __('No customer query found.', 'dc-woocommerce-multi-vendor') ?></div></article>',
+            emptyTable: '<article class="reply-item" style="border-bottom:none;"><div class="col-md-12 col-md-12 col-sm-12 col-xs-12" style="text-align:center;"><?php echo trim(__('No unanswered questions found.', 'dc-woocommerce-multi-vendor')); ?></div></article>',
         },
         preDrawCallback: function( settings ) {
             $('#customer_questions thead').hide();

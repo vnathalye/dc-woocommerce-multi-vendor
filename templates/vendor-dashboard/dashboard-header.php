@@ -44,7 +44,7 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
                 <ul class="dropdown-menu dropdown-user dropdown-menu-right">
                     <li class="sidebar-logo text-center"> 
                         <div class="vendor-profile-pic-holder">
-                            <img src="<?php echo $vendor_logo; ?>" alt="hard crop 130 * 130">
+                            <img src="<?php echo $vendor_logo; ?>" alt="vendor logo">
                         </div>
                         <h4><?php echo $vendor->user_data->display_name; ?></h4>  
                     </li> 

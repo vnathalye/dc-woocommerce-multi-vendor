@@ -91,28 +91,28 @@ foreach ($terms as $term) {
 <?php }
 ?>
         product_table = $('#product_table').DataTable({
-            'ordering': <?php echo isset($table_init['ordering']) ? $table_init['ordering'] : 'true'; ?>,
-            'searching': <?php echo isset($table_init['searching']) ? $table_init['searching'] : 'true'; ?>,
+            'ordering': <?php echo isset($table_init['ordering']) ? trim($table_init['ordering']) : 'true'; ?>,
+            'searching': <?php echo isset($table_init['searching']) ? trim($table_init['searching']) : 'true'; ?>,
             "processing": true,
             "serverSide": true,
             "language": {
-                "emptyTable": "<?php echo isset($table_init['emptyTable']) ? $table_init['emptyTable'] : __('No products found!', 'dc-woocommerce-multi-vendor'); ?>",
-                "processing": "<?php echo isset($table_init['processing']) ? $table_init['processing'] : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
-                "info": "<?php echo isset($table_init['info']) ? $table_init['info'] : __('Showing _START_ to _END_ of _TOTAL_ products', 'dc-woocommerce-multi-vendor'); ?>",
-                "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? $table_init['infoEmpty'] : __('Showing 0 to 0 of 0 products', 'dc-woocommerce-multi-vendor'); ?>",
-                "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? $table_init['lengthMenu'] : __('Show products _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
-                "zeroRecords": "<?php echo isset($table_init['zeroRecords']) ? $table_init['zeroRecords'] : __('No matching products found', 'dc-woocommerce-multi-vendor'); ?>",
-                "search": "<?php echo isset($table_init['search']) ? $table_init['search'] : __('Search:', 'dc-woocommerce-multi-vendor'); ?>",
+                "emptyTable": "<?php echo isset($table_init['emptyTable']) ? trim($table_init['emptyTable']) : __('No products found!', 'dc-woocommerce-multi-vendor'); ?>",
+                "processing": "<?php echo isset($table_init['processing']) ? trim($table_init['processing']) : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
+                "info": "<?php echo isset($table_init['info']) ? trim($table_init['info']) : __('Showing _START_ to _END_ of _TOTAL_ products', 'dc-woocommerce-multi-vendor'); ?>",
+                "infoEmpty": "<?php echo isset($table_init['infoEmpty']) ? trim($table_init['infoEmpty']) : __('Showing 0 to 0 of 0 products', 'dc-woocommerce-multi-vendor'); ?>",
+                "lengthMenu": "<?php echo isset($table_init['lengthMenu']) ? trim($table_init['lengthMenu']) : __('Number of rows _MENU_', 'dc-woocommerce-multi-vendor'); ?>",
+                "zeroRecords": "<?php echo isset($table_init['zeroRecords']) ? trim($table_init['zeroRecords']) : __('No matching products found', 'dc-woocommerce-multi-vendor'); ?>",
+                "search": "<?php echo isset($table_init['search']) ? trim($table_init['search']) : __('Search:', 'dc-woocommerce-multi-vendor'); ?>",
                 "paginate": {
-                    "next": "<?php echo isset($table_init['next']) ? $table_init['next'] : __('Next', 'dc-woocommerce-multi-vendor'); ?>",
-                    "previous": "<?php echo isset($table_init['previous']) ? $table_init['previous'] : __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
+                    "next": "<?php echo isset($table_init['next']) ? trim($table_init['next']) : __('Next', 'dc-woocommerce-multi-vendor'); ?>",
+                    "previous": "<?php echo isset($table_init['previous']) ? trim($table_init['previous']) : __('Previous', 'dc-woocommerce-multi-vendor'); ?>"
                 },
             },
             "drawCallback": function(settings){
                 $( "#product_cat" ).detach();
-                
+                $('thead tr th.image').removeClass('sorting_asc');
                 var product_cat_sel = $('<select id="product_cat" class="wcmp-filter-dtdd wcmp_filter_product_cat form-control">').appendTo("#product_table_length");
-                product_cat_sel.append($("<option>").attr('value', '').text('<?php _e('Select a Category', 'dc-woocommerce-multi-vendor'); ?>'));
+                product_cat_sel.append($("<option>").attr('value', '').text('<?php echo trim(__('Select a Category', 'dc-woocommerce-multi-vendor')); ?>'));
                 $(filter_by_category_list).each(function () {
                     product_cat_sel.append($("<option>").attr('value', this.key).text(this.label));
                 });
@@ -124,7 +124,7 @@ foreach ($terms as $term) {
                 url: woocommerce_params.ajax_url + '?action=wcmp_vendor_product_list',
                 type: "post",
                 data: function (data) {
-                    data.post_status = "<?php echo isset($_GET['post_status']) ? $_GET['post_status'] : 'all' ?>";
+                    data.post_status = "<?php echo isset($_GET['post_status']) ? trim($_GET['post_status']) : 'all' ?>";
                     data.product_cat = $('#product_cat').val();
                 },
                 error: function(xhr, status, error) {

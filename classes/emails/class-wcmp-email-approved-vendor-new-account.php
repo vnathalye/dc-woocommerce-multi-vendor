@@ -37,8 +37,6 @@ if (!class_exists('WC_Email_Approved_New_Vendor_Account')) :
             $this->template_html = 'emails/approved-vendor-account.php';
             $this->template_plain = 'emails/plain/approved-vendor-account.php';
 
-            //$this->subject = __('Your account on {site_title}', 'dc-woocommerce-multi-vendor');
-            //$this->heading = __('Welcome to {site_title}', 'dc-woocommerce-multi-vendor');
             $this->template_base = $WCMp->plugin_path . 'templates/';
             // Call parent constuctor
             parent::__construct();
@@ -66,26 +64,6 @@ if (!class_exists('WC_Email_Approved_New_Vendor_Account')) :
                 return;
 
             $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
-        }
-
-        /**
-         * get_subject function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_subject() {
-            return apply_filters('woocommerce_email_subject_approved_vendor_new_account', $this->format_string($this->subject), $this->object);
-        }
-
-        /**
-         * get_heading function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_heading() {
-            return apply_filters('woocommerce_email_heading_approved_vendor_new_account', $this->format_string($this->heading), $this->object);
         }
         
         /**

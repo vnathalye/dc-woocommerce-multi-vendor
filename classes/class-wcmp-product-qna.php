@@ -18,6 +18,7 @@ class WCMp_Product_QNA {
         global $wpdb;
         $this->question_table = $wpdb->prefix.'wcmp_cust_questions';
         $this->answer_table = $wpdb->prefix.'wcmp_cust_answers';
+        add_action( 'wcmp_product_qna_delete_question', array($this, 'wcmp_product_qna_delete_question'));
     }
     
     /**
@@ -63,6 +64,23 @@ class WCMp_Product_QNA {
     }
     
     /**
+     * Delete all answers of a question from database.
+     *
+     * @since  3.0.4
+     * @param WCMp_Product_QNA question $ques_ID
+     */
+    public function wcmp_product_qna_delete_question( $ques_ID ){
+        if($ques_ID){
+            $answers = $this->get_Answers($ques_ID);
+            if($answers){
+                foreach ($answers as $ans) {
+                    $this->deleteAnswer($ans->ans_ID);
+                }
+            }
+        }
+    }
+
+    /**
      * Get a question.
      *
      * @since  3.0.0
@@ -107,7 +125,7 @@ class WCMp_Product_QNA {
                 if($product_questions){
                     foreach ($product_questions as $question) {
                         if($unanswer){
-                            $_is_answer_given = $this->get_Answer($question->ques_ID);
+                            $_is_answer_given = $this->get_Answers($question->ques_ID);
                             if(!$_is_answer_given){
                                 $vendor_questions[$question->ques_ID] = $question;
                             }

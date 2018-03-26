@@ -833,56 +833,7 @@ class WCMp_Vendor {
                         $args['is_trashed']
                     ) 
                 );
-                $pending_shippings_arr = array();
-                if($pending_shippings){
-                    foreach ($pending_shippings as $pending_orders_item) {
-                        try {
-                            $order = wc_get_order($pending_orders_item->order_id);
-                            $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $args['vendor_id'], 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
-                            $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $args['vendor_id'], 'order_id' => $order->get_id(), 'shipping_status' => 0));
-                            $product_sku = array();
-                            $product_name = array();
-                            //$product_dimention = array();
-                            foreach ($pending_shipping_products as $pending_shipping_product) {
-                                $product = wc_get_product($pending_shipping_product->product_id);
-                                if ($product && $product->needs_shipping()) {
-                                    $product_sku[] = $product->get_sku() ? $product->get_sku() : '<span class="na">&ndash;</span>';
-                                    $product_name[] = $product->get_title();
-                                    if ($pending_shipping_product->variation_id != 0) {
-                                        $product = wc_get_product($pending_shipping_product->variation_id);
-                                    }
-                                }
-                            }
-                            if(empty($product_name))                                
-                                continue;
-                            
-                            $action_html = '';
-                            $vendor = get_current_vendor();
-                            if ($vendor->is_shipping_enable()) {
-                                $is_shipped = (array) get_post_meta($order->get_id(), 'dc_pv_shipped', true);
-                                if (!in_array($vendor->id, $is_shipped)) {
-                                    $action_html .= '<a href="javascript:void(0)" title="' . __('Mark as shipped', 'dc-woocommerce-multi-vendor') . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><i class="wcmp-font ico-shippingnew-icon action-icon"></i></a> ';
-                                } else {
-                                    $action_html .= '<i title="' . __('Shipped', 'dc-woocommerce-multi-vendor') . '" class="wcmp-font ico-shipping-icon"></i> ';
-                                }
-                            }
-                            $action_html = apply_filters('wcmp_dashboard_pending_shipping_widget_data_actions', $action_html, $order->get_id());
-                            $pending_shippings_arr[] = apply_filters('wcmp_vendor_pending_shipping_table_row_data',array(
-                                'order_id' => $order->get_id(),
-                                'products_name' => $product_name,
-                                'order_date' => wcmp_date($order->get_date_created()),
-                                //'dimentions' => $dimentions,
-                                'shipping_address' => $order->get_formatted_shipping_address(),
-                                'shipping_amount' => $pending_shipping_amount['shipping_amount'],
-                                'action' => $action_html,
-                                ),$pending_orders_item);
-                            
-                        } catch (Exception $ex) {
-
-                        }
-                    }
-                }
-                $reports = $pending_shippings_arr;
+                $reports = $pending_shippings;
                 break;
        
             default:

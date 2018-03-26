@@ -71,22 +71,21 @@ do_action('before_wcmp_vendor_stats_reports');
                 <ul class="wcmp-website-stat-list">
                     <li>
                         <span><i class="wcmp-font ico-visit-icon"></i></span>
-                        <span><?php _e('Store traffic ', 'dc-woocommerce-multi-vendor'); ?><mark id="stats-diff-traffic" class="_wcmp_diff_traffic_no "></mark></span>
+                        <span><?php _e('Store traffic', 'dc-woocommerce-multi-vendor'); ?> <mark id="stats-diff-traffic" class="_wcmp_diff_traffic_no "></mark></span>
                     </li>
                     <li>
                         <span><i class="wcmp-font ico-cart-icon"></i></span>
-                        <span><?php _e('Received orders ', 'dc-woocommerce-multi-vendor'); ?><mark id="stats-diff-order-no" class="_wcmp_diff_orders_no "></mark></span>
+                        <span><?php _e('Received orders', 'dc-woocommerce-multi-vendor'); ?> <mark id="stats-diff-order-no" class="_wcmp_diff_orders_no "></mark></span>
                     </li> 
                     <li>
                         <span><i class="wcmp-font ico-price2-icon"></i></span>
-                        <span><?php _e('Total sales ', 'dc-woocommerce-multi-vendor'); ?><mark id="stats-diff-sales-total" class="_wcmp_diff_sales_total "></mark></span>
+                        <span><?php _e('Total sales', 'dc-woocommerce-multi-vendor'); ?> <mark id="stats-diff-sales-total" class="_wcmp_diff_sales_total "></mark></span>
                     </li>
                     
                     <li>
                         <span><i class="wcmp-font ico-earning-icon"></i></span>
-                        <span><?php _e('Your earning ', 'dc-woocommerce-multi-vendor'); ?><mark id="stats-diff-earning" class="_wcmp_diff_earning "></mark></span>
+                        <span><?php _e('Your earning', 'dc-woocommerce-multi-vendor'); ?> <mark id="stats-diff-earning" class="_wcmp_diff_earning "></mark></span>
                     </li>
-                    
                 </ul>
             </div>
         </div>

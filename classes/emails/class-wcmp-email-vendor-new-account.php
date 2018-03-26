@@ -67,26 +67,6 @@ if (!class_exists('WC_Email_Vendor_New_Account')) :
 
             $this->send($this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments());
         }
-
-        /**
-         * get_subject function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_subject() {
-            return apply_filters('woocommerce_email_subject_vendor_new_account', $this->format_string($this->subject), $this->object);
-        }
-
-        /**
-         * get_heading function.
-         *
-         * @access public
-         * @return string
-         */
-        function get_heading() {
-            return apply_filters('woocommerce_email_heading_vendor_new_account', $this->format_string($this->heading), $this->object);
-        }
         
         /**
          * Get email subject.

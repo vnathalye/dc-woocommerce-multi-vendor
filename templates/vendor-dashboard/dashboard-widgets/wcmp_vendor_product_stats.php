@@ -64,4 +64,4 @@ if($total_products == 0) {
         </ul>
     </div>
 </div>
-<?php } ?>
+<?php } 

@@ -79,16 +79,16 @@ jQuery(document).ready(function($) {
         processing: true,
         serverSide: true,
         language: {
-            "emptyTable": "<?php echo __('Sorry. No transactions are available.','dc-woocommerce-multi-vendor'); ?>",
-            "processing": "<?php echo __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
-            "info": "<?php echo __('Showing _START_ to _END_ of _TOTAL_ transactions','dc-woocommerce-multi-vendor'); ?>",
-            "infoEmpty": "<?php echo __('Showing 0 to 0 of 0 transactions','dc-woocommerce-multi-vendor'); ?>",
-            "lengthMenu": "<?php echo __('Show _MENU_ transactions','dc-woocommerce-multi-vendor'); ?>",
-            "zeroRecords": "<?php echo __('No matching transactions found','dc-woocommerce-multi-vendor'); ?>",
-            "search": "<?php echo __('Search:','dc-woocommerce-multi-vendor'); ?>",
+            "emptyTable": "<?php echo trim(__('Sorry. No transactions are available.','dc-woocommerce-multi-vendor')); ?>",
+            "processing": "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
+            "info": "<?php echo trim(__('Showing _START_ to _END_ of _TOTAL_ transactions','dc-woocommerce-multi-vendor')); ?>",
+            "infoEmpty": "<?php echo trim(__('Showing 0 to 0 of 0 transactions','dc-woocommerce-multi-vendor')); ?>",
+            "lengthMenu": "<?php echo trim(__('Number of rows _MENU_','dc-woocommerce-multi-vendor')); ?>",
+            "zeroRecords": "<?php echo trim(__('No matching transactions found','dc-woocommerce-multi-vendor')); ?>",
+            "search": "<?php echo trim(__('Search:','dc-woocommerce-multi-vendor')); ?>",
             "paginate": {
-                "next":  "<?php echo __('Next','dc-woocommerce-multi-vendor'); ?>",
-                "previous":  "<?php echo __('Previous','dc-woocommerce-multi-vendor'); ?>"
+                "next":  "<?php echo trim(__('Next','dc-woocommerce-multi-vendor')); ?>",
+                "previous":  "<?php echo trim(__('Previous','dc-woocommerce-multi-vendor')); ?>"
             }
         },
         initComplete: function (settings, json) {

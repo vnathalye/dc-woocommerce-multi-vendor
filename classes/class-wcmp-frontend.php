@@ -8,17 +8,21 @@
  * @author 		WC Marketplace
  */
 class WCMp_Frontend {
-
     public function __construct() {
         //enqueue scripts
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_scripts'));
         //enqueue styles
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_styles'), 999);
+
+        add_action('wp_head', array(&$this, 'wcmp_remove_internal_styles_start'), 0);
+        add_action('wp_head', array(&$this, 'wcmp_remove_internal_styles_end'), 999);
+
         add_action('woocommerce_archive_description', array(&$this, 'product_archive_vendor_info'), 10);
         add_filter('body_class', array(&$this, 'set_product_archive_class'));
         add_action('template_redirect', array(&$this, 'template_redirect'));
 
-        add_filter('page_template', array(&$this, 'wcmp_vendor_dashboard_template'));
+        add_filter( 'template_include', array(&$this,'wcmp_vendor_dashboard_template'), 99);
+        //add_filter('page_template', array(&$this, 'wcmp_vendor_dashboard_template'));
 
         add_action('woocommerce_order_details_after_order_table', array($this, 'display_vendor_msg_in_thank_you_page'), 100);
         add_action('wcmp_vendor_register_form', array(&$this, 'wcmp_vendor_register_form_callback'));
@@ -435,6 +439,31 @@ class WCMp_Frontend {
             if (!in_array($handle, $styles_to_keep)) {
                 wp_dequeue_style($handle);
             }
+        }
+    }
+
+    /**
+     * Turn on output buffering on vendor dashboard
+     * @return void
+     */
+    public function wcmp_remove_internal_styles_start() {
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+
+        if ($is_vendor_dashboard) {
+            ob_start();
+        }
+    }
+
+    /**
+     * Remove all internal css within current buffer and delete current output buffer
+     * @return void
+     */
+    public function wcmp_remove_internal_styles_end() {
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+
+        if ($is_vendor_dashboard) {
+            $css=ob_get_clean();
+            echo preg_replace('/<style(.*?)<\/style>/', '', $css);
         }
     }
 

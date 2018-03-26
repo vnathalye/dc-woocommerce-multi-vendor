@@ -54,11 +54,16 @@ $subtotal = 0;
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($vendor_items as $item): $product = wc_get_product($item->product_id);
+                            <?php foreach ($vendor_items as $item): 
+                                if($item->variation_id != 0){
+                                    $product = wc_get_product($item->variation_id);
+                                }else{
+                                    $product = wc_get_product($item->product_id);
+                                }
                                 $subtotal += $product->get_price(''); ?>
                                 <tr>
                                     <td><?php echo $product->get_title(); ?> × <?php echo $item->quantity; ?></td>
-                                    <td><?php echo wc_price($product->get_price()); ?></td>
+                                    <td><?php echo wc_price($product->get_price() * $item->quantity); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

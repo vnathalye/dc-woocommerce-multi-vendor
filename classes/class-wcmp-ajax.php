@@ -327,7 +327,7 @@ class WCMp_Ajax {
         $include = array();
         foreach ($ids as $id) {
             $_product = wc_get_product($id);
-            if ($_product && $_product->get_parent_id()) {
+            if ($_product && !$_product->get_parent_id()) {
                 $include[] = $_product->get_id();
             }
         }
@@ -2448,7 +2448,7 @@ class WCMp_Ajax {
                     $row = array();
                     $row ['select_transaction'] = '<input name="transaction_ids[]" value="' . $transaction_id . '"  class="select_transaction" type="checkbox" >';
                     $row ['date'] = wcmp_date($trans_post->post_date);
-                    $row ['transaction_id'] = '<a href="' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'transaction-details'), $transaction_id)) . '">#' . $transaction_id . '</a>';
+                    $row ['transaction_id'] = '<a href="' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_transaction_details_endpoint', 'vendor', 'general', 'transaction-details'), $transaction_id)) . '">#' . $transaction_id . '</a>';
                     $row ['commission_ids'] = '#' . implode(', #', $commission_details);
                     $row ['fees'] = isset($transfer_charge) ? wc_price($transfer_charge) : wc_price(0);
                     $row ['net_earning'] = wc_price($transaction_amt);
@@ -2584,13 +2584,18 @@ class WCMp_Ajax {
             $reply = isset($_POST['reply']) ? sanitize_textarea_field($_POST['reply']) : '';
             $vendor = get_wcmp_vendor(get_current_user_id());
             if ($vendor && $reply && $ques_ID) {
-                $result = $WCMp->product_qna->createAnswer(array(
-                    'ques_ID' => $ques_ID,
-                    'ans_details' => sanitize_textarea_field($reply),
-                    'ans_by' => $vendor->id,
-                    'ans_created' => date('Y-m-d H:i:s', current_time('timestamp')),
-                    'ans_vote' => ''
-                ));
+                $_is_answer_given = $WCMp->product_qna->get_Answers($ques_ID);
+                if(isset($_is_answer_given[0]) && count($_is_answer_given[0]) > 0){
+                    $result = $WCMp->product_qna->updateAnswer($_is_answer_given[0]->ans_ID, array('ans_details' => sanitize_textarea_field($reply)));
+                }else{
+                    $result = $WCMp->product_qna->createAnswer(array(
+                        'ques_ID' => $ques_ID,
+                        'ans_details' => sanitize_textarea_field($reply),
+                        'ans_by' => $vendor->id,
+                        'ans_created' => date('Y-m-d H:i:s', current_time('timestamp')),
+                        'ans_vote' => ''
+                    ));
+                }
                 if ($result) {
                     //delete transient
                     if (get_transient('wcmp_customer_qna_for_vendor_' . $vendor->id)) {
@@ -2689,7 +2694,7 @@ class WCMp_Ajax {
                     </div>
                     <div class="media-body">
                         <h4 class="media-heading">' . get_user_by('ID', $comment->user_id)->display_name . ' -- <small>' . human_time_diff(strtotime($comment->comment_date)) . __(' ago', 'dc-woocommerce-multi-vendor') . '</small></h4>
-                        <p>' . $comment->comment_content . '</p>
+                        <p>' . wp_trim_words($comment->comment_content, 250, '...'). '</p>
                         <a data-toggle="modal" data-target="#commient-modal-' . $comment->comment_ID . '">' . __('Reply', 'dc-woocommerce-multi-vendor') . '</a>
                         <!-- Modal -->
                         <div class="modal fade" id="commient-modal-' . $comment->comment_ID . '" role="dialog">
@@ -2748,7 +2753,7 @@ class WCMp_Ajax {
                         <div class="media">
                             <!-- <div class="media-left">' . $product->get_image() . '</div> -->
                             <div class="media-body">
-                                <h4 class="media-heading qna-question">' . $data->ques_details . '</h4>
+                                <h4 class="media-heading qna-question">' . wp_trim_words($data->ques_details, 160, '...') . '</h4>
                                 <time class="qna-date">
                                     <span>' . wcmp_date($data->ques_created) . '</span>
                                 </time>
@@ -2820,9 +2825,9 @@ class WCMp_Ajax {
                 $votes = array();
                 foreach ($vendor_qnas as $key => $qna_ques) { 
                     $count = 0;
-                    $have_answer = $WCMp->product_qna->get_Answer($qna_ques->ques_ID);
-                    if($have_answer){
-                        $ans_vote = maybe_unserialize($have_answer->ans_vote);
+                    $have_answer = $WCMp->product_qna->get_Answers($qna_ques->ques_ID);
+                    if(isset($have_answer[0]) && count($have_answer[0]) > 0){
+                        $ans_vote = maybe_unserialize($have_answer[0]->ans_vote);
                         if(is_array($ans_vote)){
                             $count = array_sum($ans_vote);
                         }
@@ -2839,11 +2844,11 @@ class WCMp_Ajax {
             foreach ($vendor_qnas as $question) {
                 $product = wc_get_product($question->product_ID);
                 if($product){
-                    $have_answer = $WCMp->product_qna->get_Answer($question->ques_ID);
+                    $have_answer = $WCMp->product_qna->get_Answers($question->ques_ID);
                     $details = '';
                     $status = '';
                     $vote = '&ndash;';
-                    if(!$have_answer){
+                    if(!isset($have_answer[0])){
                         $status = '<span class="unanswered label label-default">'.__('Unanswered', 'dc-woocommerce-multi-vendor').'</span>';
                         $details .= '<div class="wcmp-question-details-modal modal-body">
                                         <textarea class="form-control" rows="5" id="qna-reply-' . $question->ques_ID . '" placeholder="' . __('Post your answer...', 'dc-woocommerce-multi-vendor') . '"></textarea>
@@ -2852,8 +2857,8 @@ class WCMp_Ajax {
                                         <button type="button" data-key="' . $question->ques_ID . '" class="btn btn-default wcmp-add-qna-reply">' . __('Add', 'dc-woocommerce-multi-vendor') . '</button>
                                     </div>';
                     }else{
-                        $status = '<span class="answered label label-info">'.__('Answered', 'dc-woocommerce-multi-vendor').'</span>';
-                        $ans_vote = maybe_unserialize($have_answer->ans_vote);
+                        $status = '<span class="answered label label-success">'.__('Answered', 'dc-woocommerce-multi-vendor').'</span>';
+                        $ans_vote = maybe_unserialize($have_answer[0]->ans_vote);
                         if(is_array($ans_vote)){
                             $vote = array_sum($ans_vote);
                             if($vote > 0){
@@ -2864,19 +2869,19 @@ class WCMp_Ajax {
                         }
                         if(apply_filters('wcmp_vendor_can_modify_qna_answer', false)){
                             $details .= '<div class="wcmp-question-details-modal modal-body">
-                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer->ans_ID . '">'.stripslashes($have_answer->ans_details).'</textarea>
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '">'.stripslashes($have_answer[0]->ans_details).'</textarea>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" data-key="' . $have_answer->ans_ID . '" class="btn btn-default wcmp-update-qna-answer">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</button>
+                                        <button type="button" data-key="' . $have_answer[0]->ans_ID . '" class="btn btn-default wcmp-update-qna-answer">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</button>
                                     </div>';
                         }else{
                             $details .= '<div class="wcmp-question-details-modal modal-body">
-                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer->ans_ID . '" disabled>'.stripslashes($have_answer->ans_details).'</textarea>
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '" disabled>'.stripslashes($have_answer[0]->ans_details).'</textarea>
                                     </div>';
                         }
                     }
                     $data[] = array(
-                        'qnas' => '<a data-toggle="modal" data-target="#question-details-modal-' . $question->ques_ID . '" data-ques="'.$question->ques_ID.'" class="question-details">'.stripslashes($question->ques_details).'</a>'
+                        'qnas' => '<a data-toggle="modal" data-target="#question-details-modal-' . $question->ques_ID . '" data-ques="'.$question->ques_ID.'" class="question-details">'.wp_trim_words(stripslashes($question->ques_details), 160, '...').'</a>'
                                 . '<!-- Modal -->
                                 <div class="modal fade" id="question-details-modal-' . $question->ques_ID . '" role="dialog">
                                     <div class="modal-dialog">

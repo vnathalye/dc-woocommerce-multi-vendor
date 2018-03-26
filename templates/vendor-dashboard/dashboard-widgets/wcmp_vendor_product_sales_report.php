@@ -29,7 +29,7 @@ if ($sold_product_list_sorted) {
             echo "<td><span>" . $value['name'] . " (" . __('This product does not exists', 'dc-woocommerce-multi-vendor') . ")</span></td>";
         } else {
             // echo "<td>" . $value['image'] . "</td>";
-            echo "<td class='product_sold_last_week_name_class'><span><a href='" . $value['permalink'] . "'>" . $value['image'] . " " . $value['name'] . "</a></span></td>";
+            echo "<td class='product_sold_last_week_name_class'><span><a href='" . $value['permalink'] . "'>" . $value['image'] . " " . wp_trim_words( $value['name'], 60, '...' ) . "</a></span></td>";
         }
         echo "<td><span>". wc_price($value['price']*$value['qty']) ."</span></td>";
         echo "<td><span>" . $value['qty'] . "</span></td>";

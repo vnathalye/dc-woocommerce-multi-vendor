@@ -179,7 +179,7 @@ function sibdebarToggle(){
 
 function toggleAllCheckBox(self, tableId) {
     if (jQuery(self).is(':checked')) {
-        jQuery('#' + tableId).find('tbody tr td input[type=checkbox]').prop('checked', true);
+        jQuery('#' + tableId).find('tbody tr td input[type=checkbox]').not(":disabled").prop('checked', true);
     } else {
         jQuery('#' + tableId).find('tbody tr td input[type=checkbox]').prop('checked', false);
     }

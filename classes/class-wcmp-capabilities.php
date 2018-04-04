@@ -36,7 +36,7 @@ class WCMp_Capabilities {
         //add_filter('woocommerce_product_data_tabs', array(&$this, 'wcmp_woocommerce_product_data_tabs'), 30);
         //add_action('admin_print_styles', array(&$this, 'output_capability_css'));
         add_action('woocommerce_get_item_data', array(&$this, 'add_sold_by_text_cart'), 30, 2);
-        add_action('woocommerce_add_order_item_meta', array(&$this, 'order_item_meta_2'), 20, 2);
+        add_action('woocommerce_new_order_item', array(&$this, 'order_item_meta_2'), 20, 3);
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'wcmp_after_add_to_cart_form'), 30);
         /* for single product */
         add_action('woocommerce_product_meta_start', array($this, 'wcmp_after_add_to_cart_form'), 25);
@@ -291,10 +291,10 @@ class WCMp_Capabilities {
      * @param item_id, cart_item
      * @return void 
      */
-    public function order_item_meta_2($item_id, $cart_item) {
+    public function order_item_meta_2($item_id, $item, $order_id) { 
         if ('Enable' === get_wcmp_vendor_settings('sold_by_catalog', 'general') && apply_filters('sold_by_cart_and_checkout', true)) {
             $general_cap = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'));
-            $vendor = get_wcmp_product_vendors($cart_item['product_id']);
+            $vendor = get_wcmp_product_vendors($item['product_id']);
             if ($vendor) {
                 wc_add_order_item_meta($item_id, $general_cap, $vendor->user_data->display_name);
                 wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);

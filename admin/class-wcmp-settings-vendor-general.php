@@ -132,8 +132,8 @@ class WCMp_Settings_Vendor_General {
         if (isset($input['wcmp_coupons_endpoint']) && !empty($input['wcmp_coupons_endpoint'])) {
             $new_input['wcmp_coupons_endpoint'] = sanitize_text_field($input['wcmp_coupons_endpoint']);
         }
-        if (isset($input['wcmp_show_products_qnas_endpoint']) && !empty($input['wcmp_show_products_qnas_endpoint'])) {
-            $new_input['wcmp_show_products_qnas_endpoint'] = sanitize_text_field($input['wcmp_show_products_qnas_endpoint']);
+        if (isset($input['wcmp_vendor_products_qnas_endpoint']) && !empty($input['wcmp_vendor_products_qnas_endpoint'])) {
+            $new_input['wcmp_vendor_products_qnas_endpoint'] = sanitize_text_field($input['wcmp_vendor_products_qnas_endpoint']);
         }
         if (!$hasError) {
             add_settings_error(

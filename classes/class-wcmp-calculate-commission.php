@@ -282,11 +282,8 @@ class WCMp_Calculate_Commission {
                     } else {
                         $product_id_for_value = $variation_id;
                     }
-                    $product_value = get_post_meta($product_id_for_value, '_price', true);
-                    if (empty($product_value)) {
-                        $product_value = 0;
-                    }
-                    $product_value_total += ($product_value * $item['qty']);
+
+                    $product_value_total += $item->get_total();
                     if ($amount > $product_value_total) {
                         $amount = $product_value_total;
                     }

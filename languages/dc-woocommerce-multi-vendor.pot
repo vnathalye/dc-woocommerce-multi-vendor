@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-26 11:11+0000\n"
+"POT-Creation-Date: 2018-04-04 13:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -25,56 +25,76 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1853
+#: includes/wcmp-core-functions.php:1857
 msgid "Insert Product Title before submit."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1854
+#: includes/wcmp-core-functions.php:1858
 msgid "Product SKU must be unique."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1855
+#: includes/wcmp-core-functions.php:1859
 msgid "Variation SKU must be unique."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1856
+#: includes/wcmp-core-functions.php:1860
 msgid "Product Successfully Saved."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1857
+#: includes/wcmp-core-functions.php:1861
 msgid "Product Successfully Published."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1870
+#: includes/wcmp-core-functions.php:1862
+msgid "Choose ..."
+msgstr ""
+
+#: includes/wcmp-core-functions.php:1863
+msgid "Search for a attribute ..."
+msgstr ""
+
+#: includes/wcmp-core-functions.php:1876
 msgid "Insert Coupon Title before submit."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1871
+#: includes/wcmp-core-functions.php:1877
 msgid "Coupon Successfully Saved."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1872
+#: includes/wcmp-core-functions.php:1878
 msgid "Coupon Successfully Published."
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1910
+#: includes/wcmp-core-functions.php:1879
+msgid "Any category"
+msgstr ""
+
+#: includes/wcmp-core-functions.php:1880
+msgid "No categories"
+msgstr ""
+
+#: includes/wcmp-core-functions.php:1881
+msgid "Search for a product ..."
+msgstr ""
+
+#: includes/wcmp-core-functions.php:1919
 msgid "Store Name"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1914
+#: includes/wcmp-core-functions.php:1923
 msgid "Store Image"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1918
+#: includes/wcmp-core-functions.php:1927
 msgid "Store Cover Image"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1922
+#: includes/wcmp-core-functions.php:1931
 #: templates/vendor-dashboard/vendor-billing.php:32
 msgid "Payment Method"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1926 classes/class-wcmp-report.php:97
+#: includes/wcmp-core-functions.php:1935 classes/class-wcmp-report.php:97
 #: classes/class-wcmp-vendor-hooks.php:445 classes/class-wcmp-ajax.php:2157
 #: classes/class-wcmp-post-commission.php:447 admin/class-wcmp-settings.php:261
 #: templates/vendor-dashboard/vendor-products-qna.php:37
@@ -86,31 +106,31 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:1932
+#: includes/wcmp-core-functions.php:1941
 msgid "Shipping Data"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2313 includes/wcmp-core-functions.php:2416
+#: includes/wcmp-core-functions.php:2322 includes/wcmp-core-functions.php:2425
 #: classes/class-wcmp-vendor-dashboard.php:922
 #: classes/class-wcmp-vendor-dashboard.php:1062
 msgid "Last 7 days"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2314 includes/wcmp-core-functions.php:2417
+#: includes/wcmp-core-functions.php:2323 includes/wcmp-core-functions.php:2426
 #: classes/class-wcmp-vendor-dashboard.php:923
 #: classes/class-wcmp-vendor-dashboard.php:1063
 msgid "Last 30 days"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2317
+#: includes/wcmp-core-functions.php:2326
 msgid " visitors"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2331
+#: includes/wcmp-core-functions.php:2340
 msgid "No Data"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2365 classes/class-wcmp-user.php:392
+#: includes/wcmp-core-functions.php:2374 classes/class-wcmp-user.php:392
 #: admin/class-wcmp-settings-vendor-registration.php:88
 #: admin/class-wcmp-settings-general-customer_support_details.php:40
 #: templates/vendor-dashboard/shop-front.php:168
@@ -118,31 +138,31 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2365
+#: includes/wcmp-core-functions.php:2374
 msgid "% Users"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2470 includes/wcmp-core-functions.php:2527
+#: includes/wcmp-core-functions.php:2479 includes/wcmp-core-functions.php:2536
 msgid "is up by "
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2471 includes/wcmp-core-functions.php:2528
+#: includes/wcmp-core-functions.php:2480 includes/wcmp-core-functions.php:2537
 msgid "is down by "
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2472 includes/wcmp-core-functions.php:2529
+#: includes/wcmp-core-functions.php:2481 includes/wcmp-core-functions.php:2538
 msgid "remains same"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2473 includes/wcmp-core-functions.php:2530
+#: includes/wcmp-core-functions.php:2482 includes/wcmp-core-functions.php:2539
 msgid "no amount"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2474 includes/wcmp-core-functions.php:2531
+#: includes/wcmp-core-functions.php:2483 includes/wcmp-core-functions.php:2540
 msgid "no prior data"
 msgstr ""
 
-#: includes/wcmp-core-functions.php:2478
+#: includes/wcmp-core-functions.php:2487
 #, php-format
 msgid "Last %d days"
 msgstr ""
@@ -168,15 +188,15 @@ msgstr ""
 msgid "Vendor Registration"
 msgstr ""
 
-#: includes/class-wcmp-install.php:316
+#: includes/class-wcmp-install.php:317
 msgid "Pending Vendor"
 msgstr ""
 
-#: includes/class-wcmp-install.php:322
+#: includes/class-wcmp-install.php:323
 msgid "Rejected Vendor"
 msgstr ""
 
-#: includes/class-wcmp-install.php:328 classes/class-wcmp-report.php:91
+#: includes/class-wcmp-install.php:329 classes/class-wcmp-report.php:91
 #: classes/class-wcmp-post-commission.php:448
 #: classes/class-wcmp-taxonomy.php:36 classes/class-wcmp-taxonomy.php:37
 #: classes/class-wcmp-product.php:593 classes/class-wcmp-product.php:749
@@ -275,35 +295,35 @@ msgstr ""
 msgid "Ask Now"
 msgstr ""
 
-#: templates/wcmp-customer-qna-form.php:51 classes/class-wcmp-ajax.php:2536
+#: templates/wcmp-customer-qna-form.php:51 classes/class-wcmp-ajax.php:2543
 msgid "You already gave a thumbs up."
 msgstr ""
 
 #: templates/wcmp-customer-qna-form.php:53
-#: templates/wcmp-customer-qna-form.php:62 classes/class-wcmp-ajax.php:2538
-#: classes/class-wcmp-ajax.php:2547
+#: templates/wcmp-customer-qna-form.php:62 classes/class-wcmp-ajax.php:2545
+#: classes/class-wcmp-ajax.php:2554
 msgid "Give a thumbs down"
 msgstr ""
 
 #: templates/wcmp-customer-qna-form.php:55
-#: templates/wcmp-customer-qna-form.php:60 classes/class-wcmp-ajax.php:2540
-#: classes/class-wcmp-ajax.php:2545
+#: templates/wcmp-customer-qna-form.php:60 classes/class-wcmp-ajax.php:2547
+#: classes/class-wcmp-ajax.php:2552
 msgid "Give a thumbs up"
 msgstr ""
 
-#: templates/wcmp-customer-qna-form.php:57 classes/class-wcmp-ajax.php:2542
+#: templates/wcmp-customer-qna-form.php:57 classes/class-wcmp-ajax.php:2549
 msgid "You already gave a thumbs down."
 msgstr ""
 
-#: templates/wcmp-customer-qna-form.php:72 classes/class-wcmp-ajax.php:2556
+#: templates/wcmp-customer-qna-form.php:72 classes/class-wcmp-ajax.php:2563
 msgid "Q: "
 msgstr ""
 
-#: templates/wcmp-customer-qna-form.php:75 classes/class-wcmp-ajax.php:2560
+#: templates/wcmp-customer-qna-form.php:75 classes/class-wcmp-ajax.php:2567
 msgid "A: "
 msgstr ""
 
-#: templates/wcmp-customer-qna-form.php:89 classes/class-wcmp-ajax.php:2572
+#: templates/wcmp-customer-qna-form.php:89 classes/class-wcmp-ajax.php:2579
 msgid "Load More"
 msgstr ""
 
@@ -1436,19 +1456,19 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2231 classes/class-wcmp-ajax.php:2391
+#: classes/class-wcmp-ajax.php:2231 classes/class-wcmp-ajax.php:2398
 #, php-format
 msgid "ID: %d"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2232 classes/class-wcmp-ajax.php:2392
-#: classes/class-wcmp-ajax.php:2875 admin/class-wcmp-settings-to_do_list.php:35
+#: classes/class-wcmp-ajax.php:2232 classes/class-wcmp-ajax.php:2399
+#: classes/class-wcmp-ajax.php:2882 admin/class-wcmp-settings-to_do_list.php:35
 #: admin/class-wcmp-settings-to_do_list.php:82
 #: admin/class-wcmp-settings-to_do_list.php:121
 msgid "Edit"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2233 classes/class-wcmp-ajax.php:2393
+#: classes/class-wcmp-ajax.php:2233 classes/class-wcmp-ajax.php:2400
 msgid "Delete Permanently"
 msgstr ""
 
@@ -1468,69 +1488,69 @@ msgstr ""
 msgid "Published"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2389
+#: classes/class-wcmp-ajax.php:2396
 msgid "Are you sure want to delete this coupon?"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2506
+#: classes/class-wcmp-ajax.php:2513
 msgid "Your question submitted successfully!"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2578
+#: classes/class-wcmp-ajax.php:2585
 msgid "You are not logged in."
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2606
+#: classes/class-wcmp-ajax.php:2613
 msgid "No more customer query found."
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2635
+#: classes/class-wcmp-ajax.php:2642
 msgid "Thanks for your vote!"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2651
+#: classes/class-wcmp-ajax.php:2658
 msgid "Answer updated successfully!"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2696
+#: classes/class-wcmp-ajax.php:2703
 msgid " ago"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2698 classes/class-wcmp-ajax.php:2760
+#: classes/class-wcmp-ajax.php:2705 classes/class-wcmp-ajax.php:2767
 msgid "Reply"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2707
+#: classes/class-wcmp-ajax.php:2714
 msgid "Reply to "
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2710
+#: classes/class-wcmp-ajax.php:2717
 msgid "Enter reply..."
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2713
+#: classes/class-wcmp-ajax.php:2720
 msgid "Comment"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2768
+#: classes/class-wcmp-ajax.php:2775
 msgid "Product - "
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2772 classes/class-wcmp-ajax.php:2854
+#: classes/class-wcmp-ajax.php:2779 classes/class-wcmp-ajax.php:2861
 msgid "Post your answer..."
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2775 classes/class-wcmp-ajax.php:2857
+#: classes/class-wcmp-ajax.php:2782 classes/class-wcmp-ajax.php:2864
 #: templates/vendor-dashboard/product-manager/add-product.php:598
 msgid "Add"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2852
+#: classes/class-wcmp-ajax.php:2859
 #: templates/vendor-dashboard/vendor-products-qna.php:56
 msgid "Unanswered"
 msgstr ""
 
-#: classes/class-wcmp-ajax.php:2860
+#: classes/class-wcmp-ajax.php:2867
 msgid "Answered"
 msgstr ""
 
@@ -1859,18 +1879,24 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: classes/class-wcmp-post-transaction.php:254
-msgid "Commission ID"
-msgstr ""
-
+#: classes/class-wcmp-post-transaction.php:242
 #: classes/class-wcmp-post-transaction.php:326
 #: templates/vendor-dashboard/vendor-orders.php:109
 msgid "Completed"
 msgstr ""
 
+#: classes/class-wcmp-post-transaction.php:244
 #: classes/class-wcmp-post-transaction.php:328
 #: templates/vendor-dashboard/vendor-orders.php:108
 msgid "Processing"
+msgstr ""
+
+#: classes/class-wcmp-post-transaction.php:246
+msgid "Cancelled"
+msgstr ""
+
+#: classes/class-wcmp-post-transaction.php:254
+msgid "Commission ID"
 msgstr ""
 
 #: classes/class-wcmp-user.php:239
@@ -3514,6 +3540,10 @@ msgid ""
 "withdrawal."
 msgstr ""
 
+#: admin/class-wcmp-settings-payment.php:62
+msgid "in days"
+msgstr ""
+
 #: admin/class-wcmp-settings-payment.php:65
 msgid "How/When to Pay "
 msgstr ""
@@ -3755,7 +3785,7 @@ msgstr ""
 
 #: templates/vendor-dashboard/vendor-orders.php:157
 #: templates/vendor-dashboard/vendor-transactions.php:118
-#: templates/vendor-dashboard/vendor-withdrawal.php:104
+#: templates/vendor-dashboard/vendor-withdrawal.php:108
 #: templates/vendor-dashboard/vendor-products-qna.php:106
 #: templates/vendor-dashboard/product-manager/products.php:131
 #: templates/vendor-dashboard/dashboard-widgets/wcmp_vendor_products_cust_qna.php:57
@@ -5071,7 +5101,9 @@ msgid ""
 msgstr ""
 
 #: templates/vendor-dashboard/product-manager/add-product.php:21
-msgid "Product is already published and you are not allowed to edit it now"
+msgid ""
+"Product has been sent to the admin for review. Once done, the product will "
+"be published."
 msgstr ""
 
 #: templates/vendor-dashboard/product-manager/add-product.php:104
@@ -5679,6 +5711,10 @@ msgid "Email restrictions"
 msgstr ""
 
 #: templates/vendor-dashboard/coupon-manager/add-coupons.php:187
+msgid "No restictions"
+msgstr ""
+
+#: templates/vendor-dashboard/coupon-manager/add-coupons.php:187
 msgid ""
 "List of allowed emails to check against the customer's billing email when an "
 "order is placed. Separate email addresses with commas."
@@ -5693,11 +5729,20 @@ msgid "Usage limit per coupon"
 msgstr ""
 
 #: templates/vendor-dashboard/coupon-manager/add-coupons.php:194
+#: templates/vendor-dashboard/coupon-manager/add-coupons.php:196
+msgid "Unlimited usage"
+msgstr ""
+
+#: templates/vendor-dashboard/coupon-manager/add-coupons.php:194
 msgid "How many times this coupon can be used before it is void."
 msgstr ""
 
 #: templates/vendor-dashboard/coupon-manager/add-coupons.php:195
 msgid "Limit usage to X items"
+msgstr ""
+
+#: templates/vendor-dashboard/coupon-manager/add-coupons.php:195
+msgid "Apply to all qualifying items in cart"
 msgstr ""
 
 #: templates/vendor-dashboard/coupon-manager/add-coupons.php:195

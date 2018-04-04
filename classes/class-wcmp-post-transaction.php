@@ -239,11 +239,11 @@ class WCMp_Transaction {
         }
         $status = get_post_status($transaction_id);
         if($status == 'wcmp_completed'){
-            $transaction_status = 'Completed';
+            $transaction_status = __('Completed', 'dc-woocommerce-multi-vendor');
         } else if($status == 'wcmp_processing'){
-            $transaction_status = 'Processing';
+            $transaction_status = __('Processing', 'dc-woocommerce-multi-vendor');
         }else{
-            $transaction_status = 'Cancelled';
+            $transaction_status = __('Cancelled', 'dc-woocommerce-multi-vendor');
         }
         
         $amount = (float) get_post_meta($transaction_id, 'amount', true) - (float) get_post_meta($transaction_id, 'transfer_charge', true) - (float) get_post_meta($transaction_id, 'gateway_charge', true);

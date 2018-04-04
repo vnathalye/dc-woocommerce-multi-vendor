@@ -1472,15 +1472,15 @@ if (!function_exists('do_wcmp_data_migrate')) {
                     update_wcmp_vendor_settings('sold_by_catalog', 'Enable', 'general');
                 }
             }
-            if (version_compare($previous_plugin_version, '3.0.1', '<=')){
+            if (version_compare($previous_plugin_version, '3.0.1', '<=')) {
                 $vendors = get_wcmp_vendors();
-                if($vendors){
-                    foreach ($vendors as $vendor){
+                if ($vendors) {
+                    foreach ($vendors as $vendor) {
                         delete_user_meta($vendor->id, 'timezone_string');
                     }
                 }
             }
-            if (version_compare($previous_plugin_version, '3.0.3', '<=')){
+            if (version_compare($previous_plugin_version, '3.0.3', '<=')) {
                 $collate = '';
                 if ($wpdb->has_cap('collation')) {
                     $collate = $wpdb->get_charset_collate();
@@ -1496,6 +1496,10 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 CONSTRAINT ques_id UNIQUE (ques_ID)
 		) $collate;";
                 $wpdb->query($create_table_query);
+            }
+            if (version_compare($previous_plugin_version, '3.0.4', '<=')) {
+                $max_index_length = 191;
+                $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_visitors_stats` DROP INDEX `user_cookie`, ADD INDEX `user_cookie`(user_cookie({$max_index_length}))");
             }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
@@ -1702,13 +1706,13 @@ if (!function_exists('wcmp_count_commission')) {
             if ($commission_status) {
                 switch ($commission_status) {
                     case 'paid':
-                        $commission_count->paid += count($commission_count->paid);
+                        $commission_count->paid += 1;
                         break;
                     case 'unpaid':
-                        $commission_count->unpaid += count($commission_count->unpaid);
+                        $commission_count->unpaid += 1;
                         break;
                     case 'reverse':
-                        $commission_count->reverse += count($commission_count->reverse);
+                        $commission_count->reverse += 1;
                         break;
                 }
             }
@@ -1730,7 +1734,7 @@ if (!function_exists('wcmp_process_order')) {
      */
     function wcmp_process_order($order_id, $order = null) {
         global $wpdb;
-        if(!$order)
+        if (!$order)
             $order = wc_get_order($order_id);
         if (get_post_meta($order_id, '_wcmp_order_processed', true) && !$order) {
             return;
@@ -1855,6 +1859,8 @@ if (!function_exists('get_frontend_product_manager_messages')) {
             'variation_sku_unique' => __('Variation SKU must be unique.', 'dc-woocommerce-multi-vendor'),
             'product_saved' => __('Product Successfully Saved.', 'dc-woocommerce-multi-vendor'),
             'product_published' => __('Product Successfully Published.', 'dc-woocommerce-multi-vendor'),
+            'choose' => __('Choose ...', 'dc-woocommerce-multi-vendor'),
+            'search_attribute' => __('Search for a attribute ...', 'dc-woocommerce-multi-vendor'),
         );
 
         return $messages;
@@ -1870,6 +1876,9 @@ if (!function_exists('get_frontend_coupon_manager_messages')) {
             'no_title' => __('Insert Coupon Title before submit.', 'dc-woocommerce-multi-vendor'),
             'coupon_saved' => __('Coupon Successfully Saved.', 'dc-woocommerce-multi-vendor'),
             'coupon_published' => __('Coupon Successfully Published.', 'dc-woocommerce-multi-vendor'),
+            'any_category' => __('Any category', 'dc-woocommerce-multi-vendor'),
+            'no_category' => __('No categories', 'dc-woocommerce-multi-vendor'),
+            'search_product' => __('Search for a product ...', 'dc-woocommerce-multi-vendor'),
         );
 
         return $messages;
@@ -2538,6 +2547,7 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
 }
 
 if (!function_exists('wcmp_date')) {
+
     /**
      * WCMp date formatter function
      * @param DateTime $date
@@ -2546,24 +2556,25 @@ if (!function_exists('wcmp_date')) {
     function wcmp_date($date) {
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone('UTC'));
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(wcmp_timezone_string()));
-        return $date->format(get_option( 'date_format' ));
+        return $date->format(get_option('date_format'));
     }
 
 }
 
 
 if (!function_exists('wcmp_timezone_string')) {
+
     /**
      * WCMp timezone string
      * @return Timezone string
      */
     function wcmp_timezone_string() {
         // If site timezone string exists, return it.
-        if ($timezone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option( 'timezone_string' )) {
+        if ($timezone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option('timezone_string')) {
             return $timezone;
         }
         // Get UTC offset, if it isn't set then return UTC.
-        if (0 === ( $utc_offset = intval(get_user_meta(get_current_user_id(), 'gmt_offset', true) ? get_user_meta(get_current_user_id(), 'gmt_offset', true): get_option('gmt_offset', 0)) )) {
+        if (0 === ( $utc_offset = intval(get_user_meta(get_current_user_id(), 'gmt_offset', true) ? get_user_meta(get_current_user_id(), 'gmt_offset', true) : get_option('gmt_offset', 0)) )) {
             return 'UTC';
         }
 
@@ -2587,6 +2598,44 @@ if (!function_exists('wcmp_timezone_string')) {
 
         // Fallback to wc_timezone_string.
         return 'UTC';
+    }
+
+}
+
+if (!function_exists('is_commission_requested_for_withdrawals')) {
+
+    /**
+     * WCMp commission requested for withdrawals
+     * @return True/false bool
+     */
+    function is_commission_requested_for_withdrawals($commission_id) {
+        if(!$commission_id)
+            return false;
+        $args = array(
+            'post_type' => 'wcmp_transaction',
+            'posts_per_page' => -1,
+            'post_status' => 'wcmp_processing',
+            'meta_query' => array(
+                'relation' => 'OR',
+                array(
+                    'key' => 'commission_detail',
+                    'value' => sprintf(':"%s";', $commission_id),
+                    'compare' => 'LIKE'
+                ),
+                array(
+                    'key' => 'commission_detail',
+                    'value' => sprintf(';i:%d;', $commission_id),
+                    'compare' => 'LIKE'
+                )
+            )
+        );
+        $transactions = new WP_Query($args);
+        $have_transactions = $transactions->get_posts();
+        if($have_transactions){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

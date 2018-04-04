@@ -56,19 +56,19 @@ jQuery(document).ready(function ($) {
     });
 
     $("#product_cats").select2({
-        placeholder: "Choose ..."
+        placeholder: product_manager_messages.choose
     });
 
     $(".product_taxonomies").select2({
-        placeholder: "Choose ..."
+        placeholder: product_manager_messages.choose
     });
 
     $("#upsell_ids").select2({
-        placeholder: "Choose ..."
+        placeholder: product_manager_messages.choose
     });
 
     $("#crosssell_ids").select2({
-        placeholder: "Choose ..."
+        placeholder: product_manager_messages.choose
     });
 
     /*if( $("#children").length > 0 ) {
@@ -495,7 +495,7 @@ jQuery(document).ready(function ($) {
                          });*/
 
                         $('#attributes').find('.multi_input_block:last').find('select').select2({
-                            placeholder: "Search for a attribute ..."
+                            placeholder: product_manager_messages.search_attribute
                         });
                         $('#attributes').find('.multi_input_block:last').find('input[type=checkbox]').each(function(){
                             $(this).wrap('<span class="checkbox-holder"></span>');
@@ -523,7 +523,7 @@ jQuery(document).ready(function ($) {
         addMultiInputProperty($('#attributes'));
         resetMultiInputIndex($('#attributes'));
         $('#attributes').find('.multi_input_block').find('select').select2({
-            placeholder: "Search for a attribute ..."
+            placeholder: product_manager_messages.search_attribute
         });
     }
 

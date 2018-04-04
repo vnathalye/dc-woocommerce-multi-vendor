@@ -184,6 +184,7 @@ class WCMp_Install {
         if ($wpdb->has_cap('collation')) {
             $collate = $wpdb->get_charset_collate();
         }
+        $max_index_length = 191;
         $create_tables_query = array();
         $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_vendor_orders` (
 		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -238,8 +239,8 @@ class WCMp_Install {
                 CONSTRAINT visitor UNIQUE (vendor_id, session_id),
                 KEY vendor_id (vendor_id),
                 KEY user_id (user_id),
-                KEY user_cookie (user_cookie),
-                KEY session_id (session_id),
+                KEY user_cookie (user_cookie($max_index_length)),
+                KEY session_id (session_id($max_index_length)),
                 KEY ip (ip)
 		) $collate;";
         

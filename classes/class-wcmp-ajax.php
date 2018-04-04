@@ -2280,7 +2280,7 @@ class WCMp_Ajax {
                     $row ['categories'] = '<td>' . $product_cats . '</td>';
                     $row ['date'] = '<td>' . $date . '</td>';
                     $row ['status'] = '<td>' . $status . '</td>';
-                    $data[] = $row;
+                    $data[] = apply_filters( 'wcmp_vendor_dashboard_product_list_table_row_data', $row, $product );
                 }
             }
 
@@ -2296,6 +2296,7 @@ class WCMp_Ajax {
     }
 
     public function wcmp_vendor_unpaid_order_vendor_withdrawal_list() {
+        global $WCMp;
         if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
             $vendor = get_wcmp_vendor(get_current_vendor_id());
             $requestData = $_REQUEST;
@@ -2330,8 +2331,14 @@ class WCMp_Ajax {
                     if ($diff < $commission_threshold_time) {
                         continue;
                     }
+                    
+                    if(is_commission_requested_for_withdrawals($commission_id)){
+                        $disabled_reqested_withdrawals = 'disabled';
+                    }else{
+                        $disabled_reqested_withdrawals = '';
+                    }
                     $row = array();
-                    $row ['select_withdrawal'] = '<input name="commissions[]" value="' . $commission_id . '" class="select_withdrawal" type="checkbox" >';
+                    $row ['select_withdrawal'] = '<input name="commissions[]" value="' . $commission_id . '" class="select_withdrawal" type="checkbox" '.$disabled_reqested_withdrawals.'>';
                     $row ['order_id'] = $order->get_id();
                     $row ['commission_amount'] = wc_price($vendor_share['commission_amount']);
                     $row ['shipping_amount'] = wc_price($vendor_share['shipping_amount']);

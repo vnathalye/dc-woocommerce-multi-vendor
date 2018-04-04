@@ -128,7 +128,7 @@ foreach ($terms as $term) {
                     data.product_cat = $('#product_cat').val();
                 },
                 error: function(xhr, status, error) {
-                    $("#product_table tbody").append('<tr class="odd"><td valign="top" colspan="7" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');
+                    $("#product_table tbody").append('<tr class="odd"><td valign="top" colspan="<?php echo count($products_table_headers); ?>" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');
                     $("#product_table_processing").css("display","none");
                 }
             },

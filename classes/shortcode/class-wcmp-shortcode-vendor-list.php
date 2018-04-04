@@ -71,6 +71,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
          */
         public static function output($atts) {
             global $WCMp;
+            wp_enqueue_script('frontend_js');
             extract(shortcode_atts(array('orderby' => 'registered', 'order' => 'ASC'), $atts, 'wcmp_vendorslist'));
             $product_category = $sort_type = '';
             if (isset($_REQUEST['vendor_sort_type'])) {

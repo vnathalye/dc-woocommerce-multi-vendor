@@ -41,19 +41,19 @@ jQuery(document).ready(function($) {
   });
   
   $("#product_ids").select2({
-		placeholder: "Search for a product ..."
+		placeholder: coupon_manager_messages.search_product
 	});
 	
 	$("#exclude_product_ids").select2({
-		placeholder: "Search for a product ..."
+		placeholder: coupon_manager_messages.search_product
 	});
   
   $("#product_categories").select2({
-		placeholder: "Any category"
+		placeholder: coupon_manager_messages.any_category
 	});
 	
 	$("#exclude_product_categories").select2({
-		placeholder: "No categories"
+		placeholder: coupon_manager_messages.no_category
 	});
   
   function coupon_manager_form_validate() {

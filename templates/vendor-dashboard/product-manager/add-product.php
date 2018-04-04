@@ -18,7 +18,7 @@ if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_u
     ?>
     <div class="col-md-12">
         <div class="panel panel-default">
-            <?php _e('Product is already published and you are not allowed to edit it now', 'dc-woocommerce-multi-vendor'); ?>
+            <?php _e('Product has been sent to the admin for review. Once done, the product will be published.', 'dc-woocommerce-multi-vendor'); ?>
         </div>
     </div>
     <?php

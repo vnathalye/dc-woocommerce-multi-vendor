@@ -164,7 +164,7 @@ class WCMp_Ajax {
                     } else if ($key == 'mark_ship') {
                         $action_html .= '<i title="' . $mark_ship_title . '" class="wcmp-font ' . $action['icon'] . '"></i> ';
                     } else {
-                        $action_html .= '<a href="' . $action['url'] . '"><i class="wcmp-font ' . $action['icon'] . '"></i></a> ';
+                        $action_html .= '<a href="' . $action['url'] . '" title="' . $action['title'] . '"><i class="wcmp-font ' . $action['icon'] . '"></i></a> ';
                     }
                 }
                 $data[] = array(
@@ -172,8 +172,8 @@ class WCMp_Ajax {
                     'order_id' => $order->get_id(),
                     'order_date' => wcmp_date($order->get_date_created()),
                     'vendor_earning' => wc_price(get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()))['total']),
-                    'order_status' => ucfirst($order->get_status()),
-                    'action' => $action_html
+                    'order_status' => esc_html( wc_get_order_status_name( $order->get_status() ) ),//ucfirst($order->get_status()),
+                    'action' => apply_filters('wcmp_vendor_orders_row_action_html', $action_html, $actions)
                 );
             }
         }
@@ -1968,7 +1968,8 @@ class WCMp_Ajax {
                     $vendor_term = get_user_meta($current_user_id, '_vendor_term_id', true);
                     $term = get_term($vendor_term, $WCMp->taxonomy->taxonomy_name);
                     wp_delete_object_term_relationships($new_product_id, $WCMp->taxonomy->taxonomy_name);
-                    wp_set_post_terms($new_product_id, $term->name, $WCMp->taxonomy->taxonomy_name, true);
+                    //wp_set_post_terms($new_product_id, $term->name, $WCMp->taxonomy->taxonomy_name, true);
+                    wp_set_object_terms($new_product_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
                 }
 
                 // Notify Admin on New Product Creation
@@ -2266,11 +2267,18 @@ class WCMp_Ajax {
                     if ($termlist) {
                         $product_cats = implode(' | ', $termlist);
                     }
-                    $status = ucfirst($product->get_status());
                     $date = '&ndash;';
                     if ($product->get_status() == 'publish') {
                         $status = __('Published', 'dc-woocommerce-multi-vendor');
                         $date = wcmp_date($product->get_date_created('edit'));
+                    }elseif($product->get_status() == 'pending'){
+                        $status = __('Pending', 'dc-woocommerce-multi-vendor');
+                    }elseif($product->get_status() == 'draft'){
+                        $status = __('Draft', 'dc-woocommerce-multi-vendor');
+                    }elseif($product->get_status() == 'private'){
+                        $status = __('Private', 'dc-woocommerce-multi-vendor');
+                    }else{
+                        $status = ucfirst($product->get_status());
                     }
 
                     $row ['image'] = '<td>' . $product->get_image(apply_filters('wcmp_vendor_product_list_image_size', array(40, 40))) . '</td>';

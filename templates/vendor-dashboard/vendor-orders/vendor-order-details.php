@@ -39,7 +39,7 @@ $subtotal = 0;
     <div class="icon-header">
         <span><i class="wcmp-font ico-order-details-icon"></i></span>
         <h2><?php _e('Order #', 'dc-woocommerce-multi-vendor'); ?><?php echo $order->get_id(); ?></h2>
-        <h3><?php _e('was placed on', 'dc-woocommerce-multi-vendor'); ?> <?php echo wcmp_date($order->get_date_created()); ?> <?php _e('and is currently', 'dc-woocommerce-multi-vendor'); ?> <span class="<?php echo $order->get_status(); ?>" style="float:none;"><?php echo ucfirst($order->get_status()); ?>.</span></h3>
+        <h3><?php _e('was placed on', 'dc-woocommerce-multi-vendor'); ?> <?php echo wcmp_date($order->get_date_created()); ?> <?php _e('and is currently', 'dc-woocommerce-multi-vendor'); ?> <span class="<?php echo $order->get_status(); ?>" style="float:none;"><?php echo esc_html( wc_get_order_status_name( $order->get_status() ) ); ?>.</span></h3>
     </div>
     <div class="row">
         <div class="col-md-8">
@@ -55,15 +55,10 @@ $subtotal = 0;
                         </thead>
                         <tbody>
                             <?php foreach ($vendor_items as $item): 
-                                if($item->variation_id != 0){
-                                    $product = wc_get_product($item->variation_id);
-                                }else{
-                                    $product = wc_get_product($item->product_id);
-                                }
-                                $subtotal += $product->get_price(''); ?>
+                                $item_obj = $order->get_item($item->order_item_id); ?>
                                 <tr>
-                                    <td><?php echo $product->get_title(); ?> × <?php echo $item->quantity; ?></td>
-                                    <td><?php echo wc_price($product->get_price() * $item->quantity); ?></td>
+                                    <td><?php echo esc_html( $item_obj->get_name() ); ?> <small class="times">&times;</small> <?php echo esc_html( $item_obj->get_quantity() ); ?></td>
+                                    <td><?php echo wc_price( $item_obj->get_total(), array( 'currency' => $order->get_currency() ) ); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

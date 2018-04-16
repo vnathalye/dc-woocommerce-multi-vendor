@@ -1081,8 +1081,7 @@ Class WCMp_Admin_Dashboard {
         }
         $args = apply_filters('wcmp_vendor_pending_shipping_args', array(
             'start_date' => $last_seven_day_date,
-            'end_date' => $today,
-            'is_trashed' => ''
+            'end_date' => $today
         ));
         $pending_shippings = $vendor->get_vendor_orders_reports_of('pending_shipping', $args);
         $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(

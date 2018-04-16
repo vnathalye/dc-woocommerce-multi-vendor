@@ -53,7 +53,7 @@ class WCMp_Vendor {
                 'author__not_in' => array($this->id)
             );
             $args_default = wp_parse_args($args, $args_default);
-            $args = apply_filters('wcmp_vendor_review_rating_args_to_fetch', $args_default);
+            $args = apply_filters('wcmp_vendor_review_rating_args_to_fetch', $args_default, $this);
             return get_comments($args);
         }
     }
@@ -70,8 +70,9 @@ class WCMp_Vendor {
                 'count' => true,
                 'meta_key' => 'vendor_rating_id',
                 'meta_value' => $vendor_id,
+                'author__not_in' => array($this->id)
             );
-            $args = apply_filters('wcmp_vendor_review_rating_args_to_fetch', $args_default);
+            $args = apply_filters('wcmp_vendor_review_rating_args_to_fetch', $args_default, $this);
             return get_comments($args);
         }
     }
@@ -821,16 +822,14 @@ class WCMp_Vendor {
                 $defaults = array(
                     'vendor_id'   => $this->id,
                     'end_date'    => $today,
-                    'start_date'  => $last_seven_day_date,
-                    'is_trashed'  => ''
+                    'start_date'  => $last_seven_day_date
                 );
                 $args = apply_filters('get_vendor_orders_reports_of_pending_shipping_query_args', wp_parse_args( $args, $defaults ));
                 $pending_shippings = $wpdb->get_results( 
-                    $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}wcmp_vendor_orders WHERE vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed`=%s AND `shipping_status` != 1 group by order_id order by order_id", 
+                    $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id > 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed` != 1 AND `shipping_status` != 1 group by order_id order by order_id", 
                         $args['vendor_id'],
                         $args['start_date'],
-                        $args['end_date'],
-                        $args['is_trashed']
+                        $args['end_date']
                     ) 
                 );
                 $reports = $pending_shippings;

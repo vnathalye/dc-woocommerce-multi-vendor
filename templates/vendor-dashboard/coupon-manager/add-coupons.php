@@ -104,7 +104,7 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
                     "description" => array('label' => __('Description', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele', 'label_class' => 'pro_title', 'value' => $description),
                     "discount_type" => array('label' => __('Discount Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'options' => apply_filters( "wcmp_vendor_frontend_add_coupon_types", array('fixed_product' => __('Fixed Product Discount', 'dc-woocommerce-multi-vendor'))), 'class' => 'regular-select pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $discount_type),
                     "coupon_amount" => array('label' => __('Coupon Amount', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $coupon_amount),
-                    "expiry_date" => array('label' => __('Coupon expiry date', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => 'YYYY-MM-DD', 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $expiry_date),
+                    "expiry_date" => array('label' => __('Coupon expiry date', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => __('YYYY-MM-DD', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $expiry_date),
                     "coupon_id" => array('type' => 'hidden', 'value' => $coupon_id)
                 ));
                 ?>
@@ -112,14 +112,14 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
             <h3 class="pro_ele_head"><?php _e('Usage Restriction', 'dc-woocommerce-multi-vendor'); ?></h3>
             <div class="pro_ele_block">
                 <?php
-                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("minimum_amount" => array('label' => __('Minimum spend', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => 'No Minimum', 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $minimum_amount),
-                    "maximum_amount" => array('label' => __('Maximum spend', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => 'No Maximum', 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $maximum_amount),
+                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("minimum_amount" => array('label' => __('Minimum spend', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => __('No Minimum', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $minimum_amount),
+                    "maximum_amount" => array('label' => __('Maximum spend', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'placeholder' => __('No Maximum', 'dc-woocommerce-multi-vendor'), 'class' => 'regular-text pro_ele', 'label_class' => 'pro_ele pro_title', 'value' => $maximum_amount),
                     "individual_use" => array('label' => __('Individual use only', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'class' => 'regular-checkbox pro_ele', 'value' => 'enable', 'label_class' => 'pro_title checkbox_title', 'hints' => __('Check this box if the coupon cannot be used in conjunction with other coupons.', 'dc-woocommerce-multi-vendor'), 'dfvalue' => $individual_use),
                     "exclude_sale_items" => array('label' => __('Exclude sale items', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'class' => 'regular-checkbox pro_ele', 'value' => 'enable', 'label_class' => 'pro_title checkbox_title', 'hints' => __('Check this box if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are no sale items in the cart.', 'dc-woocommerce-multi-vendor'), 'dfvalue' => $exclude_sale_items)
                 ));
                 ?>
                 <div class="form-group">
-                    <label class="control-label col-sm-3" for="product_ids">Products</label>
+                    <label class="control-label col-sm-3" for="product_ids"><?php _e('Products', 'dc-woocommerce-multi-vendor'); ?></label>
                     <div class="col-md-6 col-sm-9">
                         <select id="product_ids" name="product_ids[]" class="form-control regular-select pro_ele" multiple="multiple" style="width: 100%;">
                             <?php
@@ -134,7 +134,7 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-sm-3" for="exclude_product_ids">Exclude products</label>
+                    <label class="control-label col-sm-3" for="exclude_product_ids"><?php _e('Exclude products', 'dc-woocommerce-multi-vendor'); ?></label>
                     <div class="col-md-6 col-sm-9">
                         <select id="exclude_product_ids" name="exclude_product_ids[]" class="form-control regular-select pro_ele" multiple="multiple" style="width: 100%;">
                             <?php
@@ -150,7 +150,7 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
                 </div>
                 <div class="form-group">
 <!--                <p class="product_categories pro_ele pro_title"><strong>Product categories</strong><span class="img_tip" data-desc="A product must be in this category for the coupon to remain valid or, for 'Product Discounts', products in these categories will be discounted."></span></p>-->
-                    <label class="control-label col-sm-3" for="product_categories">Product categories</label>
+                    <label class="control-label col-sm-3" for="product_categories"><?php _e('Product categories', 'dc-woocommerce-multi-vendor'); ?></label>
                     <div class="col-md-6 col-sm-9">
                         <select id="product_categories" name="product_categories[]" class="form-control regular-select pro_ele" multiple="multiple" style="width: 100%;">
                             <?php
@@ -167,7 +167,7 @@ $categories = get_terms('product_cat', 'orderby=name&hide_empty=0');
                 </div>
                 <div class="form-group">
 <!--                <p class="exclude_product_categories pro_ele pro_title"><strong>Exclude categories</strong><span class="img_tip" data-desc="Product must not be in this category for the coupon to remain valid or, for 'Product Discounts', products in these categories will not be discounted."></span></p>-->
-                    <label class="control-label col-sm-3" for="exclude_product_categories">Exclude categories</label>    
+                    <label class="control-label col-sm-3" for="exclude_product_categories"><?php _e('Exclude categories', 'dc-woocommerce-multi-vendor'); ?></label>    
                     <div class="col-md-6 col-sm-9">
                         <select id="exclude_product_categories" name="exclude_product_categories[]" class="form-control regular-select pro_ele" multiple="multiple" style="width: 100%;">
                             <?php

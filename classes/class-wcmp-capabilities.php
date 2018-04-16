@@ -162,13 +162,9 @@ class WCMp_Capabilities {
     public function wcmp_wc_product_sku_enabled($state) {
         $user = wp_get_current_user();
         if (is_user_wcmp_vendor($user)) {
-            $vendor_can = $this->vendor_can('sku');
-            if ($vendor_can) {
-                return true;
-            } else
-                return false;
+            return apply_filters( 'wcmp_vendor_product_sku_enabled', true , $user->ID );
         }
-        return true;
+        return $state;
     }
 
     /**

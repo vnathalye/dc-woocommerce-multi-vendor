@@ -225,7 +225,7 @@ if (!class_exists('WCMp_Frontend_WP_Fields')) {
          */
         public function select_input($field) {
             $field['class'] = isset($field['class']) ? $field['class'] : 'select short';
-            $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['value'] = isset($field['value']) ? $field['value'] : null; // default empty value always set to 0 option value
             $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
 
             // Custom attribute handling

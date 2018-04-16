@@ -1497,7 +1497,7 @@ if (!function_exists('do_wcmp_data_migrate')) {
 		) $collate;";
                 $wpdb->query($create_table_query);
             }
-            if (version_compare($previous_plugin_version, '3.0.4', '<=')) {
+            if (version_compare($previous_plugin_version, '3.0.5', '<=')) {
                 $max_index_length = 191;
                 $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_visitors_stats` DROP INDEX `user_cookie`, ADD INDEX `user_cookie`(user_cookie({$max_index_length}))");
             }
@@ -2276,7 +2276,7 @@ if (!function_exists('get_wcmp_product_policies')) {
             $cancellation_policy = get_wcmp_vendor_settings('cancellation_policy');
             if (apply_filters('wcmp_vendor_can_overwrite_policies', true) && $vendor = get_wcmp_product_vendors($product->get_id())) {
                 $shipping_policy = get_user_meta($vendor->id, '_vendor_shipping_policy', true) ? get_user_meta($vendor->id, '_vendor_shipping_policy', true) : $shipping_policy;
-                $refund_policy = get_user_meta($vendor->id, '_wcmp_refund_policy', true) ? get_user_meta($vendor->id, '_wcmp_refund_policy', true) : $refund_policy;
+                $refund_policy = get_user_meta($vendor->id, '_vendor_refund_policy', true) ? get_user_meta($vendor->id, '_vendor_refund_policy', true) : $refund_policy;
                 $cancellation_policy = get_user_meta($vendor->id, '_vendor_cancellation_policy', true) ? get_user_meta($vendor->id, '_vendor_cancellation_policy', true) : $cancellation_policy;
             }
             if (get_post_meta($product->get_id(), '_wcmp_shipping_policy', true)) {

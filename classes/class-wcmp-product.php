@@ -564,7 +564,8 @@ class WCMp_Product {
                     $vendor_term = $_REQUEST['choose_vendor_bulk'];
 
                     $term = get_term($vendor_term, $WCMp->taxonomy->taxonomy_name);
-                    wp_set_post_terms($product_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    //wp_set_post_terms($product_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    wp_set_object_terms($product_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
 
                     $vendor = get_wcmp_vendor_by_term($vendor_term);
                     if (!wp_is_post_revision($product_id)) {
@@ -945,7 +946,9 @@ class WCMp_Product {
                 $term = get_term($_POST['choose_vendor'], $WCMp->taxonomy->taxonomy_name);
                 if ($term) {
                     wp_delete_object_term_relationships($post_id, $WCMp->taxonomy->taxonomy_name);
-                    wp_set_post_terms($post_id, $term->slug, $WCMp->taxonomy->taxonomy_name, true);
+                    //wp_set_post_terms($post_id, $term->slug, $WCMp->taxonomy->taxonomy_name, true);
+                    wp_set_object_terms($post_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
+                    
                 }
 
                 $vendor = get_wcmp_vendor_by_term($_POST['choose_vendor']);
@@ -963,7 +966,8 @@ class WCMp_Product {
                     $vendor = get_wcmp_vendor(get_current_user_id());
                     wp_delete_object_term_relationships($post_id, $WCMp->taxonomy->taxonomy_name);
                     $term = get_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
-                    wp_set_post_terms($post_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    //wp_set_post_terms($post_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    wp_set_object_terms($post_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
                     $vendor = get_wcmp_vendor_by_term($vendor->term_id);
                     if (!wp_is_post_revision($post_id)) {
                         // unhook this function so it doesn't loop infinitely

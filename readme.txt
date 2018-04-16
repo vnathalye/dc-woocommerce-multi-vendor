@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.9.4
 Requires PHP: 5.6
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,13 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.5 - 2018-04-09 =
+* Enhancement: - Single order details section.
+* Tweak: - Commission calculation logic.
+* Fix - Duplicate withdrawal request.
+* Fix - Email issue.
+* Updated - Language file.
 
 = 3.0.4 - 2018-03-21 =
 * Enhancement: - Product questions and answers section.
@@ -351,5 +358,5 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 3.0.4 =
+= 3.0.5 =
 WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

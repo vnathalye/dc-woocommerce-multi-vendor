@@ -24,8 +24,8 @@ class WCMp_Vendor_Coupon_Shortcode {
         global $WCMp;
         $WCMp->nocache();
         $coupon_arr = array();
-        if (!defined('MNDASHBAOARD')) {
-            define('MNDASHBAOARD', true);
+        if (!defined('WCMP_DASHBAOARD')) {
+            define('WCMP_DASHBAOARD', true);
         }
         if (is_user_logged_in()) {
             $user = wp_get_current_user();

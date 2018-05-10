@@ -51,7 +51,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_delete',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {			
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {			
 			if(	res == 1 ) {
                                 window.location.reload();
 				element_to_be_deleted1.hide();
@@ -63,7 +63,7 @@ jQuery(document).ready(function($){
 					action : 'wcmp_announcements_refresh_tab_data',
 					tabname : tab_to_refrash					
 				}
-				$.post(woocommerce_params.ajax_url, data, function(res) {
+				$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {
 					$("#"+tab_id+' .msg_container').html(res);
 					jQuery(function($) {
 						$( "#accordion-1" ).accordion({
@@ -102,7 +102,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_read',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {			
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
                                 window.location.reload();
 				element_to_be_deleted1.hide();
@@ -126,7 +126,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_unread',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {				
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {				
 			if(	res != 0 ) {
                                 window.location.reload();
 				element_to_be_deleted1.hide();
@@ -155,7 +155,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_unread',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {				
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {				
 			if(	res != 0 ) {
                                 window.location.reload();
 				element_to_be_deleted1.remove();
@@ -166,7 +166,7 @@ jQuery(document).ready(function($){
 					action : 'wcmp_announcements_refresh_tab_data',
 					tabname : tab_to_refrash					
 				}				
-				$.post(woocommerce_params.ajax_url, data2, function(res2) {
+				$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data2, function(res2) {
 					$("#"+tab_id+' .msg_container').html(res2);
 					jQuery(function($) {							
 						$( "#accordion-2" ).accordion({
@@ -198,7 +198,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_read',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {			
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
                                 window.location.reload();
 				element_to_be_deleted1.remove();
@@ -210,7 +210,7 @@ jQuery(document).ready(function($){
 					action : 'wcmp_announcements_refresh_tab_data',
 					tabname : tab_to_refrash					
 				}				
-				$.post(woocommerce_params.ajax_url, data2, function(res2) {
+				$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data2, function(res2) {
 					$("#"+tab_id+' .msg_container').html(res2);
 					jQuery(function($) {							
 						$( "#accordion-3" ).accordion({
@@ -242,7 +242,7 @@ jQuery(document).ready(function($){
 			actionmode : 'mark_restore',
 			msg_id : msg_id			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(res) {			
+		$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {			
 			if(	res != 0 ) {
                                 window.location.reload();
 				element_to_be_deleted1.remove();
@@ -254,7 +254,7 @@ jQuery(document).ready(function($){
 					action : 'wcmp_announcements_refresh_tab_data',
 					tabname : tab_to_refrash					
 				}				
-				$.post(woocommerce_params.ajax_url, data2, function(res2) {
+				$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data2, function(res2) {
 					$("#"+tab_id+' .msg_container').html(res2);
 					jQuery(function($) {							
 						$( "#accordion-4" ).accordion({
@@ -282,7 +282,7 @@ jQuery(document).ready(function($){
 				action : 'wcmp_announcements_refresh_tab_data',
 				tabname : clicked_tab					
 			}
-			$.post(woocommerce_params.ajax_url, data, function(res) {
+			$.post(wcmp_new_vandor_announcements_js_script_data.ajax_url, data, function(res) {
 				//console.log(res);	
 				$(target_tab_id+' .msg_container').html(res);
 					jQuery(function($) {

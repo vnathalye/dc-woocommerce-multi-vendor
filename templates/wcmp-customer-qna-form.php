@@ -34,7 +34,14 @@ do_action('before_wcmp_customer_qna_form');
             </div>
             <div id="qna-result-wrap" class="qna-result-wrap">
             <?php if($cust_qna_data){ 
-                foreach ($cust_qna_data as $qna) { ?>
+                foreach ($cust_qna_data as $qna) { 
+                    $vendor = get_wcmp_vendor($qna->ans_by);
+                    if($vendor){
+                        $ans_by = $vendor->page_title;
+                    }else{
+                        $ans_by = get_userdata($qna->ans_by)->display_name;
+                    }
+                    ?>
                 <div class="qna-item-wrap item-<?php echo $qna->ques_ID; ?>">
                     <div class="qna-block">
 
@@ -69,15 +76,15 @@ do_action('before_wcmp_customer_qna_form');
 
                         <div class="qtn-content">
                             <div class="qtn-row">
-                                <p class="qna-question"><span><?php _e('Q: ', 'dc-woocommerce-multi-vendor'); ?></span><?php echo stripslashes($qna->ques_details); ?></p>
+                                <p class="qna-question"><span><?php _e('Q:', 'dc-woocommerce-multi-vendor'); ?> </span><?php echo stripslashes($qna->ques_details); ?></p>
                             </div>
                             <div class="qtn-row">
-                                <p class="qna-answer "><span><?php _e('A: ', 'dc-woocommerce-multi-vendor'); ?></span><?php echo stripslashes($qna->ans_details); ?></p>
+                                <p class="qna-answer "><span><?php _e('A:', 'dc-woocommerce-multi-vendor'); ?> </span><?php echo stripslashes($qna->ans_details); ?></p>
                             </div>
                             <div class="bottom-qna">
                                 <ul class="qna-info">
-                                    <li class="qna-user"><?php echo get_userdata($qna->ans_by)->display_name; ?></li>
-                                    <li class="qna-date"><?php echo wc_string_to_datetime($qna->ques_created)->date(wc_date_format()); ?></li> 
+                                    <li class="qna-user"><?php echo $ans_by; ?></li>
+                                    <li class="qna-date"><?php echo date_i18n(wc_date_format(), strtotime($qna->ques_created)); ?></li> 
                                 </ul>
                             </div>
                         </div>

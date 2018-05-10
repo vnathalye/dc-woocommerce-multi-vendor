@@ -18,7 +18,7 @@ $t_earning = isset($report_data['stats']['earning']) ? $report_data['stats']['ea
 $t_withdrawal = isset($report_data['stats']['withdrawal']) ? $report_data['stats']['withdrawal'] : 0;
 $t_orders_no = isset($report_data['stats']['orders_no']) ? $report_data['stats']['orders_no'] : 0;
 echo $email_heading . "\n\n"; 
-printf(__( 'Hello %s,<br>Your %s store orders report stats are as follows:', 'dc-woocommerce-multi-vendor' ),  $vendor->user_data->display_name, $report_data['period']); 
+printf(__( 'Hello %s,<br>Your %s store orders report stats are as follows:', 'dc-woocommerce-multi-vendor' ),  $vendor->page_title, $report_data['period']); 
 echo "****************************************************\n\n";
 
 printf(__( '%s sale: %s', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period']), wc_price($t_sale));

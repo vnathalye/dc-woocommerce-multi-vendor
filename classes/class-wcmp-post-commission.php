@@ -165,6 +165,7 @@ class WCMp_Commission {
                     $html .= '</td><tr/>' . "\n";
                 } elseif ($k == '_commission_vendor') {
                     $vendor = get_wcmp_vendor_by_term($data);
+                    $vendor_term = get_term($data);
                     if ($data && strlen($data) > 0 && $vendor) {
                         $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td>';
                         $html .= '<table>';
@@ -173,7 +174,7 @@ class WCMp_Commission {
                         $html .= get_avatar($vendor->id, 50); //get_the_post_thumbnail($product->get_id(), array('50', '50'));
                         $html .= '</td>';
                         $html .= '<td>';
-                        $html .= '<a href="' . get_edit_user_link($vendor->id) . '">' . $vendor->user_data->display_name . '</a>';
+                        $html .= '<a href="' . get_edit_user_link($vendor->id) . '">' . $vendor_term->name . '</a>';
                         $html .= '</td>';
                         $html .= '</tr>';
                         $html .= '</table>';
@@ -595,7 +596,7 @@ class WCMp_Commission {
             $commission_data = $this->get_commission($commission);
             $commission_staus = get_post_meta($commission, '_paid_status', true);
             $commission_amounts = get_wcmp_vendor_order_amount(array('vendor_id' => $commission_data->vendor->id, 'commission_id' => $commission));
-            $recipient = get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) ? get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) : $commission_data->vendor->user_data->display_name;
+            $recipient = get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) ? get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) : $commission_data->vendor->page_title;
             $commissions_data[] = array(
                 $recipient,
                 $currency,

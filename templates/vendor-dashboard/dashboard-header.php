@@ -46,7 +46,7 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
                         <div class="vendor-profile-pic-holder">
                             <img src="<?php echo $vendor_logo; ?>" alt="vendor logo">
                         </div>
-                        <h4><?php echo $vendor->user_data->display_name; ?></h4>  
+                        <h4><?php echo $vendor->page_title; ?></h4>  
                     </li> 
                     <?php $panel_nav = $WCMp->vendor_dashboard->dashboard_header_right_panel_nav(); 
                     if($panel_nav) : 

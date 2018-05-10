@@ -17,6 +17,28 @@ class WCMp_Cron_Job {
         add_action('vendor_monthly_order_stats', array(&$this, 'vendor_monthly_order_stats_report'));
 
         add_action('migrate_multivendor_table', array(&$this, 'migrate_multivendor_table'));
+
+        $this->wcmp_clear_scheduled_event();
+    }
+
+    /**
+     * Clear scheduled event
+     */
+    function wcmp_clear_scheduled_event() {
+        $cron_hook_identifier = apply_filters('wcmp_cron_hook_identifier', array(
+            'masspay_cron_start',
+            'vendor_weekly_order_stats',
+            'vendor_monthly_order_stats',
+            'migrate_multivendor_table',
+        ));
+        if ($cron_hook_identifier) {
+            foreach ($cron_hook_identifier as $cron_hook) {
+                $timestamp = wp_next_scheduled($cron_hook);
+                if ($timestamp && apply_filters('wcmp_unschedule_'. $cron_hook . '_cron_event', false)) {
+                    wp_unschedule_event($timestamp, $cron_hook);
+                }
+            }
+        }
     }
 
     /**
@@ -123,17 +145,21 @@ class WCMp_Cron_Job {
                                 }
                             }
                         } else {
+                            if (apply_filters('wcmp_send_vendor_weekly_zero_order_stats_report', true, $vendor)) {
+                                $report_data['order_data'] = $order_data;
+                                if ($email->trigger($vendor, $report_data, $attachments)) {
+                                    $email->find[] = $vendor->page_title;
+                                    $email->replace[] = '{STORE_NAME}';
+                                }
+                            }
+                        }
+                    } else {
+                        if (apply_filters('wcmp_send_vendor_weekly_zero_order_stats_report', true, $vendor)) {
                             $report_data['order_data'] = $order_data;
                             if ($email->trigger($vendor, $report_data, $attachments)) {
                                 $email->find[] = $vendor->page_title;
                                 $email->replace[] = '{STORE_NAME}';
                             }
-                        }
-                    } else {
-                        $report_data['order_data'] = $order_data;
-                        if ($email->trigger($vendor, $report_data, $attachments)) {
-                            $email->find[] = $vendor->page_title;
-                            $email->replace[] = '{STORE_NAME}';
                         }
                     }
                 }
@@ -195,17 +221,21 @@ class WCMp_Cron_Job {
                                 }
                             }
                         } else {
+                            if (apply_filters('wcmp_send_vendor_monthly_zero_order_stats_report', true, $vendor)) {
+                                $report_data['order_data'] = $order_data;
+                                if ($email->trigger($vendor, $report_data, $attachments)) {
+                                    $email->find[] = $vendor->page_title;
+                                    $email->replace[] = '{STORE_NAME}';
+                                }
+                            }
+                        }
+                    } else {
+                        if (apply_filters('wcmp_send_vendor_monthly_zero_order_stats_report', true, $vendor)) {
                             $report_data['order_data'] = $order_data;
                             if ($email->trigger($vendor, $report_data, $attachments)) {
                                 $email->find[] = $vendor->page_title;
                                 $email->replace[] = '{STORE_NAME}';
                             }
-                        }
-                    } else {
-                        $report_data['order_data'] = $order_data;
-                        if ($email->trigger($vendor, $report_data, $attachments)) {
-                            $email->find[] = $vendor->page_title;
-                            $email->replace[] = '{STORE_NAME}';
                         }
                     }
                 }

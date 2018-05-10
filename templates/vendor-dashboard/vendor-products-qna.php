@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
     // Exit if accessed directly
     exit;
 }
+global $WCMp;
 $vendor = get_wcmp_vendor(get_current_vendor_id());
 do_action('before_wcmp_vendor_dashboard_products_qna_table');
 ?>
@@ -96,7 +97,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
                 })
             },
             ajax: {
-                url: woocommerce_params.ajax_url + '?action=wcmp_vendor_products_qna_list',
+                url: '<?php echo add_query_arg( 'action', 'wcmp_vendor_products_qna_list', $WCMp->ajax_url() ); ?>',
                 type: "post",
                 data: function (data) {
                     data.qna_status = $('#filter_by_qna_status').val();

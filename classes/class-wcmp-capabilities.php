@@ -257,7 +257,7 @@ class WCMp_Capabilities {
             $sold_by_text = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'), $cart_item['product_id']);
             $vendor = get_wcmp_product_vendors($cart_item['product_id']);
             if ($vendor) {
-                $array = array_merge($array, array(array('name' => $sold_by_text, 'value' => $vendor->user_data->display_name)));
+                $array = array_merge($array, array(array('name' => $sold_by_text, 'value' => $vendor->page_title)));
                 do_action('after_sold_by_text_cart_page', $vendor);
             }
         }
@@ -275,7 +275,7 @@ class WCMp_Capabilities {
             $vendor = get_wcmp_product_vendors($post->ID);
             if ($vendor) {
                 $sold_by_text = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'), $post->ID);
-                echo '<a class="by-vendor-name-link" style="display: block;" href="' . $vendor->permalink . '">' . $sold_by_text . ' ' . $vendor->user_data->display_name . '</a>';
+                echo '<a class="by-vendor-name-link" style="display: block;" href="' . $vendor->permalink . '">' . $sold_by_text . ' ' . $vendor->page_title . '</a>';
                 do_action('after_sold_by_text_shop_page', $vendor);
             }
         }
@@ -292,7 +292,7 @@ class WCMp_Capabilities {
             $general_cap = apply_filters('wcmp_sold_by_text', __('Sold By', 'dc-woocommerce-multi-vendor'));
             $vendor = get_wcmp_product_vendors($item['product_id']);
             if ($vendor) {
-                wc_add_order_item_meta($item_id, $general_cap, $vendor->user_data->display_name);
+                wc_add_order_item_meta($item_id, $general_cap, $vendor->page_title);
                 wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
             }
         }

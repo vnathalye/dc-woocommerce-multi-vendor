@@ -181,7 +181,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
                     $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` SET shipping_status = 1 WHERE order_id =" . $order_id . " AND vendor_id = " . $vendor->id);
                 }
                 $order = new WC_Order($order_id);
-                $comment_id = $order->add_order_note(__('Vendor ', 'dc-woocommerce-multi-vendor') . $vendor->user_data->display_name . __(' has shipped his part of order to customer.', 'dc-woocommerce-multi-vendor'), true);
+                $comment_id = $order->add_order_note(__('Vendor ', 'dc-woocommerce-multi-vendor') . $vendor->page_title . __(' has shipped his part of order to customer.', 'dc-woocommerce-multi-vendor'), true);
                 add_comment_meta($comment_id, '_vendor_id', $user_id);
             }
             return true;
@@ -217,7 +217,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
                 }
 
                 $shippers = (array) get_post_meta($order->get_id(), 'dc_pv_shipped', true);
-                $shipped = in_array($user_id, $shippers) ? 'Yes' : 'No';
+                $shipped = in_array($user_id, $shippers) ? __('Yes', 'dc-woocommerce-multi-vendor') : __('No', 'dc-woocommerce-multi-vendor');
 
                 if ($order->get_id() && $vendor->term_id) {
 

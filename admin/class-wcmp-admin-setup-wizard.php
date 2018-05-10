@@ -732,8 +732,8 @@ class WCMp_Admin_Setup_Wizard {
                 <h2><?php _e( 'Learn more', 'dc-woocommerce-multi-vendor' ); ?></h2>
                 <ul>
                     <li class="video-walkthrough"><a href="https://www.youtube.com/c/WCMarketplace"><?php esc_html_e( 'Watch the tutorial videos', 'dc-woocommerce-multi-vendor' ); ?></a></li>
-                    <li class="newsletter"><a href="https://wc-marketplace.com/knowledgebase/wcmp-setup-guide/?utm_source=setup%20wizard&utm_content=setup%20guide"><?php esc_html_e( 'Looking for help to get started', 'dc-woocommerce-multi-vendor' ); ?></a></li>
-                    <li class="learn-more"><a href="https://wc-marketplace.com/best-revenue-model-marketplace-part-one/?utm_source=setup%20wizard&utm_content=revenue%20model"><?php esc_html_e( 'Learn more about revenue models', 'dc-woocommerce-multi-vendor' ); ?></a></li>
+                    <li class="newsletter"><a href="https://wc-marketplace.com/knowledgebase/wcmp-setup-guide/?utm_source=wcmp_plugin&utm_medium=setup_wizard&utm_campaign=new_installation&utm_content=documentation"><?php esc_html_e( 'Looking for help to get started', 'dc-woocommerce-multi-vendor' ); ?></a></li>
+                    <li class="learn-more"><a href="https://wc-marketplace.com/best-revenue-model-marketplace-part-one/?utm_source=wcmp_plugin&utm_medium=setup_wizard&utm_campaign=new_installation&utm_content=blog"><?php esc_html_e( 'Learn more about revenue models', 'dc-woocommerce-multi-vendor' ); ?></a></li>
                 </ul>
             </div>
         </div>

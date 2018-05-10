@@ -43,13 +43,13 @@ global $WCMp;
                             <div class="col-md-6">
                                 <div class="wcmp_displaybox2 text-center">
                                     <h4><?php _e('Total Sales', 'dc-woocommerce-multi-vendor'); ?></h4>
-                                    <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo $total_vendor_sales; ?></h3>
+                                    <h3><?php echo wc_price($total_vendor_sales); ?></h3>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="wcmp_displaybox2 text-center">
                                     <h4><?php _e('My Earnings', 'dc-woocommerce-multi-vendor'); ?></h4>
-                                    <h3><sup><?php echo get_woocommerce_currency_symbol(); ?></sup><?php echo $total_vendor_earning; ?></h3>
+                                    <h3><?php echo wc_price($total_vendor_earning); ?></h3>
                                 </div>
                             </div>
                             <div class="col-md-6">

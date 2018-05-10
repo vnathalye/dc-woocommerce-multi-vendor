@@ -2555,26 +2555,29 @@ if (!function_exists('wcmp_date')) {
      */
     function wcmp_date($date) {
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone('UTC'));
-        $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(wcmp_timezone_string()));
+        $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(get_vendor_timezone_string()));
         return $date->format(get_option('date_format'));
     }
 
 }
 
 
-if (!function_exists('wcmp_timezone_string')) {
+if (!function_exists('get_vendor_timezone_string')) {
 
     /**
      * WCMp timezone string
+     * @param $vendor_id int Vendor ID
      * @return Timezone string
      */
-    function wcmp_timezone_string() {
+    function get_vendor_timezone_string($vendor_id = '') {
+        if(!$vendor_id)
+            $vendor_id = get_current_user_id();
         // If site timezone string exists, return it.
-        if ($timezone = get_user_meta(get_current_user_id(), 'timezone_string', true) ? get_user_meta(get_current_user_id(), 'timezone_string', true) : get_option('timezone_string')) {
+        if ($timezone = get_user_meta($vendor_id, 'timezone_string', true) ? get_user_meta($vendor_id, 'timezone_string', true) : get_option('timezone_string')) {
             return $timezone;
         }
         // Get UTC offset, if it isn't set then return UTC.
-        if (0 === ( $utc_offset = intval(get_user_meta(get_current_user_id(), 'gmt_offset', true) ? get_user_meta(get_current_user_id(), 'gmt_offset', true) : get_option('gmt_offset', 0)) )) {
+        if (0 === ( $utc_offset = intval(get_user_meta($vendor_id, 'gmt_offset', true) ? get_user_meta($vendor_id, 'gmt_offset', true) : get_option('gmt_offset', 0)) )) {
             return 'UTC';
         }
 

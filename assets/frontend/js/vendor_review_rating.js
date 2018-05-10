@@ -1,4 +1,4 @@
-/* global wcmp_review_rating_msg */
+/* global wcmp_seller_review_rating_js_script_data */
 
 jQuery(document).ready(function ($) {
     $('#wcmp_vendor_reviews #respond #rating').hide().before('<p class="stars"><span><a class="star-1" href="#">1</a><a class="star-2" href="#">2</a><a class="star-3" href="#">3</a><a class="star-4" href="#">4</a><a class="star-5" href="#">5</a></span></p>');
@@ -18,12 +18,12 @@ jQuery(document).ready(function ($) {
                 var $rating = $(this).closest('#respond').find('#rating'),
                         rating = $rating.val();
                 if ($rating.size() > 0 && !rating) {
-                    window.alert(wcmp_review_rating_msg.rating_error_msg_txt);
+                    window.alert(wcmp_seller_review_rating_js_script_data.messages.rating_error_msg_txt);
                     return false;
                 }
                 var comment = $('#wcmp_vendor_reviews #respond #comment').val();
                 if (comment == '' || comment.length < 10) {
-                    window.alert(wcmp_review_rating_msg.review_error_msg_txt);
+                    window.alert(wcmp_seller_review_rating_js_script_data.messages.review_error_msg_txt);
                     return false;
                 }
                 var vendor_id = $('#wcmp_vendor_reviews #respond #wcmp_vendor_for_rating').val();
@@ -31,12 +31,12 @@ jQuery(document).ready(function ($) {
                     action: 'wcmp_add_review_rating_vendor',
                     rating: rating,
                     comment: comment,
-                    vendor_id: wcmp_review_rating_msg.vendor_id
+                    vendor_id: $('#wcmp_vendor_for_rating').val()
                 }
-                $.post(wcmp_review_rating_msg.ajax_url, data, function (response) {
+                $.post(wcmp_seller_review_rating_js_script_data.ajax_url, data, function (response) {
                     if (response == 1) {
                         $('#wcmp_vendor_reviews #respond p#wcmp_seller_review_rating')
-                                .html(wcmp_review_rating_msg.review_success_msg_txt)
+                                .html(wcmp_seller_review_rating_js_script_data.messages.review_success_msg_txt)
                                 .addClass('success_review_msg')
                                 .removeClass('error_review_msg');
                         $rating.val('');
@@ -45,7 +45,7 @@ jQuery(document).ready(function ($) {
                         setTimeout(location.reload(), 2000);
                     } else {
                         $('#wcmp_vendor_reviews #respond p#wcmp_seller_review_rating')
-                                .html(wcmp_review_rating_msg.review_failed_msg_txt)
+                                .html(wcmp_seller_review_rating_js_script_data.messages.review_failed_msg_txt)
                                 .addClass('error_review_msg')
                                 .removeClass('success_review_msg');
                     }
@@ -67,7 +67,7 @@ jQuery(document).ready(function ($) {
             totalreview: totalreview.val(),
             term_id: term_id.val()
         }
-        $.post(wcmp_review_rating_msg.ajax_url, data, function (response) {
+        $.post(wcmp_seller_review_rating_js_script_data.ajax_url, data, function (response) {
             $('ol.vendor_comment_list').append(response);
             pageno.val(parseInt(pageno.val()) + parseInt('1'));
             if (parseInt(pageno.val()) >= parseInt(totalpage.val())) {
@@ -82,7 +82,7 @@ jQuery(document).ready(function ($) {
         var vendor_id = $(this).data('vendor_id');
         var comment = $('#comment-content-' + comment_id).val();
         if (comment === '' || comment.length < 10) {
-            window.alert(wcmp_review_rating_msg.review_error_msg_txt);
+            window.alert(wcmp_seller_review_rating_js_script_data.messages.review_error_msg_txt);
             return false;
         }
         var data = {
@@ -91,7 +91,7 @@ jQuery(document).ready(function ($) {
             vendor_id: vendor_id,
             comment_parent : comment_id
         };
-        $.post(wcmp_review_rating_msg.ajax_url, data, function (response) {
+        $.post(wcmp_seller_review_rating_js_script_data.ajax_url, data, function (response) {
             if (response == 1) {
                 $('#commient-modal-'+comment_id).modal('hide');
                 setTimeout(location.reload(), 2000);

@@ -108,7 +108,7 @@ jQuery(document).ready(function($) {
             })
         },
         ajax:{
-            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_transactions_list', 
+            url : '<?php echo add_query_arg( 'action', 'wcmp_vendor_transactions_list', $WCMp->ajax_url() ); ?>', 
             type: "post",
             data: function (data) {
                 data.from_date = $('#wcmp_from_date').val();

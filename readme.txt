@@ -3,25 +3,18 @@ Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
-Tested up to: 4.9.4
+Tested up to: 4.9.5
 Requires PHP: 5.6
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WC Marketplace - The most user recommended multivendor marketplace plugin for WooCommerce.
+WC Marketplace - The most user recommended multi-vendor marketplace plugin for WooCommerce.
 
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
 > <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/?utm_source=WordPress&utm_medium=plugin_desc&utm_campaign=update_notice) before upgrading your marketplace to avoid any undesirable situations.</strong>
-
-= Highlights of WC Marketplace 3.0: =
-- Intuitive design focusing on user engagement and user experience.
-- A delight for the marketplace owners’ with improved setting panels; now you can setup your marketplace within minutes!
-- Vendors will fall in love with your marketplace. With all the new store insights at their disposal, they can drive more sales than ever.
-- Designed with developers in mind. Just dive in and you will find a hook for your development purpose.
-- Built-in support for simple products within vendor frontend, earlier premium feature.
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 
@@ -39,15 +32,11 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 
 <strong>Riley:</strong>  Don't take my word for it, checkout our exhaustive, have-it-all [feature list](https://wc-marketplace.com/features/). You will be surprised to find out what other multivendor plugins offer in pro or premium, WC Marketplace has all of them covered.
 
-> Take a step forward and try our [demo](http://wcmpdemos.com/addon/WCMp/my-account/ "Admin demo | Vendor demo").
+> Take a step forward and try our [demo](http://wcmpdemos.com/WCMp/my-account/).
 
 <strong>You:</strong> [In your mind- "There should be a catch or a hidden cost. Let me dig more." ] Well your plugin looks promising. But, I wonder, why this charity?
 
 <strong>Riley:</strong> No question of charity. We provide [paid customization](https://wc-marketplace.com/custom-development/) services for marketplace owners to meet their specific business goals. Also, we have categorized our bouquet of features under necessity and extras. So if marketplaces need these nice-to-have extras, we have add-ons for them. But you will always have your fully functional multi vendor store with or without them. [Check out our add-ons](https://wc-marketplace.com/addons).
-
-<strong>You:</strong> [Got ya!] So, you have just tweaked the game in your favor. Others offer "pro" and you have your own bagful of paid "add-ons". Right?
-
-<strong>Riley:</strong> Nope. These add-ons are completely optional and some of them are even free. We keep these features outside of core plugin to make marketplace owner's life simple, without overloading them with unnecessary features/settings. If you don't need them why bother.
 
 > <strong>Advertisement -</strong>
 >
@@ -56,6 +45,10 @@ WC Marketplace - The most user recommended multivendor marketplace plugin for Wo
 > - [Advanced Frontend Manager](https://wc-marketplace.com/product/wcmp-frontend-product-manager)
 > - [Vendor Membership](https://wc-marketplace.com/product/wcmp-vendor-membership/)
 > - [Add-ons Bundle](https://wc-marketplace.com/wcmp-bundle/)
+
+<strong>You:</strong> [Got ya!] So, you have just tweaked the game in your favor. Others offer "pro" and you have your own bagful of paid "add-ons". Right?
+
+<strong>Riley:</strong> Nope. These add-ons are completely optional and some of them are even free. We keep these features outside of core plugin to make marketplace owner's life simple, without overloading them with unnecessary features/settings. If you don't need them why bother.
 
 <strong>You:</strong> [Still sceptical] But, pro version is not just about features. They also include friendly support, prompt reply, and quick resolution. What about that?
 
@@ -112,6 +105,18 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.6 - 2018-05-08 =
+* Added: - Vendor dashboard > Product tags autocomplete support.
+* Added: - Vendor dashboard > Orders listing action icons on hover title.
+* Tweak: - Replace use of deprecated `woocommerce_params` with respective wcmp script data.
+* Tweak: - Replace vendor `display_name` with store name in `sold by {vendor}`.
+* Fix - wp-admin > Add product page SKU field was not showing.
+* Fix - Vendor dashboard > Vendor report price decimals issue.
+* Fix - Single product page > Vendor refund policy issue. #29
+* Dev - Add new `$WCMp->localize_script()` method.
+* Dev - Add filter 'wcmp_get_script_data'.
+* Updated - Language file.
 
 = 3.0.5 - 2018-04-09 =
 * Enhancement: - Single order details section.
@@ -358,5 +363,5 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 3.0.5 =
+= 3.0.6 =
 WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

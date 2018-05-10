@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
             }
         },
         ajax:{
-            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_dashboard_customer_questions_data', 
+            url : '<?php echo add_query_arg( 'action', 'wcmp_vendor_dashboard_customer_questions_data', $WCMp->ajax_url() ); ?>', 
             type: "post",
             'error': function(xhr, status, error) {
                 $("#customer_questions tbody").append('<tr class="odd"><td valign="top" colspan="1" class="dataTables_empty"><article class="reply-item" style="border-bottom:none;"><div class="col-md-12 col-md-12 col-sm-12 col-xs-12" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></div></article></td></tr>');

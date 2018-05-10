@@ -146,11 +146,11 @@ global $woocommerce, $WCMp;
                 }
             },
             ajax: {
-                url: woocommerce_params.ajax_url + '?action=wcmp_datatable_get_vendor_orders',
+                url: '<?php echo add_query_arg( 'action', 'wcmp_datatable_get_vendor_orders', $WCMp->ajax_url() ); ?>',
                 type: "post",
                 data: function (data) {
-                    data.start_date = vendor_orders_args.start_date;
-                    data.end_date = vendor_orders_args.end_date;
+                    data.start_date = '<?php echo $start_date; ?>';
+                    data.end_date = '<?php echo $end_date; ?>';
                     data.order_status = $('#filter_by_order_status').val();
                 },
                 error: function(xhr, status, error) {

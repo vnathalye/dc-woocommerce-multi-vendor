@@ -245,8 +245,8 @@ class WCMp_Product {
                 $other_user = new WP_User($result_post->post_author);
                 if ($_product->is_visible() && !is_user_wcmp_pending_vendor($other_user) && !is_user_wcmp_rejected_vendor($other_user) && $post->post_author != $result_post->post_author) {
                     if ($vendor_data) {
-                        if (isset($vendor_data->user_data->data->display_name)) {
-                            $more_product_array[$i]['seller_name'] = $vendor_data->user_data->data->display_name;
+                        if (isset($vendor_data->page_title)) {
+                            $more_product_array[$i]['seller_name'] = $vendor_data->page_title;
                             $more_product_array[$i]['is_vendor'] = 1;
 //                            $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
 //                            if (!empty($terms)) {
@@ -767,10 +767,10 @@ class WCMp_Product {
         $html .= '<div class="options_group" > <table class="form-field form-table">';
         $html .= '<tbody>';
         if ($vendor) {
-            $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->user_data->display_name . '</option>';
+            $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->page_title . '</option>';
         } else if ($current_user_is_vendor) {
             $vendor = get_wcmp_vendor_by_term(get_user_meta($current_user, '_vendor_term_id', true));
-            $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->user_data->display_name . '</option>';
+            $option = '<option value="' . $vendor->term_id . '" selected="selected">' . $vendor->page_title . '</option>';
         } else {
             $option = '<option>' . __("Choose a vendor", 'dc-woocommerce-multi-vendor') . '</option>';
         }
@@ -779,7 +779,7 @@ class WCMp_Product {
             $html .= '<select name="' . esc_attr('choose_vendor') . '" id="' . esc_attr('choose_vendor_ajax') . '" class="ajax_chosen_select_vendor" data-placeholder="' . __("Search for vendor", 'dc-woocommerce-multi-vendor') . '" style="width:300px;" >' . $option . '</select>';
             $html .= '<p class="description">' . 'choose vendor' . '</p>';
         } else {
-            $html .= '<label id="vendor-label" for="' . esc_attr('vendor') . '">' . $vendor->user_data->display_name . '</label>';
+            $html .= '<label id="vendor-label" for="' . esc_attr('vendor') . '">' . $vendor->page_title . '</label>';
             $html .= '<input type="hidden" name="' . esc_attr('choose_vendor') . '"   value="' . $vendor->term_id . '" />';
         }
         $html .= '</td><tr/>';

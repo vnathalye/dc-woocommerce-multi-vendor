@@ -338,7 +338,7 @@ Class WCMp_Admin_Dashboard {
                             'order' => '#' . $customer_order,
                             'date_of_purchase' => date_i18n('d-m-Y', strtotime($order->get_date_created())),
                             'time_of_purchase' => date_i18n('H', strtotime($order->get_date_created())) . ' : ' . date_i18n('i', strtotime($order->get_date_created())),
-                            'vendor_name' => $vendor->user_data->display_name,
+                            'vendor_name' => $vendor->page_title,
                             'product' => $item_names,
                             'qty' => $item_qty,
                             'discount_used' => apply_filters('wcmp_export_discount_used_in_order', $coupon_used),
@@ -749,17 +749,11 @@ Class WCMp_Admin_Dashboard {
                             return $err_msg;
                         }
                     } else {
-                        wp_update_user(array('ID' => $user_id, 'display_name' => $post[$fieldkey]));
+                        if(apply_filters('wcmp_update_user_display_name_with_vendor_store_name', false, $user_id)){
+                            wp_update_user(array('ID' => $user_id, 'display_name' => $post[$fieldkey]));
+                        }
                     }
                 }
-            } else if (!isset($post['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
-                delete_user_meta($user_id, '_vendor_hide_description');
-            } else if (!isset($post['vendor_hide_email']) && $fieldkey == 'vendor_hide_email') {
-                delete_user_meta($user_id, '_vendor_hide_email');
-            } else if (!isset($post['vendor_hide_address']) && $fieldkey == 'vendor_hide_address') {
-                delete_user_meta($user_id, '_vendor_hide_address');
-            } else if (!isset($post['vendor_hide_phone']) && $fieldkey == 'vendor_hide_phone') {
-                delete_user_meta($user_id, '_vendor_hide_phone');
             }
         }
         if (isset($_POST['_shop_template']) && !empty($_POST['_shop_template'])) {
@@ -1192,15 +1186,6 @@ Class WCMp_Admin_Dashboard {
         global $WCMp;
         $total_amount = 0;
         $transaction_display_array = array();
-        /*     $user_id = get_current_user_id();
-
-          $orders = get_wcmp_vendor_orders(array('vendor_id'=>$user_id));
-          $numItems = count($orders);
-
-          //variables to send $orders, $numItems
-          //require_once(plugin_dir_path( __FILE__ ) . "wcmp_vendor_last_five_transactions_total_unpaid_amount.php");
-          $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_last_five_transactions_total_unpaid_amount.php', array('orders' => $orders, 'numItems' => $numItems)); */
-
         $vendor = get_wcmp_vendor(get_current_vendor_id());
         $requestData = $_REQUEST;
         $vendor = apply_filters('wcmp_transaction_vendor', $vendor);
@@ -1210,7 +1195,6 @@ Class WCMp_Admin_Dashboard {
         $unpaid_orders = get_wcmp_vendor_order_amount(array('commission_status' => 'unpaid'), $vendor->id);
         $count = 0; // varible for counting 5 transaction details
         foreach ($transaction_details as $transaction_id => $details) {
-            //print_r($details);
             $count++;
             if ($count <= 5) {
                 //$transaction_display_array[$transaction_id] = $details['total_amount'];
@@ -1223,7 +1207,7 @@ Class WCMp_Admin_Dashboard {
         }
         //print_r($total_amount);
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_transaction_details.php', array('total_amount' => $unpaid_orders['total'], 'transaction_display_array' => $transaction_display_array));
-        //print_r($transaction_details);
+       
     }
 
     public function wcmp_vendor_products_cust_qna() {

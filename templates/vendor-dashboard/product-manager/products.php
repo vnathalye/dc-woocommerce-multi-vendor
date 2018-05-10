@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
     // Exit if accessed directly
     exit;
 }
+global $WCMp;
 $vendor = get_wcmp_vendor(get_current_vendor_id());
 do_action('before_wcmp_vendor_dashboard_product_list_table');
 ?>
@@ -121,7 +122,7 @@ foreach ($terms as $term) {
                 }
             },
             "ajax": {
-                url: woocommerce_params.ajax_url + '?action=wcmp_vendor_product_list',
+                url: '<?php echo add_query_arg( 'action', 'wcmp_vendor_product_list', $WCMp->ajax_url() ); ?>',
                 type: "post",
                 data: function (data) {
                     data.post_status = "<?php echo isset($_GET['post_status']) ? trim($_GET['post_status']) : 'all' ?>";

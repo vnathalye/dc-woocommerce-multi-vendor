@@ -9,7 +9,7 @@ jQuery(document).ready(function($){
 				action : 'wcmp_dismiss_dashboard_announcements',
 				post_id : post_id
 			}
-			$.post(woocommerce_params.ajax_url, data, function(responsee) { 
+			$.post(wcmp_frontend_vdashboard_js_script_data.ajax_url, data, function(responsee) { 
 				element_to_be_refrash.html(responsee);			
 			});
 			lodder.hide();			
@@ -63,7 +63,7 @@ jQuery(document).ready(function($){
 			total_page : total_page,
 			perpagedata : perpagedata			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(responsee) {		 		 
+		$.post(wcmp_frontend_vdashboard_js_script_data.ajax_url, data, function(responsee) {		 		 
 			$('#'+tobeappend+' tr:last').after(responsee);		 	 
 			if((parseInt(next_page) + 1) > parseInt(total_page)) {
 			  $(mybutton).remove();
@@ -121,7 +121,7 @@ jQuery(document).ready(function($){
 			total_page : total_page,
 			perpagedata : perpagedata			
 		}
-		$.post(woocommerce_params.ajax_url, data, function(responsee) {		 		 
+		$.post(wcmp_frontend_vdashboard_js_script_data.ajax_url, data, function(responsee) {		 		 
 			$('#'+tobeappend+' tr:last').after(responsee);		 	 
 			if((parseInt(next_page) + 1) > parseInt(total_page)) {
 			  $(mybutton).remove();

@@ -89,8 +89,9 @@ class WCMp_Settings_To_Do_List {
                                 continue;
                             ?>
                         <tr>
-                        <?php $currentvendor = get_userdata($get_pending_coupon->post_author); ?>
-                            <td class="coupon column-coupon"><a href="user-edit.php?user_id=<?php echo $get_pending_coupon->post_author; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $currentvendor->display_name; ?></a></td>
+                        <?php $currentvendor = get_wcmp_vendor($get_pending_coupon->post_author); 
+                        $vendor_term = get_term($currentvendor->term_id); ?>
+                            <td class="coupon column-coupon"><a href="user-edit.php?user_id=<?php echo $get_pending_coupon->post_author; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $vendor_term->name; ?></a></td>
                             <td class="coupon column-coupon"><?php echo $get_pending_coupon->post_title; ?></td>
                             <td class="edit"><a target="_blank" href="post.php?post=<?php echo $get_pending_coupon->ID; ?>&action=edit"><input type="button" class="vendor_edit_button" value="Edit" /> </a> </td>
                             <td class="dismiss"><input class="vendor_dismiss_button" type="button" data-type="shop_coupon" data-id="<?php echo $get_pending_coupon->ID; ?>" id="dismiss_request" name="dismiss_request" value="Dismiss"></td>
@@ -128,8 +129,9 @@ class WCMp_Settings_To_Do_List {
                     continue;
                 ?>
                         <tr>
-                <?php $currentvendor = get_userdata($get_pending_product->post_author); ?>
-                            <td class="vendor column-coupon"><a href="user-edit.php?user_id=<?php echo $get_pending_product->post_author; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $currentvendor->display_name; ?></a></td>
+                <?php $currentvendor = get_wcmp_vendor($get_pending_product->post_author); 
+                $vendor_term = get_term($currentvendor->term_id); ?>
+                            <td class="vendor column-coupon"><a href="user-edit.php?user_id=<?php echo $get_pending_product->post_author; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $vendor_term->name; ?></a></td>
                             <td class="coupon column-coupon"><?php echo $get_pending_product->post_title; ?></td>
                             <td class="edit"><a target="_blank" href="post.php?post=<?php echo $get_pending_product->ID; ?>&action=edit"><input type="button" class="vendor_edit_button" value="Edit" /> </a> </td>
                             <td class="dismiss"><input class="vendor_dismiss_button" data-type="product" data-id="<?php echo $get_pending_product->ID; ?>"  type="button" id="dismiss_request" name="dismiss_request" value="Dismiss"></td>
@@ -169,6 +171,7 @@ class WCMp_Settings_To_Do_List {
                         $dismiss = get_post_meta($transaction->ID, '_dismiss_to_do_list', true);
                         $vendor_term_id = $transaction->post_author;
                         $currentvendor = get_wcmp_vendor_by_term($vendor_term_id);
+                        $vendor_term = get_term($vendor_term_id);
                         if ($dismiss || !$currentvendor) {
                             continue;
                         }
@@ -181,7 +184,7 @@ class WCMp_Settings_To_Do_List {
                         <tr>
                 <?php
                 ?>
-                            <td class="vendor column-coupon"><a href="user-edit.php?user_id=<?php echo $currentvendor->id; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $currentvendor->user_data->display_name; ?></a></td>
+                            <td class="vendor column-coupon"><a href="user-edit.php?user_id=<?php echo $currentvendor->id; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_vendor" target="_blank"><?php echo $vendor_term->name; ?></a></td>
                             <td class="commission column-coupon"><?php echo $transaction->post_title; ?></td>
                             <td class="commission_val column-coupon"><?php echo wc_price($amount); ?></td>
                             <td class="account_detail"><?php echo __('Account Name- ', 'dc-woocommerce-multi-vendor') . ' ' . $account_name . '<br>' . __('Account No - ', 'dc-woocommerce-multi-vendor') . $account_no . '<br>' . __('Bank Name - ', 'dc-woocommerce-multi-vendor') . $bank_name . '<br>' . __('IBAN - ', 'dc-woocommerce-multi-vendor') . $iban; ?></td>

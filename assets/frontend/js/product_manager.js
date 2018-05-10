@@ -1,31 +1,31 @@
-/* global woocommerce_params */
+/* global product_manager_js_script_data */
 
 var removed_person_types = [];
 var removed_variations = [];
 var resetMultiInputIndex;
 var addMultiInputProperty;
 jQuery(document).ready(function ($) {
-    var block = function( $node ) {
-        if ( ! is_blocked( $node ) ) {
-            $node.addClass( 'processing' ).block( {
+    var block = function ($node) {
+        if (!is_blocked($node)) {
+            $node.addClass('processing').block({
                 message: null,
                 overlayCSS: {
                     background: '#fff',
                     opacity: 0.6
                 }
-            } );
+            });
         }
     };
-    var is_blocked = function( $node ) {
-        return $node.is( '.processing' ) || $node.parents( '.processing' ).length;
+    var is_blocked = function ($node) {
+        return $node.is('.processing') || $node.parents('.processing').length;
     };
 
-    var unblock = function( $node ) {
-        $node.removeClass( 'processing' ).unblock();
+    var unblock = function ($node) {
+        $node.removeClass('processing').unblock();
     };
     if ($.isFunction($.fn.singleProductMulipleVendor)) {
         $("#product_manager_form input[name=title]").singleProductMulipleVendor({
-            ajaxurl: woocommerce_params.ajax_url,
+            ajaxurl: product_manager_js_script_data.ajax_url,
             is_admin: false
         });
         $('body').on('click', '#wcmp_auto_suggest_product_title ul li a', function () {
@@ -35,7 +35,7 @@ jQuery(document).ready(function ($) {
                 action: 'wcmp_create_duplicate_product',
                 product_id: product_id
             };
-            $.post(woocommerce_params.ajax_url, data, function (response) {
+            $.post(product_manager_js_script_data.ajax_url, data, function (response) {
                 unblock($('#product_manager_form'));
                 //console.log(response);
                 if (response.status) {
@@ -56,19 +56,19 @@ jQuery(document).ready(function ($) {
     });
 
     $("#product_cats").select2({
-        placeholder: product_manager_messages.choose
+        placeholder: product_manager_js_script_data.messages.choose
     });
 
     $(".product_taxonomies").select2({
-        placeholder: product_manager_messages.choose
+        placeholder: product_manager_js_script_data.messages.choose
     });
 
     $("#upsell_ids").select2({
-        placeholder: product_manager_messages.choose
+        placeholder: product_manager_js_script_data.messages.choose
     });
 
     $("#crosssell_ids").select2({
-        placeholder: product_manager_messages.choose
+        placeholder: product_manager_js_script_data.messages.choose
     });
 
     /*if( $("#children").length > 0 ) {
@@ -124,20 +124,20 @@ jQuery(document).ready(function ($) {
     });
 
     /*$('.variation_manage_stock').change(function () {
-        if ($(this).is(':checked')) {
-            $(this).parent().find('.variation_non_manage_stock').removeClass('non_stock_ele_hide');
-        } else {
-            $(this).parent().find('.variation_non_manage_stock').addClass('non_stock_ele_hide');
-        }
-    }).change();*/
+     if ($(this).is(':checked')) {
+     $(this).parent().find('.variation_non_manage_stock').removeClass('non_stock_ele_hide');
+     } else {
+     $(this).parent().find('.variation_non_manage_stock').addClass('non_stock_ele_hide');
+     }
+     }).change();*/
 
     //var pro_types = [ "simple", "grouped", "external" ];
     var pro_types = ["simple"];
     if ($('#product_type').length > 0) {
         $('#product_type').change(function (e) {
-            if( e.originalEvent !== undefined ) {
-              $("#frontend_product_manager_accordion").accordion( "option", "active", 0 );
-              $("#frontend_product_manager_accordion").accordion("refresh");
+            if (e.originalEvent !== undefined) {
+                $("#frontend_product_manager_accordion").accordion("option", "active", 0);
+                $("#frontend_product_manager_accordion").accordion("refresh");
             }
             var product_type = $(this).val();
             $('.pro_ele_head').addClass('pro_head_hide');
@@ -149,16 +149,16 @@ jQuery(document).ready(function ($) {
             if (product_type == 'simple')
                 $('.frontend_product_manager_product_types > .description').removeClass('pro_ele_hide');
 
-              $('#is_downloadable').change();
+            $('#is_downloadable').change();
             // WCMp Product Types Support
             if ($.inArray(product_type, pro_types) == -1) {
                 $('.simple').removeClass('pro_ele_hide pro_block_hide pro_head_hide');
                 $('.non-' + product_type).addClass('pro_ele_hide pro_block_hide pro_head_hide');
             }
-            
+
 
             $(document.body).trigger('product_type_changed');
-            
+
         }).change();
 
         // Downloadable
@@ -243,9 +243,9 @@ jQuery(document).ready(function ($) {
                 $(this).children('.add_multi_input_block').remove();
             }
         });
-        
+
         multi_input_holder.children('.multi_input_block').find('.add_multi_input_block').off('click').on('click', function () {
-            
+
             var holder_id = multi_input_holder.attr('id');
             var holder_name = multi_input_holder.data('name');
             //var multi_input_blockCount = multi_input_holder.data('length');
@@ -255,7 +255,7 @@ jQuery(document).ready(function ($) {
 
             multi_input_blockEle.find('textarea,input:not(input[type=button],input[type=submit],input[type=checkbox],input[type=radio])').val('');
             multi_input_blockEle.find('input[type=checkbox]').attr('checked', false);
-            
+
             multi_input_blockEle.find('.dc-wp-fields-uploader,.multi_input_block_element:not(.multi_input_holder)').each(function () {
                 var ele = $(this);
                 var ele_name = ele.data('name');
@@ -265,7 +265,7 @@ jQuery(document).ready(function ($) {
                     /****/
                     uploadEle.find('a span').css('display', 'none');
                     //if (holder_id + '_' + ele_name + '_' + multi_input_blockCount === 'variations_downloadable_file_' + multi_input_blockCount) {
-                        uploadEle.find('a').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount + '_display');
+                    uploadEle.find('a').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount + '_display');
                     //}
                     /*****/
                     uploadEle.find('img').attr('src', '').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount + '_display').addClass('placeHolder').css('display', 'inline-block');
@@ -374,7 +374,7 @@ jQuery(document).ready(function ($) {
                     uploadEle.find('.multi_input_block_element').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount).attr('name', holder_name + '[' + multi_input_blockCount + '][' + ele_name + ']');
                     uploadEle.find('.upload_button').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount + '_button').show();
                     uploadEle.find('.remove_button').attr('id', holder_id + '_' + ele_name + '_' + multi_input_blockCount + '_remove_button').hide();
-                    
+
                     //edited by dCube
                     var attchment_val = uploadEle.find('#' + holder_id + '_' + ele_name + '_' + multi_input_blockCount).val();
                     if (attchment_val) {
@@ -393,11 +393,11 @@ jQuery(document).ready(function ($) {
                     //ele.parent().parent().find('.checkbox_title').attr('for', holder_name + '_' + ele_name + '_' + multi_input_blockCount);
                 }
                 /*var eleid = ele.attr('id');
-                ele.parent().parent().find('.checkbox_title').attr('for', eleid);
-                console.log(ele.parent().parent().find('.checkbox_title').attr('for'));*/
+                 ele.parent().parent().find('.checkbox_title').attr('for', eleid);
+                 console.log(ele.parent().parent().find('.checkbox_title').attr('for'));*/
             });
             $('.checkbox_title').each(function () {
-              $(this).attr('for', $(this).next().find('.multi_input_block_element').attr('id'));
+                $(this).attr('for', $(this).next().find('.multi_input_block_element').attr('id'));
             });
             multi_input_blockCount++;
         });
@@ -479,7 +479,7 @@ jQuery(document).ready(function ($) {
 
             $.ajax({
                 type: 'POST',
-                url: woocommerce_params.ajax_url,
+                url: product_manager_js_script_data.ajax_url,
                 data: data,
                 success: function (response) {
                     if (response) {
@@ -495,9 +495,9 @@ jQuery(document).ready(function ($) {
                          });*/
 
                         $('#attributes').find('.multi_input_block:last').find('select').select2({
-                            placeholder: product_manager_messages.search_attribute
+                            placeholder: product_manager_js_script_data.messages.search_attribute
                         });
-                        $('#attributes').find('.multi_input_block:last').find('input[type=checkbox]').each(function(){
+                        $('#attributes').find('.multi_input_block:last').find('input[type=checkbox]').each(function () {
                             $(this).wrap('<span class="checkbox-holder"></span>');
                             $('.checkbox-holder').append('<i class="wcmp-font ico-uncheckbox-icon"></i>');
                         });
@@ -523,7 +523,7 @@ jQuery(document).ready(function ($) {
         addMultiInputProperty($('#attributes'));
         resetMultiInputIndex($('#attributes'));
         $('#attributes').find('.multi_input_block').find('select').select2({
-            placeholder: product_manager_messages.search_attribute
+            placeholder: product_manager_js_script_data.messages.search_attribute
         });
     }
 
@@ -554,7 +554,7 @@ jQuery(document).ready(function ($) {
      }  
      $.ajax({
      type:    'POST',
-     url: woocommerce_params.ajax_url,
+     url: product_manager_js_script_data.ajax_url,
      data: data,
      success: function(response) {
      if(response) {
@@ -757,7 +757,7 @@ jQuery(document).ready(function ($) {
         var title = $.trim($('#product_manager_form').find('#title').val());
         if (title.length == 0) {
             $is_valid = false;
-            $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + product_manager_messages.no_title + '</div>');
+            $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + product_manager_js_script_data.messages.no_title + '</div>');
             $('.woocommerce-error').focus();
         }
         return $is_valid;
@@ -792,19 +792,19 @@ jQuery(document).ready(function ($) {
                 removed_variations: removed_variations,
                 removed_person_types: removed_person_types
             }
-            $.post(woocommerce_params.ajax_url, data, function (response) {
+            $.post(product_manager_js_script_data.ajax_url, data, function (response) {
                 $(this).prop('disabled', false);
                 $("#pruduct_manager_submit_button").prop('disabled', false);
                 if (response) {
                     $response_json = $.parseJSON(response);
                     if ($response_json.status) {
-                        if($response_json.is_new == '0'){
+                        if ($response_json.is_new == '0') {
                             $('.woocommerce-error,.woocommerce-message').remove();
                             $('#product_manager_form').prepend('<div class="woocommerce-message" tabindex="-1">' + $response_json.message + '</div>');
                             $('.woocommerce-message').focus();
-                        }else{
+                        } else {
                             window.location = $response_json.redirect;
-                        }  
+                        }
                     } else {
                         $('.woocommerce-error,.woocommerce-message').remove();
                         $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + $response_json.message + '</div>');
@@ -848,17 +848,17 @@ jQuery(document).ready(function ($) {
                 removed_variations: removed_variations,
                 removed_person_types: removed_person_types
             }
-            $.post(woocommerce_params.ajax_url, data, function (response) {
+            $.post(product_manager_js_script_data.ajax_url, data, function (response) {
                 $(this).prop('disabled', false);
                 $("#pruduct_manager_draft_button").prop('disabled', false);
                 if (response) {
                     $response_json = $.parseJSON(response);
                     if ($response_json.status) {
-                        if($response_json.is_new == '0'){
+                        if ($response_json.is_new == '0') {
                             $('.woocommerce-error,.woocommerce-message').remove();
                             $('#product_manager_form').prepend('<div class="woocommerce-message" tabindex="-1">' + $response_json.message + '</div>');
                             $('.woocommerce-message').focus();
-                        }else{
+                        } else {
                             window.location = $response_json.redirect;
                         }
                     } else {
@@ -877,26 +877,93 @@ jQuery(document).ready(function ($) {
     function jsUcfirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
-    
+
     function get_fpm_tinymce_content(id) {
         var content;
         var inputid = id;
-        if(typeof tinyMCE == 'undefined'){
-            var textArea = jQuery('textarea#' + inputid);    
-            if (textArea.length>0 && textArea.is(':visible')) {
-                content = textArea.val();        
-            }  
-        }else{
+        if (typeof tinyMCE == 'undefined') {
+            var textArea = jQuery('textarea#' + inputid);
+            if (textArea.length > 0 && textArea.is(':visible')) {
+                content = textArea.val();
+            }
+        } else {
             var editor = tinyMCE.get(inputid);
-            var textArea = jQuery('textarea#' + inputid);    
-            if (textArea.length>0 && textArea.is(':visible')) {
-                content = textArea.val();        
+            var textArea = jQuery('textarea#' + inputid);
+            if (textArea.length > 0 && textArea.is(':visible')) {
+                content = textArea.val();
             } else {
                 //content = editor.getContent();
                 tinyMCE.triggerSave();
                 content = textArea.val();
-            } 
-        }     
+            }
+        }
         return content;
     }
+
+    $('#wcmp_search_product_tag').autocomplete({
+        source: function (name, response) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: product_manager_js_script_data.ajax_url,
+                data: 'action=wcmp_product_tag_search&tax=product_tag&q=' + $('#wcmp_search_product_tag').val(),
+                success: function (data) {
+                    response(data);
+                }
+            });
+        },
+        minLength: 2,
+        select: function (event, ui) {
+            // Add the selected term appending to the current values with a comma
+            var terms = split(event.target.value);
+            // remove the current input
+            terms.pop();
+            // add the selected item
+            terms.push(ui.item.value);
+            // join all terms with a comma
+            event.target.value = terms.join(", ") + ',';
+
+            return false;
+        },
+        focus: function () {
+            // prevent value inserted on focus when navigating the drop down list
+            return false;
+        }
+    });
+    
+    $('#wcmp_add_product_tag').on('click', function(e){
+        e.preventDefault();
+        var tags = $('#wcmp_search_product_tag').val();
+        var new_tag = extractLast(tags);
+        var data = {
+            action: 'wcmp_product_tag_add',
+            new_tag: new_tag
+        };
+        $.post(product_manager_js_script_data.ajax_url, data, function (response) { console.log(response);
+            if(response.message != ''){
+                $('.woocommerce-error,woocommerce-message').remove();
+                $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + response.message + '</div>');
+                $('.woocommerce-error').focus();
+            }
+            if(response.tag_name != ''){
+                var terms = split(tags);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push(response.tag_name);
+                // join all terms with a comma
+                $('#wcmp_search_product_tag').val(terms.join(", ") + ',');
+            }
+        });
+    });
+
+    function split(val) {
+        return val.split(/,\s*/);
+    }
+    
+    function extractLast( term ) {
+        term = term.replace(/,+$/,'');
+        return split( term ).pop();
+    }
+
 });

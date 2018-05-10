@@ -15,7 +15,7 @@ $vendor = get_wcmp_product_vendors($product->get_id());
 if ($vendor) {
     $html .= '<div class="product-vendor">';
     $html .= apply_filters('wcmp_before_seller_info_tab', '');
-    $html .= '<h2>' . $vendor->user_data->display_name . '</h2>';
+    $html .= '<h2>' . $vendor->page_title . '</h2>';
     echo $html;
     $term_vendor = wp_get_post_terms($product->get_id(), $WCMp->taxonomy->taxonomy_name);
     if (!is_wp_error($term_vendor) && !empty($term_vendor)) {
@@ -33,7 +33,7 @@ if ($vendor) {
     if ('' != $vendor->description) {
         $html .= '<p>' . $vendor->description . '</p>';
     }
-    $html .= '<p><a href="' . $vendor->permalink . '">' . sprintf(__('More Products from %1$s', 'dc-woocommerce-multi-vendor'), $vendor->user_data->display_name) . '</a></p>';
+    $html .= '<p><a href="' . $vendor->permalink . '">' . sprintf(__('More Products from %1$s', 'dc-woocommerce-multi-vendor'), $vendor->page_title) . '</a></p>';
     $html .= apply_filters('wcmp_after_seller_info_tab', '');
     $html .= '</div>';
     echo $html;

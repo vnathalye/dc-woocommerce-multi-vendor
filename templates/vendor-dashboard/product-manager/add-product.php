@@ -531,10 +531,24 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     }
                 }
 
-                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("product_tags" => array('label' => __('Tags', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $product_tags, 'desc' => __('Separate product tags with commas', 'dc-woocommerce-multi-vendor'))
-                ));
+//                $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array("product_tags" => array('label' => __('Tags', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $product_tags, 'desc' => __('Separate product tags with commas', 'dc-woocommerce-multi-vendor'))
+//                ));
                 ?>
-                </p>
+                
+                <div class="form-group tagsdiv">
+                    <label class="control-label form-label col-sm-3"><?php _e('Tags', 'dc-woocommerce-multi-vendor'); ?></label>
+                    <div class="col-md-6">
+                        <input type="text" placeholder="<?php _e('Search tag name..', 'dc-woocommerce-multi-vendor'); ?>" class="form-control regular-text" name="product_tags" id="wcmp_search_product_tag" value="<?php echo $product_tags; ?>" />
+                        <p class="description "><?php _e('Separate product tags with commas', 'dc-woocommerce-multi-vendor'); ?></p>
+                    </div>
+                    <?php if(apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id())) : ?>
+                    <div class="col-md-3">
+                        <button id="wcmp_add_product_tag" class="button btn btn-default"><?php _e('Add', 'dc-woocommerce-multi-vendor'); ?></button>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                
             </div>
             <h3 class="pro_ele_head simple variable grouped non-external non-redq_rental non-accommodation-booking non-booking <?php if (apply_filters("vendor_product_inventory_hide",false)) echo ' vendor_hidden'; ?>"><?php _e('Inventory', 'dc-woocommerce-multi-vendor'); ?></h3>
             <div class="pro_ele_block simple variable grouped non-external non-redq_rental non-accommodation-booking non-booking <?php if (apply_filters("vendor_product_inventory_hide",false)) echo ' vendor_hidden'; ?>">
@@ -605,7 +619,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
                             "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
                             "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external grouped', 'label_class' => 'pro_title'),
-                            "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'placeholder' => printf(__( 'Enter some text, or some attributes by "%s" separating values.', 'dc-woocommerce-multi-vendor' ), WC_DELIMITER ), 'label_class' => 'pro_title'),
+                            "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external grouped', 'placeholder' => sprintf( esc_attr__( 'Enter some text, or some attributes by "%s" separating values.', 'dc-woocommerce-multi-vendor' ), WC_DELIMITER ), 'label_class' => 'pro_title'),
                             "is_visible" => array('label' => __('Visible on the product page', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele simple variable external grouped', 'label_class' => 'pro_title checkbox_title'),
                             "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
                             "tax_name" => array('type' => 'hidden'),

@@ -79,8 +79,9 @@ class WCMp_Ajax {
 
         //frontend product manager ajax
         add_action('wp_ajax_frontend_product_manager', array(&$this, 'frontend_product_manager'));
-
         add_action('wp_ajax_generate_taxonomy_attributes', array(&$this, 'generate_taxonomy_attributes'));
+        add_action('wp_ajax_wcmp_product_tag_search', array(&$this, 'wcmp_product_tag_search'));
+        add_action('wp_ajax_wcmp_product_tag_add', array(&$this, 'wcmp_product_tag_add'));
 
         //add_action('wp_ajax_generate_variation_attributes', array(&$this, 'generate_variation_attributes'));
 
@@ -116,7 +117,8 @@ class WCMp_Ajax {
         $end_date = date('Y-m-d G:i:s', $_POST['end_date']);
         $vendor = get_current_vendor();
         $vendor_all_orders = $wpdb->get_results("SELECT DISTINCT order_id from `{$wpdb->prefix}wcmp_vendor_orders` where commission_id > 0 AND vendor_id = '" . $vendor->id . "' AND (`created` >= '" . $start_date . "' AND `created` <= '" . $end_date . "') and `is_trashed` != 1 ORDER BY `created` DESC", ARRAY_A);
-        $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders', wp_list_pluck($vendor_all_orders, 'order_id'));
+        $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders', $vendor_all_orders);
+        $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders_id', wp_list_pluck($vendor_all_orders, 'order_id'));
         if (isset($requestData['order_status']) && $requestData['order_status'] != 'all' && $requestData['order_status'] != '') {
             foreach ($vendor_all_orders as $key => $value) {
                 if (wc_get_order($value)->get_status() != $requestData['order_status']) {
@@ -172,7 +174,7 @@ class WCMp_Ajax {
                     'order_id' => $order->get_id(),
                     'order_date' => wcmp_date($order->get_date_created()),
                     'vendor_earning' => wc_price(get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()))['total']),
-                    'order_status' => esc_html( wc_get_order_status_name( $order->get_status() ) ),//ucfirst($order->get_status()),
+                    'order_status' => esc_html(wc_get_order_status_name($order->get_status())), //ucfirst($order->get_status()),
                     'action' => apply_filters('wcmp_vendor_orders_row_action_html', $action_html, $actions)
                 );
             }
@@ -323,7 +325,7 @@ class WCMp_Ajax {
 
         $data_store = WC_Data_Store::load('product');
         $ids = $data_store->search_products($term, '', false);
-        
+
         $include = array();
         foreach ($ids as $id) {
             $_product = wc_get_product($id);
@@ -1181,16 +1183,23 @@ class WCMp_Ajax {
 
         $found_vendors = array();
 
-        $args = array(
+        $args1 = array(
             'search' => '*' . $term . '*',
             'search_columns' => array('user_login', 'display_name', 'user_email')
         );
-
-        $vendors = get_wcmp_vendors($args);
+        $args2 = array(
+            'meta_key' => '_vendor_page_title',
+            'meta_value' => esc_attr($term),
+            'meta_compare' => 'LIKE',
+        );
+        $vendors1 = get_wcmp_vendors($args1);
+        $vendors2 = get_wcmp_vendors($args2);
+        $vendors = array_unique(array_merge($vendors1, $vendors2), SORT_REGULAR);
 
         if (!empty($vendors) && is_array($vendors)) {
             foreach ($vendors as $vendor) {
-                $found_vendors[$vendor->term_id] = $vendor->user_data->display_name;
+                $vendor_term = get_term($vendor->term_id);
+                $found_vendors[$vendor->term_id] = $vendor_term->name;
             }
         }
 
@@ -1247,7 +1256,7 @@ class WCMp_Ajax {
         if ($check) {
             $product = get_post(absint($product_id));
             $vendor = get_wcmp_product_vendors($product_id);
-
+            $vendor_term = get_term($vendor->term_id);
             $subject = __('Report an abuse for product', 'dc-woocommerce-multi-vendor') . get_the_title($product_id);
 
             $to = sanitize_email(get_option('admin_email'));
@@ -1257,7 +1266,7 @@ class WCMp_Ajax {
             $message = sprintf(__("User %s (%s) is reporting an abuse on the following product: \n", 'dc-woocommerce-multi-vendor'), $name, $from_email);
             $message .= sprintf(__("Product details: %s (ID: #%s) \n", 'dc-woocommerce-multi-vendor'), $product->post_title, $product->ID);
 
-            $message .= sprintf(__("Vendor shop: %s \n", 'dc-woocommerce-multi-vendor'), $vendor->user_data->display_name);
+            $message .= sprintf(__("Vendor shop: %s \n", 'dc-woocommerce-multi-vendor'), $vendor_term->name);
 
             $message .= sprintf(__("Message: %s\n", 'dc-woocommerce-multi-vendor'), $user_message);
             $message .= "\n\n\n";
@@ -1287,27 +1296,22 @@ class WCMp_Ajax {
         }
         $html = '';
         if (isset($_POST['s']) && sanitize_text_field($_POST['s'])) {
-            $args = array(
+            $args1 = array(
                 'search' => '*' . esc_attr($_POST['s']) . '*',
                 'search_columns' => array('display_name', 'user_login', 'user_nicename'),
-                    /* 'meta_query' => array(
-                      'relation' => 'OR',
-                      array(
-                      'key'     => 'first_name',
-                      'value'   => esc_attr( $_POST['s'] ),
-                      'compare' => 'LIKE'
-                      ),
-                      array(
-                      'key'     => 'last_name',
-                      'value'   => esc_attr( $_POST['s'] ),
-                      'compare' => 'LIKE'
-                      )
-                      ) */
             );
-            $vendors = get_wcmp_vendors($args);
+            $args2 = array(
+                'meta_key' => '_vendor_page_title',
+                'meta_value' => esc_attr($_POST['s']),
+                'meta_compare' => 'LIKE',
+            );
+            $vendors1 = get_wcmp_vendors($args1);
+            $vendors2 = get_wcmp_vendors($args2);
+            $vendors = array_unique(array_merge($vendors1, $vendors2), SORT_REGULAR);
 
             if ($vendors) {
                 foreach ($vendors as $vendors_key => $vendor) {
+                    $vendor_term = get_term($vendor->term_id);
                     $vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
                     $html .= '<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
                     <div style=" width: 25%;  display: inline;">        
@@ -1315,7 +1319,7 @@ class WCMp_Ajax {
                     </div>
                     <div style=" width: 75%;  display: inline;  padding: 10px;">
                             <a href="' . esc_attr($vendor->permalink) . '">
-                                ' . $vendor->user_data->display_name . '
+                                ' . $vendor_term->name . '
                             </a>
                     </div>
                 </div>';
@@ -1331,6 +1335,7 @@ class WCMp_Ajax {
             $vendors = get_wcmp_vendors();
             if ($vendors) {
                 foreach ($vendors as $vendors_key => $vendor) {
+                    $vendor_term = get_term($vendor->term_id);
                     $vendor->image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
                     $html .= '<div style=" width: 100%; margin-bottom: 5px; clear: both; display: block;">
                     <div style=" width: 25%;  display: inline;">        
@@ -1338,7 +1343,7 @@ class WCMp_Ajax {
                     </div>
                     <div style=" width: 75%;  display: inline;  padding: 10px;">
                             <a href="' . esc_attr($vendor->permalink) . '">
-                                ' . $vendor->user_data->display_name . '
+                                ' . $vendor_term->name . '
                             </a>
                     </div>
                 </div>';
@@ -2271,13 +2276,13 @@ class WCMp_Ajax {
                     if ($product->get_status() == 'publish') {
                         $status = __('Published', 'dc-woocommerce-multi-vendor');
                         $date = wcmp_date($product->get_date_created('edit'));
-                    }elseif($product->get_status() == 'pending'){
+                    } elseif ($product->get_status() == 'pending') {
                         $status = __('Pending', 'dc-woocommerce-multi-vendor');
-                    }elseif($product->get_status() == 'draft'){
+                    } elseif ($product->get_status() == 'draft') {
                         $status = __('Draft', 'dc-woocommerce-multi-vendor');
-                    }elseif($product->get_status() == 'private'){
+                    } elseif ($product->get_status() == 'private') {
                         $status = __('Private', 'dc-woocommerce-multi-vendor');
-                    }else{
+                    } else {
                         $status = ucfirst($product->get_status());
                     }
 
@@ -2288,7 +2293,7 @@ class WCMp_Ajax {
                     $row ['categories'] = '<td>' . $product_cats . '</td>';
                     $row ['date'] = '<td>' . $date . '</td>';
                     $row ['status'] = '<td>' . $status . '</td>';
-                    $data[] = apply_filters( 'wcmp_vendor_dashboard_product_list_table_row_data', $row, $product );
+                    $data[] = apply_filters('wcmp_vendor_dashboard_product_list_table_row_data', $row, $product);
                 }
             }
 
@@ -2339,14 +2344,14 @@ class WCMp_Ajax {
                     if ($diff < $commission_threshold_time) {
                         continue;
                     }
-                    
-                    if(is_commission_requested_for_withdrawals($commission_id)){
+
+                    if (is_commission_requested_for_withdrawals($commission_id)) {
                         $disabled_reqested_withdrawals = 'disabled';
-                    }else{
+                    } else {
                         $disabled_reqested_withdrawals = '';
                     }
                     $row = array();
-                    $row ['select_withdrawal'] = '<input name="commissions[]" value="' . $commission_id . '" class="select_withdrawal" type="checkbox" '.$disabled_reqested_withdrawals.'>';
+                    $row ['select_withdrawal'] = '<input name="commissions[]" value="' . $commission_id . '" class="select_withdrawal" type="checkbox" ' . $disabled_reqested_withdrawals . '>';
                     $row ['order_id'] = $order->get_id();
                     $row ['commission_amount'] = wc_price($vendor_share['commission_amount']);
                     $row ['shipping_amount'] = wc_price($vendor_share['shipping_amount']);
@@ -2528,7 +2533,7 @@ class WCMp_Ajax {
             $product = wc_get_product($product_id);
             if ($product) {
                 //$vendor = get_wcmp_product_vendors( $product->get_id() );
-                $qnas_data = $WCMp->product_qna->get_Product_QNA($product->get_id(),array('sortby'=>'vote'));
+                $qnas_data = $WCMp->product_qna->get_Product_QNA($product->get_id(), array('sortby' => 'vote'));
                 if ($keyword) {
                     $qnas_data = array_filter($qnas_data, function($data) use ($keyword) {
                         return ( strpos(strtolower($data->ques_details), $keyword) !== false );
@@ -2536,55 +2541,62 @@ class WCMp_Ajax {
                 }
                 if ($qnas_data) {
                     foreach ($qnas_data as $qna) {
+                        $vendor = get_wcmp_vendor($qna->ans_by);
+                        if ($vendor) {
+                            $vendor_term = get_term($vendor->term_id);
+                            $ans_by = $vendor_term->name;
+                        } else {
+                            $ans_by = get_userdata($qna->ans_by)->display_name;
+                        }
                         $qna_data .= '<div class="qna-item-wrap item-' . $qna->ques_ID . '">
                         <div class="qna-block">
                             <div class="qna-vote">';
-                                $count = 0;
-                                $ans_vote = maybe_unserialize($qna->ans_vote);
-                                if (is_array($ans_vote)) {
-                                    $count = array_sum($ans_vote);
-                                }
-                                $qna_data .= '<div class="vote">';
-                                if (is_user_logged_in()) {
-                                    if($ans_vote && array_key_exists(get_current_user_id(), $ans_vote)) {
-                                        if($ans_vote[get_current_user_id()] > 0){
-                                            $qna_data .= '<a href="javascript:void(0)" title="'.__('You already gave a thumbs up.', 'dc-woocommerce-multi-vendor').'" class="give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
-                                    <span class="vote-count">'.$count.'</span>
-                                    <a href="" title="'.__('Give a thumbs down', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
-                                        }else{
-                                            $qna_data .= '<a href="" title="'.__('Give a thumbs up', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
-                                    <span class="vote-count">'.$count.'</span>
-                                    <a href="javascript:void(0)" title="'.__('You already gave a thumbs down.', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
-                                        }
-                                    }else{
-                                        $qna_data .= '<a href="" title="'.__('Give a thumbs up', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-up-vote" data-vote="up" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-like"></i></a>
-                                    <span class="vote-count">'.$count.'</span>
-                                    <a href="" title="'.__('Give a thumbs down', 'dc-woocommerce-multi-vendor').'" class="give-vote-btn give-down-vote" data-vote="down" data-ans="'.$qna->ans_ID.'"><i class="vote-sprite vote-sprite-dislike"></i></a>';
-                                    }
+                        $count = 0;
+                        $ans_vote = maybe_unserialize($qna->ans_vote);
+                        if (is_array($ans_vote)) {
+                            $count = array_sum($ans_vote);
+                        }
+                        $qna_data .= '<div class="vote">';
+                        if (is_user_logged_in()) {
+                            if ($ans_vote && array_key_exists(get_current_user_id(), $ans_vote)) {
+                                if ($ans_vote[get_current_user_id()] > 0) {
+                                    $qna_data .= '<a href="javascript:void(0)" title="' . __('You already gave a thumbs up.', 'dc-woocommerce-multi-vendor') . '" class="give-up-vote" data-vote="up" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-like"></i></a>
+                                    <span class="vote-count">' . $count . '</span>
+                                    <a href="" title="' . __('Give a thumbs down', 'dc-woocommerce-multi-vendor') . '" class="give-vote-btn give-down-vote" data-vote="down" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-dislike"></i></a>';
                                 } else {
-                                $qna_data .= '<a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-like"></i></a><span class="vote-count">'.$count.'</span><a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                                    $qna_data .= '<a href="" title="' . __('Give a thumbs up', 'dc-woocommerce-multi-vendor') . '" class="give-vote-btn give-up-vote" data-vote="up" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-like"></i></a>
+                                    <span class="vote-count">' . $count . '</span>
+                                    <a href="javascript:void(0)" title="' . __('You already gave a thumbs down.', 'dc-woocommerce-multi-vendor') . '" class="give-vote-btn give-down-vote" data-vote="down" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-dislike"></i></a>';
                                 }
-                                $qna_data .= '</div></div>'
-                                    . '<div class="qtn-content">'
-                                    . '<div class="qtn-row">'
-                                    . '<p class="qna-question">'
-                                    . '<span>'.__('Q: ', 'dc-woocommerce-multi-vendor').'</span>' . $qna->ques_details . '</p>'
-                                    . '</div>'
-                                    . '<div class="qtn-row">'
-                                    . '<p class="qna-answer">'
-                                    . '<span>'.__('A: ', 'dc-woocommerce-multi-vendor').'</span>' . $qna->ans_details . '</p>'
-                                    . '</div>'
-                                    . '<div class="bottom-qna">'
-                                    . '<ul class="qna-info">';
-                                
-                            $qna_data .= '<li class="qna-user">' . get_userdata($qna->ans_by)->display_name . '</li>'
-                                    . '<li class="qna-date">' . date("F j, Y, g:i a", strtotime($qna->ans_created)) . '</li>'
-                                    . '</ul>'
-                                    . '</div>'
-                                    . '</div></div></div>';
+                            } else {
+                                $qna_data .= '<a href="" title="' . __('Give a thumbs up', 'dc-woocommerce-multi-vendor') . '" class="give-vote-btn give-up-vote" data-vote="up" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-like"></i></a>
+                                    <span class="vote-count">' . $count . '</span>
+                                    <a href="" title="' . __('Give a thumbs down', 'dc-woocommerce-multi-vendor') . '" class="give-vote-btn give-down-vote" data-vote="down" data-ans="' . $qna->ans_ID . '"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                            }
+                        } else {
+                            $qna_data .= '<a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-like"></i></a><span class="vote-count">' . $count . '</span><a href="javascript:void(0)" class="non_loggedin"><i class="vote-sprite vote-sprite-dislike"></i></a>';
+                        }
+                        $qna_data .= '</div></div>'
+                                . '<div class="qtn-content">'
+                                . '<div class="qtn-row">'
+                                . '<p class="qna-question">'
+                                . '<span>' . __('Q: ', 'dc-woocommerce-multi-vendor') . ' </span>' . $qna->ques_details . '</p>'
+                                . '</div>'
+                                . '<div class="qtn-row">'
+                                . '<p class="qna-answer">'
+                                . '<span>' . __('A: ', 'dc-woocommerce-multi-vendor') . ' </span>' . $qna->ans_details . '</p>'
+                                . '</div>'
+                                . '<div class="bottom-qna">'
+                                . '<ul class="qna-info">';
+
+                        $qna_data .= '<li class="qna-user">' . $ans_by . '</li>'
+                                . '<li class="qna-date">' . date_i18n(wc_date_format(), strtotime($qna->ans_created)) . '</li>'
+                                . '</ul>'
+                                . '</div>'
+                                . '</div></div></div>';
                     }
-                    if(count($qnas_data) > 4){
-                        $qna_data .='<div class="qna-item-wrap load-more-qna"><a href="" class="load-more-btn button" style="width:100%;text-align:center;">'.__('Load More', 'dc-woocommerce-multi-vendor').'</a></div>';
+                    if (count($qnas_data) > 4) {
+                        $qna_data .= '<div class="qna-item-wrap load-more-qna"><a href="" class="load-more-btn button" style="width:100%;text-align:center;">' . __('Load More', 'dc-woocommerce-multi-vendor') . '</a></div>';
                     }
                 }
             }
@@ -2600,9 +2612,9 @@ class WCMp_Ajax {
             $vendor = get_wcmp_vendor(get_current_user_id());
             if ($vendor && $reply && $ques_ID) {
                 $_is_answer_given = $WCMp->product_qna->get_Answers($ques_ID);
-                if(isset($_is_answer_given[0]) && count($_is_answer_given[0]) > 0){
+                if (isset($_is_answer_given[0]) && count($_is_answer_given[0]) > 0) {
                     $result = $WCMp->product_qna->updateAnswer($_is_answer_given[0]->ans_ID, array('ans_details' => sanitize_textarea_field($reply)));
-                }else{
+                } else {
                     $result = $WCMp->product_qna->createAnswer(array(
                         'ques_ID' => $ques_ID,
                         'ans_details' => sanitize_textarea_field($reply),
@@ -2658,7 +2670,7 @@ class WCMp_Ajax {
             $result = false;
             $ans_ID = isset($_POST['key']) ? (int) $_POST['key'] : '';
             $answer = isset($_POST['answer']) ? $_POST['answer'] : '';
-            if($ans_ID){
+            if ($ans_ID) {
                 $result = $WCMp->product_qna->updateAnswer($ans_ID, array('ans_details' => sanitize_textarea_field($answer)));
             }
             if ($result) {
@@ -2670,7 +2682,7 @@ class WCMp_Ajax {
                 $no_data = 1;
             }
         }
-        wp_send_json(array('no_data' => $no_data, 'message' => $msg, 'data' => $qna_data, 'remain_data' => $remain_data, 'redirect'=>$redirect, 'is_user'=>is_user_logged_in()));
+        wp_send_json(array('no_data' => $no_data, 'message' => $msg, 'data' => $qna_data, 'remain_data' => $remain_data, 'redirect' => $redirect, 'is_user' => is_user_logged_in()));
         die();
     }
 
@@ -2703,13 +2715,20 @@ class WCMp_Ajax {
         if ($vendor_reviews_total) {
             $vendor_reviews = array_slice($vendor_reviews_total, $requestData['start'], $requestData['length']);
             foreach ($vendor_reviews as $comment) :
+                $vendor = get_wcmp_vendor($comment->user_id);
+                if ($vendor) {
+                    $vendor_term = get_term($vendor->term_id);
+                    $comment_by = $vendor_term->name;
+                } else {
+                    $comment_by = get_userdata($comment->user_id)->display_name;
+                }
                 $row = '';
                 $row = '<div class="media-left pull-left">   
                         <a href="#">' . get_avatar($comment->user_id, 50, '', '') . '</a>
                     </div>
                     <div class="media-body">
-                        <h4 class="media-heading">' . get_user_by('ID', $comment->user_id)->display_name . ' -- <small>' . human_time_diff(strtotime($comment->comment_date)) . __(' ago', 'dc-woocommerce-multi-vendor') . '</small></h4>
-                        <p>' . wp_trim_words($comment->comment_content, 250, '...'). '</p>
+                        <h4 class="media-heading">' . $comment_by . ' -- <small>' . human_time_diff(strtotime($comment->comment_date)) . __(' ago', 'dc-woocommerce-multi-vendor') . '</small></h4>
+                        <p>' . wp_trim_words($comment->comment_content, 250, '...') . '</p>
                         <a data-toggle="modal" data-target="#commient-modal-' . $comment->comment_ID . '">' . __('Reply', 'dc-woocommerce-multi-vendor') . '</a>
                         <!-- Modal -->
                         <div class="modal fade" id="commient-modal-' . $comment->comment_ID . '" role="dialog">
@@ -2719,7 +2738,7 @@ class WCMp_Ajax {
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">' . __('Reply to ', 'dc-woocommerce-multi-vendor') . get_user_by('ID', $comment->user_id)->display_name . '</h4>
+                                        <h4 class="modal-title">' . __('Reply to ', 'dc-woocommerce-multi-vendor') . $comment_by . '</h4>
                                     </div>
                                     <div class="wcmp-widget-modal modal-body">
                                             <textarea class="form-control" rows="5" id="comment-content-' . $comment->comment_ID . '" placeholder="' . __('Enter reply...', 'dc-woocommerce-multi-vendor') . '"></textarea>
@@ -2810,7 +2829,7 @@ class WCMp_Ajax {
         wp_send_json($json_data);
         die;
     }
-    
+
     public function wcmp_vendor_products_qna_list() {
         global $WCMp;
         $requestData = $_REQUEST;
@@ -2818,14 +2837,14 @@ class WCMp_Ajax {
         // filter by status
         if (isset($requestData['qna_status']) && $requestData['qna_status'] == 'all' && $requestData['qna_status'] != '') {
             $vendor_questions_n_answers = $WCMp->product_qna->get_Vendor_Questions($vendor, false);
-        }else{
+        } else {
             $vendor_questions_n_answers = $WCMp->product_qna->get_Vendor_Questions($vendor, true);
         }
         // filter by products
-        if(isset($requestData['qna_products']) && is_array($requestData['qna_products'])){
-            if($vendor_questions_n_answers){
-                foreach ($vendor_questions_n_answers as $key => $qna_ques) { 
-                    if(!in_array($qna_ques->product_ID, $requestData['qna_products'])){
+        if (isset($requestData['qna_products']) && is_array($requestData['qna_products'])) {
+            if ($vendor_questions_n_answers) {
+                foreach ($vendor_questions_n_answers as $key => $qna_ques) {
+                    if (!in_array($qna_ques->product_ID, $requestData['qna_products'])) {
                         unset($vendor_questions_n_answers[$key]);
                     }
                 }
@@ -2834,21 +2853,21 @@ class WCMp_Ajax {
         $vendor_qnas = array_slice($vendor_questions_n_answers, $requestData['start'], $requestData['length']);
         $data = array();
 
-        if($vendor_qnas){
+        if ($vendor_qnas) {
             // filter by vote
-            if($requestData['order'][0]['dir'] != 'asc'){
+            if ($requestData['order'][0]['dir'] != 'asc') {
                 $votes = array();
-                foreach ($vendor_qnas as $key => $qna_ques) { 
+                foreach ($vendor_qnas as $key => $qna_ques) {
                     $count = 0;
                     $have_answer = $WCMp->product_qna->get_Answers($qna_ques->ques_ID);
-                    if(isset($have_answer[0]) && count($have_answer[0]) > 0){
+                    if (isset($have_answer[0]) && count($have_answer[0]) > 0) {
                         $ans_vote = maybe_unserialize($have_answer[0]->ans_vote);
-                        if(is_array($ans_vote)){
+                        if (is_array($ans_vote)) {
                             $count = array_sum($ans_vote);
                         }
                         $vendor_qnas[$key]->vote_count = $count;
                         $votes[$key] = $count;
-                    }else{
+                    } else {
                         $vendor_qnas[$key]->vote_count = $count;
                         $votes[$key] = $count;
                     }
@@ -2858,46 +2877,46 @@ class WCMp_Ajax {
 
             foreach ($vendor_qnas as $question) {
                 $product = wc_get_product($question->product_ID);
-                if($product){
+                if ($product) {
                     $have_answer = $WCMp->product_qna->get_Answers($question->ques_ID);
                     $details = '';
                     $status = '';
                     $vote = '&ndash;';
-                    if(!isset($have_answer[0])){
-                        $status = '<span class="unanswered label label-default">'.__('Unanswered', 'dc-woocommerce-multi-vendor').'</span>';
+                    if (!isset($have_answer[0])) {
+                        $status = '<span class="unanswered label label-default">' . __('Unanswered', 'dc-woocommerce-multi-vendor') . '</span>';
                         $details .= '<div class="wcmp-question-details-modal modal-body">
                                         <textarea class="form-control" rows="5" id="qna-reply-' . $question->ques_ID . '" placeholder="' . __('Post your answer...', 'dc-woocommerce-multi-vendor') . '"></textarea>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" data-key="' . $question->ques_ID . '" class="btn btn-default wcmp-add-qna-reply">' . __('Add', 'dc-woocommerce-multi-vendor') . '</button>
                                     </div>';
-                    }else{
-                        $status = '<span class="answered label label-success">'.__('Answered', 'dc-woocommerce-multi-vendor').'</span>';
+                    } else {
+                        $status = '<span class="answered label label-success">' . __('Answered', 'dc-woocommerce-multi-vendor') . '</span>';
                         $ans_vote = maybe_unserialize($have_answer[0]->ans_vote);
-                        if(is_array($ans_vote)){
+                        if (is_array($ans_vote)) {
                             $vote = array_sum($ans_vote);
-                            if($vote > 0){
-                                $vote = '<span class="label label-success">'.$vote.'</span>';
-                            }else{
-                                $vote = '<span class="label label-danger">'.$vote.'</span>';
+                            if ($vote > 0) {
+                                $vote = '<span class="label label-success">' . $vote . '</span>';
+                            } else {
+                                $vote = '<span class="label label-danger">' . $vote . '</span>';
                             }
                         }
-                        if(apply_filters('wcmp_vendor_can_modify_qna_answer', false)){
+                        if (apply_filters('wcmp_vendor_can_modify_qna_answer', false)) {
                             $details .= '<div class="wcmp-question-details-modal modal-body">
-                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '">'.stripslashes($have_answer[0]->ans_details).'</textarea>
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '">' . stripslashes($have_answer[0]->ans_details) . '</textarea>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" data-key="' . $have_answer[0]->ans_ID . '" class="btn btn-default wcmp-update-qna-answer">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</button>
                                     </div>';
-                        }else{
+                        } else {
                             $details .= '<div class="wcmp-question-details-modal modal-body">
-                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '" disabled>'.stripslashes($have_answer[0]->ans_details).'</textarea>
+                                        <textarea class="form-control" rows="5" id="qna-answer-' . $have_answer[0]->ans_ID . '" disabled>' . stripslashes($have_answer[0]->ans_details) . '</textarea>
                                     </div>';
                         }
                     }
                     $data[] = array(
-                        'qnas' => '<a data-toggle="modal" data-target="#question-details-modal-' . $question->ques_ID . '" data-ques="'.$question->ques_ID.'" class="question-details">'.wp_trim_words(stripslashes($question->ques_details), 160, '...').'</a>'
-                                . '<!-- Modal -->
+                        'qnas' => '<a data-toggle="modal" data-target="#question-details-modal-' . $question->ques_ID . '" data-ques="' . $question->ques_ID . '" class="question-details">' . wp_trim_words(stripslashes($question->ques_details), 160, '...') . '</a>'
+                        . '<!-- Modal -->
                                 <div class="modal fade" id="question-details-modal-' . $question->ques_ID . '" role="dialog">
                                     <div class="modal-dialog">
                                         <!-- Modal content-->
@@ -2906,7 +2925,7 @@ class WCMp_Ajax {
                                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                 <h4 class="modal-title">' . stripslashes($question->ques_details) . '</h4>
                                             </div>
-                                            '.$details.'
+                                            ' . $details . '
                                         </div>
                                     </div>
                                 </div>',
@@ -2925,6 +2944,91 @@ class WCMp_Ajax {
             "data" => $data   // total data array
         );
         wp_send_json($json_data);
+    }
+
+    /**
+     * Ajax handler for tag search.
+     *
+     * @since 3.0.6
+     */
+    function wcmp_product_tag_search() {
+        if (!isset($_GET['tax'])) {
+            wp_die(0);
+        }
+
+        $taxonomy = sanitize_key($_GET['tax']);
+        $tax = get_taxonomy($taxonomy);
+        if (!$tax) {
+            wp_die(0);
+        }
+
+        if (!current_user_can($tax->cap->assign_terms)) {
+            wp_die(-1);
+        }
+
+        $s = wp_unslash($_GET['q']);
+
+        $comma = _x(',', 'tag delimiter');
+        if (',' !== $comma)
+            $s = str_replace($comma, ',', $s);
+        if (false !== strpos($s, ',')) {
+            $s = explode(',', $s);
+            $s = $s[count($s) - 1];
+        }
+        $s = trim($s);
+
+        /**
+         * Filters the minimum number of characters required to fire a tag search via Ajax.
+         *
+         * @since 4.0.0
+         *
+         * @param int         $characters The minimum number of characters required. Default 2.
+         * @param WP_Taxonomy $tax        The taxonomy object.
+         * @param string      $s          The search term.
+         */
+        $term_search_min_chars = (int) apply_filters('term_search_min_chars', 2, $tax, $s);
+
+        /*
+         * Require $term_search_min_chars chars for matching (default: 2)
+         * ensure it's a non-negative, non-zero integer.
+         */
+        if (( $term_search_min_chars == 0 ) || ( strlen($s) < $term_search_min_chars )) {
+            wp_die();
+        }
+
+        $results = get_terms($taxonomy, array('name__like' => $s, 'fields' => 'names', 'hide_empty' => false));
+
+        wp_send_json($results);
+        wp_die();
+    }
+    
+    /**
+     * Ajax handler for tag add.
+     *
+     * @since 3.0.6
+     */
+    function wcmp_product_tag_add() {
+        $taxonomy = apply_filters( 'wcmp_product_tag_add_taxonomy', 'product_tag' );
+	$tax = get_taxonomy($taxonomy);
+        $tag_name = '';
+        $message = '';
+        if (!apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id())){
+            $message = __("You don't have permission to add product tags", 'dc-woocommerce-multi-vendor');
+            wp_send_json(array('tag_name' => $tag_name, 'message' => $message));
+            die;
+        }
+
+	$tag = wp_insert_term($_POST['new_tag'], $taxonomy, $_POST );
+
+	if ( !$tag || is_wp_error($tag) || (!$tag = get_term( $tag['term_id'], $taxonomy )) ) {
+            $message = __('An error has occurred. Please reload the page and try again.', 'dc-woocommerce-multi-vendor');
+            if ( is_wp_error($tag) && $tag->get_error_message() )
+                $message = $tag->get_error_message();
+        }else{
+            $tag_name = $tag->name;
+        }
+        wp_send_json(array('tag_name' => $tag_name, 'message' => $message));
+        die;
     }
 
 }

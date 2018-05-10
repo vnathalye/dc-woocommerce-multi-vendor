@@ -12,7 +12,7 @@
 global $WCMp;
 ?>
 
-<h4><?php echo $vendor->user_data->display_name; ?> </h4>
+<h4><?php echo $vendor->page_title; ?> </h4>
 <?php 
 	$description = strip_tags($vendor->description);
 	if (strlen($description) > 250) {
@@ -25,7 +25,7 @@ global $WCMp;
 ?>
 <p><?php echo $description; ?> </p>
 <p>
-	<a href="<?php echo esc_attr( $vendor->permalink ); ?>" title="'<?php echo sprintf( __( 'More Products from %1$s', 'dc-woocommerce-multi-vendor' ), $vendor->user_data->display_name ); ?> '">
-		<?php echo sprintf( __( 'More Products from %1$s', 'dc-woocommerce-multi-vendor' ), $vendor->user_data->display_name );?>
+	<a href="<?php echo esc_attr( $vendor->permalink ); ?>" title="<?php echo sprintf( __( 'More Products from %1$s', 'dc-woocommerce-multi-vendor' ), $vendor->page_title ); ?>">
+		<?php echo sprintf( __( 'More Products from %1$s', 'dc-woocommerce-multi-vendor' ), $vendor->page_title );?>
 	</a>
 </p>

@@ -46,6 +46,8 @@ class WCMp_User {
         add_filter('login_redirect', array($this, 'wp_wcmp_vendor_login'), 10, 3);
         // set cookie
         $this->set_wcmp_user_cookies();
+        //User Avatar override
+        add_filter( 'get_avatar', array( &$this, 'wcmp_user_avatar_override' ), 10, 6 );
     }
 
     /**
@@ -862,7 +864,9 @@ class WCMp_User {
                         if (!$vendor->update_page_title(wc_clean($fieldvalue))) {
                             $errors->add('vendor_title_exists', __('Title Update Error', 'dc-woocommerce-multi-vendor'));
                         } else {
-                            wp_update_user(array('ID' => $user_id, 'display_name' => $fieldvalue));
+                            if(apply_filters('wcmp_update_user_display_name_with_vendor_store_name', false, $user_id)){
+                                wp_update_user(array('ID' => $user_id, 'display_name' => $fieldvalue));
+                            }
                         }
                     } elseif ($fieldkey == 'vendor_page_slug') {
                         if (!$vendor->update_page_slug(wc_clean($fieldvalue))) {
@@ -873,6 +877,8 @@ class WCMp_User {
                     } else {
                         update_user_meta($user_id, '_' . $fieldkey, $_POST[$fieldkey]);
                     }
+                } else if (isset($_POST['vendor_commission']) && $fieldkey == 'vendor_commission') {
+                    update_user_meta($user_id, '_vendor_commission', $_POST[$fieldkey]);
                 } else if (!isset($_POST['vendor_hide_description']) && $fieldkey == 'vendor_hide_description') {
                     delete_user_meta($user_id, '_vendor_hide_description');
                 } else if (!isset($_POST['vendor_hide_address']) && $fieldkey == 'vendor_hide_address') {
@@ -983,6 +989,73 @@ class WCMp_User {
         }else{
             setcookie( $_cookie_id, $_COOKIE[$_cookie_id], time() + YEAR_IN_SECONDS, '/' );
         }
-    } 
+    }
+    
+    /**
+	* avatar_override()
+	*
+	* Overrides an avatar with a profile image
+	*
+	* @param string $avatar SRC to the avatar
+	* @param mixed $id_or_email 
+	* @param int $size Size of the image
+	* @param string $default URL to the default image
+	* @param string $alt Alternative text
+	**/
+    public function wcmp_user_avatar_override( $avatar, $id_or_email, $size, $default, $alt, $args=array()) {
+        //Get user data
+        if ( is_numeric( $id_or_email ) ) {
+                $user = get_user_by( 'id', ( int )$id_or_email );
+        } elseif( is_object( $id_or_email ) )  {
+            $comment = $id_or_email;
+            if ( empty( $comment->user_id ) ) {
+                    $user = get_user_by( 'id', $comment->user_id );
+            } else {
+                    $user = get_user_by( 'email', $comment->comment_author_email );
+            }
+            if ( !$user ) return $avatar;
+        } elseif( is_string( $id_or_email ) ) {
+            $user = get_user_by( 'email', $id_or_email );
+        } else {
+            return $avatar;
+        }
+        if ( !$user ) return $avatar;
+        $classes = array(
+            'avatar',
+            sprintf( 'avatar-%s', esc_attr( $size ) ),
+            'photo'
+        );	
+        if ( isset( $args[ 'class' ] ) ) {
+            if ( is_array( $args['class'] ) ) {
+                $classes = array_merge( $classes, $args['class'] );
+            } else {
+                $args[ 'class' ] = explode( ' ', $args[ 'class' ] );
+                $classes = array_merge( $classes, $args[ 'class' ] );
+            }
+        } 
+        //Get custom filter classes
+        $classes = (array)apply_filters( 'wcmp_user_avatar_classes', $classes );
+
+        //Determine if the user is WCMp vendor
+        $wcmp_vendor_avatar = '';
+        if(is_user_wcmp_vendor($user->ID)){
+            $vendor = get_wcmp_vendor($user->ID);
+            $wcmp_vendor_avatar = sprintf(
+                "<img alt='%s' src='%s' class='%s' height='%d' width='%d' %s/>",
+                esc_attr( $args['alt'] ),
+                esc_url( $vendor->get_image('image', array($size, $size)) ),
+                esc_attr(implode( ' ', $classes ) ),
+                (int) $size,
+                (int) $size,
+                $args['extra_attr']
+            );
+        }
+
+        if(!empty($wcmp_vendor_avatar)){
+            return $wcmp_vendor_avatar;
+        }else{
+            return $avatar; 
+        }
+    }
     
 }

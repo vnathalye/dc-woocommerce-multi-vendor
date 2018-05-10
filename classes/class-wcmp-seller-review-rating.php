@@ -47,7 +47,7 @@ class WCMp_Seller_Review_Rating {
                             $term_link = get_term_link($term, $WCMp->taxonomy->taxonomy_name);
                             $review_link = trailingslashit($term_link) . '#reviews';
                             $arr_values['vendor_review_link'] = $review_link;
-                            $arr_values['shop_name'] = $vendor->user_data->display_name;
+                            $arr_values['shop_name'] = $vendor->page_title;
                             $arr_values['product_name'] = $product->post_title;
                             $WCMp->template->get_template('review/review-link.php', array('review_data' => $arr_values));
                         }
@@ -65,7 +65,7 @@ class WCMp_Seller_Review_Rating {
                         $term_link = get_term_link($term, $WCMp->taxonomy->taxonomy_name);
                         $review_link = trailingslashit($term_link) . '#reviews';
                         $arr_values['vendor_review_link'] = $review_link;
-                        $arr_values['shop_name'] = $vendor->user_data->display_name;
+                        $arr_values['shop_name'] = $vendor->page_title;
                         $arr_values['product_name'] = $product->post_title;
                         $WCMp->template->get_template('review/review-link.php', array('review_data' => $arr_values));
                     }
@@ -104,7 +104,13 @@ class WCMp_Seller_Review_Rating {
     function wcmp_comment_vendor_rating_callback($comment) {
         global $WCMp;
         $vendor_rating_id = get_comment_meta($comment->comment_ID, 'vendor_rating_id', true);
-        $user = new WP_User($vendor_rating_id);
+        $vendor = new WCMp_Vendor($vendor_rating_id);
+        if($vendor){
+            $name = $vendor->page_title;
+        }else{
+            $user = new WP_User($vendor_rating_id);
+            $name = $user->display_name;
+        }
         ?>
         <table class="form-table">
             <tbody>			
@@ -117,7 +123,7 @@ class WCMp_Seller_Review_Rating {
                         <label for="vendor_rating_author" class="screen-reader-text"><?php echo __('Vendor Name.', 'dc-woocommerce-multi-vendor'); ?></label>
                     </th>
                     <td>
-        <?php echo $user->display_name; ?>
+        <?php echo $name; ?>
                     </td>
                 </tr>
             </tbody>
@@ -131,6 +137,7 @@ class WCMp_Seller_Review_Rating {
                         update_comment_meta($_POST['comment_ID'], 'vendor_rating', $_POST['vendor_rating']);
                     }
                 }
+                return $comment_data;
             }
 
             function get_wcmp_comment_rating_field($comment) {

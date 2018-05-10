@@ -19,6 +19,7 @@ global $WCMp;
         foreach ($vendor_array as $vendor_id => $products) {
             if(is_user_wcmp_vendor($vendor_id)){
             $vendor_meta = get_user_meta($vendor_id);
+            $vendor = get_wcmp_vendor($vendor_id);
             $vendor_message_to_buyer = apply_filters('wcmp_display_vendor_message_to_buyer', get_user_meta($vendor_id, '_vendor_message_to_buyers', true), $vendor_id);
 //            if (!empty($vendor_message_to_buyer) ||
 //                    (isset($vendor_meta['_vendor_customer_phone'][0]) && isset($vendor_meta['_vendor_customer_email'][0])) ||
@@ -34,7 +35,7 @@ global $WCMp;
                 <tr>
                     <td style="padding:10px 10px; background:none; border-right: 1px solid #e4e4e4; border-bottom: 1px solid #e4e4e4; width:50%;" align="left" valign="top">
                         <p><strong><?php echo __('Vendor Name', 'dc-woocommerce-multi-vendor'); ?> </strong><br>
-                            <?php echo $vendor_meta['nickname'][0] ?> </p>
+                            <?php echo $vendor->page_title; ?> </p>
                         <p><strong><?php echo __('Product Name', 'dc-woocommerce-multi-vendor'); ?> </strong> <br>
                         <?php echo $products; ?>
                         </p>

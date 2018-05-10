@@ -208,7 +208,7 @@ class DC_Widget_Quick_Info_Widget extends WP_Widget {
             $headers[] = "From: {$from} <{$from_email}>";
             $headers[] = "Cc: Admin <{$admin_email}>";
             $headers[] = "Reply-To: {$from} <{$from_email}>";
-
+            $headers = apply_filters('wcmp_contact_vendor_send_mail_headers', $headers);
             /* === Send Mail === */
             $check = wp_mail($to, $subject, $message, $headers);
 

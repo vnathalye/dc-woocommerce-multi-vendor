@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 
 if (isset($queried_object->term_id) && !empty($queried_object)) {
     $vendor = get_wcmp_vendor_by_term($queried_object->term_id);
-    $shop_name = $vendor->user_data->data->display_name;
+    $shop_name = $vendor->page_title;
     $vendor_id = $vendor->id;
     $count = $vendor->get_review_count();
     $is_enable = wcmp_seller_review_enable($queried_object->term_id);

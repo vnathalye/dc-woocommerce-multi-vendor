@@ -34,7 +34,7 @@ jQuery(document).ready(function ($) {
             msg: $('.report_abuse_msg').val(),
         };
         if (inpObjName.checkValidity() && inpObjEmail.checkValidity() && inpObjMessage.checkValidity()) {
-            $.post(woocommerce_params.ajax_url, data, function (responsee) {
+            $.post(frontend_js_script_data.ajax_url, data, function (responsee) {
                 $('.simplePopupClose').click();
                 $('#report_abuse').css({'box-shadow': 'none', 'cursor': 'default', 'color': '#686868'});
                 $('#report_abuse').attr('href', 'javascript:void(0)');
@@ -52,7 +52,7 @@ jQuery(document).ready(function ($) {
             vendor_search_nonce: $('#wcmp_vendor_search_nonce').val()
         }
 
-        $.post(woocommerce_params.ajax_url, vendor_search_data, function (response) {
+        $.post(frontend_js_script_data.ajax_url, vendor_search_data, function (response) {
             $('#wcmp_widget_vendor_list').html('');
             $('#wcmp_widget_vendor_list').html(response);
 
@@ -72,7 +72,7 @@ jQuery(document).ready(function ($) {
     $('.wcmp_fpm_delete').each(function() {
         $(this).click(function(event) {
             event.preventDefault();
-            var rconfirm = confirm("Are you sure and want to delete this 'Product'?\nYou can't undo this action ...");
+            var rconfirm = confirm(frontend_js_script_data.messages.confirm_dlt_pro);
             if(rconfirm) deleteProduct($(this));
             return false;
         });
@@ -92,7 +92,7 @@ jQuery(document).ready(function ($) {
         }	
         $.ajax({
             type: 'POST',
-            url: woocommerce_params.ajax_url,
+            url: frontend_js_script_data.ajax_url,
             data: data,
             success: function(response) {
                 if(response) {

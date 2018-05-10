@@ -25,14 +25,14 @@ class WCMp_Settings_Vendor_Registration {
     public function settings_page_init() {
         global $WCMp;
         ?>
-<h4>Setting panel to add extra fields in vendor registration page, along with the <a href="<?php echo admin_url('admin.php').'?page=wc-settings&tab=account'; ?>">WooCommerce registration form</a></h4>
+<h4><?php echo __('Setting panel to add extra fields in vendor registration page, along with the','dc-woocommerce-multi-vendor'); ?> <a href="<?php echo admin_url('admin.php').'?page=wc-settings&tab=account'; ?>"><?php echo __('WooCommerce registration form','dc-woocommerce-multi-vendor'); ?></a></h4>
         <div id="nav-menus-frame" ng-app="vendor_registration">
             <div id="menu-settings-column" class="metabox-holder" ng-controller="postbox_menu">
                 <div id="side-sortables" class="meta-box-sortables ui-sortable">
                     <div class="postbox" ng-class="postboxClass">
                         <button ng-click="togglePostbox()" aria-expanded="false" class="handlediv button-link" type="button"><span class="screen-reader-text">Toggle panel: Format</span><span aria-hidden="true" class="toggle-indicator"></span></button>
                         <h3 class="hndl ui-sortable-handle">
-                            <span>Form Fields</span>
+                            <span><?php echo __('Form Fields','dc-woocommerce-multi-vendor'); ?></span>
                         </h3>
                         <div class="inside">
                             <p class="button-controls">
@@ -69,7 +69,7 @@ class WCMp_Settings_Vendor_Registration {
                     <div class="postbox" ng-class="vendorStoreFieldClass">
                         <button ng-click="togglevendorStoreField()" aria-expanded="false" class="handlediv button-link" type="button"><span class="screen-reader-text">Toggle panel: Format</span><span aria-hidden="true" class="toggle-indicator"></span></button>
                         <h3 class="hndl ui-sortable-handle">
-                            <span>Vendor Store Fields</span>
+                            <span><?php echo __('Vendor Store Fields','dc-woocommerce-multi-vendor'); ?></span>
                         </h3>
                         <div class="inside">
                             <p class="button-controls">
@@ -110,7 +110,7 @@ class WCMp_Settings_Vendor_Registration {
                             <input type="button" value="Save" ng-click="saveFormData()" class="button-primary menu-save">
                             <a disabled="" ng-show="showSaveSpinner" class="button-secondary" href="#"><span style="visibility: visible; float: left;" class="spinner"></span></a>
                             
-                            <div ng-if="fields.length === 0" class="wcmp-form-empty-container">Build your form here</div>
+                            <div ng-if="fields.length === 0" class="wcmp-form-empty-container"><?php echo __('Build your form here','dc-woocommerce-multi-vendor'); ?></div>
                             
                             <ul class="meta-box-sortables" ui-sortable="fieldSortableOptions" ng-model="fields">
                                 <li ng-repeat="(parentIndex,field) in fields track by $index">
@@ -127,7 +127,7 @@ class WCMp_Settings_Vendor_Registration {
                             </ul>
                             <input type="button" value="Save" ng-click="saveFormData()" class="button-primary menu-save">
                             <a disabled="" ng-show="showSaveSpinner" class="button-secondary" href="#"><span style="visibility: visible; float: left;" class="spinner"></span></a>
-                            <h4>Use [wcmp-regi-12], [wcmp-regi-6], [wcmp-regi-4] CSS class to customize the form</h4>
+                            <h4><?php printf(__('Use %s, %s, %s CSS class to customize the form','dc-woocommerce-multi-vendor'), '[wcmp-regi-12]', '[wcmp-regi-6]', '[wcmp-regi-4]'); ?></h4>
                         </div>
                     </div>
                 </div>

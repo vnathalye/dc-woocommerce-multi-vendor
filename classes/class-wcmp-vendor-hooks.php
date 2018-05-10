@@ -314,6 +314,7 @@ class WCMp_Vendor_Hooks {
         //wp_enqueue_style('ui_vendor_announcements', '//code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css', array(), $WCMp->version);
         wp_enqueue_script('jquery-ui-accordion');
         wp_enqueue_script('wcmp_new_vandor_announcements_js', $frontend_script_path . 'wcmp_vendor_announcements' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        $WCMp->localize_script('wcmp_new_vandor_announcements_js');
         //wp_enqueue_script('jquery');
         //wp_enqueue_script('wcmp_new_vandor_announcements_js_lib_ui', '//code.jquery.com/ui/1.10.4/jquery-ui.js', array('jquery'), $WCMp->version, true);
         $vendor = get_wcmp_vendor(get_current_vendor_id());
@@ -419,11 +420,16 @@ class WCMp_Vendor_Hooks {
         if(!wp_script_is( 'tiny_mce', 'enqueued' )){
             wp_enqueue_editor();
         }
+         // Enqueue jQuery UI and autocomplete
+        wp_enqueue_script( 'jquery-ui-autocomplete' );
+        wp_enqueue_script( 'wp-a11y' );
+        wp_enqueue_script( 'suggest' );
+    
         wp_enqueue_style('product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager' . $suffix . '.css', array(), $WCMp->version);
         wp_enqueue_script('product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager' . $suffix . '.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
 
-        $WCMp_fpm_messages = get_frontend_product_manager_messages();
-        wp_localize_script('product_manager_js', 'product_manager_messages', $WCMp_fpm_messages);
+        $WCMp->localize_script('product_manager_js');
+        
         $pro_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')];
         if ($pro_id) {
             $product = wc_get_product($pro_id);
@@ -476,8 +482,8 @@ class WCMp_Vendor_Hooks {
         $WCMp->library->load_select2_lib();
         wp_enqueue_script('coupon_manager_js', $WCMp->plugin_url . 'assets/frontend/js/coupon_manager.js', array('jquery', 'jquery-ui-accordion'), $WCMp->version, true);
 
-        $WCMp_fpm_messages = get_frontend_coupon_manager_messages();
-        wp_localize_script('coupon_manager_js', 'coupon_manager_messages', $WCMp_fpm_messages);
+        $WCMp->localize_script('coupon_manager_js');
+        
         $coupon_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon')];
         $WCMp->template->get_template('vendor-dashboard/coupon-manager/add-coupons.php', array('couponid' => $coupon_id));
     }
@@ -508,11 +514,11 @@ class WCMp_Vendor_Hooks {
             $WCMp->template->get_template('vendor-dashboard/vendor-orders/vendor-order-details.php', array('order_id' => $vendor_order));
         } else {
             $WCMp->library->load_dataTable_lib();
-            $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
-            $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
-            $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-            wp_enqueue_script('vendor_orders_js', $frontend_script_path . 'vendor_orders' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_localize_script('vendor_orders_js', 'wcmp_mark_shipped_text', array('text' => __('Order is marked as shipped.', 'dc-woocommerce-multi-vendor'), 'image' => $WCMp->plugin_url . 'assets/images/roket-green.png'));
+//            $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
+//            $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
+//            $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
+//            wp_enqueue_script('vendor_orders_js', $frontend_script_path . 'vendor_orders' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+//            wp_localize_script('vendor_orders_js', 'wcmp_mark_shipped_text', array('text' => __('Order is marked as shipped.', 'dc-woocommerce-multi-vendor'), 'image' => $WCMp->plugin_url . 'assets/images/roket-green.png'));
 
             if (!empty($_POST['wcmp_start_date_order'])) {
                 $start_date = $_POST['wcmp_start_date_order'];
@@ -525,8 +531,8 @@ class WCMp_Vendor_Hooks {
             } else {
                 $end_date = date('t-m-Y');
             }
-            wp_localize_script('vendor_orders_js', 'vendor_orders_args', array('start_date' => strtotime($start_date), 'end_date' => strtotime($end_date . ' +1 day')));
-            $WCMp->template->get_template('vendor-dashboard/vendor-orders.php', array('vendor' => $vendor));
+            //wp_localize_script('vendor_orders_js', 'vendor_orders_args', array('start_date' => strtotime($start_date), 'end_date' => strtotime($end_date . ' +1 day')));
+            $WCMp->template->get_template('vendor-dashboard/vendor-orders.php', array('vendor' => $vendor, 'start_date' => strtotime($start_date), 'end_date' => strtotime($end_date . ' +1 day')));
         }
     }
 
@@ -579,7 +585,7 @@ class WCMp_Vendor_Hooks {
         global $WCMp, $wp;
         $user_id = get_current_vendor_id();
         if (is_user_wcmp_vendor($user_id)) {
-            $transaction_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_vendor_withdrawal_endpoint', 'vendor', 'general', 'transaction-details')];
+            $transaction_id = $wp->query_vars[get_wcmp_vendor_settings('wcmp_transaction_details_endpoint', 'vendor', 'general', 'transaction-details')];
             if (!empty($transaction_id)) {
                 $WCMp->template->get_template('vendor-dashboard/vendor-withdrawal/vendor-withdrawal-request.php', array('transaction_id' => $transaction_id));
             } else {

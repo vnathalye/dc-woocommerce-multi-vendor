@@ -23,8 +23,8 @@ class WCMp_Vendor_Dashboard_Shortcode {
     public static function output($attr) {
         global $WCMp, $wp;
         $WCMp->nocache();
-        if (!defined('MNDASHBAOARD')) {
-            define('MNDASHBAOARD', true);
+        if (!defined('WCMP_DASHBAOARD')) {
+            define('WCMP_DASHBAOARD', true);
         }
         if (!is_user_logged_in()) {
             echo '<div class="woocommerce">';

@@ -1,4 +1,4 @@
-jQuery(document).ready(function ($) {
+jQuery(document).ready(function ($) { 
     /** for add xtore support **/
     var SingleProductMultivendor;
     if(typeof themeSingleProductMultivendor != 'undefined'){
@@ -19,7 +19,7 @@ jQuery(document).ready(function ($) {
         var data = {
             action: 'get_loadmorebutton_single_product_multiple_vendors'
         }
-        $.post(woocommerce_params.ajax_url, data, function (response) {
+        $.post(wcmp_single_product_multiple_vendors_script_data.ajax_url, data, function (response) {
             $(SingleProductMultivendor).append(response);
         });
     }
@@ -39,7 +39,7 @@ jQuery(document).ready(function ($) {
                     sorting_value: sorting_value,
                     attrid: attrid
                 }
-                $.post(woocommerce_params.ajax_url, sorting_data, function (response) {
+                $.post(wcmp_single_product_multiple_vendors_script_data.ajax_url, sorting_data, function (response) {
                     $(SingleProductMultivendor+ ' .rowbody').each(function () {
                         $(this).remove();
                     });

@@ -32,7 +32,7 @@ if($vendors) {
 			</div>
 			<div style=" width: 75%;  display: inline;  padding: 10px;">
 					<a href="<?php echo esc_attr( $vendor->permalink ); ?>">
-						<?php echo $vendor->user_data->display_name; ?>
+						<?php echo $vendor->page_title; ?>
 					</a>
 			</div>
 		</div>

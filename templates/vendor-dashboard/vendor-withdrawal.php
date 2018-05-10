@@ -102,7 +102,7 @@ jQuery(document).ready(function($) {
             })
         },
         ajax:{
-            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_unpaid_order_vendor_withdrawal_list', 
+            url : '<?php echo add_query_arg( 'action', 'wcmp_vendor_unpaid_order_vendor_withdrawal_list', $WCMp->ajax_url() ); ?>', 
             type: "post",
             error: function(xhr, status, error) {
                 $("#vendor_withdrawal tbody").append('<tr class="odd"><td valign="top" colspan="6" class="dataTables_empty" style="text-align:center;">'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></a></td></tr>');

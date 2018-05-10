@@ -60,7 +60,7 @@ jQuery(document).ready(function($) {
             }
         },
         ajax:{
-            url : woocommerce_params.ajax_url+'?action=wcmp_vendor_dashboard_reviews_data', 
+            url : '<?php echo add_query_arg( 'action', 'wcmp_vendor_dashboard_reviews_data', $WCMp->ajax_url() ); ?>', 
             type: "post",
             error: function(xhr, status, error) {
                 $("#vendor_reviews tbody").append('<tr class="odd"><td valign="top" colspan="1" class="dataTables_empty"><div>'+error+' - <a href="javascript:window.location.reload();"><?php _e('Reload', 'dc-woocommerce-multi-vendor'); ?></div></td></tr>');

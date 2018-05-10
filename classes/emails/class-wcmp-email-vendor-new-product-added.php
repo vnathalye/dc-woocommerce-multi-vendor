@@ -72,7 +72,7 @@ if (!class_exists('WC_Email_Vendor_New_Product_Added')) :
             $this->replace[] = $this->product_name;
 
             $this->find[] = '{vendor_name}';
-            $this->vendor_name = $vendor->user_data->display_name;
+            $this->vendor_name = $vendor->page_title;
             $this->replace[] = $this->vendor_name;
 
             $this->post_id = $post->ID;

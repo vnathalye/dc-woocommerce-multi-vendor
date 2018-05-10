@@ -241,6 +241,15 @@ final class WCMp {
     }
 
     /**
+     * Get Ajax URL.
+     *
+     * @return string
+     */
+    public function ajax_url() {
+        return admin_url('admin-ajax.php', 'relative');
+    }
+
+    /**
      * Init WCMp User and define users roles
      *
      * @access public
@@ -419,6 +428,77 @@ final class WCMp {
         $emails['WC_Email_Vendor_Orders_Stats_Report'] = new WC_Email_Vendor_Orders_Stats_Report();
 
         return $emails;
+    }
+
+    /**
+     * Return data for script handles.
+     * @since  3.0.6 
+     * @param  string $handle
+     * @return array|bool
+     */
+    public function wcmp_get_script_data($handle) {
+        global $WCMp;
+
+        switch ($handle) {
+            case 'frontend_js' :
+                $params = array(
+                    'ajax_url' => $this->ajax_url(),
+                    'messages' => array('confirm_dlt_pro' => __("Are you sure and want to delete this Product?\nYou can't undo this action ...", 'dc-woocommerce-multi-vendor')),
+                );
+                break;
+            
+            case 'product_manager_js' :
+                $params = array(
+                    'ajax_url' => $this->ajax_url(),
+                    'messages' => get_frontend_product_manager_messages(),
+                );
+                break;
+
+            case 'coupon_manager_js' :
+                $params = array(
+                    'ajax_url' => $this->ajax_url(),
+                    'messages' => get_frontend_coupon_manager_messages(),
+                );
+                break;
+            
+            case 'wcmp_frontend_vdashboard_js' :
+            case 'wcmp_single_product_multiple_vendors' :
+            case 'wcmp_customer_qna_js' :
+            case 'wcmp_new_vandor_announcements_js' :
+                $params = array(
+                    'ajax_url' => $this->ajax_url(),
+                );
+                break;
+            
+            case 'wcmp_seller_review_rating_js' :
+                $params = array(
+                    'ajax_url' => $this->ajax_url(),
+                    'messages' => array(
+                        'rating_error_msg_txt' => __('Please rate the vendor', 'dc-woocommerce-multi-vendor'),
+                        'review_error_msg_txt' => __('Please review your vendor and minimum 10 Character required', 'dc-woocommerce-multi-vendor'),
+                        'review_success_msg_txt' => __('Your review submitted successfully', 'dc-woocommerce-multi-vendor'),
+                        'review_failed_msg_txt' => __('Error in system please try again later', 'dc-woocommerce-multi-vendor'),
+                    ),
+                );
+                break;
+
+            default:
+                $params = false;
+        }
+
+        return apply_filters('wcmp_get_script_data', $params, $handle);
+    }
+
+    /**
+     * Localize a WCMp script once.
+     * @since  3.0.6 
+     * @param  string $handle
+     */
+    public function localize_script($handle) {
+        if ( $data = $this->wcmp_get_script_data($handle) ) {
+            $name = str_replace('-', '_', $handle) . '_script_data';
+            wp_localize_script($handle, $name, apply_filters($name, $data));
+        }
     }
 
     /**

@@ -39,7 +39,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                     if ($vendor && !in_array($vendor->id, $block_vendors)) {
                         $vendor_info[$vendor->id] = array(
                             'vendor_permalink' => $vendor->permalink,
-                            'vendor_name' => $vendor->user_data->display_name,
+                            'vendor_name' => $vendor->page_title,
                             'vendor_image' => $vendor->get_image() ? $vendor->get_image('image', array(125, 125)) : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png',
                             'ID' => $vendor->id,
                             'term_id' => $vendor->term_id
@@ -53,7 +53,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                     if (!in_array($vendor->id, $block_vendors)) {
                         $vendor_info[$vendor->id] = array(
                             'vendor_permalink' => $vendor->permalink,
-                            'vendor_name' => $vendor->user_data->display_name,
+                            'vendor_name' => $vendor->page_title,
                             'vendor_image' => $vendor->get_image() ? $vendor->get_image('image', array(125, 125)) : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png',
                             'ID' => $vendor->id,
                             'term_id' => $vendor->term_id

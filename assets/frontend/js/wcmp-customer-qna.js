@@ -34,7 +34,7 @@
                     product_ID: $('#product_ID').val(),
                     keyword: this_ele_val
                 };
-                $.post(woocommerce_params.ajax_url, data, function (response) { 
+                $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) { 
                     unblock($('#cust_qna_form') );
                     if (response.no_data == 1) {
                         $('#qna-result-msg').html(response.message);
@@ -56,7 +56,7 @@
                     product_ID: $('#product_ID').val(),
                     keyword: ''
                 };
-                $.post(woocommerce_params.ajax_url, data, function (response) {
+                $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) {
                     unblock($('#cust_qna_form') );
                     if (response.no_data == 1) {
                         $('#qna-result-msg').html(response.message);
@@ -80,7 +80,7 @@
             handler: 'submit',
             customer_qna_data: $('#customerqnaform').serialize()
         };
-        $.post(woocommerce_params.ajax_url, data, function (response) {
+        $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) {
             if (response.no_data == 0) {
 //                unblock($('#cust_qna_form') );
 //                setTimeout(function(){
@@ -105,7 +105,7 @@
             reply: reply,
             key: key
         };
-        $.post(woocommerce_params.ajax_url, data, function (response) {
+        $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) {
             if (response.no_data == 0) {
 //                $('#reply-item-'+key).hide();
 //                if(response.remain_data == 0){
@@ -130,7 +130,7 @@
             answer: answer,
             key: key
         };
-        $.post(woocommerce_params.ajax_url, data, function (response) {
+        $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) {
             if (response.no_data == 0) {
 //                $('#reply-item-'+key).hide();
 //                if(response.remain_data == 0){
@@ -157,7 +157,7 @@
             vote: vote,
             ans_ID: ans_ID
         };
-        $.post(woocommerce_params.ajax_url, data, function (response) {
+        $.post(wcmp_customer_qna_js_script_data.ajax_url, data, function (response) {
             unblock( $('#cust_qna_form') );
             if (response.no_data == 0) {
                 setTimeout(function(){

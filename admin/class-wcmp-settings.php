@@ -443,7 +443,7 @@ class WCMp_Settings {
     public function wcmp_to_do() {
         ?>  
         <div class="wrap wcmp_vendors_settings">
-            <h1><?php _e('To-do') ?></h1>
+            <h1><?php _e('To-do', 'dc-woocommerce-multi-vendor') ?></h1>
             <?php do_action("settings_page_to_do_list_tab_init", 'to_do_list'); ?>
             <?php do_action('dualcube_admin_footer'); ?>
         </div>

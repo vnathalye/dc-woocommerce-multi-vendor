@@ -433,7 +433,7 @@ class WCMp_Settings {
     public function wcmp_extensions() {
         ?>  
         <div class="wrap">
-            <h1><?php _e('WCMp Extensions') ?></h1>
+            <h1><?php _e('WCMp Extensions', 'dc-woocommerce-multi-vendor') ?></h1>
             <?php do_action("settings_page_wcmp-addons_tab_init", 'wcmp-addons'); ?>
             <?php do_action('dualcube_admin_footer'); ?>
         </div>

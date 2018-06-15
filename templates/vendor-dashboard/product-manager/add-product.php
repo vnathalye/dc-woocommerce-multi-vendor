@@ -70,7 +70,7 @@ $upsell_ids = array();
 $crosssell_ids = array();
 $children = array();
 
-$enable_reviews = '';
+$enable_reviews = 'enable';
 $menu_order = '';
 $purchase_note = '';
 
@@ -286,7 +286,7 @@ if (is_user_wcmp_vendor($current_user_id))
 // Shipping Class List
 $product_shipping_class = get_terms('product_shipping_class', array('hide_empty' => 0));
 $variation_shipping_option_array = array('-1' => __('Same as parent', 'dc-woocommerce-multi-vendor'));
-$shipping_option_array = array('_no_shipping_class' => __('No shipping class', 'dc-woocommerce-multi-vendor'));
+$shipping_option_array = array();
 foreach ($product_shipping_class as $product_shipping) {
     if ($is_vendor && apply_filters('wcmp_allowed_only_vendor_shipping_class', true)) {
         $vendor_id = get_woocommerce_term_meta($product_shipping->term_id, 'vendor_id', true);
@@ -304,6 +304,7 @@ foreach ($product_shipping_class as $product_shipping) {
         $shipping_option_array[$product_shipping->term_id] = $product_shipping->name;
     }
 }
+$shipping_option_array['_no_shipping_class'] = __('No shipping class', 'dc-woocommerce-multi-vendor');
 
 // Tax Class List
 $tax_classes = WC_Tax::get_tax_classes();

@@ -20,6 +20,13 @@ $vendor_hide_description = get_user_meta($vendor->id, '_vendor_hide_description'
 $vendor_hide_email = get_user_meta($vendor->id, '_vendor_hide_email', true);
 $vendor_hide_address = get_user_meta($vendor->id, '_vendor_hide_address', true);
 $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
+
+$field_type = (apply_filters('wcmp_vendor_storefront_wpeditor_enabled', true, $vendor->id)) ? 'wpeditor' : 'textarea';
+$_wp_editor_settings = array('tinymce' => true);
+if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
+    $_wp_editor_settings['media_buttons'] = false;
+}
+$_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings', $_wp_editor_settings);
 ?>
 <style>
     .store-map-address{
@@ -133,16 +140,20 @@ $vendor_hide_phone = get_user_meta($vendor->id, '_vendor_hide_phone', true);
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Store Description', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
-                            <textarea class="no_input form-control" name="vendor_description" cols="" rows=""><?php echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea>
+                            <?php $vendor_description = isset($vendor_description['value']) ? $vendor_description['value'] : '';
+                            $WCMp->wcmp_wp_fields->dc_generate_form_field(array("vendor_description" => array('name' => 'vendor_description', 'type' => $field_type, 'class' => 'no_input form-control regular-textarea', 'value' => $vendor_description, 'settings' => $_wp_editor_settings))); ?>
+                            <!--textarea class="no_input form-control" name="vendor_description" cols="" rows=""><?php //echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea-->
                         </div>
                     </div>
                     <?php if (isset($vendor_message_to_buyers)) { ?>
-                        <div class="form-group">
-                            <label class="control-label col-sm-3 col-md-3"><?php _e('Message to Buyers', 'dc-woocommerce-multi-vendor'); ?></label>
-                            <div class="col-md-6 col-sm-9">
-                                <textarea class="no_input form-control" name="vendor_message_to_buyers" cols="" rows=""><?php echo isset($vendor_message_to_buyers['value']) ? $vendor_message_to_buyers['value'] : ''; ?></textarea>
-                            </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-3 col-md-3"><?php _e('Message to Buyers', 'dc-woocommerce-multi-vendor'); ?></label>
+                        <div class="col-md-6 col-sm-9">
+                            <?php $message_to_buyer = isset($vendor_message_to_buyers['value']) ? $vendor_message_to_buyers['value'] : '';
+                            $WCMp->wcmp_wp_fields->dc_generate_form_field(array("vendor_message_to_buyers" => array('name' => 'vendor_message_to_buyers', 'type' => $field_type, 'class' => 'no_input form-control regular-textarea', 'value' => $message_to_buyer, 'settings' => $_wp_editor_settings))); ?>
+                            <!--textarea class="no_input form-control" name="vendor_message_to_buyers" cols="" rows=""><?php //echo isset($vendor_message_to_buyers['value']) ? $vendor_message_to_buyers['value'] : ''; ?></textarea-->
                         </div>
+                    </div>
                     <?php } ?>
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Phone', 'dc-woocommerce-multi-vendor'); ?></label>

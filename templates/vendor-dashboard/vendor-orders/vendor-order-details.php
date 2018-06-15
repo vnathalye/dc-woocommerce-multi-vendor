@@ -15,6 +15,7 @@ if (!defined('ABSPATH')) {
 global $woocommerce, $WCMp;
 $vendor = get_current_vendor();
 $order = wc_get_order($order_id);
+$vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
 if (!$order) {
     ?>
     <div class="col-md-12">
@@ -55,9 +56,13 @@ $subtotal = 0;
                         </thead>
                         <tbody>
                             <?php foreach ($vendor_items as $item): 
-                                $item_obj = $order->get_item($item->order_item_id); ?>
+                                $item_obj = $order->get_item($item->order_item_id); 
+                                $edit_product_link = '';
+                                if (current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') {
+                                    $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $item->product_id));
+                                } ?>
                                 <tr>
-                                    <td><?php echo esc_html( $item_obj->get_name() ); ?> <small class="times">&times;</small> <?php echo esc_html( $item_obj->get_quantity() ); ?></td>
+                                    <td><?php echo $edit_product_link ? '<a href="' . $edit_product_link . '" class="wcmp-order-item-link">' . esc_html( $item_obj->get_name() ) . '</a>' : esc_html( $item_obj->get_name() ); ?> <small class="times">&times;</small> <?php echo esc_html( $item_obj->get_quantity() ); ?></td>
                                     <td><?php echo wc_price( $item_obj->get_total(), array( 'currency' => $order->get_currency() ) ); ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -69,7 +74,7 @@ $subtotal = 0;
                             </tr>
                             <tr>
                                 <td><?php _e('Shipping:', 'dc-woocommerce-multi-vendor'); ?></td>
-                                <td><?php echo wc_price($vendor_order_amount['shipping_amount']); ?><?php _e(' via ', 'dc-woocommerce-multi-vendor'); ?><?php echo $order->get_shipping_method(); ?></td>
+                                <td><?php echo wc_price($vendor_order_amount['shipping_amount']); ?><?php if($vendor_shipping_method) echo __(' via ', 'dc-woocommerce-multi-vendor') . $vendor_shipping_method->get_name(); ?></td>
                             </tr>
                             <tr>
                                 <td><?php _e('All Tax:', 'dc-woocommerce-multi-vendor'); ?></td>

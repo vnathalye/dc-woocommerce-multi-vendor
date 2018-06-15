@@ -66,10 +66,10 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'), 10, 2);
             //add_action('publish_product', array($this, 'update_data_to_products_map_table'), 10, 2);
-            //add_action('save_post_product', array($this, 'update_duplicate_product_title'), 10, 3);
+            add_action('save_post_product', array($this, 'update_duplicate_product_title'), 10, 3);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
-            add_action('delete_post', array($this, 'remove_prent_product_from_childs'), 10);
+            add_action('before_delete_post', array($this, 'remove_prent_product_from_childs'), 10);
             //add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             //add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             //add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
@@ -91,12 +91,15 @@ class WCMp_Product {
     }
     
     public function remove_prent_product_from_childs($post_id) {
-        $mapped_products = wc_get_products(array('post_parent' => $post_id, 'posts_per_page' => -1));
-        if($mapped_products){
-            foreach ($mapped_products as $key => $product) {
-                $product->set_parent_id(0);
-                $product->save();
-            }
+        global $wpdb;
+        $post = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE ID = %d", $post_id ) );
+        $parent_data = array( 'post_parent' => 0 );
+	$parent_where = array( 'post_parent' => $post_id );
+
+        $children_query = $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $post_id, $post->post_type );
+        $childrens = $wpdb->get_results( $children_query );
+        if ( $childrens ) {
+            $wpdb->update( $wpdb->posts, $parent_data, $parent_where + array( 'post_type' => $post->post_type ) );
         }
     }
 
@@ -313,15 +316,17 @@ class WCMp_Product {
 //            }
 //        }
 //    }
-//
-//    function update_duplicate_product_title($post_ID, $post, $update) {
-//        global $wpdb;
-//        $parent_product_id = get_post_meta($post_ID, '_wcmp_parent_product_id', true);
-//        if ($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
-//            $parent_post = get_post(absint($parent_product_id));
-//            $wpdb->update($wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID));
-//        }
-//    }
+
+    function update_duplicate_product_title($post_ID, $post, $update) {
+        global $wpdb;
+        $parent_product_id = wp_get_post_parent_id($post_ID);
+        if ($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
+            $parent_post = get_post(absint($parent_product_id));
+            if($parent_post){
+                $wpdb->update($wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID));
+            }
+        }
+    }
 
     function exclude_postmeta_copy_to_draft($arr = array()) {
         $exclude_arr = array('_sku', '_sale_price', '_sale_price_dates_from', '_sale_price_dates_to', '_sold_individually', '_backorders', '_upsell_ids', '_crosssell_ids', '_commission_per_product');
@@ -702,7 +707,7 @@ class WCMp_Product {
             return;
         }
         // skip for new posts and auto drafts
-        if ('new' === $old_status || 'auto-draft' === $old_status) {
+        if ('new' === $old_status || 'auto-draft' === $new_status) {
             return;
         }
 

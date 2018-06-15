@@ -643,24 +643,31 @@ class WCMp_Vendor {
         global $WCMp;
         $vendor = get_wcmp_vendor_by_term($term_id);
         $vendor_totals = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order));
-        return array(
-            'commission_subtotal' => array(
-                'label' => __('Commission Subtotal:', 'dc-woocommerce-multi-vendor'),
-                'value' => wc_price($vendor_totals['commission_amount'])
-            ),
-            'tax_subtotal' => array(
-                'label' => __('Tax Subtotal:', 'dc-woocommerce-multi-vendor'),
-                'value' => wc_price($vendor_totals['tax_amount'] + $vendor_totals['shipping_tax_amount'])
-            ),
-            'shipping_subtotal' => array(
-                'label' => __('Shipping Subtotal:', 'dc-woocommerce-multi-vendor'),
-                'value' => wc_price($vendor_totals['shipping_amount'])
-            ),
-            'total' => array(
-                'label' => __('Total:', 'dc-woocommerce-multi-vendor'),
-                'value' => wc_price($vendor_totals['commission_amount'] + $vendor_totals['tax_amount'] + $vendor_totals['shipping_tax_amount'] + $vendor_totals['shipping_amount'])
-            )
+        $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
+        $order_item_totals = array();
+        $order_item_totals['commission_subtotal'] = array(
+            'label' => __('Commission Subtotal:', 'dc-woocommerce-multi-vendor'),
+            'value' => wc_price($vendor_totals['commission_amount'])
         );
+        $order_item_totals['tax_subtotal'] = array(
+            'label' => __('Tax Subtotal:', 'dc-woocommerce-multi-vendor'),
+            'value' => wc_price($vendor_totals['tax_amount'] + $vendor_totals['shipping_tax_amount'])
+        );
+        if($vendor_shipping_method){
+            $order_item_totals['shipping_method'] = array(
+                'label' => __('Shipping Method:', 'dc-woocommerce-multi-vendor'),
+                'value' => $vendor_shipping_method->get_name()
+            );
+        }
+        $order_item_totals['shipping_subtotal'] = array(
+            'label' => __('Shipping Subtotal:', 'dc-woocommerce-multi-vendor'),
+            'value' => wc_price($vendor_totals['shipping_amount'])
+        );
+        $order_item_totals['total'] = array(
+            'label' => __('Total:', 'dc-woocommerce-multi-vendor'),
+            'value' => wc_price($vendor_totals['commission_amount'] + $vendor_totals['tax_amount'] + $vendor_totals['shipping_tax_amount'] + $vendor_totals['shipping_amount'])
+        );
+        return $order_item_totals;
     }
 
     /**
@@ -826,7 +833,7 @@ class WCMp_Vendor {
                 );
                 $args = apply_filters('get_vendor_orders_reports_of_pending_shipping_query_args', wp_parse_args( $args, $defaults ));
                 $pending_shippings = $wpdb->get_results( 
-                    $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id > 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed` != 1 AND `shipping_status` != 1 group by order_id order by order_id", 
+                    $wpdb->prepare("SELECT order_id FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id > 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s AND `is_trashed` != 1 AND `shipping_status` != 1 group by order_id order by order_id DESC", 
                         $args['vendor_id'],
                         $args['start_date'],
                         $args['end_date']

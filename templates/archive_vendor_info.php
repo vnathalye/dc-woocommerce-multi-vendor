@@ -77,20 +77,15 @@ $vendor_hide_description = apply_filters('wcmp_vendor_store_header_hide_descript
 if (!$vendor_hide_description) {
     ?>
     <div class="description_data">
-        <?php
-        $string = $description;
-        ?>
         <table>
             <tbody>
                 <tr>
                     <td>
                         <label><strong><?php _e('Description', 'dc-woocommerce-multi-vendor') ?></strong></label>
                     </td>
-                    <td style="padding: 15px;">
-    <?php echo stripslashes($string); ?>
-                    </td>
+                    <td style="padding: 15px;"><?php echo htmlspecialchars_decode( wpautop( $description ), ENT_QUOTES ); ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
-<?php } ?>
+<?php }

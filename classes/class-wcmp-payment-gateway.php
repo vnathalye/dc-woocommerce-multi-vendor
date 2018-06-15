@@ -65,7 +65,7 @@ abstract class WCMp_Payment_Gateway {
         $transfer_charge = 0;
         if ($this->transaction_mode == 'manual') {
             $no_of_orders = isset($WCMp->vendor_caps->payment_cap['no_of_orders']) && $WCMp->vendor_caps->payment_cap['no_of_orders'] ? $WCMp->vendor_caps->payment_cap['no_of_orders'] : 0;
-            if (count($WCMp->transaction->get_transactions($this->vendor->term_id)) >= $no_of_orders) {
+            if (count($WCMp->transaction->get_transactions($this->vendor->term_id)) > $no_of_orders) {
                 $transfer_charge = (float) get_wcmp_vendor_settings('commission_transfer', 'payment', '', 0);
             }
         }

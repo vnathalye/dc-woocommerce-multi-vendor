@@ -984,10 +984,13 @@ class WCMp_User {
     public function set_wcmp_user_cookies() {
         $current_user_id = get_current_user_id();
         $_cookie_id = "_wcmp_user_cookie_".$current_user_id;
-        if(!isset($_COOKIE[$_cookie_id])) { 
-            setcookie( $_cookie_id, uniqid('wcmp_cookie'), time() + YEAR_IN_SECONDS, '/' );
-        }else{
-            setcookie( $_cookie_id, $_COOKIE[$_cookie_id], time() + YEAR_IN_SECONDS, '/' );
+        if ( ! headers_sent() ) {
+            $secure = ( 'https' === parse_url( home_url(), PHP_URL_SCHEME ) );
+            if(!isset($_COOKIE[$_cookie_id])) { 
+                setcookie( $_cookie_id, uniqid('wcmp_cookie'), time() + YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
+            }else{
+                setcookie( $_cookie_id, $_COOKIE[$_cookie_id], time() + YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
+            }
         }
     }
     
@@ -1038,7 +1041,7 @@ class WCMp_User {
 
         //Determine if the user is WCMp vendor
         $wcmp_vendor_avatar = '';
-        if(is_user_wcmp_vendor($user->ID)){
+        if(is_user_wcmp_vendor($user->ID) && apply_filters('is_wcmp_user_avatar_overridden', true, $user->ID)){
             $vendor = get_wcmp_vendor($user->ID);
             $wcmp_vendor_avatar = sprintf(
                 "<img alt='%s' src='%s' class='%s' height='%d' width='%d' %s/>",

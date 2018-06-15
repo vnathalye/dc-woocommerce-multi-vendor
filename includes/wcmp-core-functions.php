@@ -274,6 +274,11 @@ if (!function_exists('doProductVendorLOG')) {
         global $WCMp;
         $file = $WCMp->plugin_path . 'log/product_vendor.log';
         if (file_exists($file)) {
+            $temphandle = @fopen( $file, 'w+' ); // @codingStandardsIgnoreLine.
+            @fclose( $temphandle ); // @codingStandardsIgnoreLine.
+            if ( defined( 'FS_CHMOD_FILE' ) ) {
+                @chmod( $file, FS_CHMOD_FILE ); // @codingStandardsIgnoreLine.
+            }
             // Open the file to get existing content
             $current = file_get_contents($file);
             if ($current) {
@@ -900,7 +905,7 @@ if (!function_exists('wcmp_get_all_order_of_user')) {
             'post_type' => wc_get_order_types(),
             'post_status' => array_keys(wc_get_order_statuses()),
         ));
-        if (count($customer_orders > 0)) {
+        if (is_array($customer_orders) && count($customer_orders > 0)) {
             $order_lits = $customer_orders;
         }
         return $order_lits;
@@ -1500,6 +1505,18 @@ if (!function_exists('do_wcmp_data_migrate')) {
             if (version_compare($previous_plugin_version, '3.0.5', '<=')) {
                 $max_index_length = 191;
                 $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_visitors_stats` DROP INDEX `user_cookie`, ADD INDEX `user_cookie`(user_cookie({$max_index_length}))");
+            }
+            if (version_compare($previous_plugin_version, '3.0.7', '<=')) {
+                /* Migrate vendor data application */
+                $args = array('post_type' => 'wcmp_vendorrequest', 'numberposts' => -1, 'post_status' => 'publish');
+                $vendor_applications = get_posts($args);
+                if($vendor_applications) :
+                    foreach ($vendor_applications as $application) {
+                        $user_id = get_post_meta($application->ID, 'user_id', true);
+                        $application_data = get_post_meta($application->ID, 'wcmp_vendor_fields', true);
+                        update_user_meta($user_id, 'wcmp_vendor_fields', $application_data);
+                    }
+                endif;
             }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
@@ -2641,4 +2658,33 @@ if (!function_exists('is_commission_requested_for_withdrawals')) {
         }
     }
 
+}
+
+if (!function_exists('get_wcmp_vendor_order_shipping_method')) {
+
+    /**
+     * WCMp vendor order shipping method
+     * @param Order ID $order_id
+     * @param Vendor ID $vendor_id
+     * @return shipping method object on success or else false
+     */
+    function get_wcmp_vendor_order_shipping_method($order_id, $vendor_id = '') {
+        if(!$order_id) return false;
+        $order = wc_get_order($order_id);
+        if(!$order) return false;
+        $vendor_id = !empty($vendor_id) ? $vendor_id : get_current_user_id();
+        foreach ( $order->get_shipping_methods() as $shipping_method ) {
+            $meta_data = $shipping_method->get_formatted_meta_data( '' );
+            foreach ( $meta_data as $meta_id => $meta ) :
+                if ( !in_array( $meta->key, array('vendor_id'), true ) ) {
+                    continue;
+                }
+                
+                if($meta->value && $meta->value == $vendor_id)
+                    return $shipping_method;
+                
+            endforeach;
+        }
+        return false;
+    }
 }

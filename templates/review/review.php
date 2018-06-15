@@ -56,7 +56,7 @@ $has_reply_comments = get_comments($args);
 							if ( $verified )
 								echo '<em class="verified">(' . apply_filters('wcmp_varified_buyer_text_filter',__( 'verified buyer', 'dc-woocommerce-multi-vendor' )) . ')</em> ';
 
-					?>&ndash; <time itemprop="datePublished" datetime="<?php echo get_comment_date( 'c',$comment->comment_ID ); ?>"><?php echo get_comment_date( wc_date_format(), $comment->comment_ID ); ?></time>:
+					?>&ndash; <time itemprop="datePublished" datetime="<?php echo get_comment_date( 'c',$comment->comment_ID ); ?>"><?php echo get_comment_date( wc_date_format(), $comment->comment_ID ); ?></time>
 				</p>
 
 			<?php endif; ?>
@@ -95,7 +95,7 @@ $has_reply_comments = get_comments($args);
 							if ( $verified )
 								echo '<em class="verified">(' . apply_filters('wcmp_varified_buyer_text_filter',__( 'verified buyer', 'dc-woocommerce-multi-vendor' )) . ')</em> ';
 
-					?>&ndash; <time itemprop="datePublished" datetime="<?php echo get_comment_date( 'c',$comment->comment_ID ); ?>"><?php echo get_comment_date( wc_date_format(), $comment->comment_ID ); ?></time>:
+					?>&ndash; <time itemprop="datePublished" datetime="<?php echo get_comment_date( 'c',$comment->comment_ID ); ?>"><?php echo get_comment_date( wc_date_format(), $comment->comment_ID ); ?></time>
 				</p>
 
 			<?php endif; ?>

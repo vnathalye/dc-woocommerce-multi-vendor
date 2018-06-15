@@ -411,61 +411,66 @@ class WCMp_Admin {
         global $WCMp;
         $screen = get_current_screen();
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-        $general_singleproductmultisellersettings = get_option('wcmp_general_singleproductmultiseller_settings_name');
-        //echo $screen->id;
-        // Enqueue admin script and stylesheet from here
+
+        $wcmp_admin_screens = apply_filters('wcmp_enable_admin_script_screen_ids', array(
+            'wcmp_page_wcmp-setting-admin',
+            'wcmp_page_wcmp-to-do',
+            'edit-wcmp_vendorrequest',
+            'dc_commission',
+            'woocommerce_page_wc-reports',
+            'toplevel_page_wc-reports',
+            'product',
+            'edit-product',
+            'user-edit',
+            'profile',
+            'users',
+            'wcmp_page_wcmp-extensions',
+	));
+        
+        // Register scripts.
+        wp_register_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
+        wp_register_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', apply_filters('wcmp_admin_script_add_dependencies', array('jquery', 'jquery-ui-core', 'jquery-ui-tabs', 'wc-backbone-modal')), $WCMp->version, true);
+        wp_register_script('dc_to_do_list_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
+        wp_register_script('wcmp-admin-commission-js', $WCMp->plugin_url . 'assets/admin/js/commission' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp-admin-product-js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('edit_user_js', $WCMp->plugin_url . 'assets/admin/js/edit_user' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('dc_users_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp_report_js', $WCMp->plugin_url . 'assets/admin/js/report' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp_vendor_js', $WCMp->plugin_url . 'assets/admin/js/vendor' . $suffix . '.js', array('jquery', 'woocommerce_admin'), $WCMp->version, true);
+        
+        if (in_array($screen->id, $wcmp_admin_screens)) :
+            wp_enqueue_style( 'wcmp_admin_css' );
+            wp_enqueue_script( 'wcmp_admin_js' );
+        endif;
+        
+        // WCMp library
         if (in_array($screen->id, array('wcmp_page_wcmp-setting-admin', 'wcmp_page_wcmp-to-do'))) :
             $WCMp->library->load_qtip_lib();
             $WCMp->library->load_upload_lib();
             $WCMp->library->load_colorpicker_lib();
             $WCMp->library->load_datepicker_lib();
-            wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
-
         endif;
+
         if (in_array($screen->id, array('wcmp_page_wcmp-to-do', 'edit-wcmp_vendorrequest'))) {
-            wp_enqueue_script('dc_to_do_list_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-        }
-        if (in_array($screen->id, array('wcmp_page_wcmp-to-do'))) {
-            wp_enqueue_style('wcmp_admin_todo_list', $WCMp->plugin_url . 'assets/admin/css/admin-to_do_list' . $suffix . '.css', array(), $WCMp->version);
+            wp_enqueue_script( 'dc_to_do_list_js' );
         }
 
-        if (in_array($screen->id, array('dc_commission', 'woocommerce_page_wc-reports', 'toplevel_page_wc-reports'))) :
+        if (in_array($screen->id, array('dc_commission', 'woocommerce_page_wc-reports', 'toplevel_page_wc-reports', 'product', 'edit-product'))) :
             $WCMp->library->load_qtip_lib();
-            wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
             if (!wp_style_is('woocommerce_chosen_styles', 'queue')) {
-                // wp_enqueue_style( 'woocommerce_chosen_styles', $woocommerce->plugin_url() . '/assets/css/chosen.css' );
                 wp_enqueue_style('woocommerce_chosen_styles', $WCMp->plugin_url . '/assets/admin/css/chosen' . $suffix . '.css');
             }
-            // Load Chosen JS
-            // wp_enqueue_script( 'ajax-chosen' );
-            // wp_enqueue_script( 'chosen' );
-            wp_enqueue_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
-            wp_enqueue_script('wcmp-admin-commission-js', $WCMp->plugin_url . 'assets/admin/js/commission' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_enqueue_script('WCMp_chosen');
+            wp_enqueue_script('WCMp_ajax-chosen');
+            wp_enqueue_script('wcmp-admin-commission-js');
             wp_localize_script('wcmp-admin-commission-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
-        endif;
-
-
-
-        if (in_array($screen->id, array('product', 'edit-product'))) :
-            $WCMp->library->load_qtip_lib();
-            wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_style('wcmp_admin_css', $WCMp->plugin_url . 'assets/admin/css/admin' . $suffix . '.css', array(), $WCMp->version);
-            if (!wp_style_is('woocommerce_chosen_styles', 'queue')) {
-                wp_enqueue_style('woocommerce_chosen_styles', $WCMp->plugin_url . '/assets/admin/css/chosen' . $suffix . '.css');
-            }
-            // Load Chosen JS
-            // wp_enqueue_script( 'ajax-chosen' );
-            // wp_enqueue_script( 'chosen' );
-
-            wp_enqueue_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
-            wp_enqueue_script('wcmp-admin-product-js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_enqueue_script('wcmp-admin-product-js');
             wp_localize_script('wcmp-admin-product-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
             if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable' && in_array($screen->id, array('product'))) {
-                wp_enqueue_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+                wp_enqueue_script('wcmp_admin_product_auto_search_js');
                 wp_localize_script('wcmp_admin_product_auto_search_js', 'wcmp_admin_product_auto_search_js_params', array(
                     'ajax_url' => admin_url('admin-ajax.php'),
                     'search_products_nonce' => wp_create_nonce('search-products'),
@@ -476,37 +481,26 @@ class WCMp_Admin {
         if (in_array($screen->id, array('user-edit', 'profile'))) :
             $WCMp->library->load_qtip_lib();
             $WCMp->library->load_upload_lib();
-            wp_enqueue_script('wcmp_admin_js', $WCMp->plugin_url . 'assets/admin/js/admin' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_style('admin_user', $WCMp->plugin_url . 'assets/admin/css/admin-user' . $suffix . '.css', array(), $WCMp->version);
-            wp_enqueue_script('edit_user_js', $WCMp->plugin_url . 'assets/admin/js/edit_user' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_enqueue_script('edit_user_js');
         endif;
 
         if (in_array($screen->id, array('users'))) :
-            wp_enqueue_script('dc_users_js', $WCMp->plugin_url . 'assets/admin/js/to_do_list' . $suffix . '.js', array('jquery'), $WCMp->version, true);
+            wp_enqueue_script('dc_users_js');
         endif;
 
         if (in_array($screen->id, array('woocommerce_page_wc-reports', 'toplevel_page_wc-reports'))) :
-            // wp_enqueue_script( 'ajax-chosen' );
-            // wp_enqueue_script( 'chosen' );
-            wp_enqueue_script('WCMp_chosen', $WCMp->plugin_url . 'assets/admin/js/chosen.jquery' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_script('WCMp_ajax-chosen', $WCMp->plugin_url . 'assets/admin/js/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'WCMp_chosen'), $WCMp->version, true);
-            wp_enqueue_script('product_js', $WCMp->plugin_url . 'assets/admin/js/product' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_localize_script('product_js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
-        endif;
-        if (in_array($screen->id, array('wcmp_vendorrequest'))) :
-            wp_enqueue_style('admin-vendor_registration-css', $WCMp->plugin_url . 'assets/admin/css/admin-vendor_registration' . $suffix . '.css', array(), $WCMp->version);
+            wp_enqueue_script('WCMp_chosen');
+            wp_enqueue_script('WCMp_ajax-chosen');
+            wp_enqueue_script('wcmp-admin-product-js');
+            wp_localize_script('wcmp-admin-product-js', 'dc_vendor_object', array('security' => wp_create_nonce("search-products")));
         endif;
 
         if (in_array($screen->id, array('woocommerce_page_wc-reports', 'toplevel_page_wc-reports'))) :
-            wp_enqueue_script('wcmp_report_js', $WCMp->plugin_url . 'assets/admin/js/report' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-            wp_enqueue_style('wcmp_report_css', $WCMp->plugin_url . 'assets/admin/css/report' . $suffix . '.css', array(), $WCMp->version);
-        endif;
-        if (in_array($screen->id, array('wcmp_page_wcmp-extensions'))) :
-            wp_enqueue_style('admin-extensions', $WCMp->plugin_url . 'assets/admin/css/admin-extensions' . $suffix . '.css', array(), $WCMp->version);
+            wp_enqueue_script('wcmp_report_js');
         endif;
 
         if (is_user_wcmp_vendor(get_current_vendor_id())) {
-            wp_enqueue_script('wcmp_vendor_js', $WCMp->plugin_url . 'assets/admin/js/vendor' . $suffix . '.js', array('jquery', 'woocommerce_admin'), $WCMp->version, true);
+            wp_enqueue_script('wcmp_vendor_js');
         }
     }
 

@@ -3,9 +3,9 @@ Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
-Tested up to: 4.9.5
+Tested up to: 4.9.6
 Requires PHP: 5.6
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,18 @@ Ans. This plugin is tested with PHP version 5.6.
 
 
 == Changelog ==
+
+= 3.0.7 - 2018-06-12 =
+* Added: - Vendor dashboard > Shop description wp_editor support.
+* Added: - Shipping method on vendor new order email.
+* Added: - Product link inside order details.
+* Tweak: - Vendor dashboard > Vendor shipping method on order details.
+* Tweak: - Shipping hide on local pick up.
+* Fix - Child products ownership issue on parent product deletion ( Single product multiple vendor ).
+* Fix - Free withdrawal limit.
+* Fix - Vendor new product email on admin assign product.
+* Fix - Edit review issue.
+* Updated - Language file.
 
 = 3.0.6 - 2018-05-08 =
 * Added: - Vendor dashboard > Product tags autocomplete support.
@@ -363,5 +375,5 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 3.0.6 =
+= 3.0.7 =
 WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

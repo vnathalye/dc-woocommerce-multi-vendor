@@ -190,7 +190,10 @@ class WCMp_Commission {
                         $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
                         $html .= '</td><tr/>' . "\n";
                     } else {
-                        $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><input name="' . esc_attr($k) . '" type="text" id="' . esc_attr($k) . '" class="regular-text" value="' . esc_attr($data) . '" />' . "\n";
+                        $val = esc_attr($data);
+                       if($k == '_commission_amount')
+                           $val = number_format( $data, wc_get_price_decimals(), wc_get_price_decimal_separator(), wc_get_price_thousand_separator() );
+                        $html .= '<tr valign="top"><th scope="row"><label for="' . esc_attr($k) . '">' . $v['name'] . '</label></th><td><input name="' . esc_attr($k) . '" type="text" id="' . esc_attr($k) . '" class="regular-text" value="' . $val . '" />' . "\n";
                         $html .= '<p class="description">' . $v['description'] . '</p>' . "\n";
                         $html .= '</td><tr/>' . "\n";
                     }

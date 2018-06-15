@@ -540,6 +540,7 @@ if (!class_exists('WCMp_WP_Fields')) {
                                 case 'email':
                                 case 'number':
                                 case 'file':
+                                case 'password':
                                 case 'url':
                                     $this->text_input($optionField);
                                     break;
@@ -619,7 +620,9 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['label_for'] = isset($field['label_for']) ? ($field['label_for'] . ' ' . $field['id']) : $field['id'];
             $field['label_class'] = isset($field['label_class']) ? ($field['label_for'] . ' ' . $field['label_class']) : $field['label_for'];
             if (!isset($field['in_table']))
-                echo '<fieldset>';
+            printf(
+                '<fieldset class="%s">', $field['wrapper_class']
+            );
             do_action('before_field_wrapper');
             do_action('before_field_wrapper_' . $field['id']);
 
@@ -757,6 +760,7 @@ if (!class_exists('WCMp_WP_Fields')) {
                             case 'email':
                             case 'number':
                             case 'file':
+                            case 'password':
                             case 'button':
                             case 'url':
                                 $this->text_input($field);

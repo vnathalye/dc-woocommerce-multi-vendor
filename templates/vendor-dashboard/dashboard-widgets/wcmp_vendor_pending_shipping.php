@@ -51,7 +51,11 @@ do_action('before_wcmp_vendor_pending_shipping');
                 }
                 if(empty($product_name))                                
                     continue;
-
+                // hide shipping for local pickup
+                $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
+                if($vendor_shipping_method && in_array($vendor_shipping_method->get_method_id(), apply_filters('hide_shipping_icon_for_vendor_order_on_methods',array('local_pickup'))))
+                    continue;   
+                
                 $action_html = '';
                 if ($vendor->is_shipping_enable()) {
                     $is_shipped = (array) get_post_meta($order->get_id(), 'dc_pv_shipped', true);

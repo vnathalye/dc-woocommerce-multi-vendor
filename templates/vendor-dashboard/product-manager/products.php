@@ -54,7 +54,7 @@ do_action('before_wcmp_vendor_dashboard_product_list_table');
             <tfoot><tr><?php echo $tbl_header_footer; ?></tr></tfoot>
         </table>
         <div class="wcmp-action-container">
-            <a href="<?php echo wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-product'));?>" class="btn btn-default"><?php echo __('Add Product', 'dc-woocommerce-multi-vendor');?></a>
+            <a href="<?php echo wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'));?>" class="btn btn-default"><?php echo __('Add Product', 'dc-woocommerce-multi-vendor');?></a>
         </div>
     </div>
 </div>

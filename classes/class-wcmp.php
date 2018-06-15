@@ -434,9 +434,10 @@ final class WCMp {
      * Return data for script handles.
      * @since  3.0.6 
      * @param  string $handle
+     * @param  array $default params
      * @return array|bool
      */
-    public function wcmp_get_script_data($handle) {
+    public function wcmp_get_script_data($handle, $default) {
         global $WCMp;
 
         switch ($handle) {
@@ -483,9 +484,9 @@ final class WCMp {
                 break;
 
             default:
-                $params = false;
+                $params = array();
         }
-
+        if($default && is_array($default)) $params = array_merge($default,$params);
         return apply_filters('wcmp_get_script_data', $params, $handle);
     }
 
@@ -494,9 +495,12 @@ final class WCMp {
      * @since  3.0.6 
      * @param  string $handle
      */
-    public function localize_script($handle) {
-        if ( $data = $this->wcmp_get_script_data($handle) ) {
+    public function localize_script($handle, $params = array(), $object = '') {
+        if ( $data = $this->wcmp_get_script_data($handle, $params) ) {
             $name = str_replace('-', '_', $handle) . '_script_data';
+            if($object){
+                $name = str_replace('-', '_', $object) . '_script_data';
+            }
             wp_localize_script($handle, $name, apply_filters($name, $data));
         }
     }

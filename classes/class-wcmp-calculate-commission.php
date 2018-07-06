@@ -197,7 +197,7 @@ class WCMp_Calculate_Commission {
         }
         $commission_data = array(
             'post_type' => 'dc_commission',
-            'post_title' => sprintf(__('Commission - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Commission date parsed by strftime', 'dc-woocommerce-multi-vendor'))),
+            'post_title' => sprintf(__('Commission - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Commission date parsed by strftime', 'dc-woocommerce-multi-vendor'), current_time( 'timestamp' ))),
             'post_status' => 'private',
             'ping_status' => 'closed',
             'post_excerpt' => '',

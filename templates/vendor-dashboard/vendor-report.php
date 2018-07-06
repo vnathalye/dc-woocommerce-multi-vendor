@@ -19,13 +19,13 @@ global $WCMp;
                     <h3><?php _e('Select Date Range :', 'dc-woocommerce-multi-vendor'); ?></h3> 
                     <div class="form-group">
                         <span class="date-inp-wrap">
-                            <input type="text" name="wcmp_stat_start_dt" value="<?php echo isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('01-m-Y'); ?>" class="pickdate gap1 wcmp_stat_start_dt form-control">
+                            <input type="text" name="wcmp_stat_start_dt" value="<?php echo isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('Y-m-01'); ?>" class="pickdate gap1 wcmp_stat_start_dt form-control">
                         </span> 
                         <!-- <span class="to-text">-</span> -->
                     </div>
                     <div class="form-group">
                         <span class="date-inp-wrap">
-                        <input type="text" name="wcmp_stat_end_dt" value="<?php echo isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('t-m-Y'); ?>" class="pickdate wcmp_stat_end_dt form-control">
+                        <input type="text" name="wcmp_stat_end_dt" value="<?php echo isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-t'); ?>" class="pickdate wcmp_stat_end_dt form-control">
                         </span>
                     </div>
                     <div class="form-group">

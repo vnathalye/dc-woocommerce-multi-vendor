@@ -59,7 +59,8 @@ final class WCMp {
 
         // Intialize WCMp Widgets
         $this->init_custom_widgets();
-
+        // Intialize Stripe library
+        $this->init_stripe_library();
         // Init payment gateways
         $this->init_payment_gateway();
 
@@ -78,8 +79,11 @@ final class WCMp {
         // Secure commission notes
         add_filter('comments_clauses', array(&$this, 'exclude_order_comments'), 10, 1);
         add_filter('comment_feed_where', array(&$this, 'exclude_order_comments_from_feed_where'));
+        
+        // Add wcmp namespace support along with WooCommerce.
+        add_filter( 'woocommerce_rest_is_request_to_rest_api', 'wcmp_namespace_approve', 10, 1 );
     }
-
+    
     public function exclude_order_comments($clauses) {
         $clauses['where'] .= ( $clauses['where'] ? ' AND ' : '' ) . " comment_type != 'commission_note' ";
         return $clauses;
@@ -173,12 +177,21 @@ final class WCMp {
         $this->init_vendor_dashboard();
         // Init vendor coupon
         $this->init_vendor_coupon();
+        
+        // Init WCMp API
+        $this->init_wcmp_rest_api();
 
         if (!wp_next_scheduled('migrate_multivendor_table') && !get_option('multivendor_table_migrated', false)) {
             wp_schedule_event(time(), 'hourly', 'migrate_multivendor_table');
         }
         do_action('wcmp_init');
     }
+    
+    // Initializing Rest API
+    function init_wcmp_rest_api() {
+		include_once ($this->plugin_path . "/api/class-wcmp-rest-controller.php" );
+		new WCMp_REST_API();
+	}
 
     /**
      * plugin admin init callback
@@ -292,9 +305,6 @@ final class WCMp {
         /* University post type */
         $this->load_class('post-university');
         new WCMp_University();
-        /* Vendor registration data post type */
-        $this->load_class('post-vendorapplication');
-        new WCMp_Vendor_Application();
         /* Flush wp rewrite rule and update permalink structure */
         register_activation_hook(__FILE__, 'flush_rewrite_rules');
     }
@@ -451,6 +461,7 @@ final class WCMp {
             case 'product_manager_js' :
                 $params = array(
                     'ajax_url' => $this->ajax_url(),
+                    'add_tags' => apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id()),
                     'messages' => get_frontend_product_manager_messages(),
                 );
                 break;
@@ -503,6 +514,70 @@ final class WCMp {
             }
             wp_localize_script($handle, $name, apply_filters($name, $data));
         }
+    }
+    
+    /**
+     * init Stripe library.
+     *
+     * @access public
+     */
+    public function init_stripe_library(){
+        global $WCMp;
+        $stripe_dependencies = WC_Dependencies_Product_Vendor::stripe_dependencies();
+        if($stripe_dependencies['status']){
+            if(!class_exists("Stripe\Stripe")) {
+                require_once( $this->plugin_path . 'lib/Stripe/init.php' );
+            }
+        }else{
+            switch ($stripe_dependencies['module']) {
+                case 'phpversion':
+                    add_action('admin_notices', array($this, 'wcmp_stripe_phpversion_required_notice'));
+                    break;
+                case 'curl':
+                    add_action('admin_notices', array($this, 'wcmp_stripe_curl_required_notice'));
+                    break;
+                case 'mbstring':
+                    add_action('admin_notices', array($this, 'wcmp_stripe_mbstring_required_notice'));
+                    break;
+                case 'json':
+                    add_action('admin_notices', array($this, 'wcmp_stripe_json_required_notice'));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    public function wcmp_stripe_phpversion_required_notice() {
+        ?>
+        <div id="message" class="error">
+            <p><?php printf(__("%sWCMp Stripe Gateway%s requires PHP 5.3.29 or greater. We recommend upgrading to PHP %s or greater.", 'dc-woocommerce-multi-vendor' ), '<strong>', '</strong>', '5.6' ); ?></p>
+        </div>
+        <?php
+    }
+    
+    public function wcmp_stripe_curl_required_notice() {
+        ?>
+        <div id="message" class="error">
+            <p><?php printf(__("%sWCMp Stripe gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'dc-woocommerce-multi-vendor' ), '<strong>', '</strong>', 'curl' ); ?></p>
+        </div>
+        <?php
+    }
+    
+    public function wcmp_stripe_mbstring_required_notice() {
+        ?>
+        <div id="message" class="error">
+            <p><?php printf(__("%sWCMp Stripe gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'dc-woocommerce-multi-vendor' ), '<strong>', '</strong>', 'mbstring' ); ?></p>
+        </div>
+        <?php
+    }
+    
+    public function wcmp_stripe_json_required_notice() {
+        ?>
+        <div id="message" class="error">
+            <p><?php printf(__("%sWCMp Vendor Membership Stripe gateway depends on the %s PHP extension. Please enable it, or ask your hosting provider to enable it.", 'dc-woocommerce-multi-vendor' ), '<strong>', '</strong>', 'json' ); ?></p>
+        </div>
+        <?php
     }
 
     /**

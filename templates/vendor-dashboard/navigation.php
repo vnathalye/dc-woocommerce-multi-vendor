@@ -13,8 +13,11 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 
 sksort($nav_items, 'position', true);
-$vendor = get_wcmp_vendor(get_current_vendor_id());
-if(!$vendor){
+
+$add_vendor_navigation = is_user_wcmp_vendor(get_current_user_id());
+if(!$add_vendor_navigation) $add_vendor_navigation = is_user_wcmp_pending_vendor(get_current_user_id());
+if(!$add_vendor_navigation) $add_vendor_navigation = is_user_wcmp_rejected_vendor(get_current_user_id());
+if(!$add_vendor_navigation){
     return;
 }
 

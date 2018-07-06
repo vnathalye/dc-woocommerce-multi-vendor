@@ -37,6 +37,11 @@ class WCMp_Endpoints {
                 'label' => __('Vendor Announcements', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_announcements_endpoint', 'vendor', 'general', 'vendor-announcements')
             )
+            , 'profile' => array(
+                'label' => __('Profile management', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_profile_endpoint', 'vendor', 'general', 'profile'),
+                'icon' => 'wcmp-font ico-user-icon'
+            )
             , 'storefront' => array(
                 'label' => __('Storefront', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_store_settings_endpoint', 'vendor', 'general', 'storefront')
@@ -96,6 +101,10 @@ class WCMp_Endpoints {
             , 'products-qna' => array(
                 'label' => __('Vendor Products Q&As', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_vendor_products_qnas_endpoint', 'vendor', 'general', 'products-qna')
+            )
+            , 'rejected-vendor-reapply' => array(
+                'label' => __('Resubmit Application', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => 'rejected-vendor-reapply'
             )
         ));
     }

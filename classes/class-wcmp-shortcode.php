@@ -222,14 +222,7 @@ class WCMp_Shortcode {
             'ignore_sticky_posts' => 1,
             'orderby' => $orderby,
             'order' => $order,
-            'posts_per_page' => $per_page,
-            'meta_query' => array(
-                array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                )
-            )
+            'posts_per_page' => $per_page
         );
 
         if (!empty($vendor) && !empty($user)) {
@@ -326,14 +319,7 @@ class WCMp_Shortcode {
             'ignore_sticky_posts' => 1,
             'orderby' => $orderby,
             'order' => $order,
-            'posts_per_page' => $count,
-            'meta_query' => array(
-                array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                )
-            )
+            'posts_per_page' => $count
         );
 
         if (!empty($vendor) && !empty($user)) {
@@ -422,17 +408,14 @@ class WCMp_Shortcode {
             'posts_per_page' => $per_page,
             'orderby' => $orderby,
             'order' => $order,
-            'meta_query' => array(
+            'tax_query' => array(
                 array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                ),
-                array(
-                    'key' => '_featured',
-                    'value' => 'yes'
-                )
-            )
+                    'taxonomy'         => 'product_visibility',
+                    'terms'            => 'featured',
+                    'field'            => 'name',
+                    'operator'         => 'IN',
+                    'include_children' => false,
+		))
         );
         if (!empty($vendor)) {
             $user = get_user_by('login', $vendor);
@@ -574,14 +557,7 @@ class WCMp_Shortcode {
             'ignore_sticky_posts' => 1,
             'orderby' => $orderby,
             'order' => $order,
-            'posts_per_page' => $per_page,
-            'meta_query' => array(
-                array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                )
-            )
+            'posts_per_page' => $per_page
         );
         if (!empty($vendor)) {
             $user = get_user_by('login', $vendor);
@@ -650,14 +626,7 @@ class WCMp_Shortcode {
             'ignore_sticky_posts' => 1,
             'posts_per_page' => $per_page,
             'meta_key' => 'total_sales',
-            'orderby' => 'meta_value_num',
-            'meta_query' => array(
-                array(
-                    'key' => '_visibility',
-                    'value' => array('catalog', 'visible'),
-                    'compare' => 'IN'
-                )
-            )
+            'orderby' => 'meta_value_num'
         );
 
         if (!empty($vendor)) {

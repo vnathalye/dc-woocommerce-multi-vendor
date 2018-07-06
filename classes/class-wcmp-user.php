@@ -48,7 +48,30 @@ class WCMp_User {
         $this->set_wcmp_user_cookies();
         //User Avatar override
         add_filter( 'get_avatar', array( &$this, 'wcmp_user_avatar_override' ), 10, 6 );
+    
+        // Disable backend access for suspended vendor
+        add_filter('wcmp_vendor_dashboard_header_right_panel_nav', array( &$this, 'remove_backend_access_for_suspended_vendor'));
+        add_action('init', array( &$this, 'remove_wp_admin_access_for_suspended_vendor'), 11);
     }
+    
+    function remove_wp_admin_access_for_suspended_vendor() {
+		if(is_user_wcmp_vendor(get_current_vendor_id())) {
+			$is_block = get_user_meta(get_current_vendor_id(), '_vendor_turn_off', true);
+			if( $is_block && is_admin() ) {
+				wp_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
+				exit;
+			}
+		}
+	}
+	
+	function remove_backend_access_for_suspended_vendor($panel_nav) {
+		if(is_user_wcmp_vendor(get_current_vendor_id())) {
+			$is_block = get_user_meta(get_current_vendor_id(), '_vendor_turn_off', true);
+			if($is_block) unset($panel_nav['wp-admin']);
+		}
+					
+		return $panel_nav;
+	}
 
     /**
      * Wordpress Login redirect
@@ -179,29 +202,9 @@ class WCMp_User {
                     }
                 }
                 $wcmp_vendor_fields = $_POST['wcmp_vendor_fields'];
-                $user_data = get_userdata($customer_id);
-                $user_name = $user_data->user_login;
-                $user_email = $user_data->user_email;
 
-                $wcmp_vendor_registration_form_id = get_user_meta($customer_id, 'wcmp_vendor_registration_form_id', true);
-                if (!$wcmp_vendor_registration_form_id) {
-                    // Create post object
-                    $my_post = array(
-                        'post_title' => $user_name,
-                        'post_status' => 'publish',
-                        'post_author' => 1,
-                        'post_type' => 'wcmp_vendorrequest'
-                    );
-
-                    // Insert the post into the database
-                    $wcmp_vendor_registration_form_id = wp_insert_post($my_post);
-                }
-                update_post_meta($wcmp_vendor_registration_form_id, 'user_id', $customer_id);
-                update_post_meta($wcmp_vendor_registration_form_id, 'username', $user_name);
-                update_post_meta($wcmp_vendor_registration_form_id, 'email', $user_email);
-                $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $wcmp_vendor_registration_form_id, $customer_id);
-                update_post_meta($wcmp_vendor_registration_form_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
-                update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $wcmp_vendor_registration_form_id);
+                $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $customer_id);
+                update_user_meta($customer_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
             }
 
             if (isset($_POST['vendor_apply']) && $user) {
@@ -442,14 +445,16 @@ class WCMp_User {
                 'label' => __('Logo', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 125,
-                'value' => $vendor->get_image() ? $vendor->get_image() : '',
+                'url' => $vendor->get_image() ? $vendor->get_image() : '',
+                'value' => $vendor->image,
                 'class' => "user-profile-fields"
             ), // Upload
             "vendor_banner" => array(
                 'label' => __('Banner', 'dc-woocommerce-multi-vendor'),
                 'type' => 'upload',
                 'prwidth' => 600,
-                'value' => $vendor->get_image('banner') ? $vendor->get_image('banner') : '',
+                'url' => $vendor->get_image('banner') ? $vendor->get_image('banner') : '',
+                'value' => $vendor->banner,
                 'class' => "user-profile-fields"
             ), // Upload			
             "vendor_csd_return_address1" => array(
@@ -514,6 +519,9 @@ class WCMp_User {
         }
         if (isset($payment_admin_settings['payment_method_paypal_payout']) && $payment_admin_settings['payment_method_paypal_payout'] = 'Enable') {
             $payment_mode['paypal_payout'] = __('PayPal Payout', 'dc-woocommerce-multi-vendor');
+        }
+        if (isset($payment_admin_settings['payment_method_stripe_masspay']) && $payment_admin_settings['payment_method_stripe_masspay'] = 'Enable') {
+            $payment_mode['stripe_masspay'] = __('Stripe Connect', 'dc-woocommerce-multi-vendor');
         }
         if (isset($payment_admin_settings['payment_method_direct_bank']) && $payment_admin_settings['payment_method_direct_bank'] = 'Enable') {
             $payment_mode['direct_bank'] = __('Direct Bank', 'dc-woocommerce-multi-vendor');

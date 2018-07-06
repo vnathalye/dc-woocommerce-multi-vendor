@@ -342,7 +342,7 @@ class WCMp_Vendor {
         }
         $vendor_id = $this->term_id;
         $commissions = false;
-        $order_id = null;
+        $order_id = array();
         if ($vendor_id > 0) {
             $args = array(
                 'post_type' => 'dc_commission',
@@ -799,7 +799,7 @@ class WCMp_Vendor {
                                 $order_id = get_post_meta($sale->commission_id, '_commission_order_id', true);
                                 $com_orders[] = $order_id;
                                 $order = wc_get_order($order_id);
-                                $discount_amount += $order->get_total_discount();
+                                if($order){ $discount_amount += $order->get_total_discount();}
                                 $amount = get_wcmp_vendor_order_amount(array('commission_id' => $sale->commission_id), $this->id);
                                 $total_comission_week += $amount['total'];
                                 $shipping_total_week += $amount['shipping_amount'];

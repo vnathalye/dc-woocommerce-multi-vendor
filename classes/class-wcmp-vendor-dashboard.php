@@ -124,7 +124,7 @@ Class WCMp_Admin_Dashboard {
             if (isset($_POST['export_transaction'])) {
                 $transaction_details = array();
                 if (!empty($_POST['transaction_ids'])) {
-                    $date = date('d-m-Y');
+                    $date = date('Y-m-d');
                     $filename = 'TransactionReport-' . $date . '.csv';
                     header("Pragma: public");
                     header("Expires: 0");
@@ -153,8 +153,10 @@ Class WCMp_Admin_Dashboard {
                             $transaction_commission = get_post_meta($transaction_id, 'amount', true);
 
                             $mode = get_post_meta($transaction_id, 'transaction_mode', true);
-                            if ($mode == 'paypal_masspay') {
+                            if ($mode == 'paypal_masspay' || $mode == 'paypal_payout') {
                                 $transaction_mode = __('PayPal', 'dc-woocommerce-multi-vendor');
+                            } else if ($mode == 'stripe_masspay') {
+                                $transaction_mode = __('Stripe', 'dc-woocommerce-multi-vendor');
                             } else if ($mode == 'direct_bank') {
                                 $transaction_mode = __('Direct Bank Transfer', 'dc-woocommerce-multi-vendor');
                             } else {
@@ -162,7 +164,7 @@ Class WCMp_Admin_Dashboard {
                             }
 
                             $order_datas[] = array(
-                                'date' => get_the_date('d-m-Y', $transaction_id),
+                                'date' => get_the_date('Y-m-d', $transaction_id),
                                 'trans_id' => '#' . $transaction_id,
                                 'order_ids' => '#' . implode(', #', $commission_details),
                                 'mode' => $transaction_mode,
@@ -204,8 +206,8 @@ Class WCMp_Admin_Dashboard {
             $vendor = get_wcmp_vendor($user->ID);
             if (isset($_POST['wcmp_stat_export']) && !empty($_POST['wcmp_stat_export']) && $vendor && apply_filters('can_wcmp_vendor_export_orders_csv', true, $vendor->id)) {
                 $vendor = apply_filters('wcmp_order_details_export_vendor', $vendor);
-                $start_date = isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('01-m-Y');
-                $end_date = isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('t-m-Y');
+                $start_date = isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('Y-m-01');
+                $end_date = isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-t');
                 $start_date = strtotime('-1 day', strtotime($start_date));
                 $end_date = strtotime('+1 day', strtotime($end_date));
                 $query = array(
@@ -231,7 +233,7 @@ Class WCMp_Admin_Dashboard {
         global $WCMp;
         $order_datas = array();
         $index = 0;
-        $date = date('d-m-Y');
+        $date = date('Y-m-d');
         $default = array(
             'filename' => 'SalesReport-' . $date . '.csv',
             'iostream' => 'php://output',
@@ -289,12 +291,11 @@ Class WCMp_Admin_Dashboard {
                 foreach ($customer_orders as $commission_id => $customer_order) {
                     $order = new WC_Order($customer_order);
                     $vendor_items = $vendor->get_vendor_items_from_order($customer_order, $vendor->term_id);
-                    $item_names = '';
-                    $item_qty = 0;
+                    $item_names = $item_qty = array();
                     if (sizeof($vendor_items) > 0) {
                         foreach ($vendor_items as $item) {
-                            $item_names .= $item['name'] . ', ';
-                            $item_qty++;
+                            $item_names[] = $item['name'];
+                            $item_qty[] = $item['quantity'];
                         }
 
                         //coupons count
@@ -336,11 +337,11 @@ Class WCMp_Admin_Dashboard {
 
                         $order_datas[$index] = apply_filters('wcmp_vendor_order_generate_csv_data', array(
                             'order' => '#' . $customer_order,
-                            'date_of_purchase' => date_i18n('d-m-Y', strtotime($order->get_date_created())),
+                            'date_of_purchase' => date_i18n('Y-m-d', strtotime($order->get_date_created())),
                             'time_of_purchase' => date_i18n('H', strtotime($order->get_date_created())) . ' : ' . date_i18n('i', strtotime($order->get_date_created())),
                             'vendor_name' => $vendor->page_title,
-                            'product' => $item_names,
-                            'qty' => $item_qty,
+                            'product' => implode( ', ', $item_names ),
+                            'qty' => implode( ', ', $item_qty ),
                             'discount_used' => apply_filters('wcmp_export_discount_used_in_order', $coupon_used),
                             'tax' => get_post_meta($commission_id, '_tax', true),
                             'shipping' => get_post_meta($commission_id, '_shipping', true),
@@ -381,7 +382,7 @@ Class WCMp_Admin_Dashboard {
         fputcsv($file, $headers);
         // Add data to file
         foreach ($order_datas as $order_data) {
-            if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_order_show_email') || $is_not_show_email_field = apply_filters('is_not_show_email_field', true)) {
+            if (!$WCMp->vendor_caps->vendor_capabilities_settings('is_order_show_email') || apply_filters('is_not_show_email_field', true)) {
                 unset($order_data['buyer']);
             }
             fputcsv($file, $order_data);
@@ -817,6 +818,34 @@ Class WCMp_Admin_Dashboard {
     }
 
     /**
+     * Save Vendor Profile data
+     * @since 3.1.0
+     * @global type $WCMp
+     * @param type $vendor_user_id
+     * @param type $post
+     */
+    public function save_vendor_profile($vendor_user_id, $post) {
+        global $WCMp;
+        if (isset($_POST['vendor_profile_data'])) {
+            $userdata = array(
+				'ID' => $vendor_user_id,
+				'user_pass' => $_POST['vendor_profile_data']['password'],
+				'user_email' => $_POST['vendor_profile_data']['user_email'],
+				'first_name' => $_POST['vendor_profile_data']['first_name'],
+				'last_name' => $_POST['vendor_profile_data']['last_name'],
+			);
+			
+			$user_id = wp_update_user( $userdata ) ;
+			
+            $profile_updt = update_user_meta($vendor_user_id, '_vendor_profile_image', $_POST['vendor_profile_data']['vendor_profile_image']);
+            
+            if ($profile_updt || $user_id) {
+                wc_add_notice(__('Profile Data Updated', 'dc-woocommerce-multi-vendor'), 'success');
+            }
+        }
+    }
+    
+    /**
      * Add vendor dashboard header navigation
      * @since 3.0.0
      */
@@ -878,12 +907,21 @@ Class WCMp_Admin_Dashboard {
                 , 'link_target' => '_self'
                 , 'nav_icon' => 'wcmp-font ico-storefront-icon'
             ),
+            'profile' => array(
+                'label' => __('Profile management', 'dc-woocommerce-multi-vendor')
+                , 'url' => esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_profile_endpoint', 'vendor', 'general', 'profile')))
+                , 'class' => ''
+                , 'capability' => true
+                , 'position' => 20
+                , 'link_target' => '_self'
+                , 'nav_icon' => 'wcmp-font ico-user-icon'
+            ),
             'wp-admin' => array(
                 'label' => __('WordPress backend', 'dc-woocommerce-multi-vendor')
                 , 'url' => esc_url(admin_url())
                 , 'class' => ''
                 , 'capability' => true
-                , 'position' => 20
+                , 'position' => 30
                 , 'link_target' => '_self'
                 , 'nav_icon' => 'wcmp-font ico-wp-backend-icon'
             ),
@@ -892,7 +930,7 @@ Class WCMp_Admin_Dashboard {
                 , 'url' => esc_url(wp_logout_url(get_permalink(wcmp_vendor_dashboard_page_id())))
                 , 'class' => ''
                 , 'capability' => true
-                , 'position' => 30
+                , 'position' => 40
                 , 'link_target' => '_self'
                 , 'nav_icon' => 'wcmp-font ico-logout-icon'
             )
@@ -1078,16 +1116,28 @@ Class WCMp_Admin_Dashboard {
             'end_date' => $today
         ));
         $pending_shippings = $vendor->get_vendor_orders_reports_of('pending_shipping', $args);
+        $pending_shippings_arr = array();
+        if($pending_shippings){
+            foreach ($pending_shippings as $pending_orders_item) { 
+                $order = wc_get_order($pending_orders_item->order_id);
+                // hide shipping for local pickup
+                $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
+                if($vendor_shipping_method && in_array($vendor_shipping_method->get_method_id(), apply_filters('hide_shipping_icon_for_vendor_order_on_methods',array('local_pickup'))))
+                    continue; 
+                
+                $pending_shippings_arr[] = $pending_orders_item;
+            }
+        }
         $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(
                 'order_id' => __('Order ID', 'dc-woocommerce-multi-vendor'),
-                'products_name' => __('Product Name', 'dc-woocommerce-multi-vendor'),
+                'products_name' => __('Product', 'dc-woocommerce-multi-vendor'),
                 'order_date' => __('Order Date', 'dc-woocommerce-multi-vendor'),
                 //'dimentions' => __('L/B/H/W', 'dc-woocommerce-multi-vendor'),
                 'shipping_address' => __('Address', 'dc-woocommerce-multi-vendor'),
                 'shipping_amount' => __('Charges', 'dc-woocommerce-multi-vendor'),
                 'action' => __('Action', 'dc-woocommerce-multi-vendor'),
             ));
-        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('pending_shippings' => $pending_shippings, 'default_headers' => $default_headers));
+        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('pending_shippings' => $pending_shippings_arr, 'default_headers' => $default_headers));
     }
 
     public function wcmp_customer_review() {
@@ -1220,9 +1270,10 @@ Class WCMp_Admin_Dashboard {
         $WCMp->library->load_jqvmap_script_lib();
         $vendor = get_current_vendor();
         $visitor_map_stats = get_wcmp_vendor_dashboard_visitor_stats_data($vendor->id);
+        $visitor_map_stats['init'] = array('map' => 'world_en', 'background_color' => false, 'color' => '#a0a0a0', 'hover_color' => false, 'hover_opacity' => 0.7);
         //wp_enqueue_script('wcmp_gchart_loader', '//www.gstatic.com/charts/loader.js');
-        wp_enqueue_script('wcmp_visitor_map_data', $WCMp->plugin_url . 'assets/frontend/js/wcmp_vendor_map_widget_data.js', array('jquery'));
-        wp_localize_script('wcmp_visitor_map_data', 'visitor_map_stats', $visitor_map_stats);
+        wp_enqueue_script('wcmp_visitor_map_data', $WCMp->plugin_url . 'assets/frontend/js/wcmp_vendor_map_widget_data.js', apply_filters('wcmp_vendor_visitors_map_script_dependancies', array('jquery','wcmp-vmap-world-script')));
+        wp_localize_script('wcmp_visitor_map_data', 'visitor_map_stats', apply_filters('wcmp_vendor_visitors_map_script_data', $visitor_map_stats));
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_visitors_map.php');
     }
 

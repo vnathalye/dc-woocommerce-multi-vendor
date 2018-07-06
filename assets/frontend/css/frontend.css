@@ -65,6 +65,7 @@ a.wcmp_vendor_detail{
     height: auto;
     max-width: 100px;
     max-height: 100px;
+    width: auto;
 }
 .vendor_address label, .wcmp_vendor_rating * {
     font-size: 14px;
@@ -393,4 +394,3 @@ a.wcmp_vendor_detail{
 .wcmp_review_loader img{	
 	margin:2px auto;	
 }
-

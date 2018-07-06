@@ -12,12 +12,12 @@
         var jQuerymap = $('#vmap');
         jQuerymap.vectorMap(
         {
-            map: 'world_en',
-            backgroundColor: false,
-            color: '#a0a0a0',
+            map: visitor_map_stats.init.map,
+            backgroundColor: visitor_map_stats.init.background_color,
+            color: visitor_map_stats.init.color,
             colors: colors,
-            hoverOpacity: 0.7, // opacity for :hover
-            hoverColor: false,
+            hoverOpacity: visitor_map_stats.init.hover_opacity, // opacity for :hover
+            hoverColor: visitor_map_stats.init.hover_color,
             onLabelShow: function (element, label, code) {
                 if (visitor_stats.map_stats[code] !== undefined) {
                     label.html(label.html() + ' - ' + visitor_stats.map_stats[code].hits_count + visitor_map_stats.lang.visitors);

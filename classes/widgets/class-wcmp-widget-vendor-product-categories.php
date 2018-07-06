@@ -22,13 +22,13 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
             'count' => array(
                 'type' => 'checkbox',
                 'std' => 1,
-                'label' => __('Show product count', 'dc-woocommerce-multi-vendor'),
+                'label' => __('Show product counts', 'dc-woocommerce-multi-vendor'),
             ),
-            'hide_empty' => array(
-                'type' => 'checkbox',
-                'std' => 0,
-                'label' => __('Hide empty categories', 'dc-woocommerce-multi-vendor'),
-            ),
+			'hierarchical'       => array(
+				'type'  => 'checkbox',
+				'std'   => 1,
+				'label' => __('Show hierarchy', 'dc-woocommerce-multi-vendor'),
+			),
         );
         parent::__construct();
     }
@@ -39,7 +39,7 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
             return;
         }
         $count = isset($instance['count']) ? $instance['count'] : $this->settings['count']['std'];
-        $hide_empty = isset($instance['hide_empty']) ? $instance['hide_empty'] : $this->settings['hide_empty']['std'];
+        $hierarchical = isset( $instance['hierarchical'] ) ? $instance['hierarchical'] : $this->settings['hierarchical']['std'];
 
         $this->vendor_term_id = $wp_query->queried_object->term_id;
         $this->widget_start($args, $instance);
@@ -62,19 +62,51 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
         $product_cats = get_terms($list_args);
         if ($product_cats) {
             echo '<ul class="product-categories">';
-            foreach ($product_cats as $product_cat) {
-                $term_count = isset($associated_terms[$product_cat->term_id]) ? count(array_unique($associated_terms[$product_cat->term_id])) : 0;
-                if (!$hide_empty || $term_count) {
-                    echo '<li class="cat-item cat-item-' . $product_cat->term_id . '"><a href="?category=' . $product_cat->slug . '">' . $product_cat->name . '</a>';
-                    if ($count) {
-                        echo '<span class="count">(' . $term_count . ')</span>';
-                    }
-                    echo '</li>';
-                }
-            }
+            
+            if($hierarchical) {
+            	echo $this->get_hierarchical_categories($product_cats, $associated_terms, $count);
+            } else {
+				foreach ($product_cats as $product_cat) {
+					$term_count = isset($associated_terms[$product_cat->term_id]) ? count(array_unique($associated_terms[$product_cat->term_id])) : 0;
+					if ($term_count) {
+						echo '<li class="cat-item cat-item-' . $product_cat->term_id . '"><a href="' . get_term_link( $product_cat->term_id, 'product_cat' ) . '">' . $product_cat->name . '</a>';
+						if ($count) {
+							echo '<span class="count">(' . $term_count . ')</span>';
+						}
+						echo '</li>';
+					}
+				}
+			}
+			
             echo '</ul>';
         }
         $this->widget_end($args);
     }
-
+    
+    function get_hierarchical_categories($terms, $associated_terms, $show_count, $parent_id = 0) {
+    	$itemOutput = '';
+    	foreach ($terms as $term_key => $term) {
+			if ($parent_id == $term->parent) {
+				$output_inner = $this->get_hierarchical_categories($terms, $associated_terms, $show_count, $term->term_id);
+				$term_count = isset($associated_terms[$term->term_id]) ? count(array_unique($associated_terms[$term->term_id])) : 0;
+				if ($term_count) {
+					if($output_inner != '') $parent_class = ' cat-parent';
+					else $parent_class = '';
+					$itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . $parent_class . '"><a href="' . get_term_link( $term->term_id, 'product_cat' ) . '">' . $term->name . '</a>';
+					if ($show_count) {
+						$itemOutput .= '<span class="count">(' . $term_count . ')</span>';
+					}
+					if($output_inner != '') {
+						$itemOutput .=  '<ul class="children">' . $output_inner . '</ul>';
+						$output_inner = '';
+					}
+					$itemOutput .= '</li>';
+				} else {
+					
+				}
+			}
+		}
+		
+		return $itemOutput;
+    }
 }

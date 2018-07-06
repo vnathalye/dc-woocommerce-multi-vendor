@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $WCMp;
 
 echo "= " . $email_heading . " =\n\n";
-echo sprintf( __("Congratulations! There is a new vendor application on %s.", 'dc-woocommerce-multi-vendor' ), get_option( 'blogname' ) );
+echo sprintf( __("Congratulations! Your vendor application on %s has been approved!", 'dc-woocommerce-multi-vendor' ), get_option( 'blogname' ) );
 echo '\n';
 echo sprintf( __( "Application Status: %s", 'dc-woocommerce-multi-vendor' ), 'Approved' );
 echo '\n';

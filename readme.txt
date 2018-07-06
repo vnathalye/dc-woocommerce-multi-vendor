@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
 Tested up to: 4.9.6
 Requires PHP: 5.6
-Stable tag: 3.0.7
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,9 @@ WC Marketplace - The most user recommended multi-vendor marketplace plugin for W
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
-> <strong>WC Marketplace 3.0 is a significantly major update and hence please follow some [standard steps](https://wc-marketplace.com/wcmp-3-0/?utm_source=WordPress&utm_medium=plugin_desc&utm_campaign=update_notice) before upgrading your marketplace to avoid any undesirable situations.</strong>
+> - <strong>Introducing [REST API (v1.0)](https://wc-marketplace.github.io/rest-api-docs/) with WCMp v3.1.0.</strong>
+> - <strong>Best-In-Class Vendor Management System.</strong>
+> - <strong>Built-in Stripe support for commission disbursal besides PayPal and Bank Transfer!</strong>
 
 <strong>You:</strong> [In your mind - "Ahem. Really?"] All plugin makers say that. What makes you different from others?
 
@@ -79,12 +81,15 @@ Plugins > Add new > Upload plugin > Upload dc-woocommerce-multi-vendor.zip > Ins
 
 == Frequently Asked Questions ==
 = Does this plugin work with newest WP version and also older versions? =
-Ans. Yes, this plugin works fine with WordPress 4.6! It is also compatible for older WordPress versions upto 4.2.
+Ans. Yes, this plugin works fine with WordPress 4.9.6! It is also compatible for older WordPress versions upto 4.2.
 = Up to which version of WooCommerce this plugin compatible with? =
 Ans. This plugin is compatible with the latest version of WooCommerce.
 = Up to which version of PHP this plugin is compatible with? =
 Ans. This plugin is tested with PHP version 5.6.
-
+= Where can I find the REST API documentation? =
+Ans. You can find the documentation of our REST API on the [WCMp REST API Docs](https://wc-marketplace.github.io/rest-api-docs/).
+= WC Marketplace is awesome! Can I contribute? =
+Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/dualcube/dc-woocommerce-multi-vendor/) :)
 
 
 
@@ -98,13 +103,41 @@ Ans. This plugin is tested with PHP version 5.6.
 7. Vendor commissions.
 8. Vendor sales reports.
 9. Product specific sales report.
-10. Customers can report abuse products.
-11. Show Multiple Seller in Single Product.
+10. Vendors management backend.
+11. Vendor quick view.
+12. Vendor application and admin notes.
+13. Vendor profile management form dashboard.
+14. Show Multiple Seller in Single Product.
 
 
 
 
 == Changelog ==
+
+= 3.1.1 - 2018-07-05 =
+* Fix - Suspended vendor backend restriction.
+* Fix - Vendor products shortcode issue.
+* Fix - Vendor add order note time issue.
+* Fix - Commission and transaction Title current time.
+* Fix - Admin new vendor account vendor profile link.
+
+= 3.1.0 - 2018-07-03 =
+* Added: - Introduced WCMp Rest API.
+* Added: - Vendors management section for admin.
+* Added: - Non-vendor ( Pending, Rejected and Suspended vendor ) limited dashboard access.
+* Added: - New vendor top rated product widget.
+* Added: - WCMp Stripe payment gateway support.
+* Feature - Vendor can managed their profile from their dashboard.
+* Feature - Rejected vendor can re-apply from their dashboard.
+* Fix - Vendor products category widget.
+* Fix - Vendor order CSV product quantity.
+* Fix - Vendor no shipping issue at checkout.
+* Fix - Vendor registration form checkbox required field validation.
+* Tweak: - Default upload_input field save process changed to id instead of url.
+* Tweak: - Default datepicker format to (Y-m-d).
+* Tweak: - Replace deprecated vendor application section with Vendors management ( WCMp > Vendors ).
+* Dev - Moved 'wcmp_vendor_fields' post meta to user meta.
+* Updated - Language file.
 
 = 3.0.7 - 2018-06-12 =
 * Added: - Vendor dashboard > Shop description wp_editor support.
@@ -375,5 +408,9 @@ Ans. This plugin is tested with PHP version 5.6.
 
 == Upgrade Notice ==
 
-= 3.0.7 =
-WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.
+= 3.1.1 - 2018-07-05 =
+* Fix - Suspended vendor backend restriction.
+* Fix - Vendor products shortcode issue.
+* Fix - Vendor add order note time issue.
+* Fix - Commission and transaction Title current time.
+* Fix - Admin new vendor account vendor profile link.

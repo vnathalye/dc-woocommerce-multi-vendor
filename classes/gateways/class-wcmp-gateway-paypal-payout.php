@@ -8,6 +8,7 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
 
     public $id;
     public $gateway_title;
+    public $payment_gateway;
     public $message = array();
     private $client_id;
     private $client_secret;
@@ -37,6 +38,8 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
             $this->token_endpoint = 'https://api.sandbox.paypal.com/v1/oauth2/token';
         }
     }
+    
+    public function gateway_logo() { global $WCMp; return $WCMp->plugin_url . 'assets/images/'.$this->id.'.png'; }
 
     public function process_payment($vendor, $commissions = array(), $transaction_mode = 'auto') {
         $this->vendor = $vendor;

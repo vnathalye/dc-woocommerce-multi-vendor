@@ -45,7 +45,8 @@ if (!class_exists('WCMp_WP_Fields')) {
          */
         function title_input($field) {
             $label = isset($field['label']) ? $field['label'] : '';
-            echo "<h3>" . $label . "</h3>";
+            $tag = isset($field['tag']) ? $field['tag'] : 'h3';
+            echo "<".$tag.">" . $label . "</".$tag.">";
         }
         
         /**
@@ -399,12 +400,13 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['class'] = isset($field['class']) ? $field['class'] : 'upload_input';
             $field['mime'] = isset($field['mime']) ? $field['mime'] : 'image';
             $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['url'] = isset($field['url']) ? $field['url'] : get_url_from_upload_field_value($field['value']);
             $field['name'] = isset($field['name']) ? $field['name'] : $field['id'];
             $field['prwidth'] = isset($field['prwidth']) ? $field['prwidth'] : 75;
             $customStyle = isset($field['value']) ? 'display: none;' : '';
             $placeHolder = ( $field['value'] ) ? '' : 'placeHolder';
             if ($field['mime'] == 'image') {
-                $mimeProp = '<img id="' . esc_attr($field['id']) . '_display" src="' . esc_attr($field['value']) . '" width="' . absint($field['prwidth']) . '" class="' . $placeHolder . '" alt="" />';
+                $mimeProp = '<img id="' . esc_attr($field['id']) . '_display" src="' . esc_attr($field['url']) . '" width="' . absint($field['prwidth']) . '" class="' . $placeHolder . '" alt="" />';
             } else {
                 if ($field['value'])
                     $field['mime'] = pathinfo($field['value'], PATHINFO_EXTENSION);
@@ -590,10 +592,10 @@ if (!class_exists('WCMp_WP_Fields')) {
                                     break;
 
                                 case 'title':
-                                    $this->title_input($field);
+                                    $this->title_input($optionField);
                                     break;
                                 case 'label':
-                                    $this->label_input($field);
+                                    $this->label_input($optionField);
                                     break;
 
                                 default:

@@ -14,6 +14,8 @@ class WCMp_Ajax {
         add_action('wp_ajax_woocommerce_json_search_vendors', array(&$this, 'woocommerce_json_search_vendors'));
         add_action('wp_ajax_activate_pending_vendor', array(&$this, 'activate_pending_vendor'));
         add_action('wp_ajax_reject_pending_vendor', array(&$this, 'reject_pending_vendor'));
+        add_action('wp_ajax_wcmp_suspend_vendor', array(&$this, 'wcmp_suspend_vendor'));
+        add_action('wp_ajax_wcmp_activate_vendor', array(&$this, 'wcmp_activate_vendor'));
         add_action('wp_ajax_send_report_abuse', array(&$this, 'send_report_abuse'));
         add_action('wp_ajax_nopriv_send_report_abuse', array(&$this, 'send_report_abuse'));
         add_action('wp_ajax_dismiss_vendor_to_do_list', array(&$this, 'dismiss_vendor_to_do_list'));
@@ -80,7 +82,6 @@ class WCMp_Ajax {
         //frontend product manager ajax
         add_action('wp_ajax_frontend_product_manager', array(&$this, 'frontend_product_manager'));
         add_action('wp_ajax_generate_taxonomy_attributes', array(&$this, 'generate_taxonomy_attributes'));
-        add_action('wp_ajax_wcmp_product_tag_search', array(&$this, 'wcmp_product_tag_search'));
         add_action('wp_ajax_wcmp_product_tag_add', array(&$this, 'wcmp_product_tag_add'));
 
         //add_action('wp_ajax_generate_variation_attributes', array(&$this, 'generate_variation_attributes'));
@@ -108,6 +109,9 @@ class WCMp_Ajax {
         add_action('wp_ajax_wcmp_vendor_dashboard_customer_questions_data', array(&$this, 'wcmp_vendor_dashboard_customer_questions_data'));
         // vendor products Q&As list
         add_action('wp_ajax_wcmp_vendor_products_qna_list', array(&$this, 'wcmp_vendor_products_qna_list'));
+        
+        // vendor management tab under WCMp
+        add_action('wp_ajax_wcmp_get_vendor_details', array(&$this, 'wcmp_get_vendor_details'));
     }
 
     public function wcmp_datatable_get_vendor_orders() {
@@ -173,14 +177,14 @@ class WCMp_Ajax {
                         $action_html .= '<a href="' . $action['url'] . '" title="' . $action['title'] . '"><i class="wcmp-font ' . $action['icon'] . '"></i></a> ';
                     }
                 }
-                $data[] = array(
+                $data[] = apply_filters('wcmp_datatable_order_list_row_data', array(
                     'select_order' => '<input type="checkbox" class="select_' . $order->get_status() . '" name="selected_orders[' . $order->get_id() . ']" value="' . $order->get_id() . '" />',
                     'order_id' => $order->get_id(),
                     'order_date' => wcmp_date($order->get_date_created()),
                     'vendor_earning' => wc_price(get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()))['total']),
                     'order_status' => esc_html(wc_get_order_status_name($order->get_status())), //ucfirst($order->get_status()),
                     'action' => apply_filters('wcmp_vendor_orders_row_action_html', $action_html, $actions)
-                );
+                ), $order);
             }
         }
         $json_data = array(
@@ -309,9 +313,13 @@ class WCMp_Ajax {
             $duplicate_product->set_parent_id($product->get_id());
             update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
             $duplicate_product->save();
-            $redirect_url .= $duplicate_product->get_id();
+            if(!empty(get_option('permalink_structure'))) {
+                $redirect_url .= $duplicate_product->get_id();
+            } else {
+                $redirect_url .= '='.$duplicate_product->get_id();
+            }
             $response['status'] = true;
-            $response['redirect_url'] = $redirect_url;
+            $response['redirect_url'] = htmlspecialchars_decode($redirect_url);
         }
         wp_send_json($response);
     }
@@ -1218,14 +1226,28 @@ class WCMp_Ajax {
      */
     function activate_pending_vendor() {
         $user_id = filter_input(INPUT_POST, 'user_id');
+        $redirect = filter_input(INPUT_POST, 'redirect');
+        $custom_note = filter_input(INPUT_POST, 'custom_note');
+        $note_by = filter_input(INPUT_POST, 'note_by');
+        
         if ($user_id) {
             $user = new WP_User(absint($user_id));
             $user->set_role('dc_vendor');
             $user_dtl = get_userdata(absint($user_id));
             $email = WC()->mailer()->emails['WC_Email_Approved_New_Vendor_Account'];
             $email->trigger($user_id, $user_dtl->user_pass);
+            
+            if(isset($custom_note) && $custom_note != '') {
+				$wcmp_vendor_rejection_notes = unserialize( get_user_meta( $user_id, 'wcmp_vendor_rejection_notes', true ) );
+				$wcmp_vendor_rejection_notes[time()] = array(
+						'note_by' => $note_by,
+						'note' => $custom_note);
+				update_user_meta( $user_id, 'wcmp_vendor_rejection_notes', serialize( $wcmp_vendor_rejection_notes ) );
+			}
         }
-        die();
+        
+        if(isset($redirect) && $redirect) wp_send_json( array( 'redirect' => true, 'redirect_url' => wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=vendors' ) ) );
+        exit;
     }
 
     /**
@@ -1235,11 +1257,60 @@ class WCMp_Ajax {
      */
     function reject_pending_vendor() {
         $user_id = filter_input(INPUT_POST, 'user_id');
+        $redirect = filter_input(INPUT_POST, 'redirect');
+        $custom_note = filter_input(INPUT_POST, 'custom_note');
+        $note_by = filter_input(INPUT_POST, 'note_by');
+        
         if ($user_id) {
             $user = new WP_User(absint($user_id));
             $user->set_role('dc_rejected_vendor');
+            
+			if(isset($custom_note) && $custom_note != '') {
+				$wcmp_vendor_rejection_notes = unserialize( get_user_meta( $user_id, 'wcmp_vendor_rejection_notes', true ) );
+				$wcmp_vendor_rejection_notes[time()] = array(
+						'note_by' => $note_by,
+						'note' => $custom_note);
+				update_user_meta( $user_id, 'wcmp_vendor_rejection_notes', serialize( $wcmp_vendor_rejection_notes ) );
+			}		
         }
-        die();
+        
+        if(isset($redirect) && $redirect) wp_send_json( array( 'redirect' => true, 'redirect_url' => wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=vendors' ) ) );
+        exit;
+    }
+    
+    /**
+     * Suspend Vendor via AJAX
+     *
+     * @return void
+     */
+    function wcmp_suspend_vendor() {
+        $user_id = filter_input(INPUT_POST, 'user_id');
+        $redirect = filter_input(INPUT_POST, 'redirect');
+        if ($user_id) {
+        	$user = new WP_User(absint($user_id));
+            if(is_user_wcmp_vendor($user)) {
+            	update_user_meta($user_id, '_vendor_turn_off', 'Enable');
+            }
+        }
+        if(isset($redirect) && $redirect) wp_send_json( array( 'redirect' => true, 'redirect_url' => wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=vendors' ) ) );
+        exit;
+    }
+    /**
+     * Activate Vendor via AJAX from Suspend state
+     *
+     * @return void
+     */
+    function wcmp_activate_vendor() {
+        $user_id = filter_input(INPUT_POST, 'user_id');
+        $redirect = filter_input(INPUT_POST, 'redirect');
+        if ($user_id) {
+        	$user = new WP_User(absint($user_id));
+            if(is_user_wcmp_vendor($user)) {
+            	delete_user_meta($user_id, '_vendor_turn_off');
+            }
+        }
+        if(isset($redirect) && $redirect) wp_send_json( array( 'redirect' => true, 'redirect_url' => wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=vendors' ) ) );
+        exit;
     }
 
     /**
@@ -1750,7 +1821,11 @@ class WCMp_Ajax {
 
                 // Set Product Tags
                 if (isset($product_manager_form_data['product_tags']) && !empty($product_manager_form_data['product_tags'])) {
-                    wp_set_post_terms($new_product_id, $product_manager_form_data['product_tags'], 'product_tag');
+                    if(is_array($product_manager_form_data['product_tags'])){
+                        wp_set_object_terms( $new_product_id, $product_manager_form_data['product_tags'], 'product_tag', false );
+                    }else{
+                        wp_set_post_terms($new_product_id, $product_manager_form_data['product_tags'], 'product_tag');
+                    }
                 }
 
                 // Set Product Featured Image
@@ -2457,8 +2532,8 @@ class WCMp_Ajax {
             $vendor = get_wcmp_vendor(get_current_vendor_id());
             $requestData = $_REQUEST;
             $vendor = apply_filters('wcmp_transaction_vendor', $vendor);
-            $start_date = isset($requestData['from_date']) ? $requestData['from_date'] : date('01-m-Y');
-            $end_date = isset($requestData['to_date']) ? $requestData['to_date'] : date('t-m-Y');
+            $start_date = isset($requestData['from_date']) ? $requestData['from_date'] : date('Y-m-01');
+            $end_date = isset($requestData['to_date']) ? $requestData['to_date'] : date('Y-m-t');
             $transaction_details = $WCMp->transaction->get_transactions($vendor->term_id, $start_date, $end_date, array('wcmp_processing', 'wcmp_completed'));
 
             $data = array();
@@ -2949,61 +3024,178 @@ class WCMp_Ajax {
         );
         wp_send_json($json_data);
     }
-
-    /**
-     * Ajax handler for tag search.
-     *
-     * @since 3.0.6
-     */
-    function wcmp_product_tag_search() {
-        if (!isset($_GET['tax'])) {
-            wp_die(0);
+    
+    function wcmp_get_vendor_details() {
+    	global $WCMp;
+    	
+    	if (!isset($_GET['vendor_id'])) {
+            wp_die( __('No Vendor ID found', 'dc-woocommerce-multi-vendor') );
         }
+        
+        if (isset($_GET['vendor_id']) && isset($_GET['vendor_id']) && isset($_GET['nonce'])) {
+            $vendor_id = $_GET['vendor_id'];
+            $nonce = $_REQUEST["nonce"];
 
-        $taxonomy = sanitize_key($_GET['tax']);
-        $tax = get_taxonomy($taxonomy);
-        if (!$tax) {
-            wp_die(0);
-        }
+            if (!wp_verify_nonce($nonce, 'wcmp-vendors')) wp_die( __('Invalid request', 'dc-woocommerce-multi-vendor') );
 
-        if (!current_user_can($tax->cap->assign_terms)) {
-            wp_die(-1);
-        }
-
-        $s = wp_unslash($_GET['q']);
-
-        $comma = _x(',', 'tag delimiter');
-        if (',' !== $comma)
-            $s = str_replace($comma, ',', $s);
-        if (false !== strpos($s, ',')) {
-            $s = explode(',', $s);
-            $s = $s[count($s) - 1];
-        }
-        $s = trim($s);
-
-        /**
-         * Filters the minimum number of characters required to fire a tag search via Ajax.
-         *
-         * @since 4.0.0
-         *
-         * @param int         $characters The minimum number of characters required. Default 2.
-         * @param WP_Taxonomy $tax        The taxonomy object.
-         * @param string      $s          The search term.
-         */
-        $term_search_min_chars = (int) apply_filters('term_search_min_chars', 2, $tax, $s);
-
-        /*
-         * Require $term_search_min_chars chars for matching (default: 2)
-         * ensure it's a non-negative, non-zero integer.
-         */
-        if (( $term_search_min_chars == 0 ) || ( strlen($s) < $term_search_min_chars )) {
-            wp_die();
-        }
-
-        $results = get_terms($taxonomy, array('name__like' => $s, 'fields' => 'names', 'hide_empty' => false));
-
-        wp_send_json($results);
-        wp_die();
+            $vendor = get_wcmp_vendor($vendor_id);
+            $product_count = 0;
+			$user_info['status'] = '';
+			$user_info['status_name'] = '';
+			if($vendor) {
+				$vendor_term_id = get_user_meta($vendor_id, '_vendor_term_id', true);
+			
+				$vendor_products = $vendor->get_products();
+				
+				$vendor_review_info = wcmp_get_vendor_review_info($vendor_term_id);
+				if(isset($vendor_review_info['total_rating'])) {
+					$user_info['total_rating'] = $vendor_review_info['total_rating'];
+					$user_info['avg_rating'] = number_format(floatval($vendor_review_info['avg_rating']), 1);
+    			}
+    			
+    			$vendor_report_data = get_wcmp_vendor_dashboard_stats_reports_data($vendor);
+    			if(isset($vendor_report_data[30]) && is_array($vendor_report_data[30])) {
+    				$user_info['last_30_days_earning'] = $vendor_report_data[30]['_wcmp_stats_table']['current_earning'];
+    				$user_info['last_30_days_sales_total'] = $vendor_report_data[30]['_wcmp_stats_table']['current_sales_total'];
+    				$user_info['last_30_days_withdrawal'] = $vendor_report_data[30]['_wcmp_stats_table']['current_withdrawal'];
+    				$user_info['last_30_days_orders_no'] = $vendor_report_data[30]['_wcmp_stats_table']['current_orders_no'];
+    			}
+    			
+    			$unpaid_orders = get_wcmp_vendor_order_amount(array('commission_status' => 'unpaid'), $vendor->id);
+    			if(isset($unpaid_orders['total']) && $unpaid_orders['total'] > 0) $user_info['withdrawable_balance'] = wc_price($unpaid_orders['total']);
+    			else $user_info['withdrawable_balance'] = wc_price(0);
+    			
+    			$vendor_profile_image = get_user_meta($vendor_id, '_vendor_profile_image', true);
+    			if(isset($vendor_profile_image) && $vendor_profile_image > 0) $user_info['profile_image'] = wp_get_attachment_url($vendor_profile_image);
+    			else $user_info['profile_image'] = get_avatar_url($vendor_id, array('size' => 120));
+    			
+				$user_info['products'] = count($vendor_products);
+                $user_info['shop_title'] = $vendor->page_title;
+                $user_info['shop_url'] = $vendor->permalink;
+                $user_info['address_1'] = $vendor->address_1;
+                $user_info['address_2'] = $vendor->address_2;
+                $user_info['city'] = $vendor->city;
+                $user_info['state'] = $vendor->state;
+                $user_info['country'] = $vendor->country;
+                $user_info['postcode'] = $vendor->postcode;
+                $user_info['phone'] = $vendor->phone;
+                $user_info['description'] = $vendor->description;
+                
+                $user_info['facebook'] = $vendor->fb_profile;
+				$user_info['twitter'] = $vendor->twitter_profile;
+				$user_info['google_plus'] = $vendor->google_plus_profile;
+				$user_info['linkdin'] = $vendor->linkdin_profile;
+				$user_info['youtube'] = $vendor->youtube;
+				$user_info['instagram'] = $vendor->instagram;
+				
+				$user_info['payment_mode'] = $vendor->payment_mode;
+				$user_info['gateway_logo'] = isset($WCMp->payment_gateway->payment_gateways[$vendor->payment_mode]) ? $WCMp->payment_gateway->payment_gateways[$vendor->payment_mode]->gateway_logo() : '';
+				
+				$vendor_progress = wcmp_get_vendor_profile_completion( $vendor->id );
+				
+				if(isset($vendor_progress['progress'])) $user_info['profile_progress'] = $vendor_progress['progress'];
+			}
+			
+			$user = get_user_by("ID", $vendor_id);
+			$user_info['ID'] = $user->data->ID;
+			$user_info['display_name'] = $user->data->display_name;
+			$user_info['email'] = $user->data->user_email;
+			$user_info['registered'] = $user->data->user_registered;
+			
+			$actions_html = '';
+			
+			if(in_array('dc_vendor', $user->roles)) {
+				$is_block = get_user_meta($vendor_id, '_vendor_turn_off', true);
+				if($is_block) {
+					$user_info['status_name'] = __('Suspended', 'dc-woocommerce-multi-vendor');
+					$user_info['status'] = 'suspended';
+					$actions['activate'] = array(
+						'ID'     => $user_info['ID'],
+						'ajax_action' => 'wcmp_activate_vendor',
+						'url'    => '#',
+						'name'   => __( 'Activate', 'dc-woocommerce-multi-vendor' ),
+						'action' => 'activate',
+					);
+				} else {
+					$user_info['status_name'] = __('Approved', 'dc-woocommerce-multi-vendor');
+					$user_info['status'] = 'approved';
+					$actions['suspend'] = array(
+						'ID'     => $user_info['ID'],
+						'ajax_action' => 'wcmp_suspend_vendor',
+						'url'    => '#',
+						'name'   => __( 'Suspend', 'dc-woocommerce-multi-vendor' ),
+						'action' => 'suspend',
+					);
+				}
+			} else if(in_array('dc_rejected_vendor', $user->roles)) {
+				$user_info['status_name'] = __('Rejected', 'dc-woocommerce-multi-vendor');
+				$user_info['status'] = 'rejected';
+			} else if(in_array('dc_pending_vendor', $user->roles)) {
+				$user_info['status_name'] = __('Pending', 'dc-woocommerce-multi-vendor');
+				$user_info['status'] = 'pending';
+				$actions['approve'] = array(
+					'ID'     => $user_info['ID'],
+					'ajax_action' => 'activate_pending_vendor',
+					'url'    => '#',
+					'name'   => __( 'Approve', 'dc-woocommerce-multi-vendor' ),
+					'action' => 'approve',
+				);
+				$actions['reject'] = array(
+					'ID'     => $user_info['ID'],
+					'ajax_action' => 'reject_pending_vendor',
+					'url'    => '#',
+					'name'   => __( 'Reject', 'dc-woocommerce-multi-vendor' ),
+					'action' => 'reject',
+				);
+			}
+			
+			if(isset($actions) && is_array($actions)) {
+				foreach($actions as $action) {
+					$actions_html .= sprintf( '<a class="button button-primary button-large wcmp-action-button wcmp-action-button-%1$s %1$s-vendor" href="%2$s" aria-label="%3$s" title="%3$s" data-vendor-id="%4$s" data-ajax-action="%5$s">%6$s</a>', esc_attr( $action['action'] ), esc_url( $action['url'] ), esc_attr( isset( $action['title'] ) ? $action['title'] : $action['name'] ), $action['ID'], $action['ajax_action'], esc_html( $action['name'] ) );
+				}
+				$user_info['actions_html'] = $actions_html;
+			}
+			
+			if( in_array('dc_pending_vendor', $user->roles) || in_array('dc_rejected_vendor', $user->roles) ) {
+				// Add Vendor Application data
+				$vendor_application_data = get_user_meta( $user_info['ID'], 'wcmp_vendor_fields', true );
+				$vendor_application_data_string = '';
+				if (!empty($vendor_application_data) && is_array($vendor_application_data)) {
+					foreach ($vendor_application_data as $key => $value) {
+						$vendor_application_data_string .= '<div class="wcmp-form-field">';
+						$vendor_application_data_string .= '<label>' . html_entity_decode($value['label']) . ':</label>';
+						if ($value['type'] == 'file') {
+							if (!empty($value['value']) && is_array($value['value'])) {
+								foreach ($value['value'] as $attacment_id) {
+									$vendor_application_data_string .= '<span> <a href="' . wp_get_attachment_url($attacment_id) . '" download>' . get_the_title($attacment_id) . '</a> </span>';
+								}
+							}
+						} else {
+							if (is_array($value['value'])) {
+								$vendor_application_data_string .= '<span> ' . implode(', ', $value['value']) . '</span>';
+							} else {
+								$vendor_application_data_string .= '<span> ' . $value['value'] . '</span>';
+							}
+						}
+						$vendor_application_data_string .= '</div>';
+					}
+				}
+				$user_info['vendor_application_data'] = $vendor_application_data_string;
+				
+				$wcmp_vendor_rejection_notes = unserialize( get_user_meta( $user_info['ID'], 'wcmp_vendor_rejection_notes', true ) );
+				
+				$wcmp_vendor_custom_notes_html = '';
+				foreach($wcmp_vendor_rejection_notes as $time => $notes) {
+					$author_info = get_userdata($notes['note_by']);
+					$wcmp_vendor_custom_notes_html .= '<div class="note-clm"><p class="note-description">' . $notes['note'] . '</p><p class="note_time note-meta">On ' . date( "Y-m-d", $time ) . '</p><p class="note_owner note-meta">By ' . $author_info->display_name . '</p></div>';
+				}
+				
+				$user_info['vendor_custom_notes'] = $wcmp_vendor_custom_notes_html;
+			}
+			
+			wp_send_json_success( $user_info );
+		}
+		return 0;
     }
     
     /**
@@ -3016,13 +3208,14 @@ class WCMp_Ajax {
 	$tax = get_taxonomy($taxonomy);
         $tag_name = '';
         $message = '';
-        if (!apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id())){
+        $status = false;
+        if (!apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_user_id())){
             $message = __("You don't have permission to add product tags", 'dc-woocommerce-multi-vendor');
-            wp_send_json(array('tag_name' => $tag_name, 'message' => $message));
+            wp_send_json(array('status' => $status, 'tag_name' => $tag_name, 'message' => $message));
             die;
         }
 
-	$tag = wp_insert_term($_POST['new_tag'], $taxonomy, $_POST );
+	$tag = wp_insert_term($_POST['new_tag'], $taxonomy, array() );
 
 	if ( !$tag || is_wp_error($tag) || (!$tag = get_term( $tag['term_id'], $taxonomy )) ) {
             $message = __('An error has occurred. Please reload the page and try again.', 'dc-woocommerce-multi-vendor');
@@ -3030,8 +3223,9 @@ class WCMp_Ajax {
                 $message = $tag->get_error_message();
         }else{
             $tag_name = $tag->name;
+            $status = true;
         }
-        wp_send_json(array('tag_name' => $tag_name, 'message' => $message));
+        wp_send_json(array('status' => $status, 'tag_name' => $tag_name, 'message' => $message));
         die;
     }
 

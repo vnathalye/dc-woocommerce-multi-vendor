@@ -107,5 +107,25 @@ class WC_Dependencies_Product_Vendor {
         return in_array('advanced-custom-fields/acf.php', self::$active_plugins) || array_key_exists('advanced-custom-fields/acf.php', self::$active_plugins);
         return false;
     }
+    
+    // Stripe dependency
+    static function stripe_dependencies() {
+        $dependencies = array('status' => true, 'module' => '');
+        if ( version_compare( PHP_VERSION, '5.3.29', '<' )) {
+            $dependencies['module'] = 'phpversion';
+            $dependencies['status'] = false;
+            return $dependencies;
+        }
+        $modules = array( 'curl', 'mbstring', 'json' );
+
+        foreach($modules as $module){
+            if(!extension_loaded($module)){
+                $dependencies['module'] = $module;
+                $dependencies['status'] = false;
+                return $dependencies;
+            }
+        }
+        return $dependencies;
+    }
 
 }

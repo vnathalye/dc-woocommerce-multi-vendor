@@ -128,6 +128,14 @@ jQuery(document).ready(function ($) {
     } else {
         $('#payment_schedule').closest("tr").css("display", "none");
     }
+    
+    $('#wcmp_disbursal_mode_admin').change(function () {
+        if ($(this).is(':checked')) {
+            $('#payment_schedule').closest("tr").show();
+        } else {
+            $('#payment_schedule').closest("tr").css("display", "none");
+        }
+    });
 
     if ($('#wcmp_disbursal_mode_vendor').is(':checked')) {
         $('#commission_transfer').closest("tr").show();
@@ -136,12 +144,44 @@ jQuery(document).ready(function ($) {
         $('#commission_transfer').closest("tr").css("display", "none");
         $('#no_of_orders').closest("tr").css("display", "none");
     }
+    
+    if ($('#wcmp_disbursal_mode_admin').is(':checked')) {
+        $('#payment_schedule').closest("tr").show();
+    } else {
+        $('#payment_schedule').closest("tr").css("display", "none");
+    }
 
-    $('#wcmp_disbursal_mode_admin').change(function () {
+    if ($('#testmode').is(':checked')) {
+        $('#test_client_id').closest("tr").show();
+        $('#test_publishable_key').closest("tr").show();
+        $('#test_secret_key').closest("tr").show();
+        $('#live_client_id').closest("tr").hide();
+        $('#live_publishable_key').closest("tr").hide();
+        $('#live_secret_key').closest("tr").hide();
+    } else {
+        $('#test_client_id').closest("tr").hide();
+        $('#test_publishable_key').closest("tr").hide();
+        $('#test_secret_key').closest("tr").hide();
+        $('#live_client_id').closest("tr").show();
+        $('#live_publishable_key').closest("tr").show();
+        $('#live_secret_key').closest("tr").show();
+    }
+
+    $('#testmode').change(function () {
         if ($(this).is(':checked')) {
-            $('#payment_schedule').closest("tr").show();
+            $('#test_client_id').closest("tr").show();
+            $('#test_publishable_key').closest("tr").show();
+            $('#test_secret_key').closest("tr").show();
+            $('#live_client_id').closest("tr").hide();
+            $('#live_publishable_key').closest("tr").hide();
+            $('#live_secret_key').closest("tr").hide();
         } else {
-            $('#payment_schedule').closest("tr").css("display", "none");
+            $('#test_client_id').closest("tr").hide();
+            $('#test_publishable_key').closest("tr").hide();
+            $('#test_secret_key').closest("tr").hide();
+            $('#live_client_id').closest("tr").show();
+            $('#live_publishable_key').closest("tr").show();
+            $('#live_secret_key').closest("tr").show();
         }
     });
 
@@ -184,4 +224,96 @@ jQuery(document).ready(function ($) {
         $(this).closest('div').addClass('selected');
     });
     // end
+    
+    // Vendor Management Tab
+    $("#vendor_preview_tabs").tabs();
+
+    var getHasLoc;
+    
+    $('body').on("click", "#vendor_preview_tabs a.ui-tabs-anchor", function(e) {
+        location.hash = '/' + $(this).attr("id");        
+    });
+    if (location.hash) {
+        getHasLoc = location.hash.replace('#/', '');        
+        $("#vendor_preview_tabs a[id='" + getHasLoc + "']").click();
+    }
+	
+	// Disable buttons for application archive tab
+	$('#vendor_preview_tabs').click('#vendor-application', function (event, ui) {
+			$vendor_type = $("#vendor-application").data( 'vendor-type' );
+			if($vendor_type) {
+				var selectedTabIndex= $("#vendor_preview_tabs").tabs('option', 'active');
+				if(selectedTabIndex == 4) $("#wc-backbone-modal-dialog").hide();
+				else $("#wc-backbone-modal-dialog").show();
+			}
+	});
+	
+	$('#vendor_payment_mode').on('change', function () {
+		$('.payment-gateway').hide();
+		$('.payment-gateway-' + $(this).val()).show();
+	}).change();
+	
+	$('.vendor-preview').click(function() {
+		var $previewButton    = $( this ),
+			$vendor_id         = $previewButton.data( 'vendor-id' );
+			
+		if ( $previewButton.data( 'vendor-data' ) ) {
+			$( this ).WCBackboneModal({
+				template: 'wcmp-modal-view-vendor',
+				variable : $previewButton.data( 'vendor-data' )
+			});
+		} else {
+			$previewButton.addClass( 'disabled' );
+
+			$.ajax({
+				url:     wcmp_admin_js_script_data.ajax_url,
+				data:    {
+					vendor_id: $vendor_id,
+					action  : 'wcmp_get_vendor_details',
+					nonce: wcmp_admin_js_script_data.vendors_nonce
+				},
+				type:    'GET',
+				success: function( response ) {
+					$( '.vendor-preview' ).removeClass( 'disabled' );
+					if ( response.success ) {
+						$previewButton.data( 'vendor-data', response.data );
+
+						$( this ).WCBackboneModal({
+							template: 'wcmp-modal-view-vendor',
+							variable : response.data
+						});
+					}
+				}
+			});
+		}
+		return false;
+	});
+	
+	$( document.body ).on('click', '#wc-backbone-modal-dialog .wcmp-action-button', function(e) {
+        e.preventDefault();
+        $('.wcmp-loader').html('<span class="dashicons dashicons-image-rotate"></span>');
+		var $actionButton    = $( this ),
+			$vendor_id       = $actionButton.data( 'vendor-id' ),
+			$vendor_action   = $actionButton.data( 'ajax-action' );
+			$pending_vendor_note = $actionButton.closest( '.wcmp-vendor-modal-main' ).find( '.pending-vendor-note' ).val();
+			$note_author_id = $actionButton.closest( '.wcmp-vendor-modal-main' ).find( '.pending-vendor-note' ).data( 'note-author-id' );
+			
+		if(typeof($vendor_id) != "undefined" && $vendor_id !== null && $vendor_id > 0) {
+			$.ajax({
+				url:  wcmp_admin_js_script_data.ajax_url,
+				data: {
+					user_id: $vendor_id,
+					action : $vendor_action,
+					redirect: true,
+					custom_note: $pending_vendor_note,
+					note_by: $note_author_id
+				},
+				type: 'POST',
+				success: function( response ) {
+                    $('.wcmp-loader').html('');
+					if(response.redirect) window.location = response.redirect_url;
+				}
+			});
+		}
+	});
 });

@@ -31,7 +31,15 @@ class WCMp_Vendor_Dashboard_Shortcode {
             wc_get_template('myaccount/form-login.php');
             echo '</div>';
         } else if (!is_user_wcmp_vendor(get_current_vendor_id())) {
-            $WCMp->template->get_template('shortcode/non_vendor_dashboard.php');
+        	$user = wp_get_current_user();
+        	
+        	if ($user && in_array('dc_pending_vendor', $user->roles)) {
+        		$WCMp->template->get_template('shortcode/pending_vendor_dashboard.php');
+        	} else if ($user && in_array('dc_rejected_vendor', $user->roles)) {
+        		$WCMp->template->get_template('shortcode/rejected_vendor_dashboard.php');
+        	} else {
+        		$WCMp->template->get_template('shortcode/non_vendor_dashboard.php');
+            }
         } else {
             do_action('wcmp_dashboard_setup');
             $WCMp->template->get_template('shortcode/vendor_dashboard.php');

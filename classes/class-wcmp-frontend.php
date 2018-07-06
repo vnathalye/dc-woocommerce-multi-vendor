@@ -96,29 +96,10 @@ class WCMp_Frontend {
                 }
             }
             $wcmp_vendor_fields = $_POST['wcmp_vendor_fields'];
-            $user_data = get_userdata($customer_id);
-            $user_name = $user_data->user_login;
-            $user_email = $user_data->user_email;
 
-            $wcmp_vendor_registration_form_id = get_user_meta($customer_id, 'wcmp_vendor_registration_form_id', true);
-            if (!$wcmp_vendor_registration_form_id) {
-                // Create post object
-                $my_post = array(
-                    'post_title' => $user_name,
-                    'post_status' => 'publish',
-                    'post_author' => 1,
-                    'post_type' => 'wcmp_vendorrequest'
-                );
+            $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $customer_id);
+            update_user_meta($customer_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
 
-                // Insert the post into the database
-                $wcmp_vendor_registration_form_id = wp_insert_post($my_post);
-            }
-            update_post_meta($wcmp_vendor_registration_form_id, 'user_id', $customer_id);
-            update_post_meta($wcmp_vendor_registration_form_id, 'username', $user_name);
-            update_post_meta($wcmp_vendor_registration_form_id, 'email', $user_email);
-            $wcmp_vendor_fields = apply_filters('wcmp_save_registration_fields', $wcmp_vendor_fields, $wcmp_vendor_registration_form_id, $customer_id);
-            update_post_meta($wcmp_vendor_registration_form_id, 'wcmp_vendor_fields', $wcmp_vendor_fields);
-            update_user_meta($customer_id, 'wcmp_vendor_registration_form_id', $wcmp_vendor_registration_form_id);
             // WCMp Vendor Registration form data mapping
             $data_type_map = apply_filters('wcmp_vendor_formdata_mapped_types', array('vendor_address_1', 'vendor_address_2', 'vendor_phone', 'vendor_country', 'vendor_state', 'vendor_city', 'vendor_postcode', 'vendor_paypal_email', 'vendor_description'));
             if ($wcmp_vendor_fields && is_array($wcmp_vendor_fields)) {
@@ -405,7 +386,7 @@ class WCMp_Frontend {
         $frontend_style_path = $WCMp->plugin_url . 'assets/frontend/css/';
         $frontend_style_path = str_replace(array('http:', 'https:'), '', $frontend_style_path);
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
         if ($is_vendor_dashboard) {
             $this->wcmp_dequeue_global_style();
         }
@@ -419,7 +400,7 @@ class WCMp_Frontend {
         wp_register_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('wcmp_custom_scroller', $frontend_style_path . 'jquery.mCustomScrollbar.css', array(), $WCMp->version);
 
-        if (is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())) {
+        if (is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id()))) {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('jquery-ui-style');
             $WCMp->library->load_bootstrap_style_lib();
@@ -454,7 +435,7 @@ class WCMp_Frontend {
      * @return void
      */
     public function wcmp_remove_internal_styles_start() {
-        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
 
         if ($is_vendor_dashboard) {
             ob_start();
@@ -466,7 +447,7 @@ class WCMp_Frontend {
      * @return void
      */
     public function wcmp_remove_internal_styles_end() {
-        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
+        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
 
         if ($is_vendor_dashboard) {
             $css = ob_get_clean();
@@ -556,7 +537,7 @@ class WCMp_Frontend {
      */
     public function wcmp_vendor_dashboard_template($page_template) {
         global $WCMp;
-        if (is_vendor_dashboard() && is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id()) && apply_filters('wcmp_vendor_dashboard_exclude_header_footer', true)) {
+        if (is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_exclude_header_footer', true)) {
             return $WCMp->template->locate_template('template-vendor-dashboard.php');
         }
         return $page_template;

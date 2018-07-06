@@ -58,7 +58,7 @@ if (isset($queried_object->term_id) && !empty($queried_object)) {
                                         <input id="wcmp_vendor_for_rating" name="wcmp_vendor_for_rating" type="hidden" value="<?php echo $vendor_id; ?>"  >
                                         <input id="author" name="author" type="hidden" value="<?php echo $current_user->display_name; ?>" size="30" aria-required="true">					 
                                         <input id="email" name="email" type="hidden" value="<?php echo $current_user->user_email; ?>" size="30" aria-required="true">
-                                        <input name="submit" type="button" id="submit" class="submit" value="Submit">
+                                        <input name="submit" type="button" id="submit" class="submit" value="<?php _e('Submit', 'dc-woocommerce-multi-vendor') ?>">
 
                                     </p>				
                                 </form>
@@ -89,7 +89,7 @@ if (isset($queried_object->term_id) && !empty($queried_object)) {
                         echo '</ol>';
                         if ($total_pages > 1) {
                             echo '<div class="wcmp_review_loader"><img src="' . $WCMp->plugin_url . 'assets/images/ajax-loader.gif" alt="ajax-loader" /></div>';
-                            echo '<input name="loadmore" type="button" id="wcmp_review_load_more" class="submit wcmp_load_more" style="float:right;" value="Load More">';
+                            echo '<input name="loadmore" type="button" id="wcmp_review_load_more" class="submit wcmp_load_more" style="float:right;" value="'.__('Load More', 'dc-woocommerce-multi-vendor').'">';
                         }
                     }
                 } elseif ($count == 0) {

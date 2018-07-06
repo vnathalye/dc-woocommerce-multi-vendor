@@ -18,6 +18,7 @@ class WCMp_Payment_Gateways {
         $load_gateways = array(
             'WCMp_Gateway_Paypal_Masspay',
             'WCMp_Gateway_Paypal_Payout',
+            'WCMp_Gateway_Stripe_Connect',
             'WCMp_Gateway_Bank_Transfer'
         );
         $load_gateways = apply_filters('wcmp_payment_gateways', $load_gateways);
@@ -30,6 +31,7 @@ class WCMp_Payment_Gateways {
     public function load_default_gateways(){
         require_once 'gateways/class-wcmp-gateway-paypal-masspay.php';
         require_once 'gateways/class-wcmp-gateway-paypal-payout.php';
+        require_once 'gateways/class-wcmp-gateway-stripe-connect.php';
         require_once 'gateways/class-wcmp-gateway-bank-transfer.php';
     }
 }

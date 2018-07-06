@@ -569,7 +569,7 @@ class WCMp_Product {
                     $vendor_term = $_REQUEST['choose_vendor_bulk'];
 
                     $term = get_term($vendor_term, $WCMp->taxonomy->taxonomy_name);
-                    //wp_set_post_terms($product_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
+                    wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->taxonomy_name);
                     wp_set_object_terms($product_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
 
                     $vendor = get_wcmp_vendor_by_term($vendor_term);
@@ -1458,14 +1458,16 @@ class WCMp_Product {
      */
     function wcmp_customer_questions_and_answers_tab($tabs) {
         global $product;
-        $vendor = get_wcmp_product_vendors($product->get_id());
-        if ($vendor && apply_filters('wcmp_customer_questions_and_answers_enabled', true, $product->get_id())) {
-            $tabs['wcmp_customer_qna'] = array(
-                'title' => __('Questions and Answers', 'dc-woocommerce-multi-vendor'),
-                'priority' => 40,
-                'callback' => array($this, 'wcmp_customer_questions_and_answers_content')
-            );
-        }
+        if($product) :
+            $vendor = get_wcmp_product_vendors($product->get_id());
+            if ($vendor && apply_filters('wcmp_customer_questions_and_answers_enabled', true, $product->get_id())) {
+                $tabs['wcmp_customer_qna'] = array(
+                    'title' => __('Questions and Answers', 'dc-woocommerce-multi-vendor'),
+                    'priority' => 40,
+                    'callback' => array($this, 'wcmp_customer_questions_and_answers_content')
+                );
+            }
+        endif;
         return $tabs;
     }
 

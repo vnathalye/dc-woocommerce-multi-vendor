@@ -1,4 +1,12 @@
 <?php
+/*
+ * The template for displaying vendor add product
+ * Override this template by copying it to yourtheme/dc-product-vendor/vendor-dashboard/product-manager/add-product.php
+ *
+ * @author 	WC Marketplace
+ * @package 	WCMp/Templates
+ * @version   3.0.0
+ */
 global $WCMp, $wc_product_attributes;
 
 $current_vendor_id = apply_filters('wcmp_current_loggedin_vendor_id', get_current_user_id());
@@ -48,6 +56,7 @@ $featured_img = '';
 $gallery_img_ids = array();
 $gallery_img_urls = array();
 $categories = array();
+$product_tag_list = array();
 $product_tags = '';
 $manage_stock = '';
 $stock_qty = 0;
@@ -539,14 +548,17 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 <div class="form-group tagsdiv">
                     <label class="control-label form-label col-sm-3"><?php _e('Tags', 'dc-woocommerce-multi-vendor'); ?></label>
                     <div class="col-md-6">
-                        <input type="text" placeholder="<?php _e('Search tag name..', 'dc-woocommerce-multi-vendor'); ?>" class="form-control regular-text" name="product_tags" id="wcmp_search_product_tag" value="<?php echo $product_tags; ?>" />
-                        <p class="description "><?php _e('Separate product tags with commas', 'dc-woocommerce-multi-vendor'); ?></p>
+                        <select id="wcmp-product-tags" name="product_tags[]" multiple="multiple" style="width: 100%;">
+                            <?php 
+                            $tags = get_terms( 'product_tag', apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'orderby' => 'count', 'order' => 'DESC' )));
+                            if($tags) :
+                                foreach ($tags as $tag) {
+                                    echo '<option value="'.$tag->name.'" '.selected(in_array($tag->name, $product_tag_list), true, false).'>'.$tag->name.'</option>';
+                                }
+                            endif;
+                            ?>
+                        </select>
                     </div>
-                    <?php if(apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id())) : ?>
-                    <div class="col-md-3">
-                        <button id="wcmp_add_product_tag" class="button btn btn-default"><?php _e('Add', 'dc-woocommerce-multi-vendor'); ?></button>
-                    </div>
-                    <?php endif; ?>
                 </div>
 
                 

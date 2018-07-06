@@ -9,6 +9,7 @@ class WCMp_Gateway_Bank_Transfer extends WCMp_Payment_Gateway {
     public $id;
     public $message = array();
     public $gateway_title;
+    public $payment_gateway;
 
     public function __construct() {
         $this->id = 'direct_bank';
@@ -16,6 +17,8 @@ class WCMp_Gateway_Bank_Transfer extends WCMp_Payment_Gateway {
         $this->payment_gateway = $this->id;
         $this->enabled = get_wcmp_vendor_settings('payment_method_direct_bank', 'payment');
     }
+    
+    public function gateway_logo() { global $WCMp; return $WCMp->plugin_url . 'assets/images/'.$this->id.'.png'; }
 
     public function process_payment($vendor, $commissions = array(), $transaction_mode = 'auto') {
         $this->vendor = $vendor;

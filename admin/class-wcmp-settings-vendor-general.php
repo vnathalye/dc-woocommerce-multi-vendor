@@ -46,6 +46,7 @@ class WCMp_Settings_Vendor_General {
                     , "fields" => array(
                         'wcmp_vendor_announcements_endpoint' => array('title' => __('Vendor Announcements', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_announcements_endpoint', 'label_for' => 'wcmp_vendor_announcements_endpoint', 'name' => 'wcmp_vendor_announcements_endpoint', 'hints' => __('Set endpoint for vendor announcements page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-announcements'),
                         'wcmp_store_settings_endpoint' => array('title' => __('Storefront', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_store_settings_endpoint', 'label_for' => 'wcmp_store_settings_endpoint', 'name' => 'wcmp_store_settings_endpoint', 'hints' => __('Set endpoint for shopfront page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'storefront'),
+                        'wcmp_profile_endpoint' => array('title' => __('Vendor Profile', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_profile_endpoint', 'label_for' => 'wcmp_profile_endpoint', 'name' => 'wcmp_profile_endpoint', 'hints' => __('Set endpoint for vendor profile management page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'profile'),
                         'wcmp_vendor_policies_endpoint' => array('title' => __('Vendor Policies', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_policies_endpoint', 'label_for' => 'wcmp_vendor_policies_endpoint', 'name' => 'wcmp_vendor_policies_endpoint', 'hints' => __('Set endpoint for vendor policies page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-policies'),
                         'wcmp_vendor_billing_endpoint' => array('title' => __('Vendor Billing', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_billing_endpoint', 'label_for' => 'wcmp_vendor_billing_endpoint', 'name' => 'wcmp_vendor_billing_endpoint', 'hints' => __('Set endpoint for vendor billing page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-billing'),
                         'wcmp_vendor_shipping_endpoint' => array('title' => __('Vendor Shipping', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_shipping_endpoint', 'label_for' => 'wcmp_vendor_shipping_endpoint', 'name' => 'wcmp_vendor_shipping_endpoint', 'hints' => __('Set endpoint for vendor shipping page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-shipping'),
@@ -91,6 +92,9 @@ class WCMp_Settings_Vendor_General {
         }
         if (isset($input['wcmp_store_settings_endpoint']) && !empty($input['wcmp_store_settings_endpoint'])) {
             $new_input['wcmp_store_settings_endpoint'] = sanitize_text_field($input['wcmp_store_settings_endpoint']);
+        }
+        if (isset($input['wcmp_profile_endpoint']) && !empty($input['wcmp_profile_endpoint'])) {
+            $new_input['wcmp_profile_endpoint'] = sanitize_text_field($input['wcmp_profile_endpoint']);
         }
         if (isset($input['wcmp_vendor_billing_endpoint']) && !empty($input['wcmp_vendor_billing_endpoint'])) {
             $new_input['wcmp_vendor_billing_endpoint'] = sanitize_text_field($input['wcmp_vendor_billing_endpoint']);

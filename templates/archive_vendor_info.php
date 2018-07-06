@@ -74,7 +74,7 @@ $template_class = apply_filters('can_vendor_edit_shop_template', false) && get_u
 </div>  
 <?php
 $vendor_hide_description = apply_filters('wcmp_vendor_store_header_hide_description', get_user_meta($vendor_id, '_vendor_hide_description', true), $vendor->id);
-if (!$vendor_hide_description) {
+if (!$vendor_hide_description && !empty($description)) {
     ?>
     <div class="description_data">
         <table>

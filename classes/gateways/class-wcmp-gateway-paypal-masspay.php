@@ -8,6 +8,7 @@ class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
 
     public $id;
     public $gateway_title;
+    public $payment_gateway;
     public $message = array();
     private $api_username;
     private $api_password;
@@ -30,6 +31,8 @@ class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
             $this->api_endpoint = 'https://api-3t.sandbox.paypal.com/nvp';
         }
     }
+    
+    public function gateway_logo() { global $WCMp; return $WCMp->plugin_url . 'assets/images/'.$this->id.'.png'; }
 
     public function process_payment($vendor, $commissions = array(), $transaction_mode = 'auto') {
         $this->vendor = $vendor;

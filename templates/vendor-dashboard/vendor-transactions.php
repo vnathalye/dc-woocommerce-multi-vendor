@@ -20,12 +20,12 @@ global $WCMp;
             <div id="vendor_transactions_date_filter" class="form-inline datatable-date-filder">
                 <div class="form-group">
                     <span class="date-inp-wrap">
-                        <input id="wcmp_from_date" class="form-control" name="from_date" class="pickdate gap1" placeholder="From" value ="<?php echo date('01-m-Y'); ?>"/>
+                        <input id="wcmp_from_date" class="form-control" name="from_date" class="pickdate gap1" placeholder="From" value ="<?php echo date('Y-m-01'); ?>"/>
                     </span>
                 </div>
                 <div class="form-group">
                     <span class="date-inp-wrap">
-                        <input id="wcmp_to_date" class="form-control" name="to_date" class="pickdate" placeholder="To" value ="<?php echo   date('t-m-Y'); ?>"/>
+                        <input id="wcmp_to_date" class="form-control" name="to_date" class="pickdate" placeholder="To" value ="<?php echo   date('Y-m-t'); ?>"/>
                     </span>
                 </div>
                 <button type="button" name="order_export_submit" id="do_filter"  class="btn btn-default" ><?php _e('Show', 'dc-woocommerce-multi-vendor') ?></button>
@@ -49,8 +49,8 @@ global $WCMp;
                     </table>
                 </div>
                 <div id="export_transaction_wrap" class="wcmp-action-container wcmp_table_loader" style="display: none;">
-                    <input type="hidden" id="export_transaction_start_date" name="from_date" value="<?php echo date('01-m-Y'); ?>" />
-                    <input id="export_transaction_end_date" type="hidden" name="to_date" value="<?php echo date('t-m-Y'); ?>" />
+                    <input type="hidden" id="export_transaction_start_date" name="from_date" value="<?php echo date('Y-m-01'); ?>" />
+                    <input id="export_transaction_end_date" type="hidden" name="to_date" value="<?php echo date('Y-m-t'); ?>" />
                     <button type="submit" name="export_transaction" class="btn btn-default"><?php _e('Download CSV', 'dc-woocommerce-multi-vendor'); ?></button>
                     <div class="clear"></div>
                 </div>
@@ -61,13 +61,13 @@ global $WCMp;
 <script>
 jQuery(document).ready(function($) {
     $( "#wcmp_from_date" ).datepicker({ 
-        dateFormat: 'dd-mm-yy',
+        dateFormat: 'yy-mm-dd',
         onClose: function (selectedDate) {
             $("#wcmp_to_date").datepicker("option", "minDate", selectedDate);
         }
     });
     $( "#wcmp_to_date" ).datepicker({ 
-        dateFormat: 'dd-mm-yy',
+        dateFormat: 'yy-mm-dd',
         onClose: function (selectedDate) {
             $("#wcmp_from_date").datepicker("option", "maxDate", selectedDate);
         }

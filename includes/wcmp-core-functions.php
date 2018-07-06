@@ -673,6 +673,10 @@ if (!function_exists('wcmp_check_if_another_vendor_plugin_exits')) {
      */
     function wcmp_check_if_another_vendor_plugin_exits() {
         require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+        // deactivate marketplace stripe gateway
+        if(version_compare(get_option('dc_product_vendor_plugin_db_version'), '3.1.0', '<')){}else{
+            if (is_plugin_active('marketplace-stripe-gateway/marketplace-stripe-gateway.php')) { deactivate_plugins('marketplace-stripe-gateway/marketplace-stripe-gateway.php'); }
+        }
         $vendor_arr = array();
         $vendor_arr[] = 'dokan-lite/dokan.php';
         $vendor_arr[] = 'wc-vendors/class-wc-vendors.php';
@@ -1506,7 +1510,7 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 $max_index_length = 191;
                 $wpdb->query("ALTER TABLE `{$wpdb->prefix}wcmp_visitors_stats` DROP INDEX `user_cookie`, ADD INDEX `user_cookie`(user_cookie({$max_index_length}))");
             }
-            if (version_compare($previous_plugin_version, '3.0.7', '<=')) {
+            if (version_compare($previous_plugin_version, '3.1.0', '<=')) {
                 /* Migrate vendor data application */
                 $args = array('post_type' => 'wcmp_vendorrequest', 'numberposts' => -1, 'post_status' => 'publish');
                 $vendor_applications = get_posts($args);
@@ -1514,9 +1518,14 @@ if (!function_exists('do_wcmp_data_migrate')) {
                     foreach ($vendor_applications as $application) {
                         $user_id = get_post_meta($application->ID, 'user_id', true);
                         $application_data = get_post_meta($application->ID, 'wcmp_vendor_fields', true);
-                        update_user_meta($user_id, 'wcmp_vendor_fields', $application_data);
+                        if(update_user_meta($user_id, 'wcmp_vendor_fields', $application_data)){
+                            wp_delete_post($application->ID, true);
+                        }
                     }
                 endif;
+                if(post_type_exists('wcmp_vendorrequest')){
+                    unregister_post_type('wcmp_vendorrequest');
+                }
             }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
@@ -2495,6 +2504,7 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
                     $stats_report_data[$key]['_wcmp_stats_aov'] = wc_price($aov, array('decimals' => 0));
                     $stats_report_data[$key]['_wcmp_stats_lang_up'] = __('is up by ', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_down'] = __('is down by ', 'dc-woocommerce-multi-vendor');
+                    $stats_report_data[$key]['_wcmp_stats_lang_are'] = __('are', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_same'] = __('remains same', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_no_amount'] = __('no amount', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_no_prev'] = __('no prior data', 'dc-woocommerce-multi-vendor');
@@ -2552,6 +2562,7 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
                 $stats_report_data[$days_range]['_wcmp_stats_aov'] = wc_price($aov, array('decimals' => 0));
                 $stats_report_data[$days_range]['_wcmp_stats_lang_up'] = __('is up by ', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_down'] = __('is down by ', 'dc-woocommerce-multi-vendor');
+                $stats_report_data[$days_range]['_wcmp_stats_lang_are'] = __('are', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_same'] = __('remains same', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_no_amount'] = __('no amount', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_no_prev'] = __('no prior data', 'dc-woocommerce-multi-vendor');
@@ -2686,5 +2697,35 @@ if (!function_exists('get_wcmp_vendor_order_shipping_method')) {
             endforeach;
         }
         return false;
+    }
+}
+
+if (!function_exists('get_url_from_upload_field_value')) {
+
+    /**
+     * Returns image url from dc-wp-field upload value.
+     *
+     * @param string $type (default: 'image')
+     * @param string/array $size (default: 'full')
+     * @return string
+     */
+    function get_url_from_upload_field_value($value, $size='full') {
+        if(!$value) return false;
+        $attach_id = $image = '';
+        if(!is_numeric($value)){
+            $attach_id = get_attachment_id_by_url($value);
+            if($attach_id == 0){ /* if no attachment id found from attachment url */
+                $image = $value;
+            }
+        }else{
+            $image_attributes = wp_get_attachment_image_src( $value, $size, true);
+            if( is_array($image_attributes) && count($image_attributes) ){
+               $image = $image_attributes[0];
+            }
+        }
+
+        $image = apply_filters('wcmp_image_url_from_upload_field_value_src', $image);
+        
+        return str_replace( array( 'https://', 'http://' ), '//', $image );
     }
 }

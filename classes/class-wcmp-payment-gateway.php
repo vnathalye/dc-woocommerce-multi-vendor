@@ -20,6 +20,8 @@ abstract class WCMp_Payment_Gateway {
     public $currency;
     public $transaction_mode;
 
+    public function gateway_logo() { global $WCMp; return $WCMp->plugin_url . 'assets/images/gateway_logo.png'; }
+    
     public function validate_request() {
         return true;
     }
@@ -36,7 +38,7 @@ abstract class WCMp_Payment_Gateway {
         }
         $transaction_args = array(
             'post_type' => 'wcmp_transaction',
-            'post_title' => sprintf(__('Transaction - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Transaction date parsed by strftime', 'dc-woocommerce-multi-vendor'))),
+            'post_title' => sprintf(__('Transaction - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Transaction date parsed by strftime', 'dc-woocommerce-multi-vendor'), current_time( 'timestamp' ))),
             'post_status' => $commission_status,
             'ping_status' => 'closed',
             'post_author' => $this->vendor->term_id
@@ -122,8 +124,14 @@ abstract class WCMp_Payment_Gateway {
                 break;
             case 'paypal_masspay':
             case 'paypal_payout':
-                $email_admin = WC()->mailer()->emails['WC_Email_Admin_Widthdrawal_Request'];
-                $email_admin->trigger($this->transaction_id, $this->vendor->term_id);
+            case 'stripe_masspay':
+                if($commission_status != 'wcmp_processing'){
+                    $email_admin = WC()->mailer()->emails['WC_Email_Vendor_Commission_Transactions'];
+                    $email_admin->trigger($this->transaction_id, $this->vendor->term_id);
+                }else{
+                    $email_admin = WC()->mailer()->emails['WC_Email_Admin_Widthdrawal_Request'];
+                    $email_admin->trigger($this->transaction_id, $this->vendor->term_id);
+                }
                 break;
             default :
                 break;

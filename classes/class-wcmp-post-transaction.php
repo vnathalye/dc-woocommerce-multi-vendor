@@ -120,7 +120,7 @@ class WCMp_Transaction {
             foreach ($transaction_data as $vendor_id => $transaction_detail) {
                 $trans_details = array(
                     'post_type' => $this->post_type,
-                    'post_title' => sprintf(__('Transaction - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Transaction date parsed by strftime', 'dc-woocommerce-multi-vendor'))),
+                    'post_title' => sprintf(__('Transaction - %s', 'dc-woocommerce-multi-vendor'), strftime(_x('%B %e, %Y @ %I:%M %p', 'Transaction date parsed by strftime', 'dc-woocommerce-multi-vendor'), current_time( 'timestamp' ))),
                     'post_status' => $transaction_status,
                     'ping_status' => 'closed',
                     'post_author' => $vendor_id
@@ -197,6 +197,8 @@ class WCMp_Transaction {
         } else if ($transaction_mode == 'paypal_payout') {
             $item_totals['via'] = array('label' => __('Transaction Mode', 'dc-woocommerce-multi-vendor'), 'value' => __('PayPal Payout', 'dc-woocommerce-multi-vendor'));
             $item_totals['paypal_email'] = array('label' => __('PayPal Email', 'dc-woocommerce-multi-vendor'), 'value' => get_user_meta($vendor->id, '_vendor_paypal_email', true));
+        } else if ($transaction_mode == 'stripe_masspay') {
+            $item_totals['via'] = array('label' => __('Transaction Mode', 'dc-woocommerce-multi-vendor'), 'value' => __('Stripe Connect', 'dc-woocommerce-multi-vendor'));
         } else if ($transaction_mode == 'manual') {
             $item_totals['via'] = array('label' => __('Transaction Mode', 'dc-woocommerce-multi-vendor'), 'value' => __('Manual', 'dc-woocommerce-multi-vendor'));
         }

@@ -572,7 +572,7 @@ class WCMp_Commission {
         // Security check
         check_admin_referer('bulk-posts');
         // Set filename
-        $date = date('d-m-Y H:i:s');
+        $date = date('Y-m-d H:i:s');
         $filename = 'Commissions ' . $date . '.csv';
         // Set page headers to force download of CSV
         header("Pragma: public");

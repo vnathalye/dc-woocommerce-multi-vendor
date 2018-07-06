@@ -148,6 +148,7 @@ class WCMp_Library {
      * Jquery style library
      */
     public function load_jquery_style_lib() {
+        global $wp_scripts;
         if (!wp_style_is('jquery-ui-style', 'registered')) {
             $jquery_version = isset($wp_scripts->registered['jquery-ui-core']->ver) ? $wp_scripts->registered['jquery-ui-core']->ver : '1.11.4';
             wp_register_style('jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.min.css', array(), $jquery_version);
@@ -171,8 +172,20 @@ class WCMp_Library {
      */
     public function load_gmap_api() {
         $api_key = get_wcmp_vendor_settings('google_api_key');
+        $protocol = is_ssl() ? 'https' : 'http';
         if ($api_key) {
-            wp_register_script('wcmp-gmaps-api', "//maps.googleapis.com/maps/api/js?key={$api_key}&libraries=places", array('jquery'));
+            $wcmp_gmaps_url = apply_filters('wcmp_google_maps_api_url', array(
+                            'protocol' => $protocol,
+                            'url_base' => '://maps.googleapis.com/maps/api/js?',
+                            'url_data' => http_build_query(apply_filters('wcmp_google_maps_api_args', array(
+                                                    'libraries' => 'places',
+                                                    'key'       => $api_key,
+                                                )
+                                            ), '', '&amp;'
+					),
+				), $api_key
+			);
+            wp_register_script('wcmp-gmaps-api', implode( '', $wcmp_gmaps_url ), array('jquery'));
             wp_enqueue_script('wcmp-gmaps-api');
         }
     }
@@ -202,6 +215,16 @@ class WCMp_Library {
         wp_enqueue_style('wcmp-jqvmap-style');
         wp_enqueue_script('wcmp-vmap-script');
         wp_enqueue_script('wcmp-vmap-world-script');
+        do_action('wcmp_jqvmap_enqueue_scripts');
+    }
+    
+    /**
+     * Stripe Library
+     */
+    public function stripe_library() {
+        if(!class_exists("Stripe\Stripe")) {
+            require_once( $this->lib_path . 'Stripe/init.php' );
+        }
     }
 
 }

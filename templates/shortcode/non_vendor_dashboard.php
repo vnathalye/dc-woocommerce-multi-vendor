@@ -30,12 +30,3 @@ if ($user && in_array('administrator', $user->roles)) {
     </div>
     <?php
 }
-if ($user && in_array('dc_pending_vendor', $user->roles)) {
-    ?>
-    <div class="container">
-        <div class="well text-center wcmp-non-vendor-notice">
-            <p><?php _e('Congratulations! You have successfully applied as a Vendor. Please wait for further notifications from the admin.', 'dc-woocommerce-multi-vendor'); ?></p>
-        </div>
-    </div>
-    <?php
-}

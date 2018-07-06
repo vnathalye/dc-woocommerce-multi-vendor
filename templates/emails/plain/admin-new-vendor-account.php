@@ -13,7 +13,7 @@ global $WCMp;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 
-$vendor_application_admin_url = apply_filters('wcmp_admin_new_vendor_email_vendor_application_url', admin_url( 'edit.php?post_type=wcmp_vendorrequest&s='.$user_object->user_login ));
+$vendor_application_admin_url = apply_filters('wcmp_admin_new_vendor_email_vendor_application_url', admin_url( 'admin.php?page=vendors&s='.$user_object->user_login ));
 
 echo "= " . $email_heading . " =\n\n";
 

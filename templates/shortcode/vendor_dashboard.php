@@ -34,7 +34,18 @@ $is_single = !is_null($WCMp->endpoints->get_current_endpoint_var()) ? '-single' 
             <?php wc_print_notices(); ?>
         </div>
         <div class="row">
-            <?php do_action('wcmp_vendor_dashboard_content'); ?>
+            <?php 
+            $is_block = get_user_meta(get_current_vendor_id(), '_vendor_turn_off', true);
+            if($is_block) {
+				?>
+				<div class="col-md-12 text-center">
+					<div class="panel wcmp-suspended-vendor-notice content-padding">
+					    <?php echo apply_filters( 'wcmp_suspended_vendor_dashboard_message', sprintf( __('Your account has been suspended by the admin due to some suspicious activity. Please contact your <a href="mailto:%s">admin</a> for further information.', 'dc-woocommerce-multi-vendor'), get_option('admin_email')) ); ?>
+					</div>
+				</div>
+			<?php } else {
+				do_action('wcmp_vendor_dashboard_content');
+			}?>
         </div>
     </div>
 </div>

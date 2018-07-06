@@ -13,6 +13,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $woocommerce, $WCMp;
+
+$orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_headers', array(
+    'select_order'  => array('label' => '', 'class' => 'text-center'),
+    'order_id'      => array('label' => __( 'Order ID', 'dc-woocommerce-multi-vendor' )),
+    'order_date'    => array('label' => __( 'Date', 'dc-woocommerce-multi-vendor' )),
+    'vendor_earning'=> array('label' => __( 'Earnings', 'dc-woocommerce-multi-vendor' )),
+    'order_status'  => array('label' => __( 'Status', 'dc-woocommerce-multi-vendor' )),
+    'action'        => array('label' => __( 'Action', 'dc-woocommerce-multi-vendor' )),
+), get_current_user_id());
 ?>
 <div class="col-md-12">
     <div class="panel panel-default">
@@ -20,27 +29,38 @@ global $woocommerce, $WCMp;
             <form name="wcmp_vendor_dashboard_orders" method="POST" class="form-inline">
                 <div class="form-group">
                     <span class="date-inp-wrap">
-                        <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : date('01-m-Y'); ?>" />
+                        <input type="text" name="wcmp_start_date_order" class="pickdate gap1 wcmp_start_date_order form-control" placeholder="<?php _e('from', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_start_date_order']) ? $_POST['wcmp_start_date_order'] : date('Y-m-01'); ?>" />
                     </span> 
                     <!-- <span class="between">&dash;</span> -->
                 </div>
                 <div class="form-group">
                     <span class="date-inp-wrap">
-                    <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : date('t-m-Y'); ?>" />
+                        <input type="text" name="wcmp_end_date_order" class="pickdate wcmp_end_date_order form-control" placeholder="<?php _e('to', 'dc-woocommerce-multi-vendor'); ?>" value="<?php echo isset($_POST['wcmp_end_date_order']) ? $_POST['wcmp_end_date_order'] : date('Y-m-t'); ?>" />
                     </span>
                 </div>
                 <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
             </form>
             <form method="post" name="wcmp_vendor_dashboard_completed_stat_export">
-                <table class="table table-striped table-bordered" id="wcmp-vendor-orders">
+                <table class="responsive-table table table-striped table-bordered" id="wcmp-vendor-orders">
                     <thead>
                         <tr>
-                            <th class="text-center"><input type="checkbox" class="select_all_all" onchange="toggleAllCheckBox(this, 'wcmp-vendor-orders');" /></th>
+                        <?php 
+                            if($orders_list_table_headers) :
+                                foreach ($orders_list_table_headers as $key => $header) {
+                                    if($key == 'select_order'){ ?>
+                            <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><input type="checkbox" class="select_all_all" onchange="toggleAllCheckBox(this, 'wcmp-vendor-orders');" /></th>
+                                <?php }else{ ?>
+                            <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><?php if(isset($header['label'])) echo $header['label']; ?></th>         
+                                <?php }
+                                }
+                            endif;
+                        ?>
+                            <!--th class="text-center"><input type="checkbox" class="select_all_all" onchange="toggleAllCheckBox(this, 'wcmp-vendor-orders');" /></th>
                             <th><?php _e('Order ID', 'dc-woocommerce-multi-vendor'); ?></th>
                             <th><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?></th>
                             <th><?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?></th>
                             <th><?php _e('Status', 'dc-woocommerce-multi-vendor'); ?></th>
-                            <th><?php _e('Action', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <th><?php _e('Action', 'dc-woocommerce-multi-vendor'); ?></th-->
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -102,7 +122,15 @@ global $woocommerce, $WCMp;
     jQuery(document).ready(function ($) {
         var orders_table;
         var statuses = [];
-        <?php 
+        var columns = [];
+        <?php if($orders_list_table_headers) {
+     foreach ($orders_list_table_headers as $key => $header) { ?>
+        obj = {};
+        obj['data'] = '<?php echo esc_js($key); ?>';
+        obj['className'] = '<?php if(isset($header['class'])) echo esc_js($header['class']); ?>';
+        columns.push(obj);
+     <?php }
+        }
         $filter_by_status = apply_filters('wcmp_vendor_dashboard_order_filter_status_arr',array(
             'all' => __('All', 'dc-woocommerce-multi-vendor'),
             'processing' => __('Processing', 'dc-woocommerce-multi-vendor'),
@@ -111,7 +139,7 @@ global $woocommerce, $WCMp;
         foreach ($filter_by_status as $key => $label) { ?>
             obj = {};
             obj['key'] = "<?php echo trim($key); ?>";
-            obj['label'] = "<?php echo trim($label); ?>";
+            obj['label'] = "<?php echo addslashes($label); ?>";
             statuses.push(obj);
         <?php } ?>
         orders_table = $('#wcmp-vendor-orders').DataTable({
@@ -158,14 +186,7 @@ global $woocommerce, $WCMp;
                     $("#wcmp-vendor-orders_processing").css("display","none");
                 }
             },
-            columns: [
-                {data: 'select_order', className: 'text-center'},
-                {data: 'order_id'},
-                {data: 'order_date'},
-                {data: 'vendor_earning'},
-                {data: 'order_status'},
-                {data: 'action'}
-            ]
+            columns: columns
         });
         $(document).on('change', '#filter_by_order_status', function () {
             orders_table.ajax.reload();

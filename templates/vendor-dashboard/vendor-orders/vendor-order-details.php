@@ -141,7 +141,7 @@ $subtotal = 0;
                         if ($comment_vendor && $comment_vendor != $vendor->id) {
                             continue;
                         }
-                        $last_added = human_time_diff(strtotime($comment->comment_date), current_time('timestamp', 1));
+                        $last_added = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
                         ?>
                         <li class="list-group-item list-group-item-action flex-column align-items-start">
                             <p><?php printf(__('Added %s ago', 'dc-woocommerce-multi-vendor'), $last_added); ?></p>

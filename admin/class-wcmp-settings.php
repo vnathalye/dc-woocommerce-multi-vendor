@@ -8,6 +8,7 @@ class WCMp_Settings {
     private $tabsection_payment = array();
     private $tabsection_vendor = array();
     private $tabsection_capabilities = array();
+    private $vendor_class_obj;
 
     /**
      * Start up
@@ -33,6 +34,7 @@ class WCMp_Settings {
         add_action( 'settings_page_payment_tab_init', array( &$this, 'payment_tab_init' ), 10, 1 );
         add_action( 'settings_page_payment_paypal_masspay_tab_init', array( &$this, 'payment_paypal_masspay_init' ), 10, 2 );
         add_action( 'settings_page_payment_paypal_payout_tab_init', array( &$this, 'payment_paypal_payout_init' ), 10, 2 );
+        add_action( 'settings_page_payment_stripe_gateway_tab_init', array(&$this, 'payment_stripe_gateway_tab_init'), 10, 2);
         // Settings tabs capability
         add_action( 'settings_page_capabilities_product_tab_init', array( &$this, 'capabilites_product_tab_init' ), 10, 2 );
 //        add_action('settings_page_capabilities_order_tab_init', array(&$this, 'capabilites_order_tab_init'), 10, 2);
@@ -41,10 +43,14 @@ class WCMp_Settings {
         add_action( 'settings_page_wcmp-addons_tab_init', array( &$this, 'wcmp_addons_tab_init' ), 10, 2 );
         add_action( 'settings_page_to_do_list_tab_init', array( &$this, 'to_do_list_tab_init' ), 10, 1 );
         add_action( 'settings_page_notices_tab_init', array( &$this, 'notices_tab_init' ), 10, 1 );
+        add_action( 'settings_page_vendors_tab_init', array( &$this, 'vendors_tab_init' ), 10, 1 );
 
         add_action( 'update_option_wcmp_vendor_general_settings_name', array( &$this, 'wcmp_update_option_wcmp_vendor_general_settings_name' ) );
+        
+        // Save screen options
+        add_filter('set-screen-option', array( &$this, 'vendors_set_option'), 10, 3);
     }
-
+    
     public function wcmp_settings_admin_header() {
         $screen = get_current_screen();
         if ( empty( $screen->id ) || strpos( $screen->id, 'wcmp_page_wcmp-setting-admin' ) === false ) {
@@ -79,6 +85,7 @@ class WCMp_Settings {
             , 45
         );
         add_submenu_page( 'wcmp', __( 'Reports', 'dc-woocommerce-multi-vendor' ), __( 'Reports', 'dc-woocommerce-multi-vendor' ), 'manage_woocommerce', 'wc-reports&tab=wcmp_vendors', '__return_false' );
+        $wcmp_vendors_page = add_submenu_page( 'wcmp', __( 'Vendors', 'dc-woocommerce-multi-vendor' ), __( 'Vendors', 'dc-woocommerce-multi-vendor' ), 'manage_woocommerce', 'vendors', array( $this, 'wcmp_vendors' ) );
         $wcmp_settings_page = add_submenu_page( 'wcmp', __( 'Settings', 'dc-woocommerce-multi-vendor' ), __( 'Settings', 'dc-woocommerce-multi-vendor' ), 'manage_woocommerce', 'wcmp-setting-admin', array( $this, 'create_wcmp_settings' ) );
 
         $wcmp_todo_list = add_submenu_page( 'wcmp', __( 'To-do List', 'dc-woocommerce-multi-vendor' ), __( 'To-do List', 'dc-woocommerce-multi-vendor' ), 'manage_woocommerce', 'wcmp-to-do', array( $this, 'wcmp_to_do' ) );
@@ -86,7 +93,19 @@ class WCMp_Settings {
         // transaction details page
         add_submenu_page( null, __( 'Transaction Details', 'dc-woocommerce-multi-vendor' ), __( 'Transaction Details', 'dc-woocommerce-multi-vendor' ), 'manage_woocommerce', 'wcmp-transaction-details', array( $this, 'wcmp_transaction_details' ) );
 
-        $this->tabs = $this->get_wcmp_settings_tabs();
+        // Assign priority incrmented by 1
+        $wcmp_submenu_priority = array(
+        	'wc-reports&tab=wcmp_vendors' => 5,
+        	'edit.php?post_type=dc_commission' => 0,
+        	'edit.php?post_type=wcmp_vendor_notice' => 2,
+        	'edit.php?post_type=wcmp_university' => 3,
+        	'vendors' => 4,
+        	'wcmp-setting-admin' => 6,
+        	'wcmp-to-do' => 1,
+        	'wcmp-extensions' => 7,
+		);
+        
+		$this->tabs = $this->get_wcmp_settings_tabs();
         $this->tabsection_general = $this->get_wcmp_settings_tabsections_general();
         $this->tabsection_payment = $this->get_wcmp_settings_tabsections_payment();
         $this->tabsection_vendor = $this->get_wcmp_settings_tabsections_vendor();
@@ -95,16 +114,23 @@ class WCMp_Settings {
         add_action( 'load-' . $wcmp_settings_page, array( &$this, 'wcmp_settings_add_help_tab' ) );
         add_action( 'load-' . $wcmp_extension_page, array( &$this, 'wcmp_settings_add_help_tab' ) );
         add_action( 'load-' . $wcmp_todo_list, array( &$this, 'wcmp_settings_add_help_tab' ) );
+        add_action( 'load-' . $wcmp_vendors_page, array( &$this, 'wcmp_vendors_add_help_tab' ) );
+        
         /* sort wcmp submenu */
         if ( isset( $submenu['wcmp'] ) ) {
-            $submenu_sort[] = $submenu['wcmp'][0];
-            $submenu_sort[] = $submenu['wcmp'][5];
-            $submenu_sort[] = $submenu['wcmp'][1];
-            $submenu_sort[] = $submenu['wcmp'][2];
-            $submenu_sort[] = $submenu['wcmp'][3];
-            $submenu_sort[] = $submenu['wcmp'][4];
-            $submenu_sort[] = $submenu['wcmp'][6];
-            $submenu['wcmp'] = apply_filters( 'wcmp_submeu_items', $submenu_sort, $submenu['wcmp'] );
+        	$wcmp_submenu_priority = apply_filters( 'wcmp_submenu_items', $wcmp_submenu_priority, $submenu['wcmp'] );
+        	$submenu_wcmp_sort = array();
+        	$submenu_wcmp_sort_duplicates = array();
+        	foreach($submenu['wcmp'] as $menu_items) {
+        		if(isset($wcmp_submenu_priority[$menu_items[2]]) && ($wcmp_submenu_priority[$menu_items[2]] >= 0) && !isset($submenu_wcmp_sort[$wcmp_submenu_priority[$menu_items[2]]])) $submenu_wcmp_sort[$wcmp_submenu_priority[$menu_items[2]]] = $menu_items;
+				else $submenu_wcmp_sort_duplicates[] = $menu_items;
+        	}
+        	
+        	ksort($submenu_wcmp_sort);
+        	
+        	$submenu_wcmp_sort = array_merge($submenu_wcmp_sort, $submenu_wcmp_sort_duplicates);
+        	
+        	$submenu['wcmp'] = $submenu_wcmp_sort;
         }
     }
 
@@ -162,7 +188,31 @@ class WCMp_Settings {
         </div>
         <?php
     }
-
+    
+    public function wcmp_vendors_add_help_tab() {
+        global $WCMp;
+        $tab = 'vendors';
+        
+        $screen = get_current_screen();
+        
+        $option = 'per_page';
+		$args   = [
+			'label'   => __('Number of vendors per page:', 'dc-woocommerce-multi-vendor'),
+			'default' => 5,
+			'option'  => 'vendors_per_page'
+		];
+	
+		add_screen_option( $option, $args );
+		
+		$WCMp->admin->load_class( "settings-{$tab}", $WCMp->plugin_path, $WCMp->token );
+		$this->vendor_class_obj = new WCMp_Settings_WCMp_Vendors( $tab );
+    }
+    
+    function vendors_set_option($status, $option, $value) {
+		if ( 'vendors_per_page' == $option ) return $value;
+		return $status;
+	}
+    
     public function wcmp_settings_add_help_tab() {
         global $WCMp;
         $screen = get_current_screen();
@@ -243,6 +293,9 @@ class WCMp_Settings {
         }
         if ( 'Enable' === get_wcmp_vendor_settings( 'payment_method_paypal_payout', 'payment' ) ) {
             $tabsection_payment['paypal_payout'] = array( 'title' => __( 'Paypal Payout', 'dc-woocommerce-multi-vendor' ), 'icon' => 'dashicons-randomize' );
+        }
+        if ( 'Enable' === get_wcmp_vendor_settings( 'payment_method_stripe_masspay', 'payment' ) ) {
+            $tabsection_payment['stripe_gateway'] = array( 'title' => __( 'Stripe Gateway', 'dc-woocommerce-multi-vendor' ), 'icon' => 'dashicons-tickets-alt' );
         }
         return $tabsection_payment;
     }
@@ -449,6 +502,15 @@ class WCMp_Settings {
         </div>
         <?php
     }
+    
+    public function wcmp_vendors() {
+        ?>  
+        <div class="wrap">
+        	<?php do_action( "settings_page_vendors_tab_init", 'vendors' ); ?>
+            <?php do_action( 'dualcube_admin_footer' ); ?>
+        </div>
+        <?php
+    }
 
     /**
      * Register and add settings
@@ -646,6 +708,12 @@ class WCMp_Settings {
         $WCMp->admin->load_class( "settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token );
         new WCMp_Settings_Payment_Paypal_Payout( $tab, $subsection );
     }
+    
+    public function payment_stripe_gateway_tab_init( $tab, $subsection ) {
+        global $WCMp;
+        $WCMp->admin->load_class( "settings-{$tab}-{$subsection}", $WCMp->plugin_path, $WCMp->token );
+        new WCMp_Settings_Payment_Stripe_Connect( $tab, $subsection );
+    }
 
 //    public function frontend_tab_init($tab) {
 //        global $WCMp;
@@ -682,6 +750,14 @@ class WCMp_Settings {
         $WCMp->admin->load_class( "settings-{$tab}", $WCMp->plugin_path, $WCMp->token );
         new WCMp_Settings_WCMp_Addons( $tab );
     }
+    
+    public function vendors_tab_init( $tab ) {
+        //global $WCMp;
+        //$WCMp->admin->load_class( "settings-{$tab}", $WCMp->plugin_path, $WCMp->token );
+        //new WCMp_Settings_WCMp_Vendors( $tab );
+        $this->vendor_class_obj->settings_page_init();
+    }
+
 
     public function is_wcmp_tab_has_subtab( $tab = 'general' ) {
         return in_array( $tab, apply_filters( 'is_wcmp_tab_has_subtab', array( 'general', 'payment', 'vendor', 'capabilities' ), $tab ) );

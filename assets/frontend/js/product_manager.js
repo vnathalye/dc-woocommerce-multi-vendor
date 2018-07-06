@@ -58,6 +58,37 @@ jQuery(document).ready(function ($) {
     $("#product_cats").select2({
         placeholder: product_manager_js_script_data.messages.choose
     });
+    
+    $("#wcmp-product-tags").select2({
+        tags: product_manager_js_script_data.add_tags,
+        tokenSeparators: [','],
+        placeholder: product_manager_js_script_data.messages.choose,
+    }).on("change", function(e) {
+        var isNew = $(this).find('[data-select2-tag="true"]');
+        if(isNew.length){
+            var data = {
+                action: 'wcmp_product_tag_add',
+                new_tag: isNew.val()
+            };
+            $.ajax({
+                type: 'POST',
+                url: product_manager_js_script_data.ajax_url,
+                data: data,
+                success: function (response) {
+                    if(response.status){ console.log(response);
+                        isNew.replaceWith('<option selected value="'+isNew.val()+'">'+isNew.val()+'</option>'); 
+                    }else{
+                        if(response.message != ''){
+                            $('.woocommerce-error,woocommerce-message').remove();
+                            $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + response.message + '</div>');
+                            $('.woocommerce-error').focus();
+                        }
+                        $('#wcmp-product-tags option[value="'+isNew.val()+'"]').remove();
+                    }
+                }
+            });
+        }
+    });
 
     $(".product_taxonomies").select2({
         placeholder: product_manager_js_script_data.messages.choose
@@ -898,71 +929,4 @@ jQuery(document).ready(function ($) {
         }
         return content;
     }
-
-    $('#wcmp_search_product_tag').autocomplete({
-        source: function (name, response) {
-            $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                url: product_manager_js_script_data.ajax_url,
-                data: 'action=wcmp_product_tag_search&tax=product_tag&q=' + $('#wcmp_search_product_tag').val(),
-                success: function (data) {
-                    response(data);
-                }
-            });
-        },
-        minLength: 2,
-        select: function (event, ui) {
-            // Add the selected term appending to the current values with a comma
-            var terms = split(event.target.value);
-            // remove the current input
-            terms.pop();
-            // add the selected item
-            terms.push(ui.item.value);
-            // join all terms with a comma
-            event.target.value = terms.join(", ") + ',';
-
-            return false;
-        },
-        focus: function () {
-            // prevent value inserted on focus when navigating the drop down list
-            return false;
-        }
-    });
-    
-    $('#wcmp_add_product_tag').on('click', function(e){
-        e.preventDefault();
-        var tags = $('#wcmp_search_product_tag').val();
-        var new_tag = extractLast(tags);
-        var data = {
-            action: 'wcmp_product_tag_add',
-            new_tag: new_tag
-        };
-        $.post(product_manager_js_script_data.ajax_url, data, function (response) { console.log(response);
-            if(response.message != ''){
-                $('.woocommerce-error,woocommerce-message').remove();
-                $('#product_manager_form').prepend('<div class="woocommerce-error" tabindex="-1">' + response.message + '</div>');
-                $('.woocommerce-error').focus();
-            }
-            if(response.tag_name != ''){
-                var terms = split(tags);
-                // remove the current input
-                terms.pop();
-                // add the selected item
-                terms.push(response.tag_name);
-                // join all terms with a comma
-                $('#wcmp_search_product_tag').val(terms.join(", ") + ',');
-            }
-        });
-    });
-
-    function split(val) {
-        return val.split(/,\s*/);
-    }
-    
-    function extractLast( term ) {
-        term = term.replace(/,+$/,'');
-        return split( term ).pop();
-    }
-
 });

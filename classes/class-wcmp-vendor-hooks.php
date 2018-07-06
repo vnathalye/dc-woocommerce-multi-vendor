@@ -15,6 +15,7 @@ class WCMp_Vendor_Hooks {
         add_action( 'wcmp_vendor_dashboard_vendor-announcements_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_announcements_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_vendor-orders_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_orders_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_storefront_endpoint', array( &$this, 'wcmp_vendor_dashboard_storefront_endpoint' ) );
+        add_action( 'wcmp_vendor_dashboard_profile_endpoint', array( &$this, 'wcmp_vendor_dashboard_profile_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_vendor-policies_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_policies_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_vendor-billing_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_billing_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_vendor-shipping_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_shipping_endpoint' ) );
@@ -37,6 +38,10 @@ class WCMp_Vendor_Hooks {
         add_filter( 'wcmp_vendor_dashboard_menu_vendor_shipping_capability', array( &$this, 'wcmp_vendor_dashboard_menu_vendor_shipping_capability' ) );
         add_action( 'before_wcmp_vendor_dashboard_content', array( &$this, 'before_wcmp_vendor_dashboard_content' ) );
         add_action( 'wp', array( &$this, 'wcmp_add_theme_support' ), 15 );
+        
+        // Rejected vendor dashboard content
+        add_action( 'wcmp_rejected_vendor_dashboard_content', array( &$this, 'rejected_vendor_dashboard_content' ) );
+        add_action( 'before_wcmp_rejected_vendor_dashboard', array( &$this, 'save_rejected_vendor_reapply_data' ) );
     }
 
     /**
@@ -255,6 +260,7 @@ class WCMp_Vendor_Hooks {
     }
 
     public function wcmp_create_vendor_dashboard_breadcrumbs( $current_endpoint, $nav = array(), $firstLevel = true ) {
+        global $WCMp;
         $nav = ! empty( $nav ) ? $nav : $this->wcmp_get_vendor_dashboard_navigation();
         $resultArray = array();
         $current_endpoint = $current_endpoint ? $current_endpoint : 'dashboard';
@@ -285,6 +291,11 @@ class WCMp_Vendor_Hooks {
                         $curent_menu = $menu;
                     }
                     break;
+                } else {
+                    $current_endpoint_arr = isset($WCMp->endpoints->wcmp_query_vars[$current_endpoint]) ? $WCMp->endpoints->wcmp_query_vars[$current_endpoint] : array();
+                    $icon = isset($current_endpoint_arr['icon']) ? '<i class="' . $current_endpoint_arr['icon'] . '"></i>' : '';
+                    $breadcrumb = $icon . '<span> ' . $current_endpoint_arr['label'] . '</span>';
+                    $curent_menu = $current_endpoint_arr;
                 }
             }
         }
@@ -337,6 +348,17 @@ class WCMp_Vendor_Hooks {
         $WCMp->library->load_gmap_api();
         $WCMp->template->get_template( 'vendor-dashboard/shop-front.php', $user_array );
     }
+    
+    /**
+     * Display vendor profile management content
+     * @global object $WCMp
+     */
+    public function wcmp_vendor_dashboard_profile_endpoint() {
+        global $WCMp;
+        $user = wp_get_current_user();
+        $WCMp->library->load_dashboard_upload_lib();
+        $WCMp->template->get_template( 'vendor-dashboard/profile.php', array( 'user' => $user ) );
+    }
 
     /**
      * display vendor policies content
@@ -388,14 +410,14 @@ class WCMp_Vendor_Hooks {
             $start_date = $_POST['wcmp_stat_start_dt'];
         } else {
             // hard-coded '01' for first day     
-            $start_date = date( '01-m-Y' );
+            $start_date = date( 'Y-m-01' );
         }
 
         if ( isset( $_POST['wcmp_stat_end_dt'] ) ) {
             $end_date = $_POST['wcmp_stat_end_dt'];
         } else {
             // hard-coded '01' for first day
-            $end_date = date( 't-m-Y' );
+            $end_date = date( 'Y-m-t' );
         }
         $vendor = get_wcmp_vendor( get_current_vendor_id() );
         $WCMp_Plugin_Post_Reports = new WCMp_Report();
@@ -518,22 +540,17 @@ class WCMp_Vendor_Hooks {
             $WCMp->template->get_template( 'vendor-dashboard/vendor-orders/vendor-order-details.php', array( 'order_id' => $vendor_order ) );
         } else {
             $WCMp->library->load_dataTable_lib();
-//            $frontend_script_path = $WCMp->plugin_url . 'assets/frontend/js/';
-//            $frontend_script_path = str_replace(array('http:', 'https:'), '', $frontend_script_path);
-//            $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-//            wp_enqueue_script('vendor_orders_js', $frontend_script_path . 'vendor_orders' . $suffix . '.js', array('jquery'), $WCMp->version, true);
-//            wp_localize_script('vendor_orders_js', 'wcmp_mark_shipped_text', array('text' => __('Order is marked as shipped.', 'dc-woocommerce-multi-vendor'), 'image' => $WCMp->plugin_url . 'assets/images/roket-green.png'));
 
             if ( ! empty( $_POST['wcmp_start_date_order'] ) ) {
                 $start_date = $_POST['wcmp_start_date_order'];
             } else {
-                $start_date = date( '01-m-Y' );
+                $start_date = date( 'Y-m-01' );
             }
 
             if ( ! empty( $_POST['wcmp_end_date_order'] ) ) {
                 $end_date = $_POST['wcmp_end_date_order'];
             } else {
-                $end_date = date( 't-m-Y' );
+                $end_date = date( 'Y-m-t' );
             }
             //wp_localize_script('vendor_orders_js', 'vendor_orders_args', array('start_date' => strtotime($start_date), 'end_date' => strtotime($end_date . ' +1 day')));
             $WCMp->template->get_template( 'vendor-dashboard/vendor-orders.php', array( 'vendor' => $vendor, 'start_date' => strtotime( $start_date ), 'end_date' => strtotime( $end_date . ' +1 day' ) ) );
@@ -668,6 +685,9 @@ class WCMp_Vendor_Hooks {
                 case 'vendor-shipping':
                     $WCMp->vendor_dashboard->save_vendor_shipping( $vendor->id, $_POST );
                     break;
+                case 'profile':
+                    $WCMp->vendor_dashboard->save_vendor_profile( $vendor->id, $_POST );
+                    break;
                 default :
                     break;
             }
@@ -780,4 +800,80 @@ class WCMp_Vendor_Hooks {
         }
     }
 
+    /**
+     * WCMp rejected vendor dashboard function
+     */
+    public function rejected_vendor_dashboard_content() {
+    	global $WCMp, $wp;
+    	
+    	if(isset($wp->query_vars['rejected-vendor-reapply'])) {
+    		$WCMp->template->get_template('non-vendor/rejected-vendor-reapply.php');
+    	} else {
+    		$WCMp->template->get_template('non-vendor/rejected-vendor-dashboard.php');
+		}
+    }
+    
+    /**
+     *  Update rejected vendor data and make the status pending
+     */
+    public function save_rejected_vendor_reapply_data() {
+    	global $WCMp;
+        $user = wp_get_current_user();
+        if ( $_SERVER['REQUEST_METHOD'] == 'POST' && is_user_wcmp_rejected_vendor($user->ID) && $WCMp->endpoints->get_current_endpoint() == 'rejected-vendor-reapply') {
+        	if(isset($_POST['reapply_vendor_application']) && isset($_POST['wcmp_vendor_fields'])) {
+        		if (isset($_FILES['wcmp_vendor_fields'])) {
+					$attacment_files = $_FILES['wcmp_vendor_fields'];
+					$files = array();
+					$count = 0;
+					if (!empty($attacment_files) && is_array($attacment_files)) {
+						foreach ($attacment_files['name'] as $key => $attacment) {
+							foreach ($attacment as $key_attacment => $value_attacment) {
+								$files[$count]['name'] = $value_attacment;
+								$files[$count]['type'] = $attacment_files['type'][$key][$key_attacment];
+								$files[$count]['tmp_name'] = $attacment_files['tmp_name'][$key][$key_attacment];
+								$files[$count]['error'] = $attacment_files['error'][$key][$key_attacment];
+								$files[$count]['size'] = $attacment_files['size'][$key][$key_attacment];
+								$files[$count]['field_key'] = $key;
+								$count++;
+							}
+						}
+					}
+					$upload_dir = wp_upload_dir();
+					require_once(ABSPATH . 'wp-admin/includes/image.php');
+					if (!function_exists('wp_handle_upload')) {
+						require_once( ABSPATH . 'wp-admin/includes/file.php' );
+					}
+					foreach ($files as $file) {
+						$uploadedfile = $file;
+						$upload_overrides = array('test_form' => false);
+						$movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+						if ($movefile && !isset($movefile['error'])) {
+							$filename = $movefile['file'];
+							$filetype = wp_check_filetype($filename, null);
+							$attachment = array(
+								'post_mime_type' => $filetype['type'],
+								'post_title' => $file['name'],
+								'post_content' => '',
+								'post_status' => 'inherit',
+								'guid' => $movefile['url']
+							);
+							$attach_id = wp_insert_attachment($attachment, $movefile['file']);
+							$attach_data = wp_generate_attachment_metadata($attach_id, $filename);
+							wp_update_attachment_metadata($attach_id, $attach_data);
+							$_POST['wcmp_vendor_fields'][$file['field_key']]['value'][] = $attach_id;
+						}
+					}
+				}
+        		update_user_meta( $user->ID, 'wcmp_vendor_fields', $_POST['wcmp_vendor_fields']);
+        		$user->remove_cap( 'dc_rejected_vendor' );
+        		$user->add_cap( 'dc_pending_vendor' );
+        		
+        		$wcmp_vendor_rejection_notes = unserialize( get_user_meta( $user->ID, 'wcmp_vendor_rejection_notes', true ) );
+				$wcmp_vendor_rejection_notes[time()] = array(
+						'note_by' => $user->ID,
+						'note' => __( 'Re applied to become a vendor', 'dc-woocommerce-multi-vendor' ));
+				update_user_meta( $user->ID, 'wcmp_vendor_rejection_notes', serialize( $wcmp_vendor_rejection_notes ) );
+        	}
+    	}
+    }
 }

@@ -107,11 +107,11 @@ $subtotal = 0;
                             <h2><?php _e('Billing address', 'dc-woocommerce-multi-vendor'); ?></h2>
                             <address>
                                 <?php echo ( $address = $order->get_formatted_billing_address() ) ? $address : __('N/A', 'dc-woocommerce-multi-vendor'); ?>
-                                <?php if ($order->get_billing_phone()) : ?>
-                                    <p class="woocommerce-customer-details--phone"><?php echo esc_html($order->get_billing_phone()); ?></p>
+                                <?php if ($order->get_billing_phone() || apply_filters('show_customer_billing_phone_for_vendor', true)) : ?>
+                                    <p class="woocommerce-customer-details-phone"><?php echo esc_html($order->get_billing_phone()); ?></p>
                                 <?php endif; ?>
-                                <?php if ($order->get_billing_email()) : ?>
-                                    <p class="woocommerce-customer-details--email"><?php echo esc_html($order->get_billing_email()); ?></p>
+                                <?php if ($order->get_billing_email() || apply_filters('show_customer_billing_email_for_vendor', true)) : ?>
+                                    <p class="woocommerce-customer-details-email"><?php echo esc_html($order->get_billing_email()); ?></p>
                                 <?php endif; ?>
                             </address>
                         </div>

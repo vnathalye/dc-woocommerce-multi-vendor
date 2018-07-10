@@ -185,7 +185,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							'ID' => $user->data->ID,
 							'name' => $user->data->display_name,
 							'email' => $user->data->user_email,
-							'registered' => $user->data->user_registered,
+							'registered' => date( 'Y-m-d H:i:s',get_date_from_gmt( $user->data->user_registered, 'U' )),
 							'products' => $product_count,
 							'status' => $status,
 							'permalink' => $vendor_permalink,

@@ -909,7 +909,7 @@ if (!function_exists('wcmp_get_all_order_of_user')) {
             'post_type' => wc_get_order_types(),
             'post_status' => array_keys(wc_get_order_statuses()),
         ));
-        if (is_array($customer_orders) && count($customer_orders > 0)) {
+        if (is_array($customer_orders) && count($customer_orders) > 0) {
             $order_lits = $customer_orders;
         }
         return $order_lits;

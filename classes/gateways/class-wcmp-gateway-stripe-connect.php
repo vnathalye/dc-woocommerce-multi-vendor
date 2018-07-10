@@ -35,7 +35,7 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
     
     public function gateway_logo() { global $WCMp; return $WCMp->plugin_url . 'assets/images/'.$this->id.'.png'; }
 
-    public function process_payment($vendor, $commissions = array(), $transaction_mode = 'auto') {
+    public function process_payment($vendor, $commissions = array(), $transaction_mode = 'auto', $transfer_args = array()) {
         $this->vendor = $vendor;
         $this->commissions = $commissions;
         $this->currency = get_woocommerce_currency();
@@ -46,7 +46,7 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
         $this->secret_key = $this->is_testmode ? get_wcmp_vendor_settings('test_secret_key', 'payment', 'stripe_gateway') : get_wcmp_vendor_settings('live_secret_key', 'payment', 'stripe_gateway');
         
         if ($this->validate_request()) {
-            if($this->process_stripe_payment()){
+            if($this->process_stripe_payment($transfer_args)){
                 $this->record_transaction();
                 if ($this->transaction_id) {
                     return array('message' => __('New transaction has been initiated', 'dc-woocommerce-multi-vendor'), 'type' => 'success', 'transaction_id' => $this->transaction_id);
@@ -93,14 +93,15 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
         return parent::validate_request();
     }
 
-    private function process_stripe_payment() {
+    private function process_stripe_payment($args) {
         try {
             Stripe::setApiKey($this->secret_key);
-            $transfer_args = apply_filters('wcmp_process_stripe_payment_transfer_args', array(
+            $transfer_args = array(
                 'amount' => $this->get_stripe_amount(),
                 'currency' => $this->currency,
                 'destination' => $this->stripe_user_id
-            ), $this);
+            );
+            $transfer_args = wp_parse_args($args, $transfer_args);
             return Transfer::create($transfer_args);
         } catch (\Stripe\Error\InvalidRequest $e) {
             $this->message[] = array('message' => $e->getMessage(), 'type' => 'error');

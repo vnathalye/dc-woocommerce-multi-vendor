@@ -149,7 +149,7 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                     <?php echo $value['script']; ?>
                     <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" value="Verified" />
                     <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][label]" value="<?php echo htmlentities($value['label']); ?>" />
-                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][type]" value="checkbox" />
+                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][type]" value="recaptcha" />
                 </div>
                 <?php
                 break;

@@ -145,7 +145,7 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                             <!--textarea class="no_input form-control" name="vendor_description" cols="" rows=""><?php //echo isset($vendor_description['value']) ? $vendor_description['value'] : ''; ?></textarea-->
                         </div>
                     </div>
-                    <?php if (isset($vendor_message_to_buyers)) { ?>
+                    <?php if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) { ?>
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Message to Buyers', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">

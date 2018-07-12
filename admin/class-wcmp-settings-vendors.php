@@ -185,7 +185,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							'ID' => $user->data->ID,
 							'name' => $user->data->display_name,
 							'email' => $user->data->user_email,
-							'registered' => date( 'Y-m-d H:i:s',get_date_from_gmt( $user->data->user_registered, 'U' )),
+							'registered' => get_date_from_gmt( $user->data->user_registered ),
 							'products' => $product_count,
 							'status' => $status,
 							'permalink' => $vendor_permalink,
@@ -598,6 +598,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							$vendor_application_data = get_user_meta($_GET['ID'], 'wcmp_vendor_fields', true);
 							if (!empty($vendor_application_data) && is_array($vendor_application_data)) {
 								foreach ($vendor_application_data as $key => $value) {
+                                                                    if ($value['type'] == 'recaptcha') continue;
 									echo '<div class="wcmp-form-field">';
 									echo '<label>' . html_entity_decode($value['label']) . ':</label>';
 									if ($value['type'] == 'file') {

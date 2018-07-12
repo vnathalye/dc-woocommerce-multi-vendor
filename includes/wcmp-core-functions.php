@@ -2502,9 +2502,10 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
                     }
                     $stats_report_data[$key]['stats_difference'] = $stats_difference;
                     $stats_report_data[$key]['_wcmp_stats_aov'] = wc_price($aov, array('decimals' => 0));
-                    $stats_report_data[$key]['_wcmp_stats_lang_up'] = __('is up by ', 'dc-woocommerce-multi-vendor');
-                    $stats_report_data[$key]['_wcmp_stats_lang_down'] = __('is down by ', 'dc-woocommerce-multi-vendor');
-                    $stats_report_data[$key]['_wcmp_stats_lang_are'] = __('are', 'dc-woocommerce-multi-vendor');
+                    $stats_report_data[$key]['_wcmp_stats_lang_up'] = __('is up by', 'dc-woocommerce-multi-vendor');
+                    $stats_report_data[$key]['_wcmp_stats_lang_down'] = __('is down by', 'dc-woocommerce-multi-vendor');
+                    $stats_report_data[$key]['_wcmp_stats_lang_are_up'] = __('are up by', 'dc-woocommerce-multi-vendor');
+                    $stats_report_data[$key]['_wcmp_stats_lang_are_down'] = __('are down by', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_same'] = __('remains same', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_no_amount'] = __('no amount', 'dc-woocommerce-multi-vendor');
                     $stats_report_data[$key]['_wcmp_stats_lang_no_prev'] = __('no prior data', 'dc-woocommerce-multi-vendor');
@@ -2562,7 +2563,8 @@ if (!function_exists('get_wcmp_vendor_dashboard_stats_reports_data')) {
                 $stats_report_data[$days_range]['_wcmp_stats_aov'] = wc_price($aov, array('decimals' => 0));
                 $stats_report_data[$days_range]['_wcmp_stats_lang_up'] = __('is up by ', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_down'] = __('is down by ', 'dc-woocommerce-multi-vendor');
-                $stats_report_data[$days_range]['_wcmp_stats_lang_are'] = __('are', 'dc-woocommerce-multi-vendor');
+                $stats_report_data[$days_range]['_wcmp_stats_lang_are_up'] = __('are up by', 'dc-woocommerce-multi-vendor');
+                $stats_report_data[$days_range]['_wcmp_stats_lang_are_down'] = __('are down by', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_same'] = __('remains same', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_no_amount'] = __('no amount', 'dc-woocommerce-multi-vendor');
                 $stats_report_data[$days_range]['_wcmp_stats_lang_no_prev'] = __('no prior data', 'dc-woocommerce-multi-vendor');

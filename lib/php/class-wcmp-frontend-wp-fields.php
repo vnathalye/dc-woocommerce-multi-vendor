@@ -511,7 +511,7 @@ if (!class_exists('WCMp_Frontend_WP_Fields')) {
                                     break;
 
                                 case 'title':
-                                    $this->title_input($field);
+                                    $this->title_input($optionField);
                                     break;
 
                                 default:

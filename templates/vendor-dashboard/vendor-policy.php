@@ -59,7 +59,7 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_policies_wp_editor_settings', 
                 </div>
             </div>
         <?php endif; ?>
-        <?php if (apply_filters('wcmp_vendor_can_overwrite_customer_support', true) || get_wcmp_vendor_settings('is_customer_support_details', 'general') == 'Enable') { ?>
+        <?php if (apply_filters('wcmp_vendor_can_overwrite_customer_support', true) && get_wcmp_vendor_settings('is_customer_support_details', 'general') == 'Enable') { ?>
             <div class="panel panel-default pannel-outer-heading">
                 <div class="panel-heading">
                     <h3><?php _e('Customer Support Details', 'dc-woocommerce-multi-vendor'); ?></h3>

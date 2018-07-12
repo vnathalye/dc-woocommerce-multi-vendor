@@ -36,10 +36,10 @@ $vendor_profile_image = get_user_meta($user->ID, '_vendor_profile_image', true);
                     <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Email', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
-                            <input class="no_input form-control" type="text" name="vendor_profile_data[user_email]" required value="<?php echo isset($user->user_email)? $user->user_email : ''; ?>"  placeholder="<?php _e('Enter your Email here', 'dc-woocommerce-multi-vendor'); ?>">
+                            <input class="no_input form-control" type="text" name="vendor_profile_data[user_email]" readonly required value="<?php echo isset($user->user_email)? $user->user_email : ''; ?>"  placeholder="<?php _e('Enter your Email here', 'dc-woocommerce-multi-vendor'); ?>">
                         </div>  
                     </div>
-					<div class="form-group">
+                    <div class="form-group">
                         <label class="control-label col-sm-3 col-md-3"><?php _e('Password', 'dc-woocommerce-multi-vendor'); ?></label>
                         <div class="col-md-6 col-sm-9">
                             <input class="no_input form-control" type="password" name="vendor_profile_data[password]" value=""  placeholder="<?php _e('Enter your password here', 'dc-woocommerce-multi-vendor'); ?>">

@@ -313,7 +313,8 @@ class WCMp_Ajax {
             $duplicate_product->set_parent_id($product->get_id());
             update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
             $duplicate_product->save();
-            if(!empty(get_option('permalink_structure'))) {
+            $permalink_structure = get_option('permalink_structure');
+            if(!empty($permalink_structure)) {
                 $redirect_url .= $duplicate_product->get_id();
             } else {
                 $redirect_url .= '='.$duplicate_product->get_id();
@@ -1454,7 +1455,7 @@ class WCMp_Ajax {
                 }
             }
 
-            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array(
+            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_generate_taxonomy_attributes', array(
                 "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
                         "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
                         "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title'),
@@ -1463,10 +1464,10 @@ class WCMp_Ajax {
                         "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
                         "tax_name" => array('type' => 'hidden'),
                         "is_taxonomy" => array('type' => 'hidden')
-                    ))
+                    )))
             ));
         } else {
-            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(array(
+            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_generate_taxonomy_attributes', array(
                 "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
                         "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
                         "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title'),
@@ -1475,7 +1476,7 @@ class WCMp_Ajax {
                         "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
                         "tax_name" => array('type' => 'hidden'),
                         "is_taxonomy" => array('type' => 'hidden')
-                    ))
+                    )))
             ));
         }
         die();
@@ -1615,6 +1616,7 @@ class WCMp_Ajax {
                 } else if ((get_post_status($new_product['ID']) == 'draft') && ($product_status != 'draft')) {
                     $is_publish = true;
                 }
+                $new_product['post_status'] = $product_status;
                 $new_product_id = wp_update_post($new_product, true);
             }
 
@@ -2062,7 +2064,7 @@ class WCMp_Ajax {
                 }
 
                 if (!$has_error) {
-                    if (get_post_status($new_product_id) == 'publish') {
+                    if (get_post_status($new_product_id) == 'publish' || (current_user_can('publish_products') && $product_status == 'publish')) {
                         if (!$has_error) {
                             if ($is_new_pro == 0) {
                                 $WCMp_fpm_messages['product_published'] = __('Product updated successfully!', 'dc-woocommerce-multi-vendor');
@@ -2481,7 +2483,7 @@ class WCMp_Ajax {
             if ($vendor_coupons) {
                 foreach ($vendor_coupons as $coupon_single) {
                     $edit_coupon_link = '';
-                    if (get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') == 'Enable') {
+                    if (current_user_can('edit_published_shop_coupons') && get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') == 'Enable') {
                         $edit_coupon_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon'), $coupon_single->ID));
                     }
                     // Get actions
@@ -2491,11 +2493,11 @@ class WCMp_Ajax {
                         'edit' => '<a href="' . esc_url($edit_coupon_link) . '">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</a>',
                         'delete' => '<a class="couponDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_delete_coupon')) . '" onclick="' . $onclick . '">' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '</a>',
                     );
-                    if (get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') != 'Enable') {
+                    if (!current_user_can('edit_published_shop_coupons') || get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') != 'Enable') {
                         unset($actions['edit']);
                         unset($actions['delete']);
                     }
-                    $actions = apply_filters('wcmp_vendor_coupon_list_row_actions', $actions);
+                    $actions = apply_filters('wcmp_vendor_coupon_list_row_actions', $actions, $coupon_single);
                     $row_actions = array();
                     foreach ($actions as $action => $link) {
                         $row_actions[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
@@ -3162,6 +3164,7 @@ class WCMp_Ajax {
 				$vendor_application_data_string = '';
 				if (!empty($vendor_application_data) && is_array($vendor_application_data)) {
 					foreach ($vendor_application_data as $key => $value) {
+                                            if ($value['type'] == 'recaptcha') continue;
 						$vendor_application_data_string .= '<div class="wcmp-form-field">';
 						$vendor_application_data_string .= '<label>' . html_entity_decode($value['label']) . ':</label>';
 						if ($value['type'] == 'file') {
@@ -3185,10 +3188,12 @@ class WCMp_Ajax {
 				$wcmp_vendor_rejection_notes = unserialize( get_user_meta( $user_info['ID'], 'wcmp_vendor_rejection_notes', true ) );
 				
 				$wcmp_vendor_custom_notes_html = '';
-				foreach($wcmp_vendor_rejection_notes as $time => $notes) {
-					$author_info = get_userdata($notes['note_by']);
-					$wcmp_vendor_custom_notes_html .= '<div class="note-clm"><p class="note-description">' . $notes['note'] . '</p><p class="note_time note-meta">On ' . date( "Y-m-d", $time ) . '</p><p class="note_owner note-meta">By ' . $author_info->display_name . '</p></div>';
-				}
+                                if($wcmp_vendor_rejection_notes) :
+                                    foreach($wcmp_vendor_rejection_notes as $time => $notes) {
+                                            $author_info = get_userdata($notes['note_by']);
+                                            $wcmp_vendor_custom_notes_html .= '<div class="note-clm"><p class="note-description">' . $notes['note'] . '</p><p class="note_time note-meta">On ' . date( "Y-m-d", $time ) . '</p><p class="note_owner note-meta">By ' . $author_info->display_name . '</p></div>';
+                                    }
+                                endif;
 				
 				$user_info['vendor_custom_notes'] = $wcmp_vendor_custom_notes_html;
 			}

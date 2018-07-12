@@ -129,10 +129,10 @@ $subtotal = 0;
             </div>      
         </div>
         <div class="col-md-4">
-            <h3><?php _e('Order notes :', 'dc-woocommerce-multi-vendor'); ?></h3>
             <?php
             $vendor_comments = $order->get_customer_order_notes();
             if (apply_filters('is_vendor_can_view_order_notes', true, $vendor->id)) { ?>
+            <h3><?php _e('Order notes :', 'dc-woocommerce-multi-vendor'); ?></h3>
             <ul class="list-group">
                 <?php  
                     if($vendor_comments){         

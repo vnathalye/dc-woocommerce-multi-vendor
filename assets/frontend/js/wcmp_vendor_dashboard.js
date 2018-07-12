@@ -151,10 +151,8 @@ jQuery(document).ready(function($){
                             return (css.match (/\bmark-\S+/g) || []).join(' '); // removes classes that starts with "mark-"
                         });
                         if(subkey == '_wcmp_diff_orders_no'){
-                            current_data._wcmp_stats_lang_up = current_data._wcmp_stats_lang_up.replace('is', current_data._wcmp_stats_lang_are);
-                            current_data._wcmp_stats_lang_down = current_data._wcmp_stats_lang_down.replace('is', current_data._wcmp_stats_lang_are);
                             if(subvalue > 0){
-                                $('.'+subkey).html(current_data._wcmp_stats_lang_up+Math.abs(subvalue));
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_are_up+' '+Math.abs(subvalue));
                                 $('.'+subkey).addClass('mark-green');
                             }else if(subvalue == 0){
                                 $('.'+subkey).html(current_data._wcmp_stats_lang_same);
@@ -163,12 +161,12 @@ jQuery(document).ready(function($){
                                 $('.'+subkey).html(current_data._wcmp_stats_lang_no_prev);
                                 $('.'+subkey).addClass('mark-green');
                             }else{
-                                $('.'+subkey).html(current_data._wcmp_stats_lang_down+Math.abs(subvalue));
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_are_down+' '+Math.abs(subvalue));
                                 $('.'+subkey).addClass('mark-red');
                             }
                         }else{
                             if(subvalue > 0){
-                                $('.'+subkey).html(current_data._wcmp_stats_lang_up+Math.abs(subvalue)+'%');
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_up+' '+Math.abs(subvalue)+'%');
                                 $('.'+subkey).addClass('mark-green');
                             }else if(subvalue == 0){
                                 $('.'+subkey).html(current_data._wcmp_stats_lang_same);
@@ -177,7 +175,7 @@ jQuery(document).ready(function($){
                                 $('.'+subkey).html(current_data._wcmp_stats_lang_no_prev);
                                 $('.'+subkey).addClass('mark-green');
                             }else{
-                                $('.'+subkey).html(current_data._wcmp_stats_lang_down+Math.abs(subvalue)+'%');
+                                $('.'+subkey).html(current_data._wcmp_stats_lang_down+' '+Math.abs(subvalue)+'%');
                                 $('.'+subkey).addClass('mark-red');
                             }
                         }

@@ -96,6 +96,7 @@ foreach ($terms as $term) {
             'searching': <?php echo isset($table_init['searching']) ? trim($table_init['searching']) : 'true'; ?>,
             "processing": true,
             "serverSide": true,
+            responsive: true,
             "language": {
                 "emptyTable": "<?php echo isset($table_init['emptyTable']) ? trim($table_init['emptyTable']) : __('No products found!', 'dc-woocommerce-multi-vendor'); ?>",
                 "processing": "<?php echo isset($table_init['processing']) ? trim($table_init['processing']) : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
@@ -138,6 +139,7 @@ foreach ($terms as $term) {
                 $(row).addClass('vendor-product');
             }
         });
+        new $.fn.dataTable.FixedHeader( product_table );
         $(document).on('change', '#product_cat', function () {
             product_table.ajax.reload();
         });

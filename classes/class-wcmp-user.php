@@ -760,7 +760,7 @@ class WCMp_User {
         $vendor = get_wcmp_vendor($user_id);
         if ($vendor) {
             $product_count = count($vendor->get_products());
-            return "<a href='edit.php?post_type=product&dc_vendor_shop=" . $vendor->user_data->user_login . "'><strong>{$product_count}</strong></a>";
+            return "<a href='edit.php?post_type=product&dc_vendor_shop=" . $vendor->page_slug . "'><strong>{$product_count}</strong></a>";
         } else {
             return "<strong></strong>";
         }

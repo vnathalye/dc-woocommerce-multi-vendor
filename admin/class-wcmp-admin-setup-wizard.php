@@ -943,7 +943,7 @@ class WCMp_Admin_Setup_Wizard {
             'stripe_masspay' => array(
                 'label' => __('Stripe Connect', 'dc-woocommerce-multi-vendor'),
                 'description' => __('', 'dc-woocommerce-multi-vendor'),
-                'repo-slug' => 'marketplace-stripe-gateway',
+                //'repo-slug' => 'marketplace-stripe-gateway',
                 'class' => ''
             ),
             'paypal_adaptive' => array(

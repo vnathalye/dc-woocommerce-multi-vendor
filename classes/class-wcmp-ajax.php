@@ -109,6 +109,10 @@ class WCMp_Ajax {
         add_action('wp_ajax_wcmp_vendor_dashboard_customer_questions_data', array(&$this, 'wcmp_vendor_dashboard_customer_questions_data'));
         // vendor products Q&As list
         add_action('wp_ajax_wcmp_vendor_products_qna_list', array(&$this, 'wcmp_vendor_products_qna_list'));
+        // vendor pending shipping widget
+        add_action('wp_ajax_wcmp_widget_vendor_pending_shipping', array(&$this, 'wcmp_widget_vendor_pending_shipping'));
+        // vendor product sales report widget
+        add_action('wp_ajax_wcmp_widget_vendor_product_sales_report', array(&$this, 'wcmp_widget_vendor_product_sales_report'));
         
         // vendor management tab under WCMp
         add_action('wp_ajax_wcmp_get_vendor_details', array(&$this, 'wcmp_get_vendor_details'));
@@ -2438,7 +2442,7 @@ class WCMp_Ajax {
                     $row ['shipping_amount'] = wc_price($vendor_share['shipping_amount']);
                     $row ['tax_amount'] = wc_price($vendor_share['tax_amount']);
                     $row ['total'] = wc_price($vendor_share['total']);
-                    $data[] = $row;
+                    $data[] = apply_filters('wcmp_vendor_withdrawal_list_row_data', $row, $commission_id);
                 }
             }
 
@@ -2507,12 +2511,18 @@ class WCMp_Ajax {
                     $usage_count = $coupon->get_usage_count();
                     $usage_limit = $coupon->get_usage_limit();
                     $usage_limit = $usage_limit ? $usage_limit : '&infin;';
+                    
+                    if ( $coupon->get_date_expires() ) {
+                        $expiry_date = wcmp_date($coupon->get_date_expires());
+                    } else {
+                        $expiry_date = '&ndash;';
+                    }
 
                     $row = array();
                     $row ['coupons'] = '<a href="' . esc_url($edit_coupon_link) . '">' . get_the_title($coupon_single->ID) . '</a>' . $action_html;
                     $row ['amount'] = $coupon->get_amount();
                     $row ['uses_limit'] = $usage_count . ' / ' . $usage_limit;
-                    $row ['expiry_date'] = wcmp_date($coupon->get_date_expires());
+                    $row ['expiry_date'] = $expiry_date;
                     $data[] = $row;
                 }
             }
@@ -2553,7 +2563,7 @@ class WCMp_Ajax {
                     $row ['commission_ids'] = '#' . implode(', #', $commission_details);
                     $row ['fees'] = isset($transfer_charge) ? wc_price($transfer_charge) : wc_price(0);
                     $row ['net_earning'] = wc_price($transaction_amt);
-                    $data[] = $row;
+                    $data[] = apply_filters('wcmp_vendor_transaction_list_row_data', $row, $transaction_id);
                 }
             }
             $json_data = array(
@@ -3232,6 +3242,142 @@ class WCMp_Ajax {
         }
         wp_send_json(array('status' => $status, 'tag_name' => $tag_name, 'message' => $message));
         die;
+    }
+    
+    function wcmp_widget_vendor_pending_shipping() {
+        if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
+            
+            $vendor = get_wcmp_vendor(get_current_vendor_id());
+            $requestData = $_REQUEST;
+            $today = @date('Y-m-d 00:00:00', strtotime("+1 days"));
+            $last_seven_day_date = date('Y-m-d H:i:s', strtotime('-7 days'));
+            
+            $args = apply_filters('wcmp_vendor_pending_shipping_args', array(
+                'start_date' => $last_seven_day_date,
+                'end_date' => $today
+            ));
+            $pending_shippings = $vendor->get_vendor_orders_reports_of('pending_shipping', $args);
+            $pending_shippings_arr = array();
+            if($pending_shippings){
+                foreach ($pending_shippings as $pending_orders_item) { 
+                    $order = wc_get_order($pending_orders_item->order_id);
+                    // hide shipping for local pickup
+                    $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
+                    if($vendor_shipping_method && in_array($vendor_shipping_method->get_method_id(), apply_filters('hide_shipping_icon_for_vendor_order_on_methods',array('local_pickup'))))
+                        continue; 
+
+                    $pending_shippings_arr[] = $pending_orders_item;
+                }
+            }
+            $data = array();
+            if ($pending_shippings_arr) {
+                foreach ($pending_shippings_arr as $pending_orders_item) {
+                    try {
+                        $order = wc_get_order($pending_orders_item->order_id);
+                        $pending_shipping_products = get_wcmp_vendor_orders(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0, 'is_trashed' => ''));
+                        $pending_shipping_amount = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id(), 'shipping_status' => 0));
+                        $product_sku = array();
+                        $product_name = array();
+                        //$product_dimention = array();
+                        foreach ($pending_shipping_products as $pending_shipping_product) {
+                            $product = wc_get_product($pending_shipping_product->product_id);
+                            if ($product && $product->needs_shipping()) {
+                                $product_sku[] = $product->get_sku() ? $product->get_sku() : '<span class="na">&ndash;</span>';
+                                $product_name[] = $product->get_title();
+                                if ($pending_shipping_product->variation_id != 0) {
+                                    $product = wc_get_product($pending_shipping_product->variation_id);
+                                }
+                            }
+                        }
+                        if(empty($product_name))                                
+                            continue;  
+
+                        $action_html = '';
+                        if ($vendor->is_shipping_enable()) {
+                            $is_shipped = (array) get_post_meta($order->get_id(), 'dc_pv_shipped', true);
+                            if (!in_array($vendor->id, $is_shipped)) {
+                                $action_html .= '<a href="javascript:void(0)" title="' . __('Mark as shipped', 'dc-woocommerce-multi-vendor') . '" onclick="wcmpMarkeAsShip(this,' . $order->get_id() . ')"><i class="wcmp-font ico-shippingnew-icon action-icon"></i></a> ';
+                            } else {
+                                $action_html .= '<i title="' . __('Shipped', 'dc-woocommerce-multi-vendor') . '" class="wcmp-font ico-shipping-icon"></i> ';
+                            }
+                        }
+                        $action_html = apply_filters('wcmp_dashboard_pending_shipping_widget_data_actions', $action_html, $order->get_id());
+                        $row = array();
+                        $row ['order_id'] = '<a href="'.esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $order->get_id())).'">#'.$order->get_id().'</a>';
+                        $row ['products_name'] = implode(' , ', $product_name);
+                        $row ['order_date'] = wcmp_date($order->get_date_created());
+                        $row ['shipping_address'] = $order->get_formatted_shipping_address();
+                        $row ['shipping_amount'] = wc_price($pending_shipping_amount['shipping_amount']);
+                        $row ['action'] = $action_html;
+                        $data[] = apply_filters('wcmp_widget_vendor_pending_shipping_row_data', $row, $pending_orders_item, $order);
+
+                        
+                    } catch (Exception $ex) {}
+                }
+            }
+            $json_data = array(
+                "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+                "recordsTotal" => intval(count($pending_shippings_arr)), // total number of records
+                "recordsFiltered" => intval(count($pending_shippings_arr)), // total number of records after searching, if there is no searching then totalFiltered = totalData
+                "data" => $data   // total data array
+            );
+            wp_send_json($json_data);
+            die;
+        }
+    }
+    
+    function wcmp_widget_vendor_product_sales_report() {
+        global $wpdb;
+        if (is_user_logged_in() && is_user_wcmp_vendor(get_current_vendor_id())) {
+   
+            $vendor = get_wcmp_vendor(get_current_vendor_id());
+            $requestData = $_REQUEST;
+            $today = @date('Y-m-d 00:00:00', strtotime("+1 days"));
+            $last_seven_day_date = date('Y-m-d H:i:s', strtotime('-7 days'));
+
+            $sale_results = $wpdb->get_results(
+                $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id != 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s", $vendor->id, $last_seven_day_date, $today
+                )
+            );
+            $sold_product_list = array();
+            if($sale_results) :
+                foreach ($sale_results as $key => $value) {
+                    if (array_key_exists($value->product_id, $sold_product_list)) {
+                        $sold_product_list[$value->product_id]['qty'] += $value->quantity;
+                    } else {
+                        $sold_product_list[$value->product_id]['qty'] = $value->quantity;
+                        $sold_product_list[$value->product_id]['item_id'] = $value->order_item_id;
+                        $sold_product_list[$value->product_id]['order_id'] = $value->order_id;
+                    }
+                }
+            endif;
+            arsort($sold_product_list);
+            $data = array();
+            foreach ($sold_product_list as $product_id => $value) {
+                $product = wc_get_product($product_id);
+                $row = array();
+                if ($product) {                    
+                    $row ['product'] = '<a href="' . $product->get_permalink($product_id) . '">' . $product->get_image(array(40, 40)) . ' ' . wp_trim_words( $product->get_name(), 60, '...' ) . '</a>';
+                    $row ['revenue'] = wc_price($product->get_price('edit') * $value['qty']) ;
+                    $row ['unique_purchase'] = $value['qty'];
+                }else{
+                    $row ['product'] = __('This product does not exists', 'dc-woocommerce-multi-vendor');
+                    $row ['revenue'] = '-';
+                    $row ['unique_purchase'] = $value['qty'];
+                }
+                $data[] = apply_filters('wcmp_widget_vendor_product_sales_report_row_data', $row, $product_id, $value);
+            }
+            
+            $json_data = array(
+                "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+                "recordsTotal" => intval(count($sold_product_list)), // total number of records
+                "recordsFiltered" => intval(count($sold_product_list)), // total number of records after searching, if there is no searching then totalFiltered = totalData
+                "data" => $data   // total data array
+            );
+            wp_send_json($json_data);
+            die;
+            
+        }
     }
 
 }

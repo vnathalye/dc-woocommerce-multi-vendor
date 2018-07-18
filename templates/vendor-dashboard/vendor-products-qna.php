@@ -68,6 +68,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
             searching: false,
             processing: true,
             serverSide: true,
+            responsive: true,
             language: {
                 emptyTable: "<?php echo trim(__('No customer questions found!', 'dc-woocommerce-multi-vendor')); ?>",
                 processing: "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
@@ -119,6 +120,7 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
                 //$(row).addClass('vendor-product');
             }
         });
+        new $.fn.dataTable.FixedHeader( qna_table );
         $(document).on('change', '#filter_by_qna_status', function () {
             qna_table.ajax.reload();
         });

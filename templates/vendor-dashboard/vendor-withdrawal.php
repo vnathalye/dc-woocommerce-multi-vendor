@@ -17,6 +17,14 @@ $get_vendor_thresold = 0;
 if (isset($WCMp->vendor_caps->payment_cap['commission_threshold']) && $WCMp->vendor_caps->payment_cap['commission_threshold']) {
 $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 }
+$withdrawal_list_table_headers = apply_filters('wcmp_datatable_vendor_withdrawal_list_table_headers', array(
+    'select_withdrawal'  => array('label' => '', 'class' => 'text-center', 'orderable' => false),
+    'order_id'      => array('label' => __( 'Order ID', 'dc-woocommerce-multi-vendor' ), 'orderable' => false),
+    'commission_amount'    => array('label' => __( 'Commission Amount', 'dc-woocommerce-multi-vendor' ), 'orderable' => false),
+    'shipping_amount'=> array('label' => __( 'Shipping Amount', 'dc-woocommerce-multi-vendor' ), 'orderable' => false),
+    'tax_amount'  => array('label' => __( 'Tax Amount', 'dc-woocommerce-multi-vendor' ), 'orderable' => false),
+    'total'        => array('label' => __( 'Total', 'dc-woocommerce-multi-vendor' ), 'orderable' => false),
+), get_current_user_id());
 ?>
 <?php if($get_vendor_thresold) : ?>
 <div class="col-md-12">
@@ -30,15 +38,20 @@ $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
         <h3 class="panel-heading"><?php _e('Completed Orders', 'dc-woocommerce-multi-vendor'); ?></h3>
         <div class="panel-body">
             <form method="post" name="get_paid_form">
-                <table id="vendor_withdrawal" class="table table-striped table-bordered">
+                <table id="vendor_withdrawal" class="table table-striped table-bordered" width="100%">
                     <thead>
                         <tr>
-                            <th class="text-center"><input class="select_all_withdrawal" type="checkbox" onchange="toggleAllCheckBox(this, 'vendor_withdrawal');" /></th>
-                            <th><?php _e('Order ID', 'dc-woocommerce-multi-vendor') ?></th>
-                            <th><?php _e('Commission Amount', 'dc-woocommerce-multi-vendor') ?></th>
-                            <th><?php _e('Shipping Amount', 'dc-woocommerce-multi-vendor') ?></th>
-                            <th><?php _e('Tax Amount', 'dc-woocommerce-multi-vendor') ?></th>
-                            <th><?php _e('Total', 'dc-woocommerce-multi-vendor') ?></th>
+                        <?php 
+                            if($withdrawal_list_table_headers) :
+                                foreach ($withdrawal_list_table_headers as $key => $header) {
+                                    if($key == 'select_withdrawal'){ ?>
+                            <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><input type="checkbox" class="select_all_withdrawal" onchange="toggleAllCheckBox(this, 'vendor_withdrawal');" /></th>
+                                <?php }else{ ?>
+                            <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><?php if(isset($header['label'])) echo $header['label']; ?></th>         
+                                <?php }
+                                }
+                            endif;
+                        ?>
                         </tr>
                     </thead>
                     <tbody>  
@@ -73,11 +86,22 @@ $get_vendor_thresold = $WCMp->vendor_caps->payment_cap['commission_threshold'];
 <script>
 jQuery(document).ready(function($) {
     var vendor_withdrawal;
+    var columns = [];
+    <?php if($withdrawal_list_table_headers) {
+     foreach ($withdrawal_list_table_headers as $key => $header) { ?>
+        obj = {};
+        obj['data'] = '<?php echo esc_js($key); ?>';
+        obj['className'] = '<?php if(isset($header['class'])) echo esc_js($header['class']); ?>';
+        obj['orderable'] = '<?php if(isset($header['orderable'])) echo esc_js($header['orderable']); ?>';
+        columns.push(obj);
+     <?php }
+        } ?>
     vendor_withdrawal = $('#vendor_withdrawal').DataTable({
         ordering  : <?php echo isset($table_init['ordering']) ? trim($table_init['ordering']) : 'false'; ?>,
         searching  : <?php echo isset($table_init['searching']) ? trim($table_init['searching']) : 'false'; ?>,
         processing: true,
         serverSide: true,
+        responsive: true,
         language: {
             "emptyTable": "<?php echo isset($table_init['emptyTable']) ? trim($table_init['emptyTable']) : __('No orders found!','dc-woocommerce-multi-vendor'); ?>",
             "processing": "<?php echo isset($table_init['processing']) ? trim($table_init['processing']) : __('Processing...', 'dc-woocommerce-multi-vendor'); ?>",
@@ -109,14 +133,8 @@ jQuery(document).ready(function($) {
                 $("#vendor_withdrawal_processing").css("display","none");
             }
         },
-        columns: [
-            { data: "select_withdrawal", className: "text-center", orderable: false },
-            { data: "order_id", orderable: false },
-            { data: "commission_amount", orderable: false },
-            { data: "shipping_amount", orderable: false },
-            { data: "tax_amount", orderable: false },
-            { data: "total", orderable: false }
-        ]
+        columns: columns
     });
+    new $.fn.dataTable.FixedHeader( vendor_withdrawal );
 });
 </script>

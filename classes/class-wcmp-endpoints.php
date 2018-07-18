@@ -20,7 +20,7 @@ class WCMp_Endpoints {
             add_action('parse_request', array($this, 'wcmp_parse_request'), 0);
             add_action('pre_get_posts', array(&$this, 'wcmp_pre_get_posts'));
         }
-        $this->init_wcmp_query_vars();
+
         if (!get_option('wcmp_flushed_rewrite_rules')) {
             flush_rewrite_rules();
             update_option('wcmp_flushed_rewrite_rules', true);
@@ -118,7 +118,7 @@ class WCMp_Endpoints {
     protected function get_wcmp_endpoints_mask() {
         if ('page' === get_option('show_on_front')) {
             $page_on_front = get_option('page_on_front');
-            if (in_array($page_on_front, array(wcmp_vendor_dashboard_page_id()))) {
+            if ($page_on_front == wcmp_vendor_dashboard_page_id()) {
                 return EP_ROOT | EP_PAGES;
             }
         }

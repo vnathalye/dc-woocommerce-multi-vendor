@@ -69,7 +69,8 @@ class WCMp_Product {
             add_action('save_post_product', array($this, 'update_duplicate_product_title'), 10, 3);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
-            add_action('before_delete_post', array($this, 'remove_prent_product_from_childs'), 10);
+            add_filter( 'wp_insert_post_data', array( $this, 'override_wc_product_post_parent' ), 99, 2 );
+            //add_action('before_delete_post', array($this, 'remove_prent_product_from_childs'), 10);
             //add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             //add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
             //add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
@@ -90,79 +91,17 @@ class WCMp_Product {
         add_action('edit_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
     }
     
-    public function remove_prent_product_from_childs($post_id) {
-        global $wpdb;
-        $post = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE ID = %d", $post_id ) );
-        $parent_data = array( 'post_parent' => 0 );
-	$parent_where = array( 'post_parent' => $post_id );
-
-        $children_query = $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $post_id, $post->post_type );
-        $childrens = $wpdb->get_results( $children_query );
-        if ( $childrens ) {
-            $wpdb->update( $wpdb->posts, $parent_data, $parent_where + array( 'post_type' => $post->post_type ) );
-        }
-    }
-
-    public function remove_product_from_multiple_seller_mapping($post_id) {
-        global $WCMp, $wpdb;
-        $product_to_be_deleted = get_post($post_id);
-        $post_type = $product_to_be_deleted->post_type;
-        if ($post_type == 'product') {
-            $table_name = $wpdb->prefix . 'wcmp_products_map';
-            $sql_query = "select * from {$table_name} where product_title = '{$product_to_be_deleted->post_title}'";
-            $results = $wpdb->get_results($sql_query);
-            if (count($results) > 0) {
-                foreach ($results as $result) {
-                    $product_ids = $result->product_ids;
-                    if (!empty($product_ids)) {
-                        $p_ids_arr = explode(',', $product_ids);
-                        if (is_array($p_ids_arr) && !empty($p_ids_arr) && count($p_ids_arr) > 0) {
-                            if (count($p_ids_arr) == 1) {
-                                $delete_query = "delete from {$table_name} where ID = {$result->ID}";
-                                $wpdb->query($delete_query);
-                            } else {
-                                if (($key = array_search($post_id, $p_ids_arr)) !== false) {
-                                    unset($p_ids_arr[$key]);
-                                }
-                                $p_ids = implode(',', $p_ids_arr);
-                                $update_query = "update {$table_name} set product_ids='{$p_ids}'  where ID = {$result->ID}";
-                                $wpdb->query($update_query);
-                            }
-                        }
-                    }
-                }
+    public function override_wc_product_post_parent( $data, $postarr ){
+        if ( 'product' === $data['post_type'] && isset( $_POST['product-type'] ) ) { 
+            $product_type = wc_clean( wp_unslash( $_POST['product-type'] ) ); 
+            switch ( $product_type ) {
+                case 'variable':
+                    $data['post_parent'] = $postarr['post_parent'];
+                    break;
             }
         }
+        return $data;
     }
-
-//    public function restore_multiple_seller_mapping($post_id) {
-//        global $WCMp, $wpdb;
-//        $product_to_be_restored = get_post($post_id);
-//        $post_type = $product_to_be_restored->post_type;
-//        if ($post_type == 'product') {
-//            $table_name = $wpdb->prefix . 'wcmp_products_map';
-//            $sql_query = "select * from {$table_name} where product_title = '{$product_to_be_restored->post_title}'";
-//            $results = $wpdb->get_results($sql_query);
-//            if (count($results) > 0) {
-//                foreach ($results as $result) {
-//                    $product_ids = $result->product_ids;
-//                    if (!empty($product_ids)) {
-//                        $p_ids_arr = explode(',', $product_ids);
-//                        $p_ids_arr[] = $post_id;
-//                        $p_ids = implode(',', $p_ids_arr);
-//                        $update_query = "update {$table_name} set product_ids='{$p_ids}'  where ID = {$result->ID}";
-//                        $wpdb->query($update_query);
-//                    } else {
-//                        $update_query = "update {$table_name} set product_ids='{$post_id}'  where ID = {$result->ID}";
-//                        $wpdb->query($update_query);
-//                    }
-//                }
-//            } else {
-//                $insert_query = "insert into {$table_name} set `product_title` = {$product_to_be_restored->post_title}, `product_ids` = {$product_to_be_restored->ID} ";
-//                $wpdb->query($insert_query);
-//            }
-//        }
-//    }
 
     function product_single_product_multivendor_tab_link() {
         global $WCMp;
@@ -258,7 +197,7 @@ class WCMp_Product {
                             //}
                         }
                     } else {
-                        $more_product_array[$i]['seller_name'] = $other_user->data->display_name;
+                        $more_product_array[$i]['seller_name'] = isset($other_user->data->display_name) ? $other_user->data->display_name : '';
                         $more_product_array[$i]['is_vendor'] = 0;
                         $more_product_array[$i]['shop_link'] = get_permalink(wc_get_page_id('shop'));
                         $more_product_array[$i]['rating_data'] = 'admin';

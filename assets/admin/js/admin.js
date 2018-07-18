@@ -205,6 +205,32 @@ jQuery(document).ready(function ($) {
             $('#payment_gateway_charge_type').closest('tr').hide();
         }
     }).change();
+    
+    $( "input[name^='wcmp_payment_settings_name[gateway_charge_fixed_with_']" ).closest('tr').hide();
+    $('#payment_gateway_charge_type').on('change', function(){
+        var charge_type = $(this).val();
+        if (charge_type == 'fixed_with_percentage') {
+            $('.automatic_payment_method').each(function(){
+                var id = $(this).attr('id');
+                if (id !== undefined) {
+                    var terget_id = 'gateway_charge' + id.split('payment_method')[1];
+                    var terget_fixed_id = 'gateway_charge_fixed_with' + id.split('payment_method')[1];
+                    if($(this).is(':checked') && $('#payment_gateway_charge').prop('checked')){
+                        $('#' + terget_id).closest('tr').show();
+                        $('#' + terget_id).attr('placeholder', wcmp_admin_js_script_data.lang.in_percentage);
+                        $('#' + terget_id).siblings('.description').html($('#' + terget_id).siblings('.description').html()+' '+wcmp_admin_js_script_data.lang.in_percentage);
+                        $('#' + terget_fixed_id).closest('tr').show();
+                        $('#' + terget_fixed_id).attr('placeholder', wcmp_admin_js_script_data.lang.in_fixed);
+                        $('#' + terget_fixed_id).siblings('.description').html($('#' + terget_fixed_id).siblings('.description').html()+' '+wcmp_admin_js_script_data.lang.in_fixed);
+                    }else{
+                        $('#' + terget_id).closest('tr').hide();
+                        $('#' + terget_fixed_id).closest('tr').hide();
+                    }
+                }
+            });
+            
+        }
+    }).trigger('change');
 
     $('.automatic_payment_method').change(function () {
         var id = $(this).attr('id');

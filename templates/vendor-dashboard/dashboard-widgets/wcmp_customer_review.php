@@ -45,6 +45,7 @@ jQuery(document).ready(function($) {
         searching  : false,
         processing: false,
         serverSide: true,
+        responsive: true,
         pagingType: 'numbers',
         language: {
             emptyTable: '<div><?php echo trim(__('No reviews found.', 'dc-woocommerce-multi-vendor')); ?></div>'

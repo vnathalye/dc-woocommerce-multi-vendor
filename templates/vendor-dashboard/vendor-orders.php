@@ -41,7 +41,7 @@ $orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_head
                 <button class="wcmp_black_btn btn btn-default" type="submit" name="wcmp_order_submit"><?php _e('Show', 'dc-woocommerce-multi-vendor'); ?></button>
             </form>
             <form method="post" name="wcmp_vendor_dashboard_completed_stat_export">
-                <table class="responsive-table table table-striped table-bordered" id="wcmp-vendor-orders">
+                <table class="table table-striped table-bordered" id="wcmp-vendor-orders" style="width:100%;">
                     <thead>
                         <tr>
                         <?php 
@@ -55,12 +55,6 @@ $orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_head
                                 }
                             endif;
                         ?>
-                            <!--th class="text-center"><input type="checkbox" class="select_all_all" onchange="toggleAllCheckBox(this, 'wcmp-vendor-orders');" /></th>
-                            <th><?php _e('Order ID', 'dc-woocommerce-multi-vendor'); ?></th>
-                            <th><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?></th>
-                            <th><?php _e('Earnings', 'dc-woocommerce-multi-vendor'); ?></th>
-                            <th><?php _e('Status', 'dc-woocommerce-multi-vendor'); ?></th>
-                            <th><?php _e('Action', 'dc-woocommerce-multi-vendor'); ?></th-->
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -147,6 +141,7 @@ $orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_head
             serverSide: true,
             searching: false,
             ordering: false,
+            responsive: true,
             drawCallback: function (settings) {
                 $( "#filter_by_order_status" ).detach();
                 var order_status_sel = $('<select id="filter_by_order_status" class="wcmp-filter-dtdd wcmp_filter_order_status form-control">').appendTo("#wcmp-vendor-orders_length");
@@ -188,6 +183,7 @@ $orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_head
             },
             columns: columns
         });
+        new $.fn.dataTable.FixedHeader( orders_table );
         $(document).on('change', '#filter_by_order_status', function () {
             orders_table.ajax.reload();
         });

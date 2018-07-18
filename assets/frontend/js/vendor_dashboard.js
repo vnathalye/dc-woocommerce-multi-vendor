@@ -76,8 +76,10 @@ jQuery( document ).ready( function ( $ ) {
         }
     } );
 
-    // table responsive
+    // table responsive 
+        
     $( ".responsive-table" ).each( function ( index ) {
+        
         var getTh = $( this ).find( 'thead th' );
         var getTr = $( this ).find( 'tbody tr' );
         var getTd = $( this ).find( 'tbody td' );
@@ -89,7 +91,8 @@ jQuery( document ).ready( function ( $ ) {
             }
 
         }
-    } );
+        console.log(getTr);
+    } ); 
 
 
 

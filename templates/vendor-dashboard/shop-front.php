@@ -410,8 +410,7 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                             ?>
                             <li>
                                 <label>
-                                    <input type="radio" <?php checked($template, $shop_template); ?> name="_shop_template" value="<?php echo $template; ?>" />  
-                                    <!-- <i class="fa fa-square-o" aria-hidden="true"></i> -->
+                                    <input type="radio" <?php checked($template, $shop_template); ?> name="_shop_template" value="<?php echo $template; ?>" />
                                     <i class="dashicons dashicons-yes"></i>
                                     <div class="template-overlay"></div>
                                     <img src="<?php echo $template_image; ?>" />

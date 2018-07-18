@@ -12,6 +12,14 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 global $WCMp;
+$transactions_list_table_headers = apply_filters('wcmp_datatable_vendor_transactions_list_table_headers', array(
+    'select_transaction'  => array('label' => '', 'class' => 'text-center'),
+    'date'      => array('label' => __( 'Date', 'dc-woocommerce-multi-vendor' )),
+    'transaction_id'    => array('label' => __( 'Transc.ID', 'dc-woocommerce-multi-vendor' )),
+    'commission_ids'=> array('label' => __( 'Commission IDs', 'dc-woocommerce-multi-vendor' )),
+    'fees'  => array('label' => __( 'Fee', 'dc-woocommerce-multi-vendor' )),
+    'net_earning'        => array('label' => __( 'Net Earnings', 'dc-woocommerce-multi-vendor' )),
+), get_current_user_id());
 ?>
 <div class="col-md-12">
     
@@ -32,15 +40,20 @@ global $WCMp;
             </div>  
             <form method="post" name="export_transaction">
                 <div class="wcmp_table_holder">
-                    <table id="vendor_transactions" class="get_wcmp_transactions table table-striped table-bordered">
+                    <table id="vendor_transactions" class="get_wcmp_transactions table table-striped table-bordered" width="100%">
                         <thead>
                             <tr>
-                                <th class="text-center"><input class="select_all_transaction" type="checkbox" onchange="toggleAllCheckBox(this, 'vendor_transactions');"></th>
-                                <th><?php _e('Date', 'dc-woocommerce-multi-vendor'); ?></th>
-                                <th><?php _e('Transc.ID', 'dc-woocommerce-multi-vendor'); ?></td>
-                                <th><?php _e('Commission IDs', 'dc-woocommerce-multi-vendor'); ?></th>
-                                <th><?php _e('Fee', 'dc-woocommerce-multi-vendor'); ?></th>
-                                <th><?php _e('Net Earnings', 'dc-woocommerce-multi-vendor'); ?></th>
+                            <?php 
+                                if($transactions_list_table_headers) :
+                                    foreach ($transactions_list_table_headers as $key => $header) {
+                                        if($key == 'select_transaction'){ ?>
+                                <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><input type="checkbox" class="select_all_transaction" onchange="toggleAllCheckBox(this, 'vendor_transactions');" /></th>
+                                    <?php }else{ ?>
+                                <th class="<?php if(isset($header['class'])) echo $header['class']; ?>"><?php if(isset($header['label'])) echo $header['label']; ?></th>         
+                                    <?php }
+                                    }
+                                endif;
+                            ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,11 +86,21 @@ jQuery(document).ready(function($) {
         }
     });
     var vendor_transactions;
+    var columns = [];
+    <?php if($transactions_list_table_headers) {
+     foreach ($transactions_list_table_headers as $key => $header) { ?>
+        obj = {};
+        obj['data'] = '<?php echo esc_js($key); ?>';
+        obj['className'] = '<?php if(isset($header['class'])) echo esc_js($header['class']); ?>';
+        columns.push(obj);
+     <?php }
+        } ?>
     vendor_transactions = $('#vendor_transactions').DataTable({
         ordering  : false,
         searching  : false,
         processing: true,
         serverSide: true,
+        responsive: true,
         language: {
             "emptyTable": "<?php echo trim(__('Sorry. No transactions are available.','dc-woocommerce-multi-vendor')); ?>",
             "processing": "<?php echo trim(__('Processing...', 'dc-woocommerce-multi-vendor')); ?>",
@@ -119,15 +142,9 @@ jQuery(document).ready(function($) {
                 $("#vendor_transactions_processing").css("display","none");
             }
         },
-        columns: [
-            { data: "select_transaction", className: "text-center" },
-            { data: "date" },
-            { data: "transaction_id" },
-            { data: "commission_ids" },
-            { data: "fees" },
-            { data: "net_earning" }
-        ]
+        columns: columns
     });
+    new $.fn.dataTable.FixedHeader( vendor_transactions );
     $(document).on('click', '#vendor_transactions_date_filter #do_filter', function () {
         $('#display_trans_from_dt').text($('#wcmp_from_date').val());
         $('#export_transaction_start_date').val($('#wcmp_from_date').val());

@@ -35,7 +35,6 @@ $count_university = count($university_posts);
             if ($university_post->post_title != '') { ?>
                 <div>				
                     <div class="msg_title_box2"><span class="title"><?php echo $university_post->post_title; ?></span><br> </div>
-                    <div class="msg_arrow_box2"><a href="#" class="msg_stat_click"><i class="fa fa-caret-down"></i></a></div>
                     <div class="clear"></div>
                 </div>
                 <div>

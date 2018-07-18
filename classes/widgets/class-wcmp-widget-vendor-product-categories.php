@@ -69,7 +69,7 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
 				foreach ($product_cats as $product_cat) {
 					$term_count = isset($associated_terms[$product_cat->term_id]) ? count(array_unique($associated_terms[$product_cat->term_id])) : 0;
 					if ($term_count) {
-						echo '<li class="cat-item cat-item-' . $product_cat->term_id . '"><a href="' . get_term_link( $product_cat->term_id, 'product_cat' ) . '">' . $product_cat->name . '</a>';
+						echo '<li class="cat-item cat-item-' . $product_cat->term_id . '"><a href="?category=' . $product_cat->slug . '">' . $product_cat->name . '</a>';
 						if ($count) {
 							echo '<span class="count">(' . $term_count . ')</span>';
 						}
@@ -92,7 +92,7 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
 				if ($term_count) {
 					if($output_inner != '') $parent_class = ' cat-parent';
 					else $parent_class = '';
-					$itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . $parent_class . '"><a href="' . get_term_link( $term->term_id, 'product_cat' ) . '">' . $term->name . '</a>';
+					$itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . $parent_class . '"><a href="?category=' . $term->slug . '">' . $term->name . '</a>';
 					if ($show_count) {
 						$itemOutput .= '<span class="count">(' . $term_count . ')</span>';
 					}

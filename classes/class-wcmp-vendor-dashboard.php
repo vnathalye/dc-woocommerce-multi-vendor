@@ -1111,33 +1111,16 @@ Class WCMp_Admin_Dashboard {
             $tracking_url = $_POST['tracking_url'];
             $vendor->set_order_shipped($order_id, $tracking_id, $tracking_url);
         }
-        $args = apply_filters('wcmp_vendor_pending_shipping_args', array(
-            'start_date' => $last_seven_day_date,
-            'end_date' => $today
-        ));
-        $pending_shippings = $vendor->get_vendor_orders_reports_of('pending_shipping', $args);
-        $pending_shippings_arr = array();
-        if($pending_shippings){
-            foreach ($pending_shippings as $pending_orders_item) { 
-                $order = wc_get_order($pending_orders_item->order_id);
-                // hide shipping for local pickup
-                $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
-                if($vendor_shipping_method && in_array($vendor_shipping_method->get_method_id(), apply_filters('hide_shipping_icon_for_vendor_order_on_methods',array('local_pickup'))))
-                    continue; 
-                
-                $pending_shippings_arr[] = $pending_orders_item;
-            }
-        }
+
         $default_headers = apply_filters('wcmp_vendor_pending_shipping_table_header', array(
                 'order_id' => __('Order ID', 'dc-woocommerce-multi-vendor'),
                 'products_name' => __('Product', 'dc-woocommerce-multi-vendor'),
                 'order_date' => __('Order Date', 'dc-woocommerce-multi-vendor'),
-                //'dimentions' => __('L/B/H/W', 'dc-woocommerce-multi-vendor'),
                 'shipping_address' => __('Address', 'dc-woocommerce-multi-vendor'),
                 'shipping_amount' => __('Charges', 'dc-woocommerce-multi-vendor'),
                 'action' => __('Action', 'dc-woocommerce-multi-vendor'),
             ));
-        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('pending_shippings' => $pending_shippings_arr, 'default_headers' => $default_headers));
+        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_pending_shipping.php', array('default_headers' => $default_headers));
     }
 
     public function wcmp_customer_review() {
@@ -1188,48 +1171,8 @@ Class WCMp_Admin_Dashboard {
     }
 
     public function wcmp_vendor_product_sales_report() {
-        global $wpdb, $WCMp;
-        $sold_product_list = array();
-        $user_id = get_current_user_id();
-        $date = new datetime();
-        $current_date = $date->format('Y-m-d H:i:s');
-        $current_date = date('Y-m-d 00:00:00', strtotime("+1 days"));
-        $before_7_days_date = date('Y-m-d H:i:s', strtotime("-7 days"));
-
-
-        $sale_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id != 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s", $user_id, $before_7_days_date, $current_date
-                )
-        );
-        //var_dump($sale_results);
-        foreach ($sale_results as $key => $value) {
-            $product_id = $value->product_id;
-            if (array_key_exists($product_id, $sold_product_list)) {
-                $sold_product_list[$product_id]['qty'] += $value->quantity;
-            } else {
-                $sold_product_list[$product_id]['qty'] = $value->quantity;
-                $sold_product_list[$product_id]['item_id'] = $value->order_item_id;
-                $sold_product_list[$product_id]['order_id'] = $value->order_id;
-
-                //print_r(get_items($value->order_item_id));die();
-            }
-        }
-        arsort($sold_product_list);
-        //print_r($sold_product_list);die();
-        $sold_product_list_sorted = array();
-        foreach ($sold_product_list as $key => $value) {
-            $product_id = $key;
-            $product = wc_get_product($product_id);
-            if ($product) {
-                $sold_product_list_sorted[$product_id]['exists'] = '1';
-                $sold_product_list_sorted[$product_id]['qty'] = $value['qty'];
-                $sold_product_list_sorted[$product_id]['name'] = $product->get_name();
-                $sold_product_list_sorted[$product_id]['image'] = $product->get_image(array(40, 40));
-                $sold_product_list_sorted[$product_id]['price'] = $product->get_price('edit');
-                $sold_product_list_sorted[$product_id]['permalink'] = $product->get_permalink($product_id);
-            }
-        }
-        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_product_sales_report.php', array('sold_product_list_sorted' => $sold_product_list_sorted));
+        global $WCMp;
+        $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_product_sales_report.php');
     }
 
     function wcmp_vendor_transaction_details() {

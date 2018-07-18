@@ -83,7 +83,10 @@ abstract class WCMp_Payment_Gateway {
                 $gateway_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
                 if ('percent' === $payment_gateway_charge_type) {
                     $gateway_charge = ($this->get_transaction_total() * $gateway_charge_amount) / 100;
-                } else{
+                }else if ('fixed_with_percentage' === $payment_gateway_charge_type) {
+                    $gateway_fixed_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_fixed_with_{$this->payment_gateway}", "payment"));
+                    $gateway_charge = (($this->get_transaction_total() * $gateway_charge_amount) / 100 ) + floatval($gateway_fixed_charge_amount);
+                }else{
                     $gateway_charge = floatval($gateway_charge_amount);
                 }
             }

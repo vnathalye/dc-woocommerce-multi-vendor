@@ -3,9 +3,9 @@ Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.0
-Tested up to: 4.9.6
+Tested up to: 4.9.7
 Requires PHP: 5.6
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ WC Marketplace - The most user recommended multi-vendor marketplace plugin for W
 == Description ==
 <strong>WCMp:</strong> Welcome, this is Riley, your WCMp virtual guide. I'm here to help you know better about WC Marketplace as plugin and as [organization](https://wc-marketplace.com/). In it's core, WCMp is a WooCommerce based multi vendor solution engineered to address all your marketplace needs. Try and fall in love with WCMp, yes it's that simple ☺
 
+> Version Highlights
+>
 > - <strong>Introducing [REST API (v1.0)](https://wc-marketplace.github.io/rest-api-docs/) with WCMp v3.1.0.</strong>
 > - <strong>Best-In-Class Vendor Management System.</strong>
 > - <strong>Built-in Stripe support for commission disbursal besides PayPal and Bank Transfer!</strong>
@@ -113,6 +115,18 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+
+= 3.1.2 - 2018-07-17 =
+* Added - Gateway charges type Fixed + Percentage.
+* UI - Vendor banner screen responsive.
+* UI - Dashboard table responsive.
+* Fix - Vendor registered date.
+* Fix - WCMp frontend title_input field.
+* Fix - Dashboard coupon list expiry date issue.
+* Fix - Google re-captcha on vendor registration form data.
+* Fix - Permalink structure on wcmp ajax.
+* Fix - Parameter issue on `wcmp_get_all_order_of_user` function.
+* Updated - Language file.
 
 = 3.1.1 - 2018-07-05 =
 * Fix - Suspended vendor backend restriction.
@@ -408,9 +422,5 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 == Upgrade Notice ==
 
-= 3.1.1 - 2018-07-05 =
-* Fix - Suspended vendor backend restriction.
-* Fix - Vendor products shortcode issue.
-* Fix - Vendor add order note time issue.
-* Fix - Commission and transaction Title current time.
-* Fix - Admin new vendor account vendor profile link.
+= 3.0.5 =
+WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

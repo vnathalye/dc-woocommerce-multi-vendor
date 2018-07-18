@@ -37,6 +37,7 @@ class WCMp_Settings_Payment {
                 $automatic_method['payment_method_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'payment_method_' . $key, 'class' => 'automatic_payment_method', 'label_for' => 'payment_method_' . $key, 'text' => $val, 'name' => 'payment_method_' . $key, 'value' => 'Enable', 'data-display-label' => $val);
             }
             $gateway_charge['gateway_charge_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'gateway_charge_' . $key, 'class' => 'payment_gateway_charge regular-text', 'label_for' => 'gateway_charge_' . $key, 'name' => 'gateway_charge_' . $key, 'placeholder' => __('For ', 'dc-woocommerce-multi-vendor') . $val, 'desc' => __('Gateway Charge For ', 'dc-woocommerce-multi-vendor') . $val );
+            $gateway_charge['gateway_charge_fixed_with_' . $key] = array('title' => __('', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'gateway_charge_fixed_with_' . $key, 'class' => 'payment_gateway_charge regular-text', 'label_for' => 'gateway_charge_fixed_with_' . $key, 'name' => 'gateway_charge_fixed_with_' . $key, 'placeholder' => __('For ', 'dc-woocommerce-multi-vendor') . $val, 'desc' => __('Gateway Charge For ', 'dc-woocommerce-multi-vendor') . $val );
             $i++;
         }
 
@@ -65,7 +66,7 @@ class WCMp_Settings_Payment {
                 "wcmp_default_settings_section" => array("title" => __('How/When to Pay ', 'dc-woocommerce-multi-vendor'), // Section one
                     "fields" => array_merge($automatic_method, array(
                         "payment_gateway_charge" => array('title' => __('Payment Gateway Charge', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'payment_gateway_charge', 'label_for' => 'payment_gateway_charge', 'name' => 'payment_gateway_charge', 'text' => __('If checked, you can set payment gateway charge to the vendor for commission disbursement. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'),
-                        "payment_gateway_charge_type" => array('title' => __('Gateway Charge Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'payment_gateway_charge_type', 'label_for' => 'payment_gateway_charge_type', 'name' => 'payment_gateway_charge_type', 'options' => array('percent' => __('Percentage', 'dc-woocommerce-multi-vendor'), 'fixed' => __('Fixed Amount', 'dc-woocommerce-multi-vendor')), 'desc' => __('Choose your preferred gateway charge type.', 'dc-woocommerce-multi-vendor')), // Select
+                        "payment_gateway_charge_type" => array('title' => __('Gateway Charge Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'payment_gateway_charge_type', 'label_for' => 'payment_gateway_charge_type', 'name' => 'payment_gateway_charge_type', 'options' => array('percent' => __('Percentage', 'dc-woocommerce-multi-vendor'), 'fixed' => __('Fixed Amount', 'dc-woocommerce-multi-vendor'), 'fixed_with_percentage' => __('%age + Fixed', 'dc-woocommerce-multi-vendor')), 'desc' => __('Choose your preferred gateway charge type.', 'dc-woocommerce-multi-vendor')), // Select
                             ), $gateway_charge, array(
                         "choose_payment_mode_automatic_disbursal" => array('title' => __('Disbursement Schedule', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'wcmp_disbursal_mode_admin', 'label_for' => 'wcmp_disbursal_mode_admin', 'name' => 'wcmp_disbursal_mode_admin', 'text' => __('If checked, automatically vendors commission will disburse. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
                         "payment_schedule" => array('title' => __('Set Schedule', 'dc-woocommerce-multi-vendor'), 'type' => 'radio', 'id' => 'payment_schedule', 'label_for' => 'payment_schedule', 'name' => 'payment_schedule', 'dfvalue' => 'daily', 'options' => array('weekly' => __('Weekly', 'dc-woocommerce-multi-vendor'), 'daily' => __('Daily', 'dc-woocommerce-multi-vendor'), 'monthly' => __('Monthly', 'dc-woocommerce-multi-vendor'), 'fortnightly' => __('Fortnightly', 'dc-woocommerce-multi-vendor'), 'hourly' => __('Hourly', 'dc-woocommerce-multi-vendor'))), // Radio
@@ -143,6 +144,9 @@ class WCMp_Settings_Payment {
             }
             if (isset($input['gateway_charge_' . $key])) {
                 $new_input['gateway_charge_' . $key] = floatval(sanitize_text_field($input['gateway_charge_' . $key]));
+            }
+            if (isset($input['gateway_charge_fixed_with_' . $key])) {
+                $new_input['gateway_charge_fixed_with_' . $key] = floatval(sanitize_text_field($input['gateway_charge_fixed_with_' . $key]));
             }
         }
         if (isset($input['payment_schedule'])) {

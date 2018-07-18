@@ -188,7 +188,7 @@ jQuery(document).ready(function($){
         // dataTable wrapper class
         $('.dataTables_wrapper').removeClass('form-inline');
         $('.table.dataTable').removeClass('no-footer');
-        $('.table.dataTable').parent().addClass('dt-wrapper');
+        //$('.table.dataTable').parent().addClass('dt-wrapper');
         
         // Tool-tips
         $('.img_tip').each(function () {

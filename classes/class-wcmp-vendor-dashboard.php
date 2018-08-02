@@ -865,7 +865,7 @@ Class WCMp_Admin_Dashboard {
                 'label' => __('Add Product', 'dc-woocommerce-multi-vendor')
                 , 'url' => apply_filters('wcmp_vendor_submit_product', esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'))))
                 , 'class' => ''
-                , 'capability' => true
+                , 'capability' => apply_filters( 'wcmp_vendor_dashboard_menu_add_product_capability', 'edit_products' )
                 , 'position' => 20
                 , 'link_target' => '_self'
                 , 'nav_icon' => 'wcmp-font ico-product-icon'

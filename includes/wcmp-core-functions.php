@@ -2003,7 +2003,7 @@ if (!function_exists('wcmp_get_vendor_profile_completion')) {
             }
             $profile_completion['progress'] = number_format((float) (($progress / $no_of_fields) * 100), 0);
         }
-        return $profile_completion;
+        return apply_filters('wcmp_vendor_profile_completion_progress_array', $profile_completion, $vendor->id);
     }
 
 }

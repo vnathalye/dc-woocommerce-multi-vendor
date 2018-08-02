@@ -102,7 +102,7 @@ class WCMp_Taxonomy {
      * @return array of WP_Term
      */
     public function wcmp_get_the_terms($terms, $post_id, $taxonomy) {
-        if ($taxonomy == $this->taxonomy_name && get_post_type($post_id) == 'product') {
+        if ($taxonomy == $this->taxonomy_name && get_post_type($post_id) == 'product' && $terms) {
             foreach ($terms as $index => $term) {
                 $term_id = $term->term_id;
                 $vendor = get_wcmp_vendor_by_term($term_id);

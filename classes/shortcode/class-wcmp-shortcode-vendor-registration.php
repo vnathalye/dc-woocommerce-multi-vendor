@@ -22,7 +22,7 @@ class WCMp_Vendor_Registration_Shortcode {
      */
     public static function output($attr) {
         global $WCMp;
-        if (!apply_filters('is_enable_wcmp_vendor_registration', get_option('users_can_register'))) {
+        if (!apply_filters('is_enable_wcmp_vendor_registration', get_option('users_can_register')) || apply_filters('is_enable_wcmp_vendor_registration', get_option( 'woocommerce_enable_myaccount_registration' )) != 'yes') {
             echo ' ' . __('Signup has been disabled.', 'dc-woocommerce-multi-vendor');
             return;
         }

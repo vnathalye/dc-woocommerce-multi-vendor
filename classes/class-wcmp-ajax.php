@@ -2282,7 +2282,7 @@ class WCMp_Ajax {
                 'post_status' => $df_post_status,
                 'suppress_filters' => true
             );
-
+          
             if (isset($requestData['product_cat']) && $requestData['product_cat'] != '') {
                 $args['tax_query'] = array(array('taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => $requestData['product_cat']));
             }
@@ -2301,7 +2301,9 @@ class WCMp_Ajax {
             }
             $args['offset'] = $requestData['start'];
             $args['posts_per_page'] = $requestData['length'];
-
+            
+            $args = apply_filters('wcmp_datatable_product_list_query_args', $args, $requestData);
+            
             $data = array();
             $products_array = $vendor->get_products($args);
             if (!empty($products_array)) {
@@ -2382,12 +2384,12 @@ class WCMp_Ajax {
                 }
             }
 
-            $json_data = array(
+            $json_data = apply_filters('wcmp_datatable_product_list_result_data', array(
                 "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
                 "recordsTotal" => intval(count($total_products_array)), // total number of records
                 "recordsFiltered" => intval(count($total_products_array)), // total number of records after searching, if there is no searching then totalFiltered = totalData
                 "data" => $data   // total data array
-            );
+            ), $requestData);
             wp_send_json($json_data);
             die;
         }

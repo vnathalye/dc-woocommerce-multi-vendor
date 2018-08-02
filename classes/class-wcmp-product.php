@@ -1211,7 +1211,7 @@ class WCMp_Product {
                 $query->set('tax_query', $taxquery);
             }
         } else {
-            if (isset($query->query['post_type']) && $query->query['post_type'] == 'product') {
+            if ((isset($query->query_vars['wc_query']) && $query->query_vars['wc_query'] == 'product_query') || (isset($query->query['post_type']) && $query->query['post_type'] == 'product')) {
                 $get_block_array = array();
                 $get_blocked = wcmp_get_all_blocked_vendors();
                 if (!empty($get_blocked)) {
@@ -1231,7 +1231,6 @@ class WCMp_Product {
                 }
             }
         }
-
         return $query;
     }
 

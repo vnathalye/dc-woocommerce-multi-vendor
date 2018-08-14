@@ -547,7 +547,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                 
                 <div class="form-group tagsdiv">
                     <label class="control-label form-label col-sm-3"><?php _e('Tags', 'dc-woocommerce-multi-vendor'); ?></label>
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-sm-9">
                         <select id="wcmp-product-tags" name="product_tags[]" multiple="multiple" style="width: 100%;">
                             <?php 
                             $tags = get_terms( 'product_tag', apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'orderby' => 'count', 'order' => 'DESC' )));

@@ -4,7 +4,9 @@
 .wcmp-color-scheme-outer_space_blue .navbar-default .navbar-toggle .icon-bar,
 .wcmp-color-scheme-outer_space_blue .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-outer_space_blue .progress-bar,
-.wcmp-color-scheme-outer_space_blue table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, .wcmp-color-scheme-outer_space_blue table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+.wcmp-color-scheme-outer_space_blue table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+.wcmp-color-scheme-outer_space_blue table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before,
+.wcmp-color-scheme-outer_space_blue input[type=radio]:checked:before {
   background: #3f85b9; }
 .wcmp-color-scheme-outer_space_blue .navbar-default.sidebar ul li a.active,
 .wcmp-color-scheme-outer_space_blue .navbar-default.sidebar a:hover,
@@ -43,7 +45,7 @@
 .wcmp-color-scheme-outer_space_blue .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-outer_space_blue .transaction-list,
 .wcmp-color-scheme-outer_space_blue .product-import.wcmp_displaybox2m h3, .wcmp-color-scheme-outer_space_blue .wcmp_displaybox2 h3,
-.wcmp-color-scheme-outer_space_blue .checkbox-holder input[type="checkbox"]:checked + .ico-uncheckbox-icon:before {
+.wcmp-color-scheme-outer_space_blue input[type=checkbox]:checked:before {
   color: #3f85b9; }
 .wcmp-color-scheme-outer_space_blue .wcmp_vendor_transaction_details {
   color: #fff; }
@@ -72,7 +74,9 @@
 .wcmp-color-scheme-green_lagoon .navbar-default .navbar-toggle .icon-bar,
 .wcmp-color-scheme-green_lagoon .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-green_lagoon .progress-bar,
-.wcmp-color-scheme-green_lagoon table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, .wcmp-color-scheme-green_lagoon table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+.wcmp-color-scheme-green_lagoon table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+.wcmp-color-scheme-green_lagoon table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before,
+.wcmp-color-scheme-green_lagoon input[type=radio]:checked:before {
   background: #009788; }
 .wcmp-color-scheme-green_lagoon .navbar-default.sidebar ul li a.active,
 .wcmp-color-scheme-green_lagoon .navbar-default.sidebar a:hover,
@@ -111,7 +115,7 @@
 .wcmp-color-scheme-green_lagoon .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-green_lagoon .transaction-list,
 .wcmp-color-scheme-green_lagoon .product-import.wcmp_displaybox2m h3, .wcmp-color-scheme-green_lagoon .wcmp_displaybox2 h3,
-.wcmp-color-scheme-green_lagoon .checkbox-holder input[type="checkbox"]:checked + .ico-uncheckbox-icon:before {
+.wcmp-color-scheme-green_lagoon input[type=checkbox]:checked:before {
   color: #009788; }
 .wcmp-color-scheme-green_lagoon .wcmp_vendor_transaction_details {
   color: #fff; }
@@ -140,7 +144,9 @@
 .wcmp-color-scheme-old_west .navbar-default .navbar-toggle .icon-bar,
 .wcmp-color-scheme-old_west .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-old_west .progress-bar,
-.wcmp-color-scheme-old_west table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, .wcmp-color-scheme-old_west table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+.wcmp-color-scheme-old_west table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before,
+.wcmp-color-scheme-old_west table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before,
+.wcmp-color-scheme-old_west input[type=radio]:checked:before {
   background: #c7a589; }
 .wcmp-color-scheme-old_west .navbar-default.sidebar ul li a.active,
 .wcmp-color-scheme-old_west .navbar-default.sidebar a:hover,
@@ -179,7 +185,7 @@
 .wcmp-color-scheme-old_west .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-old_west .transaction-list,
 .wcmp-color-scheme-old_west .product-import.wcmp_displaybox2m h3, .wcmp-color-scheme-old_west .wcmp_displaybox2 h3,
-.wcmp-color-scheme-old_west .checkbox-holder input[type="checkbox"]:checked + .ico-uncheckbox-icon:before {
+.wcmp-color-scheme-old_west input[type=checkbox]:checked:before {
   color: #c7a589; }
 .wcmp-color-scheme-old_west .wcmp_vendor_transaction_details {
   color: #000; }
@@ -207,7 +213,8 @@
 .wcmp-color-scheme-wild_watermelon .navbar .topbar-left,
 .wcmp-color-scheme-wild_watermelon .navbar-default .navbar-toggle .icon-bar,
 .wcmp-color-scheme-wild_watermelon .staticstics-panel-wrap .panel-body .compare-stat-info:after,
-.wcmp-color-scheme-wild_watermelon .progress-bar {
+.wcmp-color-scheme-wild_watermelon .progress-bar,
+.wcmp-color-scheme-wild_watermelon input[type=radio]:checked:before {
   background: #fd5668; }
 .wcmp-color-scheme-wild_watermelon .navbar-default.sidebar ul li a.active,
 .wcmp-color-scheme-wild_watermelon .navbar-default.sidebar a:hover,
@@ -246,7 +253,7 @@
 .wcmp-color-scheme-wild_watermelon .staticstics-panel-wrap .panel-body .compare-stat-info:after,
 .wcmp-color-scheme-wild_watermelon .transaction-list,
 .wcmp-color-scheme-wild_watermelon .product-import.wcmp_displaybox2m h3, .wcmp-color-scheme-wild_watermelon .wcmp_displaybox2 h3,
-.wcmp-color-scheme-wild_watermelon .checkbox-holder input[type="checkbox"]:checked + .ico-uncheckbox-icon:before {
+.wcmp-color-scheme-wild_watermelon input[type=checkbox]:checked:before {
   color: #fd5668; }
 .wcmp-color-scheme-wild_watermelon .wcmp_vendor_transaction_details {
   color: #fff; }
@@ -1000,9 +1007,6 @@ select.input-sm {
     outline: none; }
   .btn.btn-default:focus, .btn.btn-default:active:focus {
     outline: none; }
-
-.form-group > label + .col-sm-9 input[type="checkbox"] {
-  margin-top: 11px; }
 
 .pro_ele_block .form-group:last-of-type, .multi_input_block .form-group:last-of-type {
   margin-bottom: 0; }
@@ -2763,6 +2767,60 @@ form[name="wcmp_vendor_dashboard_orders"] .form-group, #vendor_transactions_date
         .checkbox-holder input[type="checkbox"]:checked + .ico-uncheckbox-icon:before {
           content: '\e90b'; }
 
+input[type=radio], input[type=checkbox] {
+  border: 2px solid #d8d8d8;
+  background: #fff;
+  color: #c5c5c5;
+  clear: none;
+  cursor: pointer;
+  display: inline-block;
+  line-height: 0;
+  height: 22px;
+  margin: 0;
+  outline: 0;
+  padding: 0 !important;
+  text-align: center;
+  vertical-align: middle;
+  width: 22px;
+  min-width: 22px;
+  -webkit-appearance: none;
+  transition: .05s border-color ease-in-out;
+  border-radius: 3px; }
+
+input[type=radio]:checked:before, input[type=checkbox]:checked:before {
+  float: left;
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  font: 400 21px/1 'wcmp' !important;
+  speak: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+input[type=checkbox]:checked:before {
+  content: '\e90b';
+  margin: -2px 0 0 -2px; }
+
+input[type=radio] {
+  border-radius: 50%;
+  line-height: 10px; }
+
+input[type=radio]:checked:before {
+  content: "";
+  border-radius: 50%;
+  font-size: 24px;
+  width: 14px;
+  height: 14px;
+  margin: 2px;
+  line-height: 16px; }
+
+input[type=radio]:focus, input[type=checkbox]:focus {
+  outline: none; }
+
+.form-horizontal .checkbox, .form-horizontal .radio {
+  min-height: 22px; }
+
 table th .checkbox-holder .wcmp-font {
   color: #afafaf;
   background: #fff; }
@@ -3085,6 +3143,9 @@ table.shipping_table td {
     float: right; } }
 .frontend_product_manager_product_types .product_type.pro_title {
   padding: 0; }
+
+#product_manager_form .frontend_product_manager_product_types .form-group label {
+  margin: 10px 0 0; }
 
 .default_attributes_holder .dft_sel_wrap select {
   margin: 0 6% 10px 0; }
@@ -3675,14 +3736,39 @@ p.description {
 
 .img_tip {
   display: inline-block;
-  cursor: pointer;
   margin-left: 5px;
   position: relative; }
   .img_tip:after {
     content: '\e92a';
     font-family: 'wcmp' !important;
     font-size: 16px;
-    color: #000; }
+    color: #000;
+    cursor: help; }
+
+.tool_tip {
+  position: relative;
+  float: right;
+  top: -17px;
+  right: -15px; }
+  .tool_tip:after {
+    content: '\e92a';
+    font-family: 'wcmp' !important;
+    font-size: 16px;
+    color: #000;
+    position: absolute;
+    top: 50%;
+    right: -7px;
+    transform: translateY(-50%);
+    cursor: help; }
+  @media screen and (max-width: 991px) {
+    .tool_tip {
+      right: -7px; }
+      .tool_tip:after {
+        font-size: 12px; } }
+
+.qtip-content {
+  color: #fff;
+  line-height: 15px; }
 
 .checkbox-group-addon div {
   margin-bottom: 8px; }

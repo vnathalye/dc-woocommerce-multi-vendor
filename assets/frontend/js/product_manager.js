@@ -528,9 +528,6 @@ jQuery(document).ready(function ($) {
                         $('#attributes').find('.multi_input_block:last').find('select').select2({
                             placeholder: product_manager_js_script_data.messages.search_attribute
                         });
-                        $('#attributes').find('.multi_input_block:last').find('input[type=checkbox]').each(function () {
-                            $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
-                        });
 
                     }
                 }

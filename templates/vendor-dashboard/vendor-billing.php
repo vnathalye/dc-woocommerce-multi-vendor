@@ -174,8 +174,8 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                             } else {
                                 $connected = false;
                             }
-
-                            if (!$connected) {
+                            $acoount_type = apply_filters('wcmp_vendor_stripe_connect_account_type', 'standard', $payment_admin_settings, $user_id);
+                            if (!$connected && $acoount_type == 'standard') {
 
                                 $status = delete_user_meta($user_id, 'vendor_connected');
                                 $status = delete_user_meta($user_id, 'admin_client_id');
@@ -210,6 +210,8 @@ $vendor_payment_mode_select = apply_filters('wcmp_vendor_payment_mode', $payment
                                     </div>
                                     <?php
                                 }
+                            }else{
+                                do_action('wcmp_bvendor_stripe_connect_account_fields', $payment_admin_settings, $user_id);
                             }
                         }
                     }

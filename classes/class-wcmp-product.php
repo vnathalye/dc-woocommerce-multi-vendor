@@ -144,29 +144,6 @@ class WCMp_Product {
 
     function get_multiple_vendors_array_for_single_product($post_id) {
         global $woocommerce, $WCMp, $wpdb;
-//        $post = get_post($post_id);
-//        $results_str = '';
-//        $searchstr = $post->post_title;
-//        $searchstr = str_replace("'", "", $searchstr);
-//        $searchstr = str_replace('"', '', $searchstr);
-//        $querystr = "select  * from {$wpdb->prefix}wcmp_products_map where replace(replace(product_title, '\'',''), '\"','') = '{$searchstr}'";
-//        $results_obj_arr = $wpdb->get_results($querystr);
-//        if (isset($results_obj_arr) && count($results_obj_arr) > 0) {
-//            $results_str = $results_obj_arr[0]->product_ids;
-//        }
-//
-//        $product_id_arr = explode(',', $results_str);
-//        $args = array(
-//            'posts_per_page' => -1,
-//            'offset' => 0,
-//            'orderby' => 'date',
-//            'order' => 'DESC',
-//            'post_type' => 'product',
-//            'post__in' => $product_id_arr,
-//            'post_status' => 'publish',
-//            'suppress_filters' => true
-//        );
-//        $results = get_posts($args);
         $post = get_post($post_id);
         $product = wc_get_product($post_id);
         $more_product_array = array();
@@ -867,8 +844,8 @@ class WCMp_Product {
     function process_vendor_data($post_id) {
         global $WCMp;
         $post = get_post($post_id);
-
-        if ($post->post_type == 'product') {
+        
+        if ($post->post_type == 'product') { 
             if (isset($_POST['commision'])) {
                 update_post_meta($post_id, '_commission_per_product', $_POST['commision']);
             }
@@ -904,7 +881,7 @@ class WCMp_Product {
                     // re-hook this function
                     add_action('save_post', array($this, 'process_vendor_data'));
                 }
-            }else{
+            }elseif(!isset($_POST['woocommerce-process-checkout-nonce'])){
                 // vendor assign with product
                 if(is_user_wcmp_vendor(get_current_user_id())){
                     $vendor = get_wcmp_vendor(get_current_user_id());

@@ -37,7 +37,7 @@ class WCMp_Settings_WCMp_Addons {
             'stream' => false,
             'filename' => null
         );
-        $url = 'https://wc-marketplace.com/wp-json/wc/v1/products/?per_page=100&orderby=title&order=asc';
+        $url = 'https://wc-marketplace.com/wp-json/wc/v2/products/?per_page=100&orderby=title&order=asc&status=publish';
         $response = wp_remote_get($url, $args);
         ?>
         <div class="wcmp-addon-container">
@@ -53,30 +53,44 @@ class WCMp_Settings_WCMp_Addons {
                 <?php
                 if (!is_wp_error($response) && isset($response['body'])) {
                     foreach (json_decode($response['body']) as $product) {
-                        if (isset($product->id)) {
+                        if (isset($product->id) && $product->id != 12603) {
                             ?>
                             <div class="addonbox">
-                                <h2 class="hndle"><span><?php echo $product->name; ?></span></h2>
-                                <div class="inside">
-                                    <div class="submitbox" id="submitpost">
-                                        <div class="addon-img-holder">
-                                            <img src="<?php echo $product->images[0]->src; ?>" alt="wcmp" />
-                                        </div>                                       
+                                <h2><?php echo $product->name; ?></h2> 
+                                <div class="addon-img-holder">
+                                    <?php
+                                        $all_meta_data = wp_list_pluck($product->meta_data, 'value' ,'key'); 
+                                        if( ! empty( $all_meta_data['extension_img_path'] ) ) {
+                                    ?>
+                                    <img src="<?php echo $all_meta_data['extension_img_path']; ?>" alt="wcmp" />    
+                                    <?php
+                                        } else {
+                                    ?>
 
-                                        <div id="major-publishing-actions">
-                                            <p><?php echo strip_tags($product->short_description); ?></p>
-                                            <div id="publishing-action">
-                                                <a href="<?php echo $product->permalink; ?>" target="_blank" class="button button-primary button-large">View More</a>
-                                            </div>
-                                            <div class="clear"></div>
-                                        </div>
-                                    </div>
+                                    <img src="<?php echo $product->images[0]->src; ?>" alt="wcmp" />
 
-                                </div>
+                                    <?php
+                                        }
+                                    ?>  
+                                </div>   
+                                <div class="addon-content-holder">
+                                    <p><?php echo wp_trim_words(strip_tags($product->short_description), 25, '...'); ?></p> 
+                                    <a href="<?php echo $product->permalink; ?>" target="_blank" class="button">View More</a>  
+                                </div> 
                             </div>
                             <?php
                         }
                     }
+                } else{
+                    ?>
+                    <div class="offline-addon-wrap">
+                        <div class="addon-content">
+                            <h2>Create the best Marketplace with our coolest add-ons!</h2>
+                            <p>Rise above your peers and grab the attention of all your vendors and customers. WCMp Extensions eases the way you do business!</p>
+                        </div>
+                        <a href="https://wc-marketplace.com/addons/" target="_blank">Get Addons!</a>
+                    </div>
+                <?php
                 }
                 ?>
             </div>

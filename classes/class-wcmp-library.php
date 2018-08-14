@@ -96,7 +96,12 @@ class WCMp_Library {
     public function load_dashboard_upload_lib() {
         global $WCMp;
         wp_enqueue_media();
-        wp_enqueue_script('frontend_dash_upload_js', $this->jquery_lib_url . 'upload/frontend-media-upload.js', array('jquery'), $WCMp->version, true);
+        wp_enqueue_style( 'imgareaselect' );
+        wp_enqueue_script('frontend_dash_upload_js', $this->jquery_lib_url . 'upload/frontend-media-upload.js', array('jquery', 'imgareaselect'), $WCMp->version, true);
+        $enableCrop = false;
+        if(wp_image_editor_supports()) $enableCrop = true;
+        $image_script_params = array('enableCrop' => $enableCrop, 'cover_ratio' => array(1200, 390), 'canSkipCrop' => false);
+        wp_localize_script( 'frontend_dash_upload_js', 'frontend_dash_upload_script_params', apply_filters( 'wcmp_frontend_dash_upload_script_params', $image_script_params) );
     }
 
     /**

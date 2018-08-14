@@ -92,10 +92,6 @@ do_action('before_wcmp_vendor_dashboard_products_qna_table');
                 if(settings.oAjaxData.qna_status){
                     qna_status_sel.val(settings.oAjaxData.qna_status);
                 }
-                $('table.dataTable tr [type="checkbox"]').each(function(){
-                    if($(this).parent().is('span.checkbox-holder')) return;
-                    $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
-                })
             },
             ajax: {
                 url: '<?php echo add_query_arg( 'action', 'wcmp_vendor_products_qna_list', $WCMp->ajax_url() ); ?>',

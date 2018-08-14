@@ -151,10 +151,6 @@ $orders_list_table_headers = apply_filters('wcmp_datatable_order_list_table_head
                 if(settings.oAjaxData.order_status){
                     order_status_sel.val(settings.oAjaxData.order_status);
                 }
-                $('table.dataTable tr [type="checkbox"]').each(function(){
-                    if($(this).parent().is('span.checkbox-holder')) return;
-                    $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
-                })
             },
             language: {
                 emptyTable: "<?php echo trim(__('No orders found!', 'dc-woocommerce-multi-vendor')); ?>",

@@ -287,11 +287,11 @@ class WCMp_Calculate_Commission {
                     if ($amount > $product_value_total) {
                         $amount = $product_value_total;
                     }
-                    return apply_filters('vendor_commission_amount', $amount);
+                    return apply_filters('vendor_commission_amount', $amount, $product_id, $variation_id, $item, $order_id, $item_id);
                 }
             }
         }
-        return apply_filters('vendor_commission_amount', $amount);
+        return apply_filters('vendor_commission_amount', $amount, $product_id, $variation_id, $item, $order_id, $item_id);
     }
 
     /**

@@ -223,6 +223,7 @@ a.wcmp_vendor_detail{
 .wcmp_vendor_banner_template.template1 .vendor_description{ 
     position: absolute;
     top: 0;
+    left: 0;
     height: 100%;
 } 
 .wcmp_vendor_banner_template.template1 .img_div img{

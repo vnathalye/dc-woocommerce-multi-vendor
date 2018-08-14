@@ -117,12 +117,10 @@ jQuery(document).ready(function($) {
         },
         drawCallback: function () {
             $('table.dataTable tr [type="checkbox"]').each(function(){
-                if($(this).parent().is('span.checkbox-holder')) return;
                 if($(this).prop('disabled')){
                     $(this).css('cursor', 'not-allowed');
                     $(this).parents('tr[role="row"]').css('background-color', '#edf0f1');
                 }
-                $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
             })
         },
         ajax:{

@@ -124,12 +124,6 @@ jQuery(document).ready(function($) {
             $('#display_trans_to_dt').text($('#wcmp_to_date').val());
             $('#export_transaction_end_date').val($('#wcmp_to_date').val());
         },
-        drawCallback: function () {
-            $('table.dataTable tr [type="checkbox"]').each(function(){
-                if($(this).parent().is('span.checkbox-holder')) return;
-                $(this).wrap('<span class="checkbox-holder"></span>').after('<i class="wcmp-font ico-uncheckbox-icon"></i>');
-            })
-        },
         ajax:{
             url : '<?php echo add_query_arg( 'action', 'wcmp_vendor_transactions_list', $WCMp->ajax_url() ); ?>', 
             type: "post",

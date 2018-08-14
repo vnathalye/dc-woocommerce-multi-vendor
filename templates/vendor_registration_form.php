@@ -105,12 +105,22 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                             if (!empty($value['options']) && is_array($value['options'])) {
                                 foreach ($value['options'] as $option_key => $option_value) {
                                     ?>
-                                    <p> <input type="checkbox" <?php if($option_value['selected']){ echo 'checked="checked"'; } ?> name="wcmp_vendor_fields[<?php echo $key; ?>][value][]" value="<?php echo $option_value['value']; ?>" <?php //if($value['required']){ echo 'required="required"'; }?>> <?php echo $option_value['label']; ?></p>
+                                    <p> <input type="checkbox" <?php if($option_value['selected']){ echo 'checked="checked"'; } ?> name="wcmp_vendor_fields[<?php echo $key; ?>][value][]" class="wcmp-regs-multi-check" value="<?php echo $option_value['value']; ?>" <?php //if($value['required']){ echo 'required="required"'; }?>> <?php echo $option_value['label']; ?></p>
                                     
                                     <?php
                                 }
                             }
-                             break;
+                            wp_add_inline_script('woocommerce', "(function ($) { 
+                                $('.wcmp_regi_main .register').submit(function(e) {
+                                    checked = $('.wcmp-regs-multi-check:checked').length;
+                                    if(!checked) {
+                                        e.preventDefault();
+                                        $('.wcmp-regs-multi-check')[0].focus();
+                                        return false;
+                                    }
+                                });
+                            })(jQuery)");
+                            break;
                          case 'multi-select':
                              ?>
                             <select class="select_box" style="min-height: 59px;" name="wcmp_vendor_fields[<?php echo $key; ?>][value][]" <?php if($value['required']){ echo 'required="required"'; }?> multiple="">

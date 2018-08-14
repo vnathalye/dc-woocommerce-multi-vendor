@@ -67,14 +67,7 @@ jQuery( document ).ready( function ( $ ) {
 
     $( document ).on( 'change', '#wcmp_visitor_stats_date_filter', function () {
         mapNavWrap();
-    } );
-
-    // wrapper on checkbox to design
-    $( 'input[type=checkbox]' ).each( function ( ) {
-        if ( !$( this ).parent().is( 'span.checkbox-holder' ) ) {
-            $( this ).wrap( '<span class="checkbox-holder"></span>' ).after( '<i class="wcmp-font ico-uncheckbox-icon"></i>' );
-        }
-    } );
+    } ); 
 
     // table responsive 
         

@@ -807,7 +807,7 @@ jQuery(document).ready(function ($) {
                     opacity: 0.6
                 }
             });
-            $('#product_manager_form').find(':input:disabled').removeAttr('disabled');
+            $('#product_manager_form').find(':input:disabled').not('input[type="submit"]').removeAttr('disabled');
             var description = get_fpm_tinymce_content('description');
             var excerpt = get_fpm_tinymce_content('excerpt');
             var data = {
@@ -862,7 +862,7 @@ jQuery(document).ready(function ($) {
                     opacity: 0.6
                 }
             });
-            $('#product_manager_form').find(':input:disabled').removeAttr('disabled');
+            $('#product_manager_form').find(':input:disabled').not('input[type="submit"]').removeAttr('disabled');
             var description = get_fpm_tinymce_content('description');
             var excerpt = get_fpm_tinymce_content('excerpt');
 

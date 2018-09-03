@@ -92,17 +92,19 @@ $subtotal = 0;
                                 <td><?php _e('Customer Note:', 'dc-woocommerce-multi-vendor'); ?></td>
                                 <td><?php echo $order->get_customer_note(); ?></td>
                             </tr>
+                            <?php do_action( 'wcmp_vendor_dashboard_order_details_table_info', $order, $vendor ); ?>
                         </tfoot>
                     </table>
                 </div>
             </div>  
-            <div class="panel panel-default pannel-outer-heading">
-                <?php if(apply_filters('is_vendor_can_see_order_billing_address', true, $vendor->id)) :?>
-                <div class="panel-heading">
+            <?php if(apply_filters('is_vendor_can_see_order_billing_address', true, $vendor->id) || apply_filters('is_vendor_can_see_order_shipping_address', true, $vendor->id)) :?>
+            <div class="panel panel-default pannel-outer-heading wcmp-billing-shipping-wrap">
+                <div class="panel-heading wcmp-billing-shipping-lbl">
                     <h3><?php _e('Billing &amp; Shipping address', 'dc-woocommerce-multi-vendor'); ?></h3>
                 </div>
                 <div class="panel-body panel-content-padding address-holder">
                     <div class="row">
+                        <?php if(apply_filters('is_vendor_can_see_order_billing_address', true, $vendor->id)) :?>
                         <div class="col-xs-6">
                             <h2><?php _e('Billing address', 'dc-woocommerce-multi-vendor'); ?></h2>
                             <address>
@@ -112,21 +114,25 @@ $subtotal = 0;
                                 <?php endif; ?>
                                 <?php if ($order->get_billing_email() || apply_filters('show_customer_billing_email_for_vendor', true)) : ?>
                                     <p class="woocommerce-customer-details-email"><?php echo esc_html($order->get_billing_email()); ?></p>
-                                <?php endif; ?>
+                                <?php endif; 
+                                do_action( 'wcmp_vendor_dashboard_order_details_billing_address', $order, $vendor ); ?>
                             </address>
                         </div>
                         <?php endif; ?>
-                        <?php if(apply_filters('is_vendor_can_see_order_shipping_address', true, $vendor->id)) :?>
+                        <?php if(apply_filters('is_vendor_can_see_order_shipping_address', true, $vendor->id)) : ?>
                         <div class="col-xs-6">
                             <h2><?php _e('Shipping address', 'dc-woocommerce-multi-vendor'); ?></h2>
                             <address>
-                            <?php echo ( $address = $order->get_formatted_shipping_address() ) ? $address : __('N/A', 'dc-woocommerce-multi-vendor'); ?>
+                            <?php echo ( $address = $order->get_formatted_shipping_address() ) ? $address : __('N/A', 'dc-woocommerce-multi-vendor'); 
+                            do_action( 'wcmp_vendor_dashboard_order_details_shipping_address', $order, $vendor ); ?>
                             </address>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <?php endif; ?>
-            </div>      
+            </div>  
+            <?php endif; 
+            do_action( 'wcmp_vendor_dashboard_after_order_details', $order, $vendor ); ?>
         </div>
         <div class="col-md-4">
             <?php

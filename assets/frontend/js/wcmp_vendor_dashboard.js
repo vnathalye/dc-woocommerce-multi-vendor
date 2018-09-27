@@ -1,3 +1,4 @@
+/*global wcmp_frontend_vdashboard_js_script_data */
 jQuery(document).ready(function($){
 	$("body").on("click", ".wcmp_delate_announcements_dashboard", function(e) {
 			var post_id = $(this).attr("data-element");
@@ -190,28 +191,6 @@ jQuery(document).ready(function($){
         $('.table.dataTable').removeClass('no-footer');
         //$('.table.dataTable').parent().addClass('dt-wrapper');
         
-        // Tool-tips
-        $('.img_tip').each(function () {
-        $(this).qtip({
-            content: $(this).attr('data-desc'),
-            position: {
-                my: 'center left',
-                at: 'center right',
-                viewport: $(window)
-            },
-            show: {
-                event: 'mouseover',
-                solo: true,
-            },
-            hide: {
-                inactive: 6000,
-                fixed: true
-            },
-            style: {
-                classes: 'qtip-dark qtip-shadow qtip-rounded qtip-dc-css'
-            }
-        });
-    });
     
     $("form[name=get_paid_form]").submit(function () {
        // submit more than once return false
@@ -220,5 +199,10 @@ jQuery(document).ready(function($){
        });
        // submit once return true
        return true;
+    });
+    
+    $('#wcmp-change-pass').on('click', function(){
+        $(this).parents('.wcmp-do-change-pass').toggle();
+        $('.vendor-edit-pass-field').toggle();
     });
 });

@@ -84,10 +84,32 @@ jQuery( document ).ready( function ( $ ) {
             }
 
         }
-        console.log(getTr);
     } ); 
 
 
+    // Tool-tips
+    $('.img_tip').each(function () {
+        $(this).qtip({
+            content: $(this).attr('data-desc'),
+            position: {
+                my: 'top center',
+                at: 'bottom center',
+                viewport: $(window)
+            },
+            show: {
+                event: 'mouseover',
+                solo: true,
+            },
+            hide: {
+                inactive: 6000,
+                fixed: true
+            },
+            style: {
+                classes: 'qtip-dark qtip-shadow qtip-rounded qtip-dc-css',
+                width: 200
+            }
+        });
+    });
 
 } );
 

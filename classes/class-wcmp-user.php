@@ -639,14 +639,21 @@ class WCMp_User {
             );
         //}
         //if (apply_filters('can_vendor_add_message_on_email_and_thankyou_page', true)) {
-            $fields['vendor_message_to_buyers'] = array(
-                'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
-                'type' => 'textarea',
-                'value' => $vendor->message_to_buyers,
-                'class' => 'user-profile-fields',
-                'settings' => $_wp_editor_settings
-            );
+            
         }
+        $_wp_editor_settings = array('tinymce' => true);
+        if (!$WCMp->vendor_caps->vendor_can('is_upload_files')) {
+            $_wp_editor_settings['media_buttons'] = false;
+        }
+        $_wp_editor_settings = apply_filters('wcmp_vendor_msg_to_buyer_wp_editor_settings', $_wp_editor_settings);
+        $fields['vendor_message_to_buyers'] = array(
+            'label' => __('Message to Buyers', 'dc-woocommerce-multi-vendor'),
+            'type' => 'wpeditor',
+            'value' => $vendor->message_to_buyers,
+            'class' => 'user-profile-fields',
+            'settings' => $_wp_editor_settings
+        );
+        
         $user = wp_get_current_user();
         if (is_array($user->roles) && in_array('administrator', $user->roles)) {
             $fields['vendor_commission'] = array(
@@ -783,12 +790,14 @@ class WCMp_User {
 
         if (is_user_wcmp_pending_vendor($user_object)) {
             $vendor = get_wcmp_vendor($user_object->ID);
+            unset($actions['view']);
             $actions['activate'] = "<a class='activate_vendor' data-id='" . $user_object->ID . "'href=#>" . __('Approve', 'dc-woocommerce-multi-vendor') . "</a>";
             $actions['reject'] = "<a class='reject_vendor' data-id='" . $user_object->ID . "'href=#>" . __('Reject', 'dc-woocommerce-multi-vendor') . "</a>";
         }
 
         if (is_user_wcmp_rejected_vendor($user_object)) {
             $vendor = get_wcmp_vendor($user_object->ID);
+            unset($actions['view']);
             $actions['activate'] = "<a class='activate_vendor' data-id='" . $user_object->ID . "'href=#>" . __('Approve', 'dc-woocommerce-multi-vendor') . "</a>";
         }
         return $actions;

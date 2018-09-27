@@ -14,7 +14,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 global $WCMp;
 ?>
 
-<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
+<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 	<p><?php printf( __( "Hi there! This is to notify that a new product has been submitted in %s.",  'dc-woocommerce-multi-vendor' ), get_option( 'blogname' ) ); ?></p>
 

@@ -15,6 +15,7 @@ global $WCMp;
 do_action('before_wcmp_vendor_dashboard_coupon_list_table');
 $coupon_list_table_headers = apply_filters('wcmp_datatable_coupon_list_table_headers', array(
     'coupons'      => array('label' => __( 'Coupon(s)', 'dc-woocommerce-multi-vendor' ), 'class' => 'name'),
+    'type'    => array('label' => __( 'Coupon type', 'dc-woocommerce-multi-vendor' )),
     'amount'    => array('label' => __( 'Coupon Amount', 'dc-woocommerce-multi-vendor' )),
     'uses_limit'=> array('label' => __( 'Usage / Limit', 'dc-woocommerce-multi-vendor' )),
     'expiry_date'  => array('label' => __( 'Expiry Date', 'dc-woocommerce-multi-vendor' )),

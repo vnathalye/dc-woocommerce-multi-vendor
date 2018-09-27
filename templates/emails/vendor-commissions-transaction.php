@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $WCMp;
 
 
-do_action( 'woocommerce_email_header', $email_heading ); 
+do_action( 'woocommerce_email_header', $email_heading, $email ); 
 $amount = get_post_meta($transaction_id, 'amount', true) - get_post_meta($transaction_id, 'transfer_charge', true) - get_post_meta($transaction_id, 'gateway_charge', true);
 $transaction_mode = get_post_meta($transaction_id, 'transaction_mode', true);
 if($transaction_mode == 'paypal_masspay') {

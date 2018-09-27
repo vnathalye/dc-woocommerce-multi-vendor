@@ -24,13 +24,13 @@ class WCMp_Settings_Vendor_Dashboard {
      */
     public function settings_page_init() {
         global $WCMp;
-        $pages = get_pages();
-        $woocommerce_pages = array(wc_get_page_id('shop'), wc_get_page_id('cart'), wc_get_page_id('checkout'), wc_get_page_id('myaccount'));
-        foreach ($pages as $page) {
-            if (!in_array($page->ID, $woocommerce_pages)) {
-                $pages_array[$page->ID] = $page->post_title;
-            }
-        }
+//        $pages = get_pages();
+//        $woocommerce_pages = array(wc_get_page_id('shop'), wc_get_page_id('cart'), wc_get_page_id('checkout'), wc_get_page_id('myaccount'));
+//        foreach ($pages as $page) {
+//            if (!in_array($page->ID, $woocommerce_pages)) {
+//                $pages_array[$page->ID] = $page->post_title;
+//            }
+//        }
         $template_options = apply_filters('wcmp_vendor_shop_template_options', array('template1' => $WCMp->plugin_url.'assets/images/template1.png', 'template2' => $WCMp->plugin_url.'assets/images/template2.png', 'template3' => $WCMp->plugin_url.'assets/images/template3.png'));
         $settings_tab_options = array("tab" => "{$this->tab}",
             "ref" => &$this,
@@ -47,7 +47,7 @@ class WCMp_Settings_Vendor_Dashboard {
                     'title' => __('Vendor Shop', 'dc-woocommerce-multi-vendor'),
                     'fields' => array(
                         "wcmp_vendor_shop_template" => array('title' => __('Vendor Shop Template', 'dc-woocommerce-multi-vendor'), 'type' => 'radio_select', 'id' => 'wcmp_vendor_shop_template', 'label_for' => 'wcmp_vendor_shop_template', 'name' => 'wcmp_vendor_shop_template', 'dfvalue' => 'vendor', 'options' => $template_options, 'value' => 'template1', 'desc' => ''), // Radio
-                        'wcmp_vendor_dashboard_custom_css' => array('title' => __('Custom CSS', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'name' => 'wcmp_vendor_dashboard_custom_css', 'id' => 'wcmp_vendor_dashboard_custom_css', 'label_for' => 'wcmp_vendor_dashboard_custom_css', 'rows' => 4, 'cols' => 40, 'hints' => __('Will be applicable on vendor frontend', 'dc-woocommerce-multi-vendor'))
+                        'wcmp_vendor_dashboard_custom_css' => array('title' => __('Custom CSS', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'name' => 'wcmp_vendor_dashboard_custom_css', 'id' => 'wcmp_vendor_dashboard_custom_css', 'label_for' => 'wcmp_vendor_dashboard_custom_css', 'rows' => 4, 'cols' => 40, 'raw_value' => true, 'hints' => __('Will be applicable on vendor frontend', 'dc-woocommerce-multi-vendor'))
                     )
                 )
             ),
@@ -82,7 +82,7 @@ class WCMp_Settings_Vendor_Dashboard {
         }
         
         if(isset($input['wcmp_vendor_dashboard_custom_css'])){
-            $new_input['wcmp_vendor_dashboard_custom_css'] = $input['wcmp_vendor_dashboard_custom_css'];
+            $new_input['wcmp_vendor_dashboard_custom_css'] = wp_unslash($input['wcmp_vendor_dashboard_custom_css']);
         }
         
         if (!$hasError) {

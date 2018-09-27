@@ -366,7 +366,15 @@ class WCMp_Admin {
             wp_enqueue_style( 'wcmp_admin_css' );
             wp_enqueue_script( 'wcmp_admin_js' );
         endif;
-        
+        // hide media list view access for vendor
+        $user = wp_get_current_user();
+        if(in_array('dc_vendor', $user->roles)){
+            $custom_css = "
+            .view-switch .view-list{
+                    display: none;
+            }";
+            wp_add_inline_style( 'media-views', $custom_css );
+        }
         // WCMp library
         if (in_array($screen->id, array('wcmp_page_wcmp-setting-admin', 'wcmp_page_wcmp-to-do'))) :
             $WCMp->library->load_qtip_lib();
@@ -382,6 +390,25 @@ class WCMp_Admin {
         if (in_array($screen->id, array('wcmp_page_vendors'))) :
         	$WCMp->library->load_upload_lib();
 	        wp_enqueue_script('wcmp_admin_js');
+                wp_register_script('wc-country-select', WC()->plugin_url() . '/assets/js/frontend/country-select' . $suffix . '.js', array('jquery'), WC_VERSION);
+                $params = array(
+                        'countries'                 => wp_json_encode( array_merge( WC()->countries->get_allowed_country_states(), WC()->countries->get_shipping_country_states() ) ),
+                        'i18n_select_state_text'    => esc_attr__( 'Select an option&hellip;', 'woocommerce' ),
+                        'i18n_no_matches'           => _x( 'No matches found', 'enhanced select', 'woocommerce' ),
+                        'i18n_ajax_error'           => _x( 'Loading failed', 'enhanced select', 'woocommerce' ),
+                        'i18n_input_too_short_1'    => _x( 'Please enter 1 or more characters', 'enhanced select', 'woocommerce' ),
+                        'i18n_input_too_short_n'    => _x( 'Please enter %qty% or more characters', 'enhanced select', 'woocommerce' ),
+                        'i18n_input_too_long_1'     => _x( 'Please delete 1 character', 'enhanced select', 'woocommerce' ),
+                        'i18n_input_too_long_n'     => _x( 'Please delete %qty% characters', 'enhanced select', 'woocommerce' ),
+                        'i18n_selection_too_long_1' => _x( 'You can only select 1 item', 'enhanced select', 'woocommerce' ),
+                        'i18n_selection_too_long_n' => _x( 'You can only select %qty% items', 'enhanced select', 'woocommerce' ),
+                        'i18n_load_more'            => _x( 'Loading more results&hellip;', 'enhanced select', 'woocommerce' ),
+                        'i18n_searching'            => _x( 'Searching&hellip;', 'enhanced select', 'woocommerce' ),
+                );
+                wp_localize_script( 'wc-country-select', 'wc_country_select_params', $params );
+                wp_enqueue_script( 'wc-country-select' );
+                wp_register_script('wcmp_country_state_js', $WCMp->plugin_url . 'assets/frontend/js/wcmp-country-state.js', array('jquery', 'wc-country-select'), $WCMp->version, true);
+                wp_enqueue_script( 'wcmp_country_state_js' );
             
         endif;
 

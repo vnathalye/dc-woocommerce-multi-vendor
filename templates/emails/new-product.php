@@ -18,7 +18,7 @@ else  $title = __( 'Product', 'dc-woocommerce-multi-vendor' );
 	
 ?>
 
-<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
+<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 	<p><?php printf( __( "Hi there! This is a notification about a new %s on %s.",  'dc-woocommerce-multi-vendor' ), $title, get_option( 'blogname' ) ); ?></p>
 

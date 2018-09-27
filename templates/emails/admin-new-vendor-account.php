@@ -13,7 +13,7 @@ global $WCMp;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 $vendor_application_admin_url = apply_filters('wcmp_admin_new_vendor_email_vendor_application_url', admin_url( 'admin.php?page=vendors&s='.$user_object->user_login ));
 ?>
-<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
+<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <p><?php printf( __( "A new user has applied to be a vendor on %s. His/her email is <strong>%s</strong>.", 'dc-woocommerce-multi-vendor' ), esc_html( $blogname ), esc_html( $user_object->user_email ) ); ?></p>
 

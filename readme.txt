@@ -2,10 +2,10 @@
 Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
-Requires at least: 4.0
-Tested up to: 4.9.7
+Requires at least: 4.2
+Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: 3.1.2
+Stable tag: 3.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,39 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.1.5 - 2018-09-24 =
+* Added - Store locators map on vendor list page.
+* Added - Pagination on vendor list page.
+* Added - Net earning column on backend WCMp > Commission.
+* Added - Vendor enable shipping settings ( WCMp > General ).
+* Added - Admin can change vendor store title ( WCMp > Vendors ).
+* UI - Vendor List page.
+* Tweak - Vendor country-state with woocommerce country-state in store settings.
+* Fix - Product duplicate submit issue.
+* Fix - Vendor product category hierarchical issue.
+* Fix - Suspended vendor's product view.
+* Fix - Media list view issue.
+* Fix - backend undefine `pages_array` issue.
+* Updated - Language file.
+
+= 3.1.4 - 2018-08-28 =
+* Fix - WP backend commission amout issue on mark as paid.
+* Fix - Vendor dashboard external URL styling.
+* Tweak - Vendor profile change password.
+* Tweak - Vendor shop address on store page.
+* Tweak - Vendor Announcement notification count.
+* Updated - Language file.
+
+= 3.1.3 - 2018-08-16 =
+* Added - Media crop features for store banner and logo.
+* Tweak - WCMp extension page UI.
+* Fix - Vendor order list filters responsive.
+* Fix - Product ownership changed on checkout for product manage stock enabled.
+* Fix - Multiple checkboxes required issue on vendor registration form.
+* Fix - WP backend user list pending vendor view action.
+* Fix - Block vendor products on taxonomy page.
+* Fix - `wcmp_get_the_terms` null issue.
+* Updated - Language file.
 
 = 3.1.2 - 2018-07-17 =
 * Added - Gateway charges type Fixed + Percentage.

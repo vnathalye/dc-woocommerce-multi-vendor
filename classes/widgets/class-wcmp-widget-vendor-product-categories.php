@@ -63,8 +63,9 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
         if ($product_cats) {
             echo '<ul class="product-categories">';
             
-            if($hierarchical) {
-            	echo $this->get_hierarchical_categories($product_cats, $associated_terms, $count);
+            if($hierarchical) { 
+                $product_cats = get_terms(array('taxonomy' => 'product_cat', 'include' => array_keys($associated_terms), 'hierarchical' =>true, 'hide_empty' => false));
+                echo $this->get_hierarchical_categories($product_cats, $associated_terms, $count);
             } else {
 				foreach ($product_cats as $product_cat) {
 					$term_count = isset($associated_terms[$product_cat->term_id]) ? count(array_unique($associated_terms[$product_cat->term_id])) : 0;
@@ -85,28 +86,84 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
     
     function get_hierarchical_categories($terms, $associated_terms, $show_count, $parent_id = 0) {
     	$itemOutput = '';
+        $has_parent_list = array();
     	foreach ($terms as $term_key => $term) {
-			if ($parent_id == $term->parent) {
-				$output_inner = $this->get_hierarchical_categories($terms, $associated_terms, $show_count, $term->term_id);
-				$term_count = isset($associated_terms[$term->term_id]) ? count(array_unique($associated_terms[$term->term_id])) : 0;
-				if ($term_count) {
-					if($output_inner != '') $parent_class = ' cat-parent';
-					else $parent_class = '';
-					$itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . $parent_class . '"><a href="?category=' . $term->slug . '">' . $term->name . '</a>';
-					if ($show_count) {
-						$itemOutput .= '<span class="count">(' . $term_count . ')</span>';
-					}
-					if($output_inner != '') {
-						$itemOutput .=  '<ul class="children">' . $output_inner . '</ul>';
-						$output_inner = '';
-					}
-					$itemOutput .= '</li>';
-				} else {
-					
-				}
-			}
-		}
+            if(apply_filters('wcmp_widget_show_vpc_hierarchical_if_no_parents', true)){
+                $term_count = isset($associated_terms[$term->term_id]) ? count(array_unique($associated_terms[$term->term_id])) : 0;
+                if($term->parent != 0 ){ 
+                    $parent_term = get_term( $term->parent, 'product_cat' );
+                    if($parent_term){
+                        if(in_array($parent_term->term_id, $has_parent_list)) continue;
+                        $has_parent_list[] = $parent_term->term_id;
+                        $term_count = isset($associated_terms[$term->term_id]) ? count(array_unique($associated_terms[$term->term_id])) : 0;
+                        $parent_class = ' cat-parent';
+                        $parent_count = 0;
+                        $itemOutput .= '<li class="cat-item cat-item-' . $parent_term->term_id . $parent_class . '"><a href="?category=' . $parent_term->slug . '">' . $parent_term->name . '</a>';
+                        if ($show_count) {
+                                $itemOutput .= '<span class="count">(' . $parent_count . ')</span>';
+                        }
+
+                        $child_terms = get_terms(array('taxonomy' => 'product_cat', 'include' => array_keys($associated_terms), 'parent' => $parent_term->term_id, 'hierarchical' =>true, 'hide_empty' => false));
+                        if($child_terms){
+                            $parent_class = ' cat-parent';
+                            $itemOutput .=  '<ul class="children">';
+                            foreach ($child_terms as $c_term) {
+                                $term_count = isset($associated_terms[$c_term->term_id]) ? count(array_unique($associated_terms[$c_term->term_id])) : 0;
+                                $itemOutput .= '<li class="cat-item cat-item-' . $c_term->term_id . $parent_class . '"><a href="?category=' . $c_term->slug . '">' . $c_term->name . '</a>';
+                                if ($show_count) {
+                                        $itemOutput .= '<span class="count">(' . $term_count . ')</span>';
+                                }
+                            }
+                            $itemOutput .=  '</ul>';
+                        }
+
+                        $itemOutput .= '</li>';
+                    }
+                }else{ 
+                    $has_parent_list[] = $term->term_id;
+                    $itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . '"><a href="?category=' . $term->slug . '">' . $term->name . '</a>';
+                    if ($show_count) {
+                            $itemOutput .= '<span class="count">(' . $term_count . ')</span>';
+                    }
+                    $child_terms = get_terms(array('taxonomy' => 'product_cat', 'include' => array_keys($associated_terms), 'parent' => $term->term_id, 'hierarchical' =>true, 'hide_empty' => false));
+                    if($child_terms){
+                        $parent_class = ' cat-parent';
+                        $itemOutput .=  '<ul class="children">';
+                        foreach ($child_terms as $c_term) {
+                            $term_count = isset($associated_terms[$c_term->term_id]) ? count(array_unique($associated_terms[$c_term->term_id])) : 0;
+                            $itemOutput .= '<li class="cat-item cat-item-' . $c_term->term_id . $parent_class . '"><a href="?category=' . $c_term->slug . '">' . $c_term->name . '</a>';
+                            if ($show_count) {
+                                    $itemOutput .= '<span class="count">(' . $term_count . ')</span>';
+                            }
+                        }
+                        $itemOutput .=  '</ul>';
+                    }
+                    $itemOutput .= '</li>';
+                }
+
+            }else{
+                if ($parent_id == $term->parent) { 
+                    $output_inner = $this->get_hierarchical_categories($terms, $associated_terms, $show_count, $term->term_id);
+                    $term_count = isset($associated_terms[$term->term_id]) ? count(array_unique($associated_terms[$term->term_id])) : 0;  
+                    if ($term_count) {
+                            if($output_inner != '') $parent_class = ' cat-parent';
+                            else $parent_class = '';
+                            $itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . $parent_class . '"><a href="?category=' . $term->slug . '">' . $term->name . '</a>';
+                            if ($show_count) {
+                                    $itemOutput .= '<span class="count">(' . $term_count . ')</span>';
+                            }
+                            if($output_inner != '') {
+                                    $itemOutput .=  '<ul class="children">' . $output_inner . '</ul>';
+                                    $output_inner = '';
+                            }
+                            $itemOutput .= '</li>';
+                    } else {
+
+                    }
+                }
+            }
+        }
 		
-		return $itemOutput;
+        return $itemOutput;
     }
 }

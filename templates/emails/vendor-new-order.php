@@ -12,7 +12,7 @@ if (!defined('ABSPATH'))
     exit; // Exit if accessed directly 
 global $WCMp;
 $vendor = get_wcmp_vendor(absint($vendor_id));
-do_action('woocommerce_email_header', $email_heading);
+do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 
 <p><?php printf(__('A new order was received and marked as processing from %s. Their order is as follows:', 'dc-woocommerce-multi-vendor'), $order->get_billing_first_name() . ' ' . $order->get_billing_last_name()); ?></p>

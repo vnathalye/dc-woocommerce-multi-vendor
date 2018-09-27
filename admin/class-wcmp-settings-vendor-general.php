@@ -26,9 +26,12 @@ class WCMp_Settings_Vendor_General {
         global $WCMp;
         $pages = get_pages();
         $woocommerce_pages = array(wc_get_page_id('shop'), wc_get_page_id('cart'), wc_get_page_id('checkout'), wc_get_page_id('myaccount'));
-        foreach ($pages as $page) {
-            if (!in_array($page->ID, $woocommerce_pages)) {
-                $pages_array[$page->ID] = $page->post_title;
+        $pages_array = array();
+        if($pages){
+            foreach ($pages as $page) {
+                if (!in_array($page->ID, $woocommerce_pages)) {
+                    $pages_array[$page->ID] = $page->post_title;
+                }
             }
         }
         $settings_tab_options = array("tab" => "{$this->tab}",

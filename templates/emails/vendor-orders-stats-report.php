@@ -18,7 +18,7 @@ $t_sale = isset($report_data['stats']['sales_total']) ? $report_data['stats']['s
 $t_earning = isset($report_data['stats']['earning']) ? $report_data['stats']['earning'] : 0;
 $t_withdrawal = isset($report_data['stats']['withdrawal']) ? $report_data['stats']['withdrawal'] : 0;
 $t_orders_no = isset($report_data['stats']['orders_no']) ? $report_data['stats']['orders_no'] : 0;
-do_action( 'woocommerce_email_header', $email_heading ); ?>
+do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p><?php printf(__( 'Hello %s,<br>Your %s store orders report stats are as follows:', 'dc-woocommerce-multi-vendor' ),  $vendor->page_title, $report_data['period']); ?></p>
 <div style="margin-bottom: 40px;">
     <table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">

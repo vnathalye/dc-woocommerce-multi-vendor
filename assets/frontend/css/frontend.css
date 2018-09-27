@@ -235,7 +235,7 @@ a.wcmp_vendor_detail{
     overflow: hidden;
 }
 .wcmp_vendor_banner_template.template1 .vendor_description .vendor_img_add{
-    width: 400px;
+    width: auto;
     max-width: 100%;
 }
 .wcmp_vendor_banner_template.template1 .vendor_address{
@@ -461,6 +461,18 @@ a.wcmp_vendor_detail{
 }
 .wcmp_review_loader img{	
 	margin:2px auto;	
+}
+.wcmp_vendor_banner_template.template1 .external_store_url{
+    margin: 1px 0 0;
+}
+.wcmp_vendor_banner_template.template1 .external_store_url a{
+    color: #fff;
+}
+.wcmp_vendor_banner_template.template2 .external_store_url{
+    margin: 0 0 10px 0;
+}
+.wcmp_vendor_banner_template.template3 .external_store_url{
+    margin: 10px 0;
 }
 @media screen and (max-width:480px){
     .wcmp_social_profile .wcmp-font{

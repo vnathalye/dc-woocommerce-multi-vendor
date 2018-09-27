@@ -31,7 +31,7 @@ if ($vendor) {
     }
     $html = '';
     if ('' != $vendor->description) {
-        $html .= '<p>' . $vendor->description . '</p>';
+        $html .= apply_filters('the_content', $vendor->description );
     }
     $html .= '<p><a href="' . $vendor->permalink . '">' . sprintf(__('More Products from %1$s', 'dc-woocommerce-multi-vendor'), $vendor->page_title) . '</a></p>';
     $html .= apply_filters('wcmp_after_seller_info_tab', '');

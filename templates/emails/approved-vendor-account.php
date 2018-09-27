@@ -12,7 +12,7 @@
 global $WCMp;
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 ?>
-<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
+<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 <p><?php printf( __( "Congratulations! Your vendor application on %s has been approved!", 'dc-woocommerce-multi-vendor' ), get_option( 'blogname' ) ); ?></p>
 <p>
 	<?php _e( "Application status: Approved",  'dc-woocommerce-multi-vendor' ); ?><br/>

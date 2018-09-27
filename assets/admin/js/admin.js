@@ -136,6 +136,44 @@ jQuery(document).ready(function ($) {
             $('#payment_schedule').closest("tr").css("display", "none");
         }
     });
+    
+    
+    if ($('#is_submit_product').is(':checked')) {
+        $('#is_published_product').closest("tr").show();
+        $('#is_edit_delete_published_product').closest("tr").show();
+    } else {
+        $('#is_published_product').closest("tr").css("display", "none");
+        $('#is_edit_delete_published_product').closest("tr").css("display", "none");
+    }
+    
+    $('#is_submit_product').change(function () {
+        if ($(this).is(':checked')) {
+            $('#is_published_product').closest("tr").show();
+            $('#is_edit_delete_published_product').closest("tr").show();
+        } else {
+            $('#is_published_product').closest("tr").css("display", "none");
+            $('#is_edit_delete_published_product').closest("tr").css("display", "none");
+        }
+    });
+    
+    if ($('#is_submit_coupon').is(':checked')) {
+        $('#is_published_coupon').closest("tr").show();
+        $('#is_edit_delete_published_coupon').closest("tr").show();
+    } else {
+        $('#is_published_coupon').closest("tr").css("display", "none");
+        $('#is_edit_delete_published_coupon').closest("tr").css("display", "none");
+    }
+    
+    $('#is_submit_coupon').change(function () {
+        if ($(this).is(':checked')) {
+            $('#is_published_coupon').closest("tr").show();
+            $('#is_edit_delete_published_coupon').closest("tr").show();
+        } else {
+            $('#is_published_coupon').closest("tr").css("display", "none");
+            $('#is_edit_delete_published_coupon').closest("tr").css("display", "none");
+        }
+    });
+    
 
     if ($('#wcmp_disbursal_mode_vendor').is(':checked')) {
         $('#commission_transfer').closest("tr").show();
@@ -200,9 +238,11 @@ jQuery(document).ready(function ($) {
         if ($(this).prop('checked')) {
             $('.payment_gateway_charge').show();
             $('#payment_gateway_charge_type').closest('tr').show();
+            $('#gateway_charges_cost_carrier').closest('tr').show();
         } else {
             $('.payment_gateway_charge').hide();
             $('#payment_gateway_charge_type').closest('tr').hide();
+            $('#gateway_charges_cost_carrier').closest('tr').hide();
         }
     }).change();
     

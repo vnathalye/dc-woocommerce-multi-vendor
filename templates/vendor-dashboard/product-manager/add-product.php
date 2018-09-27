@@ -550,7 +550,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     <div class="col-md-6 col-sm-9">
                         <select id="wcmp-product-tags" name="product_tags[]" multiple="multiple" style="width: 100%;">
                             <?php 
-                            $tags = get_terms( 'product_tag', apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'orderby' => 'count', 'order' => 'DESC' )));
+                            $tags = get_terms( 'product_tag', apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'hide_empty' => false, 'orderby' => 'count', 'order' => 'DESC' )));
                             if($tags) :
                                 foreach ($tags as $tag) {
                                     echo '<option value="'.$tag->name.'" '.selected(in_array($tag->name, $product_tag_list), true, false).'>'.$tag->name.'</option>';
@@ -892,10 +892,12 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
 <?php if (!empty($product_types)) {
  ?>
     <div id="product_manager_submit" class="wcmp-action-container">
+        <?php do_action('before_wcmp_vendor_dash_add_product_page_header_action_btn'); ?>
         <input type="submit" class="btn btn-default" name="submit-data" value="<?php _e('Submit', 'dc-woocommerce-multi-vendor'); ?>" id="pruduct_manager_submit_button" />
         <?php if (empty($pro_id) || (!empty($pro_id) && (get_post_status((int) $pro_id) == 'draft'))) { ?>
             <input type="submit" class="btn btn-default" name="draft-data" value="<?php _e('Draft', 'dc-woocommerce-multi-vendor'); ?>" id="pruduct_manager_draft_button" />
         <?php } ?>
+        <?php do_action('after_wcmp_vendor_dash_add_product_page_header_action_btn'); ?>
     </div>
 <?php } ?>
 </form>

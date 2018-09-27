@@ -164,7 +164,7 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
 
         if (!empty($ids)) {
             foreach ($ids as $order_id) {
-                $shippers = (array) get_post_meta($order_id, 'dc_pv_shipped', true);
+                $shippers = get_post_meta($order_id, 'dc_pv_shipped', true) ? get_post_meta($order_id, 'dc_pv_shipped', true) : array();
                 if (!in_array($user_id, $shippers)) {
                     $shippers[] = $user_id;
                     $mails = WC()->mailer()->emails['WC_Email_Notify_Shipped'];
@@ -172,13 +172,13 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
                         $customer_email = get_post_meta($order_id, '_billing_email', true);
                         $mails->trigger($order_id, $customer_email, $vendor->term_id);
                     }
-                    do_action('wcmp_vendors_vendor_ship', $order_id, $vendor->term_id);
-                    array_push($shippers, $user_id);
+
                     if (!empty($shippers)) {
                         array_unique($shippers);
                     }
                     update_post_meta($order_id, 'dc_pv_shipped', $shippers);
                     $wpdb->query("UPDATE `{$wpdb->prefix}wcmp_vendor_orders` SET shipping_status = 1 WHERE order_id =" . $order_id . " AND vendor_id = " . $vendor->id);
+                    do_action('wcmp_vendors_vendor_ship', $order_id, $vendor->term_id);
                 }
                 $order = new WC_Order($order_id);
                 $comment_id = $order->add_order_note(__('Vendor ', 'dc-woocommerce-multi-vendor') . $vendor->page_title . __(' has shipped his part of order to customer.', 'dc-woocommerce-multi-vendor'), true);

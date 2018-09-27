@@ -27,6 +27,9 @@ class WCMp_Vendor_Dashboard_Shortcode {
             define('WCMP_DASHBAOARD', true);
         }
         if (!is_user_logged_in()) {
+            if (( 'no' === get_option('woocommerce_registration_generate_password') && !is_user_logged_in())) {
+                wp_enqueue_script('wc-password-strength-meter');
+            }
             echo '<div class="woocommerce">';
             wc_get_template('myaccount/form-login.php');
             echo '</div>';

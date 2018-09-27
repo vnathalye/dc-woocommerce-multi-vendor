@@ -15,9 +15,6 @@ class WCMp_Frontend {
         //enqueue styles
         add_action('wp_enqueue_scripts', array(&$this, 'frontend_styles'), 999);
 
-        add_action('wp_head', array(&$this, 'wcmp_remove_internal_styles_start'), 0);
-        add_action('wp_head', array(&$this, 'wcmp_remove_internal_styles_end'), 999);
-
         add_action('woocommerce_archive_description', array(&$this, 'product_archive_vendor_info'), 10);
         add_filter('body_class', array(&$this, 'set_product_archive_class'));
         add_action('template_redirect', array(&$this, 'template_redirect'));
@@ -323,6 +320,8 @@ class WCMp_Frontend {
         wp_register_script('wcmp_single_product_multiple_vendors', $frontend_script_path . 'single-product-multiple-vendors' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_customer_qna_js', $frontend_script_path . 'wcmp-customer-qna' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_custom_scroller_js', $frontend_script_path . 'jquery.mCustomScrollbar.concat.min.js', array('jquery'), $WCMp->version, true);
+        wp_register_script('wcmp_country_state_js', $frontend_script_path . 'wcmp-country-state.js', array('jquery'), $WCMp->version, true);
+        
         /** localize script data * */
         $WCMp->localize_script('frontend_js');
         $WCMp->localize_script('wcmp_frontend_vdashboard_js');
@@ -334,6 +333,8 @@ class WCMp_Frontend {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-tabs');
             wp_enqueue_script('jquery-ui-datepicker');
+            wp_enqueue_script('jquery-blockui');
+            wp_enqueue_script( 'wc-country-select' );
 
             $WCMp->library->load_bootstrap_script_lib();
             $WCMp->library->load_qtip_lib();
@@ -343,14 +344,7 @@ class WCMp_Frontend {
             wp_enqueue_script('wcmp_seller_review_rating_js');
             wp_enqueue_script('wcmp_customer_qna_js');
             wp_enqueue_script('wcmp_custom_scroller_js');
-//            $vendor_review_rating_msg_array = array(
-//                'rating_error_msg_txt' => __('Please rate the vendor', 'dc-woocommerce-multi-vendor'),
-//                'review_error_msg_txt' => __('Please review your vendor and minimum 10 Character required', 'dc-woocommerce-multi-vendor'),
-//                'review_success_msg_txt' => __('Your review submitted successfully', 'dc-woocommerce-multi-vendor'),
-//                'review_failed_msg_txt' => __('Error in system please try again later', 'dc-woocommerce-multi-vendor'),
-//                'ajax_url' => trailingslashit(get_admin_url()) . 'admin-ajax.php'
-//            );
-//            wp_localize_script('wcmp_seller_review_rating_js', 'wcmp_review_rating_msg', apply_filters('wcmp_vendor_review_rating_localized_data', $vendor_review_rating_msg_array));
+            wp_enqueue_script('wcmp_country_state_js');
         }
         if (is_woocommerce()) {
             wp_enqueue_script('frontend_js');
@@ -359,21 +353,7 @@ class WCMp_Frontend {
             wp_enqueue_script('wcmp_customer_qna_js');
         }
         if (is_tax($WCMp->taxonomy->taxonomy_name)) {
-//            $queried_object = get_queried_object();
-//            if (isset($queried_object->term_id) && !empty($queried_object)) {
-//                $vendor = get_wcmp_vendor_by_term($queried_object->term_id);
-//                $vendor_id = $vendor->id;
-//            }
             wp_enqueue_script('wcmp_seller_review_rating_js');
-//            $vendor_review_rating_msg_array = array(
-//                'rating_error_msg_txt' => __('Please rate the vendor', 'dc-woocommerce-multi-vendor'),
-//                'review_error_msg_txt' => __('Please review your vendor and minimum 10 Character required', 'dc-woocommerce-multi-vendor'),
-//                'review_success_msg_txt' => __('Your review submitted successfully', 'dc-woocommerce-multi-vendor'),
-//                'review_failed_msg_txt' => __('Error in system please try again later', 'dc-woocommerce-multi-vendor'),
-//                'ajax_url' => trailingslashit(get_admin_url()) . 'admin-ajax.php',
-//                'vendor_id' => $vendor_id ? $vendor_id : ''
-//            );
-//            wp_localize_script('wcmp_seller_review_rating_js', 'wcmp_review_rating_msg', apply_filters('wcmp_vendor_review_rating_localized_data', $vendor_review_rating_msg_array));
         }
     }
 
@@ -431,31 +411,6 @@ class WCMp_Frontend {
     }
 
     /**
-     * Turn on output buffering on vendor dashboard
-     * @return void
-     */
-    public function wcmp_remove_internal_styles_start() {
-        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
-
-        if ($is_vendor_dashboard) {
-            ob_start();
-        }
-    }
-
-    /**
-     * Remove all internal css within current buffer and delete current output buffer
-     * @return void
-     */
-    public function wcmp_remove_internal_styles_end() {
-        $is_vendor_dashboard = is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id())) && apply_filters('wcmp_vendor_dashboard_dequeue_global_styles', true);
-
-        if ($is_vendor_dashboard) {
-            $css = ob_get_clean();
-            echo preg_replace('/<style(.*?)<\/style>/', '', $css);
-        }
-    }
-
-    /**
      * Add html for vendor taxnomy page
      * @return void
      */
@@ -469,18 +424,9 @@ class WCMp_Frontend {
             $image = $vendor->get_image() ? $vendor->get_image() : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
             $description = $vendor->description;
 
-            $address = '';
+            $address = $vendor->get_formatted_address();
 
-            if ($vendor->city) {
-                $address = $vendor->city . ', ';
-            }
-            if ($vendor->state) {
-                $address .= $vendor->state . ', ';
-            }
-            if ($vendor->country) {
-                $address .= $vendor->country;
-            }
-            $WCMp->template->get_template('archive_vendor_info.php', array('vendor_id' => $vendor->id, 'banner' => $vendor->get_image('banner'), 'profile' => $image, 'description' => stripslashes($description), 'mobile' => $vendor->phone, 'location' => $address, 'email' => $vendor->user_data->user_email));
+            $WCMp->template->get_template('archive_vendor_info.php', array('vendor_id' => $vendor->id, 'banner' => $vendor->get_image('banner'), 'profile' => $image, 'description' => apply_filters('the_content', $description), 'mobile' => $vendor->phone, 'location' => $address, 'email' => $vendor->user_data->user_email));
         }
     }
 
@@ -525,6 +471,16 @@ class WCMp_Frontend {
                 wp_safe_redirect(get_permalink(wcmp_vendor_dashboard_page_id()));
             }
             exit();
+        }elseif(is_product()){
+            // restrict block/suspended vendor product view
+            global $post;
+            if($post){
+                $vendor = get_wcmp_product_vendors($post->ID);
+                if($vendor){
+                    $is_block = get_user_meta($vendor->id, '_vendor_turn_off', true);
+                    if($is_block) wp_safe_redirect(apply_filters('wcmp_suspended_vendor_product_view_return_url', wc_get_page_permalink( 'shop' )));
+                }
+            }
         }
     }
 

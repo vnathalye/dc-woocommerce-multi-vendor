@@ -107,7 +107,7 @@ $site_logo = get_wcmp_vendor_settings('wcmp_dashboard_site_logo', 'vendor', 'das
                         if ($key == 'announcement') :
                             $vendor_announcements = $vendor->get_announcements();
                             if (isset($vendor_announcements['unread']) && count($vendor_announcements['unread']) > 0) {
-                                echo '<span class="notification-blink"></span>';
+                                echo '<span class="notification-blink">'.count($vendor_announcements['unread']).'</span>';
                             }
                         endif;
                         ?>

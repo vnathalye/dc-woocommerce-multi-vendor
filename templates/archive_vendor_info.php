@@ -70,7 +70,7 @@ $template_class = apply_filters('can_vendor_edit_shop_template', false) && get_u
                         }
                         ?>      
                     </div>  
-                    <?php if (!empty($location) && $vendor_hide_address != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-location-icon"></i><label><?php echo apply_filters('vendor_shop_page_location', $location, $vendor_id); ?></label></p><?php } ?>
+                    <?php if (!empty($location) && $vendor_hide_address != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-location-icon"></i><label><?php echo $location; ?></label></p><?php } ?>
                     <?php if (!empty($mobile) && $vendor_hide_phone != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-call-icon"></i><label><?php echo apply_filters('vendor_shop_page_contact', $mobile, $vendor_id); ?></label></p><?php } ?>
                     <?php if (!empty($email) && $vendor_hide_email != 'Enable') { ?><a href="mailto:<?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?>" class="wcmp_vendor_detail"><i class="wcmp-font ico-mail-icon"></i><?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?></a><?php } ?>
                     <?php
@@ -80,7 +80,7 @@ $template_class = apply_filters('can_vendor_edit_shop_template', false) && get_u
                         if (empty($external_store_label))
                             $external_store_label = __('External Store URL', 'dc-woocommerce-multi-vendor');
                         if (isset($external_store_url) && !empty($external_store_url)) {
-                            ?><p class="external_store_url"><label><a style="color: white;" target="_blank" href="<?php echo apply_filters('vendor_shop_page_external_store', esc_url_raw($external_store_url), $vendor_id); ?>"><?php echo $external_store_label; ?></a></label></p><?php
+                            ?><p class="external_store_url"><label><a target="_blank" href="<?php echo apply_filters('vendor_shop_page_external_store', esc_url_raw($external_store_url), $vendor_id); ?>"><?php echo $external_store_label; ?></a></label></p><?php
                             }
                         }
                         ?>
@@ -121,7 +121,7 @@ $template_class = apply_filters('can_vendor_edit_shop_template', false) && get_u
                     }
                     ?>      
                 </div>  
-                <?php if (!empty($location) && $vendor_hide_address != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-location-icon"></i><label><?php echo apply_filters('vendor_shop_page_location', $location, $vendor_id); ?></label></p><?php } ?>
+                <?php if (!empty($location) && $vendor_hide_address != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-location-icon"></i><label><?php echo $location; ?></label></p><br /><?php } ?>
                 <?php if (!empty($mobile) && $vendor_hide_phone != 'Enable') { ?><p class="wcmp_vendor_detail"><i class="wcmp-font ico-call-icon"></i><label><?php echo apply_filters('vendor_shop_page_contact', $mobile, $vendor_id); ?></label></p><?php } ?>
                 <?php if (!empty($email) && $vendor_hide_email != 'Enable') { ?><a href="mailto:<?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?>" class="wcmp_vendor_detail"><i class="wcmp-font ico-mail-icon"></i><?php echo apply_filters('vendor_shop_page_email', $email, $vendor_id); ?></a><?php } ?>
                 <?php
@@ -131,7 +131,7 @@ $template_class = apply_filters('can_vendor_edit_shop_template', false) && get_u
                     if (empty($external_store_label))
                         $external_store_label = __('External Store URL', 'dc-woocommerce-multi-vendor');
                     if (isset($external_store_url) && !empty($external_store_url)) {
-                        ?><p class="external_store_url"><label><a style="color: white;" target="_blank" href="<?php echo apply_filters('vendor_shop_page_external_store', esc_url_raw($external_store_url), $vendor_id); ?>"><?php echo $external_store_label; ?></a></label></p><?php
+                        ?><p class="external_store_url"><label><a target="_blank" href="<?php echo apply_filters('vendor_shop_page_external_store', esc_url_raw($external_store_url), $vendor_id); ?>"><?php echo $external_store_label; ?></a></label></p><?php
                         }
                     }
                     ?>

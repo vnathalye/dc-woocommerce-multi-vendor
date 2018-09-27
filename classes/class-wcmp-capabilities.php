@@ -122,11 +122,10 @@ class WCMp_Capabilities {
      */
     public function wcmp_product_type_selector($product_types) {
         $user = wp_get_current_user();
-        $restricted_product_types = array('simple', 'variable', 'grouped', 'external');
         if (is_user_wcmp_vendor($user) && $product_types) {
             foreach ($product_types as $product_type => $value) {
                 $vendor_can = $this->vendor_can($product_type);
-                if (!$vendor_can && in_array($product_type, $restricted_product_types)) {
+                if (!$vendor_can) {
                     unset($product_types[$product_type]);
                 }
             }

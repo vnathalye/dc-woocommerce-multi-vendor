@@ -373,7 +373,20 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 								if (!$vendor->update_page_slug(wc_clean($value))) {
 									$errors->add('vendor_slug_exists', __('Slug already exists', 'dc-woocommerce-multi-vendor'));
 								}
-							} else if(substr($key, 0, strlen("vendor_")) === "vendor_") {
+                                                        } else if($key === "vendor_country") {
+                                                            $country_code = $value;
+                                                            $country_data = WC()->countries->get_countries();
+                                                            $country_name = ( isset( $country_data[ $country_code ] ) ) ? $country_data[ $country_code ] : $country_code; //To get country name by code
+                                                            update_user_meta($user_id, '_' . $key, $country_name);
+                                                            update_user_meta($user_id, '_' . $key . '_code', $country_code);
+							} else if($key === "vendor_state") {
+                                                            $country_code = $_POST['vendor_country'];
+                                                            $state_code = $value;
+                                                            $state_data = WC()->countries->get_states($country_code);
+                                                            $state_name = ( isset( $state_data[$state_code] ) ) ? $state_data[$state_code] : $state_code; //to get State name by state code
+                                                            update_user_meta($user_id, '_' . $key, $state_name);
+                                                            update_user_meta($user_id, '_' . $key . '_code', $state_code);
+                                                        } else if(substr($key, 0, strlen("vendor_")) === "vendor_") {
 								update_user_meta($user_id, "_" . $key, $value);
 							}
 						} else {
@@ -465,16 +478,16 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							$tzstring = 'UTC+' . $current_offset;
 						}
 					}
-					
+					$states = ($vendor_obj->country_code) ? WC()->countries->get_states( $vendor_obj->country_code ) : array();
 					$store_tab_options =  array(
-								"vendor_page_title" => array('label' => __('Store Name *', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_page_title', 'label_for' => 'vendor_page_title', 'name' => 'vendor_page_title', 'desc' => __('Store Name cannot be changed.', 'dc-woocommerce-multi-vendor'), 'value' => $vendor_obj->page_title, 'attributes' => array('readonly' => true)),
+								"vendor_page_title" => array('label' => __('Store Name *', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_page_title', 'label_for' => 'vendor_page_title', 'name' => 'vendor_page_title', 'value' => $vendor_obj->page_title ),
 								"vendor_page_slug" => array('label' => __('Store Slug *', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_page_slug', 'label_for' => 'vendor_page_slug', 'name' => 'vendor_page_slug', 'desc' => sprintf(__('Store URL will be something like - %s', 'dc-woocommerce-multi-vendor'), trailingslashit(get_home_url()) . 'vendor_slug'), 'value' => $vendor_obj->page_slug, 'attributes' => array('readonly' => true)),
 								"vendor_description" => array('label' => __('Store Description', 'dc-woocommerce-multi-vendor'), 'type' => 'wpeditor', 'id' => 'vendor_description', 'label_for' => 'vendor_description', 'name' => 'vendor_description', 'cols' => 50, 'rows' => 6, 'value' => $vendor_obj->description), // Textarea
 								"vendor_phone" => array('label' => __('Phone', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_phone', 'label_for' => 'vendor_phone', 'name' => 'vendor_phone', 'value' => $vendor_obj->phone),
 								"vendor_address_1" => array('label' => __('Address', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_address_1', 'label_for' => 'vendor_address_1', 'name' => 'vendor_address_1', 'value' => $vendor_obj->address_1),
 								"vendor_address_2" => array('label' => '', 'type' => 'text', 'id' => 'vendor_address_2', 'label_for' => 'vendor_address_2', 'name' => 'vendor_address_2', 'value' => $vendor_obj->address_2),
-								"vendor_country" => array('label' => __('Country', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_country', 'label_for' => 'vendor_country', 'name' => 'vendor_country', 'value' => $vendor_obj->country),
-								"vendor_state" => array('label' => __('State', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_state', 'label_for' => 'vendor_state', 'name' => 'vendor_state', 'value' => $vendor_obj->state),
+								"vendor_country" => array('label' => __('Country', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'vendor_country', 'label_for' => 'vendor_country', 'name' => 'vendor_country', 'class' => 'country_to_state regular-text', 'options' => WC()->countries->get_shipping_countries(), 'value' => $vendor_obj->country_code),
+								"vendor_state" => array('label' => __('State', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'vendor_state', 'label_for' => 'vendor_state', 'name' => 'vendor_state', 'class' => 'regular-text', 'options' => $states, 'value' => $vendor_obj->state_code),
 								"vendor_city" => array('label' => __('City', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_city', 'label_for' => 'vendor_city', 'name' => 'vendor_city', 'value' => $vendor_obj->city),
 								"vendor_postcode" => array('label' => __('ZIP code', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_postcode', 'label_for' => 'vendor_postcode', 'name' => 'vendor_postcode', 'value' => $vendor_obj->postcode),
 								"timezone_string" => array('label' => __('Timezone', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'timezone_string', 'label_for' => 'timezone_string', 'name' => 'timezone_string', 'value' => $tzstring, 'attributes' => array('readonly' => true)),
@@ -572,21 +585,21 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 					if($is_approved_vendor || $is_new_vendor_form) { ?>
 					<div id="personal-detail">
 						<h2><?php echo __('Personal Information', 'dc-woocommerce-multi-vendor'); ?></h2>
-						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_tab_options", $personal_tab_options));?>
+						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_personal_tab_options", $personal_tab_options));?>
 					</div>
 					<?php } ?>
 					<?php if($is_approved_vendor) { ?>
 					<div id="store">
 						<h2><?php echo __('Store Settings', 'dc-woocommerce-multi-vendor'); ?></h2>
-						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_tab_options", $store_tab_options));?>
+						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_store_tab_options", $store_tab_options));?>
 					</div>
 					<div id="social">
 						<h2><?php echo __('Social Information', 'dc-woocommerce-multi-vendor'); ?></h2>
-						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_tab_options", $social_tab_options));?>
+						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_social_tab_options", $social_tab_options));?>
 					</div>
 					<div id="payment">
 						<h2><?php echo __('Payment Method', 'dc-woocommerce-multi-vendor'); ?></h2>
-						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_tab_options", $payment_tab_options));?>
+						<?php $WCMp->wcmp_wp_fields->dc_generate_form_field(apply_filters("settings_{$this->tab}_payment_tab_options", $payment_tab_options));?>
 					</div>
 					<?php } ?>
 					<?php if(!$is_new_vendor_form) { ?>

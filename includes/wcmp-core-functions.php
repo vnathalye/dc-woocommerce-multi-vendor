@@ -1527,6 +1527,16 @@ if (!function_exists('do_wcmp_data_migrate')) {
                     unregister_post_type('wcmp_vendorrequest');
                 }
             }
+            if (version_compare($previous_plugin_version, '3.1.5', '<')) {
+                // new vendor shipping setting value based on payment shipping settings
+                if(!get_wcmp_vendor_settings( 'is_vendor_shipping_on', 'general' ) && get_wcmp_vendor_settings('give_shipping', 'payment') && 'Enable' === get_wcmp_vendor_settings('give_shipping', 'payment') ){
+                    update_wcmp_vendor_settings('is_vendor_shipping_on', 'Enable', 'general');
+                }else{
+                    $settings = get_option("wcmp_general_settings_name");
+                    if(isset($settings['is_vendor_shipping_on'])) unset($settings['is_vendor_shipping_on']);
+                    update_option('wcmp_general_settings_name', $settings);
+                }
+            }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
         }
@@ -1792,10 +1802,13 @@ if (!function_exists('wcmp_process_order')) {
                             $mark_ship = 1;
                         }
                     }
-                    $shipping_amount = $shipping_tax_amount = 0;
-                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id]) && $product->needs_shipping()) {
+                    $shipping_amount = $shipping_tax_amount = $tax_amount = 0;
+                    if (!empty($vendor_shipping) && isset($vendor_shipping[$product_vendors->id]) && $product_vendors->is_transfer_shipping_enable() && $product->needs_shipping()) {
                         $shipping_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
                         $shipping_tax_amount = (float) round(($vendor_shipping[$product_vendors->id]['shipping_tax'] / $vendor_shipping[$product_vendors->id]['package_qty']) * $line_item->get_quantity(), 2);
+                    }
+                    if($product_vendors->is_transfer_tax_enable() && $line_item->get_total_tax()){
+                        $tax_amount = $line_item->get_total_tax();
                     }
                     $wpdb->query(
                             $wpdb->prepare(
@@ -1834,7 +1847,7 @@ if (!function_exists('wcmp_process_order')) {
                                     , $order_item_id
                                     , $product_id
                                     , $variation_id
-                                    , $line_item->get_total_tax()
+                                    , $tax_amount
                                     , 'product'
                                     , $line_item->get_quantity()
                                     , 'unpaid'
@@ -2147,7 +2160,8 @@ if (!function_exists('get_visitor_ip_data')) {
         $ip_address = $e->get_ip_address();
         if ($ip_address) {
             if (get_transient('wcmp_' . $ip_address)) {
-                return get_transient('wcmp_' . $ip_address);
+                $data = get_transient('wcmp_' . $ip_address);
+                if($data->status != 'error') return $data;
             }
             $service_endpoint = 'http://ip-api.com/json/%s';
             $response = wp_safe_remote_get(sprintf($service_endpoint, $ip_address), array('timeout' => 2));
@@ -2341,7 +2355,9 @@ if (!function_exists('get_wcmp_vendor_dashboard_visitor_stats_data')) {
     function get_wcmp_vendor_dashboard_visitor_stats_data($vendor_id = '') {
         if ($vendor_id) {
             if (get_transient('wcmp_visitor_stats_data_' . $vendor_id)) {
-                return get_transient('wcmp_visitor_stats_data_' . $vendor_id);
+                $data = get_transient('wcmp_visitor_stats_data_' . $vendor_id);
+                if((isset($data[7]['map_stats']) && !empty($data[7]['map_stats'])) || (isset($data[30]['map_stats']) && !empty($data[30]['map_stats'])))
+                    return $data;
             }
 
             $visitor_map_filter_attr = apply_filters('wcmp_vendor_visitors_map_filter_attr', array(
@@ -2359,7 +2375,7 @@ if (!function_exists('get_wcmp_vendor_dashboard_visitor_stats_data')) {
             if ($visitor_map_filter_attr) {
                 foreach ($visitor_map_filter_attr as $period => $value) {
                     $st_dt = date('Y-m-d H:i:s', strtotime("-{$period} days"));
-                    $en_dt = date('Y-m-d H:i:s');
+                    $en_dt = date('Y-m-d 23:59:59');
                     $where = "created BETWEEN '{$st_dt}' AND '{$en_dt}' AND ";
                     $filter = "GROUP BY user_cookie";
                     $visitor_data = wcmp_get_visitor_stats($vendor_id, $where, $filter);
@@ -2711,7 +2727,7 @@ if (!function_exists('get_url_from_upload_field_value')) {
      * @param string/array $size (default: 'full')
      * @return string
      */
-    function get_url_from_upload_field_value($value, $size='full') {
+    function get_url_from_upload_field_value($value, $size='full', $protocol = false) {
         if(!$value) return false;
         $attach_id = $image = '';
         if(!is_numeric($value)){
@@ -2727,7 +2743,215 @@ if (!function_exists('get_url_from_upload_field_value')) {
         }
 
         $image = apply_filters('wcmp_image_url_from_upload_field_value_src', $image);
+        if(!$protocol)
+            return str_replace( array( 'https://', 'http://' ), '//', $image );
+        else
+            return $image;
+    }
+}
+
+
+if (!function_exists('wcmp_get_latlng_distance')) {
+    /*
+     * calculates the distance between two points (given the latitude/longitude of those points).
+     * lat1, lon1 = Latitude and Longitude of point 1
+     * lat2, lon2 = Latitude and Longitude of point 2
+     * unit = the unit you desire for results            
+        where: 'M' is statute miles (default) 
+               'K' is kilometers        
+               'N' is nautical miles  
+     */
+    function wcmp_get_latlng_distance($lat1, $lon1, $lat2, $lon2, $unit='M') {
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
+
+        if ($unit == "K") {
+            return ($miles * 1.609344);
+        } else if ($unit == "N") {
+            return ($miles * 0.8684);
+        } else {
+            return $miles;
+        }
+    }
+}
+
+
+if (!function_exists('wcmp_get_vendor_list_map_store_data')) {
+    
+    function wcmp_get_vendor_list_map_store_data($vendors, $request){
+        global $WCMp;
+        $location = isset($request['locationText']) ? $request['locationText'] : '';
+        $distance_type = isset($request['distanceSelect']) ? $request['distanceSelect'] : 'M';
+        $radius = isset($request['radiusSelect']) ? $request['radiusSelect'] : '5';
+        $map_stores = array('vendors' => array(), 'stores' => array());
         
-        return str_replace( array( 'https://', 'http://' ), '//', $image );
+        foreach ($vendors as $vendor_id){
+            $vendor = get_wcmp_vendor($vendor_id);
+            $store_lat = get_user_meta($vendor_id, '_store_lat', true);
+            $store_lng = get_user_meta($vendor_id, '_store_lng', true);
+            $image = $vendor->get_image() ? $vendor->get_image('image', array(125, 125)) : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png';
+            $rating_info = wcmp_get_vendor_review_info($vendor->term_id);
+            $rating   = round( $rating_info['avg_rating'],2 );
+            $count = intval( $rating_info['total_rating'] );
+            if($count > 0) {
+                $rating_html = '<div itemprop="reviewRating" class="star-rating" style="float:none;">
+		<span style="width:'.(( $rating / 5 ) * 100).'%"><strong itemprop="ratingValue">'.$rating.'</strong> </span>
+                </div>';
+            }else {
+                $rating_html = __('No Rating Yet','dc-woocommerce-multi-vendor'); 
+            }
+            $info_html = '<div class="info-store-wrapper"> 
+                        <div class="store-img-wrap">
+                            <img src="'.$image.'" class="info-store-img" /> 
+                            <a href="'.$vendor->get_permalink().'">'.__('Visit', 'dc-woocommerce-multi-vendor').'</a>
+                        </div>
+                        <div class="info-store-header">
+                            <p class="store-name">'.$vendor->page_title.'</p>
+                            <ul>
+                                <li>'.$rating_html.'</li>
+                                <li>'.$vendor->user_data->data->user_email.'</li>
+                                <li>'.$vendor->phone.'</li>
+                            </ul>
+                        </div> 
+                    </div> ';
+            
+            if((isset($request['wcmp_vlist_center_lat']) && !empty($request['wcmp_vlist_center_lat'])) && (isset($request['wcmp_vlist_center_lng']) && !empty($request['wcmp_vlist_center_lng']))){
+                if(!empty($radius) && ((!empty($store_lat) && !empty($store_lng)) || (!empty($location) && !empty($store_lat) && !empty($store_lng)))){
+                    $distance = wcmp_get_latlng_distance($request['wcmp_vlist_center_lat'], $request['wcmp_vlist_center_lng'], $store_lat, $store_lng, $distance_type );
+                    if($distance < $radius){
+                        $map_stores['stores'][] = array(
+                            'store_name' => $vendor->page_title,
+                            'store_url'  => $vendor->get_permalink(),
+                            'location'  => array('lat' => $store_lat, 'lng' => $store_lng),
+                            'info_html' => apply_filters('wcmp_vendor_list_map_vendor_info_html', $info_html, $vendor),
+                        );
+                        $map_stores['vendors'][] = $vendor_id;
+                    }
+                }elseif(empty($location) && empty($radius)){
+                    if(!empty($store_lat) && !empty($store_lng)){
+                        $map_stores['stores'][] = array(
+                            'store_name' => $vendor->page_title,
+                            'store_url'  => $vendor->get_permalink(),
+                            'location'  => array('lat' => $store_lat, 'lng' => $store_lng),
+                            'info_html' => apply_filters('wcmp_vendor_list_map_vendor_info_html', $info_html, $vendor),
+                        );
+                    }
+                    $map_stores['vendors'][] = $vendor_id;
+                }
+            }else{
+                if(!empty($store_lat) && !empty($store_lng)){
+                    $map_stores['stores'][] = array(
+                        'store_name' => $vendor->page_title,
+                        'store_url'  => $vendor->get_permalink(),
+                        'location'  => array('lat' => $store_lat, 'lng' => $store_lng),
+                        'info_html' => apply_filters('wcmp_vendor_list_map_vendor_info_html', $info_html, $vendor),
+                    );
+                }
+                $map_stores['vendors'][] = $vendor_id;
+            }
+        }
+        return $map_stores;
+    }
+}
+
+if (!function_exists('wcmp_get_vendor_specific_order_charge')) {
+    function wcmp_get_vendor_specific_order_charge($order) {
+    	$vendor_specific_admin_commision = array();
+    	if(!$order) {
+            return $vendor_specific_admin_commision;
+        }
+        if(!is_object($order)) $order = wc_get_order($order);
+        if($order) :
+            $vendor_specific_admin_commision['order_total'] = $order->get_total();
+            $items = $order->get_items('line_item');
+            $marchants = array();
+            foreach ($items as $order_item_id => $item) {
+                $line_item = new WC_Order_Item_Product($item);
+                $product_id = $item['product_id'];
+                if ($product_id) {
+                    $product_vendors = get_wcmp_product_vendors($product_id);
+                    if (!empty($product_vendors) && isset($product_vendors->term_id)) {
+                        $marchants[] = $product_vendors->id;
+                        $line_item_total = $line_item->get_total() + $line_item->get_total_tax(); // Item Total + Item Tax
+
+                        if(isset($vendor_specific_admin_commision[$product_vendors->id])) $vendor_specific_admin_commision[$product_vendors->id] = $vendor_specific_admin_commision[$product_vendors->id] + $line_item_total;
+                        else $vendor_specific_admin_commision[$product_vendors->id] = $line_item_total;
+                    }else{
+                        $post = get_post($product_id);
+                        $marchants[] = $post->post_author;
+                    }
+                }
+            }
+            $vendor_specific_admin_commision['order_marchants'] = array_unique($marchants);
+                    
+            $shipping_items = $order->get_items('shipping');
+            foreach ($shipping_items as $shipping_item_id => $shipping_item) { 
+                $order_item_shipping = new WC_Order_Item_Shipping($shipping_item_id);
+                $shipping_vendor_id = $order_item_shipping->get_meta('vendor_id', true);
+                if($shipping_vendor_id > 0) {
+                    $shipping_item_total = $order_item_shipping->get_total() + $order_item_shipping->get_total_tax(); // Shipping Total + Shipping Tax
+
+                    if(isset($vendor_specific_admin_commision[$shipping_vendor_id])) $vendor_specific_admin_commision[$shipping_vendor_id] = $vendor_specific_admin_commision[$shipping_vendor_id] + $shipping_item_total;
+                                    else $vendor_specific_admin_commision[$shipping_vendor_id] = $shipping_item_total;
+                }
+            }
+        endif;
+        
+        return $vendor_specific_admin_commision;
+    }
+}
+
+if (!function_exists('wcmp_get_geocoder_components')) {
+    function wcmp_get_geocoder_components($components = array()) {
+        $address_components = array(
+            'street_number'     => '',
+            'street_name'       => '',
+            'street'            => '',
+            'premise'           => '',
+            'neighborhood'      => '',
+            'city'              => '',
+            'county'            => '',
+            'region_name'       => '',
+            'region_code'       => '',
+            'country_name'      => '',
+            'country_code'      => '',
+            'postcode'          => '',
+            'address'           => '',
+            'formatted_address' => '',
+            'latitude'          => '',
+            'longitude'         => '',
+        );
+        
+        foreach ($components as $key => $component) { 
+            $component = (object) $component; 
+            $type = implode( ",", $component->types );
+            if ($type == 'street_number' && ! empty( $component->long_name ) ) {
+                $address_components['street_number'] = $component->long_name;
+            } elseif ( $type == 'route' && ! empty( $component->long_name ) ) {
+                $address_components['street_name'] = $component->long_name;
+                $address_components['street'] = ! empty( $address_components['street_number'] ) ? $address_components['street_number'] . ' ' . $component->long_name : $component->long_name;
+            } elseif ( $type == 'subpremise' && ! empty( $component->long_name ) ) {
+                $address_components['premise'] = $component->long_name;
+            } elseif ( $type == 'neighborhood,political' && ! empty( $component->long_name ) ) {
+                $address_components['neighborhood'] = $component->long_name;
+            } elseif ( $type == 'locality,political' && ! empty( $component->long_name ) ) {
+                $address_components['city'] = $component->long_name;
+            } elseif ( $type == 'administrative_area_level_2,political' && ! empty( $component->long_name ) ) {
+                $address_components['city'] = $component->long_name;
+            } elseif ( $type == 'administrative_area_level_1,political' ) {
+                $address_components['region_name'] = $component->long_name;
+                $address_components['region_code'] = $component->short_name;
+            } elseif ( $type == 'country,political' ) {
+                $address_components['country_name'] = $component->long_name;
+                $address_components['country_code'] = $component->short_name;
+            } elseif ( $type == 'postal_code' && ! empty( $component->long_name ) ) {
+                $address_components['postcode'] = $component->long_name;
+            }
+        }
+        return $address_components;
     }
 }

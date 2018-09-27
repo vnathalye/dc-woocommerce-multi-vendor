@@ -75,23 +75,65 @@ abstract class WCMp_Payment_Gateway {
     }
 
     public function gateway_charge() {
-        $gateway_charge = 0;
+        $gateway_charge = $admin_gateway_charge = $global_charges = 0;
         $is_enable_gateway_charge = get_wcmp_vendor_settings('payment_gateway_charge', 'payment');
+        $order_totals = $this->vendor_wise_order_total();
         if ($is_enable_gateway_charge == 'Enable') {
             $payment_gateway_charge_type = get_wcmp_vendor_settings('payment_gateway_charge_type', 'payment', '', 'percent');
-            if (get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment")) {
-                $gateway_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
-                if ('percent' === $payment_gateway_charge_type) {
-                    $gateway_charge = ($this->get_transaction_total() * $gateway_charge_amount) / 100;
-                }else if ('fixed_with_percentage' === $payment_gateway_charge_type) {
-                    $gateway_fixed_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_fixed_with_{$this->payment_gateway}", "payment"));
-                    $gateway_charge = (($this->get_transaction_total() * $gateway_charge_amount) / 100 ) + floatval($gateway_fixed_charge_amount);
-                }else{
-                    $gateway_charge = floatval($gateway_charge_amount);
+            $gateway_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_{$this->payment_gateway}", "payment"));
+            $carrier = get_wcmp_vendor_settings('gateway_charges_cost_carrier', 'payment', '', 'vendor');
+            if ($gateway_charge_amount) {
+                foreach ($order_totals as $order_id => $details) {
+                    $order_gateway_charge = 0;
+                    $vendor_ratio = ($details['vendor_total'] / $details['order_total']);
+                    if ('percent' === $payment_gateway_charge_type) {
+                        $parcentize_charges = ($details['order_total'] * $gateway_charge_amount) / 100;
+                        $order_gateway_charge = ($vendor_ratio) ? $vendor_ratio * $parcentize_charges : $parcentize_charges;
+                    }else if ('fixed_with_percentage' === $payment_gateway_charge_type) {
+                        $gateway_fixed_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_fixed_with_{$this->payment_gateway}", "payment"));
+                        $parcentize_charges = (($details['order_total'] * $gateway_charge_amount) / 100 );
+                        $fixed_charges = floatval($gateway_fixed_charge_amount) / count($details['order_marchants']);
+                        $order_gateway_charge = ($vendor_ratio) ? ($vendor_ratio * $parcentize_charges) + $fixed_charges : ($parcentize_charges + $fixed_charges);
+                    }else{
+                        $fixed_charges = floatval($gateway_charge_amount) / count($details['order_marchants']);
+                        $order_gateway_charge = $fixed_charges;
+                    }
+                    $gateway_charge += $order_gateway_charge; 
                 }
+                
+                if($carrier == 'separate'){
+                    //$gateway_charge = 0;
+                    if ('percent' === $payment_gateway_charge_type) {
+                        $gateway_charge = ($this->get_transaction_total() * $gateway_charge_amount) / 100;
+                    }else if ('fixed_with_percentage' === $payment_gateway_charge_type) {
+                        $gateway_fixed_charge_amount = floatval(get_wcmp_vendor_settings("gateway_charge_fixed_with_{$this->payment_gateway}", "payment"));
+                        $gateway_charge = (($this->get_transaction_total() * $gateway_charge_amount) / 100 ) + floatval($gateway_fixed_charge_amount);
+                    }else{
+                        $gateway_charge = floatval($gateway_charge_amount);
+                    }
+                }
+                
+                if($carrier == 'admin')
+                    $gateway_charge = 0;
             }
         }
-        return apply_filters('wcmp_commission_gateway_charge_amount', $gateway_charge, $this->get_transaction_total(), $this->vendor, $this->commissions, $this->payment_gateway);
+        return apply_filters('wcmp_commission_gateway_charge_amount', $gateway_charge, $order_totals, $this->vendor, $this->commissions, $this->get_transaction_total(), $this->payment_gateway);
+    }
+    
+    public function vendor_wise_order_total(){
+        $vendor_wise_order_total = array();
+        if (is_array($this->commissions)) {
+            foreach ($this->commissions as $commission) {
+                $order_id = get_post_meta($commission, '_commission_order_id', true);
+                $order_charges = wcmp_get_vendor_specific_order_charge($order_id);
+                $vendor_wise_order_total[$order_id] = array(
+                    'order_total'       => $order_charges['order_total'],
+                    'vendor_total'      => $order_charges[$this->vendor->id],
+                    'order_marchants'   => $order_charges['order_marchants'],
+                );
+            }
+        }
+        return apply_filters('wcmp_vendor_wise_order_total', $vendor_wise_order_total, $this->vendor, $this->commissions, $this->payment_gateway, $this->get_transaction_total());
     }
 
     public function update_meta_data($commission_status = 'wcmp_processing') {

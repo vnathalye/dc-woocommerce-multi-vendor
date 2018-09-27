@@ -12,7 +12,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 global $WCMp;
 ?>
-<?php do_action( 'woocommerce_email_header', $email_heading ); ?>
+<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <p><?php printf( __( "Thanks for creating an account with us on %s. Unfortunately your request has been rejected.",  'dc-woocommerce-multi-vendor' ), esc_html( $blogname )); ?></p>
 <p><?php printf( __( "You may contact the site admin at %s.",  'dc-woocommerce-multi-vendor' ), get_option('admin_email')); ?></p>

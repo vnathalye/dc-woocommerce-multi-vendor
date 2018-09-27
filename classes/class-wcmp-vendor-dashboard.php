@@ -24,6 +24,8 @@ Class WCMp_Admin_Dashboard {
 
         add_action('wcmp_dashboard_setup', array(&$this, 'wcmp_dashboard_setup'), 5);
         add_action('wcmp_dashboard_widget', array(&$this, 'do_wcmp_dashboard_widget'));
+        // Vendor store updater info
+        add_action('wcmp_dashboard_setup', array(&$this, 'wcmp_dashboard_setup_updater'), 6);
 
         // Init export functions
         $this->export_csv();
@@ -36,6 +38,8 @@ Class WCMp_Admin_Dashboard {
         $this->export_vendor_orders_csv();
         // vendor tools handler
         $this->vendor_tools_handler();
+        // vendor updater handler
+        $this->vendor_updater_handler();
     }
 
     function remove_admin_bar_links() {
@@ -447,6 +451,7 @@ Class WCMp_Admin_Dashboard {
                 die();
             }
         }
+        // 
         do_action('wcmp_vendor_tools_handler', $tools_action, $wpnonce);
     }
 
@@ -721,7 +726,20 @@ Class WCMp_Admin_Dashboard {
 
                 if ($fieldkey == 'vendor_description') {
                     update_user_meta($user_id, '_' . $fieldkey, $post[$fieldkey]);
-                } else {
+                }elseif($fieldkey == 'vendor_country'){
+                    $country_code = $post[$fieldkey];
+                    $country_data = WC()->countries->get_countries();
+                    $country_name = ( isset( $country_data[ $country_code ] ) ) ? $country_data[ $country_code ] : $country_code; //To get country name by code
+                    update_user_meta($user_id, '_' . $fieldkey, $country_name);
+                    update_user_meta($user_id, '_' . $fieldkey . '_code', $country_code);
+                }elseif($fieldkey == 'vendor_state'){
+                    $country_code = $post['vendor_country'];
+                    $state_code = $post[$fieldkey];
+                    $state_data = WC()->countries->get_states($country_code);
+                    $state_name = ( isset( $state_data[$state_code] ) ) ? $state_data[$state_code] : $state_code; //to get State name by state code
+                    update_user_meta($user_id, '_' . $fieldkey, $state_name);
+                    update_user_meta($user_id, '_' . $fieldkey . '_code', $state_code);
+                }else {
                     // social url validation
                     if (in_array($fieldkey, array('vendor_fb_profile', 'vendor_twitter_profile', 'vendor_google_plus_profile', 'vendor_linkdin_profile', 'vendor_youtube', 'vendor_instagram'))) {
                         if (!empty($post[$fieldkey]) && filter_var($post[$fieldkey], FILTER_VALIDATE_URL)) {
@@ -762,6 +780,19 @@ Class WCMp_Admin_Dashboard {
         }
         if (isset($_POST['_store_location']) && !empty($_POST['_store_location'])) {
             update_user_meta($user_id, '_store_location', $_POST['_store_location']);
+        }
+        if (isset($_POST['store_address_components']) && !empty($_POST['store_address_components'])) {
+            $address_components = wcmp_get_geocoder_components(json_decode(stripslashes($_POST['store_address_components']), true));
+            if (isset($_POST['_store_location']) && !empty($_POST['_store_location'])) {
+                $address_components['formatted_address'] = $_POST['_store_location'];
+            }
+            if (isset($_POST['_store_lat']) && !empty($_POST['_store_lat'])) {
+                $address_components['latitude'] = $_POST['_store_lat'];
+            }
+            if (isset($_POST['_store_lng']) && !empty($_POST['_store_lng'])) {
+                $address_components['longitude'] = $_POST['_store_lng'];
+            }
+            update_user_meta($user_id, '_store_address_components', $address_components);
         }
         if (isset($_POST['_store_lat']) && !empty($_POST['_store_lat'])) {
             update_user_meta($user_id, '_store_lat', $_POST['_store_lat']);
@@ -827,15 +858,45 @@ Class WCMp_Admin_Dashboard {
     public function save_vendor_profile($vendor_user_id, $post) {
         global $WCMp;
         if (isset($_POST['vendor_profile_data'])) {
+            // preventing auth cookies from actually being sent to the client.
+            add_filter('send_auth_cookies', '__return_false');
+            
+            $current_user = get_user_by( 'id', $vendor_user_id );
+            
             $userdata = array(
-				'ID' => $vendor_user_id,
-				'user_pass' => $_POST['vendor_profile_data']['password'],
-				'user_email' => $_POST['vendor_profile_data']['user_email'],
-				'first_name' => $_POST['vendor_profile_data']['first_name'],
-				'last_name' => $_POST['vendor_profile_data']['last_name'],
-			);
+                'ID' => $vendor_user_id,
+                'user_email' => $_POST['vendor_profile_data']['user_email'],
+                'first_name' => $_POST['vendor_profile_data']['first_name'],
+                'last_name' => $_POST['vendor_profile_data']['last_name'],
+            );
+            
+            $pass_cur = ! empty( $_POST['vendor_profile_data']['password_current'] ) ? $_POST['vendor_profile_data']['password_current'] : '';
+            $pass1 = ! empty( $_POST['vendor_profile_data']['password_1'] ) ? $_POST['vendor_profile_data']['password_1'] : '';
+            $pass2 = ! empty( $_POST['vendor_profile_data']['password_2'] ) ? $_POST['vendor_profile_data']['password_2'] : '';
+            $save_pass = true;
+            
+            if ( ! empty( $pass_cur ) && empty( $pass1 ) && empty( $pass2 ) ) {
+                wc_add_notice( __( 'Please fill out all password fields.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                $save_pass = false;
+            } elseif ( ! empty( $pass1 ) && empty( $pass_cur ) ) {
+                wc_add_notice( __( 'Please enter your current password.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                $save_pass = false;
+            } elseif ( ! empty( $pass1 ) && empty( $pass2 ) ) {
+                wc_add_notice( __( 'Please re-enter your password.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                $save_pass = false;
+            } elseif ( ( ! empty( $pass1 ) || ! empty( $pass2 ) ) && $pass1 !== $pass2 ) {
+                wc_add_notice( __( 'New passwords do not match.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                $save_pass = false;
+            } elseif ( ! empty( $pass1 ) && ! wp_check_password( $pass_cur, $current_user->user_pass, $current_user->ID ) ) {
+                wc_add_notice( __( 'Your current password is incorrect.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                $save_pass = false;
+            }
+
+            if ( $pass1 && $save_pass ) {
+                $userdata['user_pass'] = $pass1;
+            }
 			
-			$user_id = wp_update_user( $userdata ) ;
+            $user_id = wp_update_user( $userdata ) ;
 			
             $profile_updt = update_user_meta($vendor_user_id, '_vendor_profile_image', $_POST['vendor_profile_data']['vendor_profile_image']);
             
@@ -1219,5 +1280,97 @@ Class WCMp_Admin_Dashboard {
         wp_localize_script('wcmp_visitor_map_data', 'visitor_map_stats', apply_filters('wcmp_vendor_visitors_map_script_data', $visitor_map_stats));
         $WCMp->template->get_template('vendor-dashboard/dashboard-widgets/wcmp_vendor_visitors_map.php');
     }
+    
+    public function wcmp_dashboard_setup_updater(){
+        global $WCMp;
+        $has_updated_store_addresses = get_user_meta(get_current_user_id(), '_vendor_store_country_state_updated', true);
+        $has_rejected_store_updater = get_user_meta(get_current_user_id(), '_vendor_rejected_store_country_state_update', true);
+        $has_country = get_user_meta(get_current_user_id(), '_vendor_country', true);
+        if($has_country && !$has_updated_store_addresses && !$has_rejected_store_updater && !$WCMp->endpoints->get_current_endpoint()){
+            ?>
+            <div class="modal fade" id="vendor-setuo-updater-info-modal" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+                <div class="modal-dialog">
+                <!-- Modal content-->
+                    <div class="modal-content">
+                        <form method="post">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><?php _e("Update your store country and state.", 'dc-woocommerce-multi-vendor'); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <?php wp_nonce_field( 'wcmp-vendor-store-updater' ); ?>
+                            <div class="form-group">
+                                <label><?php _e('Store Country', 'dc-woocommerce-multi-vendor'); ?></label>
+                                <select name="vendor_country" id="vendor_country" class="country_to_state user-profile-fields form-control inp-btm-margin regular-select" rel="vendor_country">
+                                    <option value=""><?php _e( 'Select a country&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
+                                    <?php $country_code = get_user_meta(get_current_user_id(), '_vendor_country_code', true);
+                                        foreach ( WC()->countries->get_shipping_countries() as $key => $value ) {
+                                            echo '<option value="' . esc_attr( $key ) . '"' . selected( esc_attr( $country_code ), esc_attr( $key ), false ) . '>' . esc_html( $value ) . '</option>';
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><?php _e('Store state', 'dc-woocommerce-multi-vendor'); ?></label>
+                                <?php $country_code = get_user_meta(get_current_user_id(), '_vendor_country_code', true);
+                                $states = WC()->countries->get_states( $country_code ); ?>
+                                <select name="vendor_state" id="vendor_state" class="state_select user-profile-fields form-control inp-btm-margin regular-select" rel="vendor_state">
+                                    <option value=""><?php esc_html_e( 'Select a state&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
+                                    <?php $state_code = get_user_meta(get_current_user_id(), '_vendor_state_code', true);
+                                    if($states):
+                                        foreach ( $states as $ckey => $cvalue ) {
+                                            echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $state_code, $ckey, false ) . '>' . esc_html( $cvalue ) . '</option>';
+                                        }
+                                    endif;
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="update btn btn-default" name="do_update_store_address" value="<?php _e("Update", 'dc-woocommerce-multi-vendor'); ?>"/>
+                            <input type="submit" class="skip btn btn-secondary" name="do_reject_store_updater" value="<?php _e("Skip", 'dc-woocommerce-multi-vendor'); ?>"/>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+            jQuery(document).ready(function($){
+                //this remove the close button on top if you need
+                $('#vendor-setuo-updater-info-modal').find('.close').remove();
+                //this unbind the event click on the shadow zone
+                $('#vendor-setuo-updater-info-modal').unbind('click');
+                $("#vendor-setuo-updater-info-modal").modal('show');
+            });
+            </script>
+            <?php 
+        }
+    }
+    
+    public function vendor_updater_handler() {
+        $wpnonce = isset($_REQUEST['_wpnonce']) ? $_REQUEST['_wpnonce'] : '';
+        if ($wpnonce && wp_verify_nonce($wpnonce, 'wcmp-vendor-store-updater')) {
+            $do_update = filter_input(INPUT_POST, 'do_update_store_address');
+            $do_skip = filter_input(INPUT_POST, 'do_reject_store_updater');
+            $country_code = filter_input(INPUT_POST, 'vendor_country');
+            $state_code = filter_input(INPUT_POST, 'vendor_state');
+            
+            if($do_update && $do_update == 'Update'){
+                $country_data = WC()->countries->get_countries();
+                $state_data = WC()->countries->get_states($country_code);
+                $country_name = ( isset( $country_data[ $country_code ] ) ) ? $country_data[ $country_code ] : $country_code; //To get country name by code
+                $state_name = ( isset( $state_data[$state_code] ) ) ? $state_data[$state_code] : $state_code; //to get State name by state code
 
+                update_user_meta(get_current_user_id(), '_vendor_country', $country_name);
+                update_user_meta(get_current_user_id(), '_vendor_country_code', $country_code);
+                update_user_meta(get_current_user_id(), '_vendor_state', $state_name);
+                update_user_meta(get_current_user_id(), '_vendor_state_code', $state_code);
+                update_user_meta(get_current_user_id(), '_vendor_store_country_state_updated', true);
+            }elseif($do_skip && $do_skip == 'Skip'){
+                update_user_meta(get_current_user_id(), '_vendor_rejected_store_country_state_update', true);
+            }
+            wp_redirect( esc_url_raw( get_permalink(wcmp_vendor_dashboard_page_id()) ) );
+            die();
+        }
+    }
+    
 }

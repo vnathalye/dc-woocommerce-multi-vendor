@@ -66,6 +66,7 @@ class WCMp_Settings_Payment {
                 "wcmp_default_settings_section" => array("title" => __('How/When to Pay ', 'dc-woocommerce-multi-vendor'), // Section one
                     "fields" => array_merge($automatic_method, array(
                         "payment_gateway_charge" => array('title' => __('Payment Gateway Charge', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'payment_gateway_charge', 'label_for' => 'payment_gateway_charge', 'name' => 'payment_gateway_charge', 'text' => __('If checked, you can set payment gateway charge to the vendor for commission disbursement. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'),
+                        "gateway_charges_cost_carrier" => array('title' => __('Who bear the gateway charges', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'gateway_charges_cost_carrier', 'label_for' => 'gateway_charges_cost_carrier', 'name' => 'gateway_charges_cost_carrier', 'options' => array('vendor' => __('Vendor', 'dc-woocommerce-multi-vendor'), 'admin' => __('Site owner', 'dc-woocommerce-multi-vendor'), 'separate' => __('Separately', 'dc-woocommerce-multi-vendor')), 'desc' => __('Choose your preferred gateway charges carrier.', 'dc-woocommerce-multi-vendor')), // Select
                         "payment_gateway_charge_type" => array('title' => __('Gateway Charge Type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'payment_gateway_charge_type', 'label_for' => 'payment_gateway_charge_type', 'name' => 'payment_gateway_charge_type', 'options' => array('percent' => __('Percentage', 'dc-woocommerce-multi-vendor'), 'fixed' => __('Fixed Amount', 'dc-woocommerce-multi-vendor'), 'fixed_with_percentage' => __('%age + Fixed', 'dc-woocommerce-multi-vendor')), 'desc' => __('Choose your preferred gateway charge type.', 'dc-woocommerce-multi-vendor')), // Select
                             ), $gateway_charge, array(
                         "choose_payment_mode_automatic_disbursal" => array('title' => __('Disbursement Schedule', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'wcmp_disbursal_mode_admin', 'label_for' => 'wcmp_disbursal_mode_admin', 'name' => 'wcmp_disbursal_mode_admin', 'text' => __('If checked, automatically vendors commission will disburse. ', 'dc-woocommerce-multi-vendor'), 'value' => 'Enable'), // Checkbox
@@ -172,6 +173,9 @@ class WCMp_Settings_Payment {
         }
         if(isset($input['payment_gateway_charge_type'])){
             $new_input['payment_gateway_charge_type'] = sanitize_text_field($input['payment_gateway_charge_type']);
+        }
+        if(isset($input['gateway_charges_cost_carrier'])){
+            $new_input['gateway_charges_cost_carrier'] = sanitize_text_field($input['gateway_charges_cost_carrier']);
         }
         if (!$hasError) {
             add_settings_error(

@@ -176,10 +176,30 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                                     <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('Address line 2', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_address_2"  value="<?php echo isset($vendor_address_2['value']) ? $vendor_address_2['value'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('Country', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_country" value="<?php echo isset($vendor_country['value']) ? $vendor_country['value'] : ''; ?>">
+                                    <select name="vendor_country" id="vendor_country" class="country_to_state user-profile-fields form-control inp-btm-margin regular-select" rel="vendor_country">
+                                        <option value=""><?php _e( 'Select a country&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
+                                        <?php $country_code = get_user_meta($vendor->id, '_vendor_country_code', true);
+                                            foreach ( WC()->countries->get_shipping_countries() as $key => $value ) {
+                                                echo '<option value="' . esc_attr( $key ) . '"' . selected( esc_attr( $country_code ), esc_attr( $key ), false ) . '>' . esc_html( $value ) . '</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                    <!--input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php //_e('Country', 'dc-woocommerce-multi-vendor'); ?>" name="vendor_country" value="<?php echo isset($vendor_country['value']) ? $vendor_country['value'] : ''; ?>"-->
                                 </div>
                                 <div class="col-md-6">
-                                    <input class="no_input form-control inp-btm-margin"  type="text" placeholder="<?php _e('State', 'dc-woocommerce-multi-vendor'); ?>"  name="vendor_state" value="<?php echo isset($vendor_state['value']) ? $vendor_state['value'] : ''; ?>">
+                                    <?php $country_code = get_user_meta($vendor->id, '_vendor_country_code', true);
+                                    $states = WC()->countries->get_states( $country_code ); ?>
+                                    <select name="vendor_state" id="vendor_state" class="state_select user-profile-fields form-control inp-btm-margin regular-select" rel="vendor_state">
+                                        <option value=""><?php esc_html_e( 'Select a state&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
+                                        <?php $state_code = get_user_meta($vendor->id, '_vendor_state_code', true);
+                                        if($states):
+                                            foreach ( $states as $ckey => $cvalue ) {
+                                                echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $state_code, $ckey, false ) . '>' . esc_html( $cvalue ) . '</option>';
+                                            }
+                                        endif;
+                                        ?>
+                                    </select>
+                                    <!--input class="no_input form-control inp-btm-margin"  type="text" placeholder="<?php //_e('State', 'dc-woocommerce-multi-vendor'); ?>"  name="vendor_state" value="<?php echo isset($vendor_state['value']) ? $vendor_state['value'] : ''; ?>"-->
                                 </div>
                                 <div class="col-md-6">
                                     <input class="no_input form-control inp-btm-margin" type="text" placeholder="<?php _e('City', 'dc-woocommerce-multi-vendor'); ?>"  name="vendor_city" value="<?php echo isset($vendor_city['value']) ? $vendor_city['value'] : ''; ?>">
@@ -249,6 +269,7 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                                     $store_lng = get_user_meta($vendor->id, '_store_lng', true) ? get_user_meta($vendor->id, '_store_lng', true) : 0;
                                     ?>
                                     <input type="hidden" name="_store_location" id="store_location" value="<?php echo $store_location; ?>">
+                                    <input type="hidden" name="store_address_components" id="store_address_components" value="">
                                     <input type="hidden" name="_store_lat" id="store_lat" value="<?php echo $store_lat; ?>">
                                     <input type="hidden" name="_store_lng" id="store_lng" value="<?php echo $store_lng; ?>">
                                 </div>
@@ -294,8 +315,8 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
 
                                             marker.setPosition(place.geometry.location);
                                             marker.setVisible(true);
-
-                                            bindDataToForm(place.formatted_address,place.geometry.location.lat(),place.geometry.location.lng());
+                                            
+                                            bindDataToForm(place.formatted_address,place.geometry.location.lat(),place.geometry.location.lng(),place.address_components);
                                             infowindow.setContent(place.formatted_address);
                                             infowindow.open(map, marker);
                                             showTooltip(infowindow,marker,place.formatted_address);
@@ -304,8 +325,8 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                                         google.maps.event.addListener(marker, "dragend", function() {
                                             geocoder.geocode({"latLng": marker.getPosition()}, function(results, status) {
                                                 if (status == google.maps.GeocoderStatus.OK) {
-                                                    if (results[0]) {        
-                                                        bindDataToForm(results[0].formatted_address,marker.getPosition().lat(),marker.getPosition().lng());
+                                                    if (results[0]) {    
+                                                        bindDataToForm(results[0].formatted_address,marker.getPosition().lat(),marker.getPosition().lng(), results[0].address_components);
                                                         infowindow.setContent(results[0].formatted_address);
                                                         infowindow.open(map, marker);
                                                         showTooltip(infowindow,marker,results[0].formatted_address);
@@ -316,8 +337,9 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                                         });
                                     }
 
-                                    function bindDataToForm(address,lat,lng){
+                                    function bindDataToForm(address,lat,lng,address_components){
                                         document.getElementById("store_location").value = address;
+                                        document.getElementById("store_address_components").value = JSON.stringify(address_components);
                                         document.getElementById("store_lat").value = lat;
                                         document.getElementById("store_lng").value = lng;
                                     }

@@ -22,8 +22,8 @@ class WCMp_Settings_WCMp_Addons {
      */
     public function settings_page_init() {
         global $WCMp, $wp_version;
-        $args = array(
-            'timeout' => 5,
+        $args = apply_filters( 'wcmp_extensions_addons_remote_args', array(
+            'timeout' => 25,
             'redirection' => 5,
             'httpversion' => '1.0',
             'user-agent' => 'WordPress/' . $wp_version . '; ' . home_url(),
@@ -36,7 +36,7 @@ class WCMp_Settings_WCMp_Addons {
             'sslverify' => true,
             'stream' => false,
             'filename' => null
-        );
+        ));
         $url = 'https://wc-marketplace.com/wp-json/wc/v2/products/?per_page=100&orderby=title&order=asc&status=publish';
         $response = wp_remote_get($url, $args);
         ?>
@@ -44,9 +44,9 @@ class WCMp_Settings_WCMp_Addons {
             <div class="addon-banner">
                 <img src="<?php echo $WCMp->plugin_url.'assets/images/addon-banner.png' ?>" />
                 <div class="addon-banner-content">
-                    <h1>WCMp Bundled Addons is available</h1>
-                    <p>Give more power to your vendors to manage their shop, allow them to track their sales and control your marketplace with additional authority- unwrap powerful marketplace solution all in one bundle.</p>
-                    <a href="https://wc-marketplace.com/wcmp-bundle/" target="_blank" class="">Grab It Now</a>
+                    <h1><?php _e('WCMp Bundled Addons is available', 'dc-woocommerce-multi-vendor'); ?></h1>
+                    <p><?php _e('Give more power to your vendors to manage their shop, allow them to track their sales and control your marketplace with additional authority- unwrap powerful marketplace solution all in one bundle.', 'dc-woocommerce-multi-vendor'); ?></p>
+                    <a href="https://wc-marketplace.com/wcmp-bundle/" target="_blank" class=""><?php _e('Grab It Now', 'dc-woocommerce-multi-vendor'); ?></a>
                 </div>
             </div>
             <div class="addonbox-container">
@@ -75,7 +75,7 @@ class WCMp_Settings_WCMp_Addons {
                                 </div>   
                                 <div class="addon-content-holder">
                                     <p><?php echo wp_trim_words(strip_tags($product->short_description), 25, '...'); ?></p> 
-                                    <a href="<?php echo $product->permalink; ?>" target="_blank" class="button">View More</a>  
+                                    <a href="<?php echo $product->permalink; ?>" target="_blank" class="button"><?php _e('View More!', 'dc-woocommerce-multi-vendor'); ?></a>  
                                 </div> 
                             </div>
                             <?php
@@ -85,10 +85,10 @@ class WCMp_Settings_WCMp_Addons {
                     ?>
                     <div class="offline-addon-wrap">
                         <div class="addon-content">
-                            <h2>Create the best Marketplace with our coolest add-ons!</h2>
-                            <p>Rise above your peers and grab the attention of all your vendors and customers. WCMp Extensions eases the way you do business!</p>
+                            <h2><?php _e('Create the best Marketplace with our coolest add-ons!', 'dc-woocommerce-multi-vendor'); ?></h2>
+                            <p><?php _e('Rise above your peers and grab the attention of all your vendors and customers. WCMp Extensions eases the way you do business!', 'dc-woocommerce-multi-vendor'); ?></p>
                         </div>
-                        <a href="https://wc-marketplace.com/addons/" target="_blank">Get Addons!</a>
+                        <a href="https://wc-marketplace.com/addons/" target="_blank"><?php _e('Get Addons!', 'dc-woocommerce-multi-vendor'); ?></a>
                     </div>
                 <?php
                 }

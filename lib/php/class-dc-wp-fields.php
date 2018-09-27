@@ -129,6 +129,7 @@ if (!class_exists('WCMp_WP_Fields')) {
             $field['rows'] = isset($field['rows']) ? $field['rows'] : 2;
             $field['cols'] = isset($field['cols']) ? $field['cols'] : 20;
             $field['value'] = isset($field['value']) ? $field['value'] : '';
+            $field['raw_value'] = isset($field['raw_value']) ? true : false;
 
             // Custom attribute handling
             $custom_attributes = array();
@@ -138,9 +139,11 @@ if (!class_exists('WCMp_WP_Fields')) {
                     $custom_attributes[] = 'data-' . esc_attr($attribute) . '="' . esc_attr($value) . '"';
 
             $field = $this->field_wrapper_start($field);
-
+            /* For viewing raw data, specially for css & js */
+            $value = ($field['raw_value']) ? $field['value'] : esc_textarea($this->string_wpml($field['value']));
+                    
             printf(
-                    '<textarea id="%s" name="%s" class="%s" placeholder="%s" rows="%s" cols="%s" %s>%s</textarea>', esc_attr($field['id']), esc_attr($field['name']), esc_attr($field['class']), esc_attr($field['placeholder']), absint($field['rows']), absint($field['cols']), implode(' ', $custom_attributes), esc_textarea($this->string_wpml($field['value']))
+                    '<textarea id="%s" name="%s" class="%s" placeholder="%s" rows="%s" cols="%s" %s>%s</textarea>', esc_attr($field['id']), esc_attr($field['name']), esc_attr($field['class']), esc_attr($field['placeholder']), absint($field['rows']), absint($field['cols']), implode(' ', $custom_attributes), $value
             );
 
             $this->field_wrapper_end($field);

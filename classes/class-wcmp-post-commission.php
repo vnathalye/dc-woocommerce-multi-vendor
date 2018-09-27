@@ -451,6 +451,7 @@ class WCMp_Commission {
             '_commission_product' => __('Product', 'dc-woocommerce-multi-vendor'),
             '_commission_vendor' => __('Vendor', 'dc-woocommerce-multi-vendor'),
             '_commission_amount' => __('Amount', 'dc-woocommerce-multi-vendor'),
+            '_commission_earning' => __('Net Earning', 'dc-woocommerce-multi-vendor'),
             '_paid_status' => __('Status', 'dc-woocommerce-multi-vendor'),
         );
 
@@ -531,6 +532,18 @@ class WCMp_Commission {
 
             case '_commission_amount':
                 echo wc_price($data);
+                break;
+            
+            case '_commission_earning':
+                $order_id = get_post_meta($id, '_commission_order_id', true);
+                $commission_vendor = get_post_meta($id, '_commission_vendor', true);
+                $vendor_user_id = get_woocommerce_term_meta($commission_vendor, '_vendor_user_id', true);
+                $vendor = get_wcmp_vendor($vendor_user_id);
+                if($vendor){
+                    $vendor_total = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order_id));
+                    echo wc_price($vendor_total['total']);
+                }
+               
                 break;
 
             case '_paid_status':

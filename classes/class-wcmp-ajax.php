@@ -190,7 +190,7 @@ class WCMp_Ajax {
         $end_date = date('Y-m-d G:i:s', $_POST['end_date']);
         $vendor = get_current_vendor();
         $vendor_all_orders = $wpdb->get_results("SELECT DISTINCT order_id from `{$wpdb->prefix}wcmp_vendor_orders` where commission_id > 0 AND vendor_id = '" . $vendor->id . "' AND (`created` >= '" . $start_date . "' AND `created` <= '" . $end_date . "') and `is_trashed` != 1 ORDER BY `created` DESC", ARRAY_A);
-        $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders', $vendor_all_orders);
+        $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders', $vendor_all_orders, $requestData, $_POST);
         $vendor_all_orders = apply_filters('wcmp_datatable_get_vendor_all_orders_id', wp_list_pluck($vendor_all_orders, 'order_id'));
         if (isset($requestData['order_status']) && $requestData['order_status'] != 'all' && $requestData['order_status'] != '') {
             foreach ($vendor_all_orders as $key => $value) {
@@ -421,7 +421,7 @@ class WCMp_Ajax {
         } else {
             $ids = array();
         }
-        $product_objects = array_map('wc_get_product', $ids);
+        $product_objects = apply_filters('wcmp_auto_suggesion_product_objects',array_map('wc_get_product', $ids), $user);
         $html = '';
         if (count($product_objects) > 0) {
             $html .= "<ul>";
@@ -1646,7 +1646,7 @@ class WCMp_Ajax {
                     $product_status = 'draft';
                 } else {
                     if ($is_vendor) {
-                        if (!current_user_can('publish_products')) {
+                        if (!apply_filters('wcmp_vendor_can_publish_products',current_user_can('publish_products'), get_current_user_id())) {
                             $product_status = 'pending';
                         } else {
                             $product_status = 'publish';
@@ -2330,7 +2330,7 @@ class WCMp_Ajax {
                 }
 
                 $requestData = $_REQUEST;
-                $df_post_status = array('publish', 'pending', 'draft');
+                $df_post_status = apply_filters( 'wcmp_vendor_dashboard_default_product_list_statues', array('publish', 'pending', 'draft'), $requestData, $vendor);
                 if (isset($requestData['post_status']) && $requestData['post_status'] != 'all') {
                     $df_post_status = $requestData['post_status'];
                 }
@@ -2592,10 +2592,11 @@ class WCMp_Ajax {
 
                         $row = array();
                         $row ['coupons'] = '<a href="' . esc_url($edit_coupon_link) . '">' . get_the_title($coupon_single->ID) . '</a>' . $action_html;
+                        $row ['type'] = esc_html( wc_get_coupon_type( $coupon->get_discount_type() ) );
                         $row ['amount'] = $coupon->get_amount();
                         $row ['uses_limit'] = $usage_count . ' / ' . $usage_limit;
                         $row ['expiry_date'] = $expiry_date;
-                        $data[] = $row;
+                        $data[] = apply_filters('wcmp_vendor_coupon_list_row_data', $row, $coupon);
                     }
                 }
 

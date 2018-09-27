@@ -44,7 +44,7 @@ $subtotal = 0;
     </div>
     <div class="row">
         <div class="col-md-8">
-            <div class="panel panel-default pannel-outer-heading marginTop-0">
+            <div class="panel panel-default pannel-outer-heading mt-0">
                 <div class="panel-heading"><h3><?php _e('Order Details', 'dc-woocommerce-multi-vendor'); ?></h3></div>
                 <div class="panel-body panel-content-padding">
                     <table class="table table-bordered">

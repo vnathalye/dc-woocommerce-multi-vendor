@@ -888,9 +888,10 @@ class WCMp_Product {
                     wp_delete_object_term_relationships($post_id, $WCMp->taxonomy->taxonomy_name);
                     $term = get_term($vendor->term_id, $WCMp->taxonomy->taxonomy_name);
                     //wp_set_post_terms($post_id, $term->name, $WCMp->taxonomy->taxonomy_name, false);
-                    wp_set_object_terms($post_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
+                    if($term)
+                        wp_set_object_terms($post_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
                     $vendor = get_wcmp_vendor_by_term($vendor->term_id);
-                    if (!wp_is_post_revision($post_id)) {
+                    if (!wp_is_post_revision($post_id) && $vendor) {
                         // unhook this function so it doesn't loop infinitely
                         remove_action('save_post', array($this, 'process_vendor_data'));
                         // update the post, which calls save_post again
@@ -1175,7 +1176,6 @@ class WCMp_Product {
                     return $query;
                 $term_id = get_user_meta($current_user_id, '_vendor_term_id', true);
 
-
                 $taxquery = array(
                     array(
                         'taxonomy' => $WCMp->taxonomy->taxonomy_name,
@@ -1188,7 +1188,7 @@ class WCMp_Product {
                 $query->set('tax_query', $taxquery);
             }
         } else {
-            if ((isset($query->query_vars['wc_query']) && $query->query_vars['wc_query'] == 'product_query') || (isset($query->query['post_type']) && $query->query['post_type'] == 'product')) {
+            if (!is_tax($WCMp->taxonomy->taxonomy_name) && (isset($query->query_vars['wc_query']) && $query->query_vars['wc_query'] == 'product_query') || (isset($query->query['post_type']) && $query->query['post_type'] == 'product')) {
                 $get_block_array = array();
                 $get_blocked = wcmp_get_all_blocked_vendors();
                 if (!empty($get_blocked)) {

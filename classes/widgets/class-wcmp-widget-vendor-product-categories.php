@@ -120,6 +120,7 @@ class WCMp_Widget_Vendor_Product_Categories extends WC_Widget {
                         $itemOutput .= '</li>';
                     }
                 }else{ 
+                    if(in_array($term->term_id, $has_parent_list)) continue;
                     $has_parent_list[] = $term->term_id;
                     $itemOutput .= '<li class="cat-item cat-item-' . $term->term_id . '"><a href="?category=' . $term->slug . '">' . $term->name . '</a>';
                     if ($show_count) {

@@ -14,9 +14,9 @@ global $WCMp;
 ?>
 
 <div id="wcmp-store-conatiner">
-    <?php if(apply_filters('wcmp_vendor_list_enable_store_locator_map', true)) : ?>
     <!-- Map Start -->
     <div class="wcmp-store-locator-wrap">
+        <?php if(apply_filters('wcmp_vendor_list_enable_store_locator_map', true)) : ?>
         <div id="wcmp-vendor-list-map" class="wcmp-store-map-wrapper"></div>
         <form name="vendor_list_sort" method="post">
             <input type="hidden" id="wcmp_vlist_center_lat" name="wcmp_vlist_center_lat" value=""/>
@@ -49,6 +49,7 @@ global $WCMp;
                 <input type="submit" name="vendorListFilter" value="<?php _e('Submit', 'dc-woocommerce-multi-vendor'); ?>">
             </div>
         </form>
+        <?php endif; ?>
         <div class="wcmp-store-map-pagination">
             <p class="wcmp-pagination-count wcmp-pull-right">
                 <?php
@@ -122,7 +123,6 @@ global $WCMp;
         </div>
     </div>
     <!-- Map End -->
-    <?php endif; ?>
 
     <div class="wcmp-store-list-wrap">
         <?php

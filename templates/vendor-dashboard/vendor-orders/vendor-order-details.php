@@ -15,7 +15,6 @@ if (!defined('ABSPATH')) {
 global $woocommerce, $WCMp;
 $vendor = get_current_vendor();
 $order = wc_get_order($order_id);
-$vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
 if (!$order) {
     ?>
     <div class="col-md-12">
@@ -26,6 +25,7 @@ if (!$order) {
     <?php
     return;
 }
+$vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order->get_id(), $vendor->id);
 $vendor_items = get_wcmp_vendor_orders(array('order_id' => $order->get_id(), 'vendor_id' => $vendor->id));
 $vendor_order_amount = get_wcmp_vendor_order_amount(array('order_id' => $order->get_id(), 'vendor_id' => $vendor->id));
 //print_r($vendor_order_amount);die;

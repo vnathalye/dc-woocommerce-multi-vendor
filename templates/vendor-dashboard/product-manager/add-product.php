@@ -22,16 +22,20 @@ if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_u
     <?php
     return;
 }
-if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_published_products') && !empty($pro_id)) {
-    ?>
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <?php _e('Product has been sent to the admin for review. Once done, the product will be published.', 'dc-woocommerce-multi-vendor'); ?>
-        </div>
-    </div>
-    <?php
-    return;
-}
+
+// changed by Vivek Athalye @vnathalye - start
+// To allow editing of DRAFT products, moved this code below
+// if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_published_products') && !empty($pro_id)) {
+//     ? >
+//     <div class="col-md-12">
+//         <div class="panel panel-default">
+//             <?php _e('Product has been sent to the admin for review. Once done, the product will be published.', 'dc-woocommerce-multi-vendor'); ? >
+//         </div>
+//     </div>
+//     <?php
+//     return;
+// }
+// changed by Vivek Athalye @vnathalye - end
 
 $product_id = 0;
 $product = array();
@@ -113,6 +117,32 @@ if (!empty($pro_id)) {
             _e('You do not have enough permission to access this product.', 'dc-woocommerce-multi-vendor');
             return;
         }
+
+        // changed by Vivek Athalye @vnathalye - start
+        // To allow editing of Draft & Pending products, moved this code here and checked the product status
+        // If product status is Pending, show appropriate message
+        // if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_published_products') && in_array($product->get_status(), array('pending')) )  {
+        //     ? >
+        //     <div class="col-md-12">
+        //         <div class="panel panel-default">
+        //             <?php _e('Product has been sent to the admin for review. Once done, the product will be published.', 'dc-woocommerce-multi-vendor'); ? >
+        //         </div>
+        //     </div>
+        //     <?php
+        //     return;
+        // }
+        // If product status is not Draft / Pending, show appropriate message
+        if (is_user_logged_in() && is_user_wcmp_vendor($current_vendor_id) && !current_user_can('edit_published_products') && !in_array($product->get_status(), array('draft', 'pending')) )  {
+            ?>
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <?php _e('Product is already published. You cannot edit it now.', 'dc-woocommerce-multi-vendor'); ?>
+                </div>
+            </div>
+            <?php
+            return;
+        }
+        // changed by Vivek Athalye @vnathalye - end
 
         $product_type = $product->get_type();
         $title = $product->get_title();

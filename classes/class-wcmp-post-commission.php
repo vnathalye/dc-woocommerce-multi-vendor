@@ -525,7 +525,7 @@ class WCMp_Commission {
                     if ($vendor_user_id) {
                         $vendor = get_wcmp_vendor($vendor_user_id);
                         $edit_url = get_edit_user_link($vendor_user_id);
-                        echo '<a href="' . esc_url($edit_url) . '">' . $vendor->user_data->user_login . '</a>';
+                        echo '<a href="' . esc_url($edit_url) . '">' . $vendor->page_title . '</a>';
                     }
                 }
                 break;
@@ -711,6 +711,16 @@ class WCMp_Commission {
             <option value="reverse"><?php _e('Reverse', 'dc-woocommerce-multi-vendor'); ?></option>
         </select>
         <?php
+        // By Commission vendor
+        $vendor_dd_html = '<select name="commission_vendor" id="dropdown_commission_vendor"><option value="">'.__("Show All Vendors", "dc-woocommerce-multi-vendor").'</option>';
+        $vendors = get_wcmp_vendors();
+        if($vendors) :
+            foreach ($vendors as $vendor) {
+                $vendor_dd_html .= '<option value="'.$vendor->term_id.'">'.$vendor->page_title.'</option>';
+            }
+        endif;
+        $vendor_dd_html .= '</select>';
+        echo $vendor_dd_html;
     }
 
     /**
@@ -722,9 +732,14 @@ class WCMp_Commission {
      */
     function wcmp_woocommerce_orders_by_customer_query($vars) {
         global $typenow, $wp_query;
-        if ($typenow == $this->post_type && isset($_GET['commission_status'])) {
+        if ($typenow == $this->post_type && isset($_GET['commission_status']) && !empty($_GET['commission_status'])) {
             $vars['meta_key'] = '_paid_status';
             $vars['meta_value'] = $_GET['commission_status'];
+        }
+        // by vendor
+        if ($typenow == $this->post_type && isset($_GET['commission_vendor']) && !empty($_GET['commission_vendor'])) {
+            $vars['meta_key'] = '_commission_vendor';
+            $vars['meta_value'] = $_GET['commission_vendor'];
         }
         return $vars;
     }

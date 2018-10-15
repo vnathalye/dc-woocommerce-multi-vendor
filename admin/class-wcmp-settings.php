@@ -442,12 +442,11 @@ class WCMp_Settings {
                     do_settings_sections( "wcmp-{$tab}-{$tab_section}-settings-admin" );
                     if ( $tab_section == 'registration' ) {
                         do_action( "settings_page_{$tab}_{$tab_section}_tab_init", $tab, $tab_section );
-                        wp_enqueue_style( 'wcmp_vendor_registration', $WCMp->plugin_url . 'assets/admin/css/admin-vendor_registration.css', array(), $WCMp->version );
                         wp_enqueue_script( 'wcmp_angular', $WCMp->plugin_url . 'assets/admin/js/angular.min.js', array(), $WCMp->version );
                         wp_enqueue_script( 'wcmp_angular-ui', $WCMp->plugin_url . 'assets/admin/js/sortable.js', array( 'wcmp_angular' ), $WCMp->version );
                         wp_enqueue_script( 'wcmp_vendor_registration', $WCMp->plugin_url . 'assets/admin/js/vendor_registration_app.js', array( 'wcmp_angular', 'wcmp_angular-ui' ), $WCMp->version );
                         $wcmp_vendor_registration_form_data = get_option( 'wcmp_vendor_registration_form_data' );
-                        wp_localize_script( 'wcmp_vendor_registration', 'vendor_registration_param', array( 'partials' => $WCMp->plugin_url . 'assets/admin/partials/', 'ajax_url' => admin_url( 'admin-ajax.php' ), 'form_data' => $wcmp_vendor_registration_form_data ) );
+                        wp_localize_script( 'wcmp_vendor_registration', 'vendor_registration_param', array( 'partials' => $WCMp->plugin_url . 'assets/admin/partials/', 'ajax_url' => admin_url( 'admin-ajax.php' ), 'lang' => array('need_country_dependancy' => __('Please add country field first.', 'dc-woocommerce-multi-vendor')), 'form_data' => $wcmp_vendor_registration_form_data ) );
                     } else {
                         submit_button();
                     }

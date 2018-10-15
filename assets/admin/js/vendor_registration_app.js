@@ -225,16 +225,19 @@ app.controller('postbox_menu',['$scope', 'vendor_registration_service', function
                 });
                 break;
             case 'vendor_state':
-                formJson.push({
-                    id: jsonLength,
-                    type: type,
-                    label: label,
-                    hidden: false,
-                    partial: type + '.html',
-                    placeholder: '',
-                    required: false,
-                    cssClass: ''
-                });
+                // add dependancies with vendor country
+                if ($.inArray('vendor_country', $.map(formJson, function(v) { return v.type; })) > -1) {
+                    formJson.push({
+                        id: jsonLength,
+                        type: type,
+                        label: label,
+                        hidden: false,
+                        partial: type + '.html',
+                        placeholder: '',
+                        required: false,
+                        cssClass: ''
+                    });
+                }else{ alert(vendor_registration_param.lang.need_country_dependancy);}
                 break;
             case 'vendor_city':
                 formJson.push({

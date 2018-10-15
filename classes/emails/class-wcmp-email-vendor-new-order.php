@@ -86,7 +86,7 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
                         $this->vendor_id = $vendor_id;
                         $this->recipient = $vendor_email;
                     }
-
+                    
                     if (!$this->is_enabled() || !$this->get_recipient()) {
                         return;
                     }
@@ -109,7 +109,8 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
                 'order' => $this->order,
                 'blogname' => $this->get_blogname(),
                 'sent_to_admin' => false,
-                'plain_text' => false
+                'plain_text' => false,
+                'email'         => $this,
                     ), 'dc-product-vendor/', $this->template_base);
         }
 
@@ -126,7 +127,8 @@ if (!class_exists('WC_Email_Vendor_New_Order')) :
                 'order' => $this->order,
                 'blogname' => $this->get_blogname(),
                 'sent_to_admin' => false,
-                'plain_text' => true
+                'plain_text' => true,
+                'email'         => $this,
                     ), 'dc-product-vendor/', $this->template_base);
         }
 

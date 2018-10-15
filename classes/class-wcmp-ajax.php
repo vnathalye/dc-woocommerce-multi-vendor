@@ -691,46 +691,47 @@ class WCMp_Ajax {
             $product_id = $_POST['product_id'];
             $vendor = get_wcmp_product_vendors($product_id);
             $admin_id = get_current_user_id();
-
-            $_product = wc_get_product($product_id);
-            $orders = array();
-            if ($_product->is_type('variable')) {
-                $get_children = $_product->get_children();
-                if (!empty($get_children)) {
-                    foreach ($get_children as $child) {
-                        $orders = array_merge($orders, $vendor->get_vendor_orders_by_product($vendor->term_id, $child));
+            if(current_user_can('administrator')){
+                $_product = wc_get_product($product_id);
+                $orders = array();
+                if ($_product->is_type('variable')) {
+                    $get_children = $_product->get_children();
+                    if (!empty($get_children)) {
+                        foreach ($get_children as $child) {
+                            $orders = array_merge($orders, $vendor->get_vendor_orders_by_product($vendor->term_id, $child));
+                        }
+                        $orders = array_unique($orders);
                     }
-                    $orders = array_unique($orders);
+                } else {
+                    $orders = array_unique($vendor->get_vendor_orders_by_product($vendor->term_id, $product_id));
                 }
-            } else {
-                $orders = array_unique($vendor->get_vendor_orders_by_product($vendor->term_id, $product_id));
-            }
 
-            foreach ($orders as $order_id) {
-                $order = new WC_Order($order_id);
-                $items = $order->get_items('line_item');
-                foreach ($items as $item_id => $item) {
-                    wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
+                foreach ($orders as $order_id) {
+                    $order = new WC_Order($order_id);
+                    $items = $order->get_items('line_item');
+                    foreach ($items as $item_id => $item) {
+                        wc_add_order_item_meta($item_id, '_vendor_id', $vendor->id);
+                    }
                 }
-            }
 
-            wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->taxonomy_name);
-            wp_delete_object_term_relationships($product_id, 'product_shipping_class');
-            wp_update_post(array('ID' => $product_id, 'post_author' => $admin_id));
-            delete_post_meta($product_id, '_commission_per_product');
-            delete_post_meta($product_id, '_commission_percentage_per_product');
-            delete_post_meta($product_id, '_commission_fixed_with_percentage_qty');
-            delete_post_meta($product_id, '_commission_fixed_with_percentage');
+                wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->taxonomy_name);
+                wp_delete_object_term_relationships($product_id, 'product_shipping_class');
+                wp_update_post(array('ID' => $product_id, 'post_author' => $admin_id));
+                delete_post_meta($product_id, '_commission_per_product');
+                delete_post_meta($product_id, '_commission_percentage_per_product');
+                delete_post_meta($product_id, '_commission_fixed_with_percentage_qty');
+                delete_post_meta($product_id, '_commission_fixed_with_percentage');
 
-            $product_obj = wc_get_product($product_id);
-            if ($product_obj->is_type('variable')) {
-                $child_ids = $product_obj->get_children();
-                if (isset($child_ids) && !empty($child_ids)) {
-                    foreach ($child_ids as $child_id) {
-                        delete_post_meta($child_id, '_commission_fixed_with_percentage');
-                        delete_post_meta($child_id, '_product_vendors_commission_percentage');
-                        delete_post_meta($child_id, '_product_vendors_commission_fixed_per_trans');
-                        delete_post_meta($child_id, '_product_vendors_commission_fixed_per_qty');
+                $product_obj = wc_get_product($product_id);
+                if ($product_obj->is_type('variable')) {
+                    $child_ids = $product_obj->get_children();
+                    if (isset($child_ids) && !empty($child_ids)) {
+                        foreach ($child_ids as $child_id) {
+                            delete_post_meta($child_id, '_commission_fixed_with_percentage');
+                            delete_post_meta($child_id, '_product_vendors_commission_percentage');
+                            delete_post_meta($child_id, '_product_vendors_commission_fixed_per_trans');
+                            delete_post_meta($child_id, '_product_vendors_commission_fixed_per_qty');
+                        }
                     }
                 }
             }
@@ -2314,6 +2315,7 @@ class WCMp_Ajax {
                 $vendor = get_current_vendor();
                 $enable_ordering = apply_filters('wcmp_vendor_dashboard_product_list_table_orderable_columns', array('name', 'date'));
                 $products_table_headers = array(
+                    'select_product' => '',
                     'image' => '',
                     'name' => __('Product', 'dc-woocommerce-multi-vendor'),
                     'price' => __('Price', 'dc-woocommerce-multi-vendor'),
@@ -2321,6 +2323,7 @@ class WCMp_Ajax {
                     'categories' => __('Categories', 'dc-woocommerce-multi-vendor'),
                     'date' => __('Date', 'dc-woocommerce-multi-vendor'),
                     'status' => __('Status', 'dc-woocommerce-multi-vendor'),
+                    'actions' => __('Actions', 'dc-woocommerce-multi-vendor'),
                 );
                 $products_table_headers = apply_filters('wcmp_vendor_dashboard_product_list_table_headers', $products_table_headers);
                 // storing columns keys for ordering
@@ -2330,6 +2333,25 @@ class WCMp_Ajax {
                 }
 
                 $requestData = $_REQUEST;
+                $filterActionData = array();
+                parse_str($requestData['products_filter_action'], $filterActionData);
+                do_action('before_wcmp_products_list_query_bind', $filterActionData, $requestData);
+                // Do bulk handle
+                if(isset($requestData['bulk_action']) && $requestData['bulk_action'] != '' && isset($filterActionData['selected_products']) && is_array($filterActionData['selected_products']) ){
+                    if($requestData['bulk_action'] === 'trash'){
+                        // Trash products
+                        foreach ($filterActionData['selected_products'] as $id) {
+                            wp_trash_post( $id );
+                        }
+                    }elseif($requestData['bulk_action'] === 'untrash'){
+                        // Untrash products
+                        foreach ($filterActionData['selected_products'] as $id) {
+                            wp_untrash_post($id);
+                        }
+                    }else{
+                        do_action('wcmp_products_list_do_handle_bulk_actions', $vendor->get_products(), $filterActionData['bulk_actions'], $filterActionData['selected_products'], $filterActionData, $requestData);
+                    }
+                }
                 $df_post_status = apply_filters( 'wcmp_vendor_dashboard_default_product_list_statues', array('publish', 'pending', 'draft'), $requestData, $vendor);
                 if (isset($requestData['post_status']) && $requestData['post_status'] != 'all') {
                     $df_post_status = $requestData['post_status'];
@@ -2352,15 +2374,29 @@ class WCMp_Ajax {
                     'post_status' => $df_post_status,
                     'suppress_filters' => true
                 );
-
-                if (isset($requestData['product_cat']) && $requestData['product_cat'] != '') {
-                    $args['tax_query'] = array(array('taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => $requestData['product_cat']));
+                $tax_query = array();
+                if (isset($filterActionData['product_cat']) && $filterActionData['product_cat'] != '') {
+                    $tax_query[] = array('taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => $filterActionData['product_cat']);
                 }
-
-                $total_products_array = $vendor->get_products($args);
+                if (isset($filterActionData['product_type']) && $filterActionData['product_type'] != '') {
+                    if ( 'downloadable' === $filterActionData['product_type'] ) {
+                        $args['meta_value']   = 'yes'; 
+                        $query_vars['meta_key']     = '_downloadable'; 
+                    } elseif ( 'virtual' === $filterActionData['product_types'] ) {
+                        $query_vars['meta_value']   = 'yes'; 
+                        $query_vars['meta_key']     = '_virtual'; 
+                    }else{
+                        $tax_query[] = array('taxonomy' => 'product_type', 'field' => 'slug', 'terms' => $filterActionData['product_type']);
+                    }
+                }
+                if($tax_query):
+                    $args['tax_query'] = $tax_query;
+                endif;
+                
+                $total_products_array = $vendor->get_products(apply_filters('wcmp_products_list_total_products_query_args',$args, $filterActionData, $requestData));
                 // filter/ordering data
-                if (!empty($requestData['search']['value'])) {
-                    $args['s'] = $requestData['search']['value'];
+                if (!empty($requestData['search_keyword'])) {
+                    $args['s'] = $requestData['search_keyword'];
                 }
                 if (isset($columns[$requestData['order'][0]['column']]) && in_array($columns[$requestData['order'][0]['column']], $enable_ordering)) {
                     $args['orderby'] = $columns[$requestData['order'][0]['column']];
@@ -2372,7 +2408,7 @@ class WCMp_Ajax {
                 $args['offset'] = $requestData['start'];
                 $args['posts_per_page'] = $requestData['length'];
 
-                $args = apply_filters('wcmp_datatable_product_list_query_args', $args, $requestData);
+                $args = apply_filters('wcmp_datatable_product_list_query_args', $args, $filterActionData, $requestData);
 
                 $data = array();
                 $products_array = $vendor->get_products($args);
@@ -2380,10 +2416,11 @@ class WCMp_Ajax {
                     foreach ($products_array as $product_single) {
                         $row = array();
                         $product = wc_get_product($product_single->ID);
-                        $edit_product_link = $product->get_permalink(); // changed by Vivek Athalye @vnathalye
-                        if ((current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') || in_array($product->get_status(), array('draft', 'pending'))) { // changed by Vivek Athalye @vnathalye
+                        $edit_product_link = '';
+                        if ((current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') || in_array($product->get_status(), apply_filters('wcmp_enable_edit_product_options_for_statuses',array('draft', 'pending')))) {
                             $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $product->get_id()));
                         }
+                        $edit_product_link = apply_filters('wcmp_vendor_product_list_product_edit_link', $edit_product_link, $product);
                         // Get actions
                         $onclick = "return confirm('" . __('Are you sure want to delete this product?', 'dc-woocommerce-multi-vendor') . "')";
                         $view_title = __('View', 'dc-woocommerce-multi-vendor');
@@ -2392,20 +2429,41 @@ class WCMp_Ajax {
                         }
                         $actions = array(
                             'id' => sprintf(__('ID: %d', 'dc-woocommerce-multi-vendor'), $product->get_id()),
-                            'edit' => '<a href="' . esc_url($edit_product_link) . '">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</a>',
-                            'delete' => '<a class="productDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('product_id' => $product->get_id()), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'))), 'wcmp_delete_product')) . '" onclick="' . $onclick . '">' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '</a>',
-                            'view' => '<a href="' . esc_url($product->get_permalink()) . '" target="_blank">' . $view_title . '</a>',
                         );
-                        if (!current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') != 'Enable' && !in_array($product->get_status(), array('draft', 'pending'))) { // changed by Vivek Athalye @vnathalye
-                            unset($actions['edit']);
-                            unset($actions['delete']);
+                        $actions_col = array(
+                            'view' => '<a href="' . esc_url($product->get_permalink()) . '" target="_blank" title="'.$view_title.'"><i class="wcmp-font ico-eye-icon"></i></a>',
+                            'edit' => '<a href="' . esc_url($edit_product_link) . '" title="' . __('Edit', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-edit-pencil-icon"></i></a>',
+                            'restore' => '<a href="' . esc_url(wp_nonce_url(add_query_arg(array('product_id' => $product->get_id()), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'))), 'wcmp_untrash_product')) . '" title="' . __('Restore from the Trash', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-reply-icon"></i></a>',
+                            'trash' => '<a class="productDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('product_id' => $product->get_id()), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'))), 'wcmp_trash_product')) . '" title="' . __('Move to the Trash', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-delete-icon"></i></a>',
+                            'delete' => '<a class="productDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('product_id' => $product->get_id()), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'))), 'wcmp_delete_product')) . '" onclick="' . $onclick . '" title="' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-delete-icon"></i></a>',
+                        );
+                        if($product->get_status() == 'trash'){
+                            $edit_product_link = '';
+                            unset($actions_col['edit']);
+                            unset($actions_col['trash']);
+                            unset($actions_col['view']);
+                        }else{
+                            unset($actions_col['restore']);
+                            unset($actions_col['delete']);
                         }
+                        
+                        if (!current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') != 'Enable' && !in_array($product->get_status(), apply_filters('wcmp_enable_edit_product_options_for_statuses',array('draft', 'pending')))) {
+                            unset($actions_col['edit']);
+                            if($product->get_status() != 'trash') unset($actions_col['delete']);
+                        }
+                        
                         $actions = apply_filters('wcmp_vendor_product_list_row_actions', $actions, $product);
+                        $actions_col = apply_filters('wcmp_vendor_product_list_row_actions_column', $actions_col, $product);
                         $row_actions = array();
                         foreach ($actions as $action => $link) {
                             $row_actions[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
                         }
+                        $row_actions_col = array();
+                        foreach ($actions_col as $action => $link) {
+                            $row_actions_col[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
+                        }
                         $action_html = '<div class="row-actions">' . implode(' <span class="divider">|</span> ', $row_actions) . '</div>';
+                        $actions_col_html = '<div class="col-actions">' . implode(' <span class="divider">|</span> ', $row_actions_col) . '</div>';
                         // is in stock
                         if ($product->is_in_stock()) {
                             $stock_html = '<span class="label label-success instock">' . __('In stock', 'dc-woocommerce-multi-vendor');
@@ -2442,7 +2500,7 @@ class WCMp_Ajax {
                         } else {
                             $status = ucfirst($product->get_status());
                         }
-
+                        $row ['select_product'] = '<input type="checkbox" class="select_' . $product->get_status() . '" name="selected_products[' . $product->get_id() . ']" value="' . $product->get_id() . '" data-title="' . $product->get_title() . '" data-sku="' . $product->get_sku() . '"/>';
                         $row ['image'] = '<td>' . $product->get_image(apply_filters('wcmp_vendor_product_list_image_size', array(40, 40))) . '</td>';
                         $row ['name'] = '<td><a href="' . esc_url($edit_product_link) . '">' . $product->get_title() . '</a>' . $action_html . '</td>';
                         $row ['price'] = '<td>' . $product->get_price_html() . '</td>';
@@ -2450,7 +2508,8 @@ class WCMp_Ajax {
                         $row ['categories'] = '<td>' . $product_cats . '</td>';
                         $row ['date'] = '<td>' . $date . '</td>';
                         $row ['status'] = '<td>' . $status . '</td>';
-                        $data[] = apply_filters('wcmp_vendor_dashboard_product_list_table_row_data', $row, $product);
+                        $row ['actions'] = '<td>' . $actions_col_html . '</td>';
+                        $data[] = apply_filters('wcmp_vendor_dashboard_product_list_table_row_data', $row, $product, $filterActionData, $requestData);
                     }
                 }
 
@@ -2459,7 +2518,7 @@ class WCMp_Ajax {
                     "recordsTotal" => intval(count($total_products_array)), // total number of records
                     "recordsFiltered" => intval(count($total_products_array)), // total number of records after searching, if there is no searching then totalFiltered = totalData
                     "data" => $data   // total data array
-                        ), $requestData);
+                        ), $filterActionData, $requestData);
                 wp_send_json($json_data);
                 die;
             }
@@ -2507,6 +2566,9 @@ class WCMp_Ajax {
                         } else {
                             $disabled_reqested_withdrawals = '';
                         }
+                        //skip withdrawal for COD order and vendor end shipping
+                        if($order->get_payment_method() == 'cod' && $vendor->is_shipping_enable()) continue;
+                        
                         $row = array();
                         $row ['select_withdrawal'] = '<input name="commissions[]" value="' . $commission_id . '" class="select_withdrawal" type="checkbox" ' . $disabled_reqested_withdrawals . '>';
                         $row ['order_id'] = $order->get_id();
@@ -2520,8 +2582,8 @@ class WCMp_Ajax {
 
                 $json_data = array(
                     "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-                    "recordsTotal" => intval(count($vendor_unpaid_total_orders)), // total number of records
-                    "recordsFiltered" => intval(count($vendor_unpaid_total_orders)), // total number of records after searching, if there is no searching then totalFiltered = totalData
+                    "recordsTotal" => intval(count($data)), // total number of records
+                    "recordsFiltered" => intval(count($data)), // total number of records after searching, if there is no searching then totalFiltered = totalData
                     "data" => $data   // total data array
                 );
                 wp_send_json($json_data);
@@ -2548,7 +2610,7 @@ class WCMp_Ajax {
                     'post_mime_type' => '',
                     'post_parent' => '',
                     'author' => get_current_vendor_id(),
-                    'post_status' => array('publish', 'pending', 'draft'),
+                    'post_status' => array('publish', 'pending', 'draft', 'trash'),
                     'suppress_filters' => true
                 );
                 $vendor_total_coupons = get_posts($args);
@@ -2566,19 +2628,36 @@ class WCMp_Ajax {
                         $onclick = "return confirm('" . __('Are you sure want to delete this coupon?', 'dc-woocommerce-multi-vendor') . "')";
                         $actions = array(
                             'id' => sprintf(__('ID: %d', 'dc-woocommerce-multi-vendor'), $coupon_single->ID),
-                            'edit' => '<a href="' . esc_url($edit_coupon_link) . '">' . __('Edit', 'dc-woocommerce-multi-vendor') . '</a>',
-                            'delete' => '<a class="couponDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_delete_coupon')) . '" onclick="' . $onclick . '">' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '</a>',
                         );
+                        $actions_col = array(
+                            'edit' => '<a href="' . esc_url($edit_coupon_link) . '" title="' . __('Edit', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-edit-pencil-icon"></i></a>',
+                            'restore' => '<a href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_untrash_coupon')) . '" title="' . __('Restore from the Trash', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-reply-icon"></i></a>',
+                            'trash' => '<a class="couponDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_trash_coupon')) . '" title="' . __('Move to the Trash', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-delete-icon"></i></a>',
+                            'delete' => '<a class="couponDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('coupon_id' => $coupon_single->ID), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons'))), 'wcmp_delete_coupon')) . '" onclick="' . $onclick . '" title="' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-delete-icon"></i></a>',
+                        );
+                        if($coupon_single->post_status == 'trash'){
+                            unset($actions_col['edit']);
+                            unset($actions_col['trash']);
+                        }else{
+                            unset($actions_col['restore']);
+                            unset($actions_col['delete']);
+                        }
                         if (!current_user_can('edit_published_shop_coupons') || get_wcmp_vendor_settings('is_edit_delete_published_coupon', 'capabilities', 'product') != 'Enable') {
                             unset($actions['edit']);
                             unset($actions['delete']);
                         }
                         $actions = apply_filters('wcmp_vendor_coupon_list_row_actions', $actions, $coupon_single);
+                        $actions_col = apply_filters('wcmp_vendor_coupon_list_row_actions_col', $actions_col, $coupon_single);
                         $row_actions = array();
                         foreach ($actions as $action => $link) {
                             $row_actions[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
                         }
                         $action_html = '<div class="row-actions">' . implode(' | ', $row_actions) . '</div>';
+                        $row_actions_cols = array();
+                        foreach ($actions_col as $action => $link) {
+                            $row_actions_cols[] = '<span class="' . esc_attr($action) . '">' . $link . '</span>';
+                        }
+                        $actions_col_html = '<div class="col-actions">' . implode(' | ', $row_actions_cols) . '</div>';
                         $coupon = new WC_Coupon($coupon_single->ID);
                         $usage_count = $coupon->get_usage_count();
                         $usage_limit = $coupon->get_usage_limit();
@@ -2596,6 +2675,7 @@ class WCMp_Ajax {
                         $row ['amount'] = $coupon->get_amount();
                         $row ['uses_limit'] = $usage_count . ' / ' . $usage_limit;
                         $row ['expiry_date'] = $expiry_date;
+                        $row ['actions'] = $actions_col_html;
                         $data[] = apply_filters('wcmp_vendor_coupon_list_row_data', $row, $coupon);
                     }
                 }
@@ -2946,6 +3026,7 @@ class WCMp_Ajax {
                 if ($active_qna) {
                     foreach ($active_qna as $key => $data) :
                         $product = wc_get_product($data->product_ID);
+                        if($product){
                         $row = '';
                         $row = '<article id="reply-item-' . $data->ques_ID . '" class="reply-item">
                         <div class="media">
@@ -2980,6 +3061,7 @@ class WCMp_Ajax {
                     </article>';
 
                         $data_html[] = array($row);
+                        }
                     endforeach;
                 }
             }

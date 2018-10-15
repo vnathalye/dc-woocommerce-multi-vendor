@@ -508,6 +508,7 @@ class WCMp_Vendor {
             $_product = apply_filters('wcmp_woocommerce_order_item_product', $order->get_product_from_item($item), $item);
             ?>
             <tr class="">
+                <?php do_action('wcmp_before_vendor_order_item_table', $item, $order, $vendor_id, $is_ship); ?>
                 <td scope="col" style="text-align:left; border: 1px solid #eee;" class="product-name">
                     <?php
                     if ($_product && !$_product->is_visible()) {
@@ -538,6 +539,7 @@ class WCMp_Vendor {
                     }
                     ?>
                 </td>
+                <?php do_action('wcmp_after_vendor_order_item_table', $item, $order, $vendor_id, $is_ship); ?>
             </tr>
             <?php
         }
@@ -901,6 +903,8 @@ class WCMp_Vendor {
         do_action('wcmp_vendors_vendor_ship', $order_id, $this->term_id);
         $order = wc_get_order($order_id);
         $comment_id = $order->add_order_note(__('Vendor ', 'dc-woocommerce-multi-vendor') . $this->page_title . __(' has shipped his part of order to customer.', 'dc-woocommerce-multi-vendor') . '<br><span>' . __('Tracking Url : ', 'dc-woocommerce-multi-vendor') . '</span> <a target="_blank" href="' . $tracking_url . '">' . $tracking_url . '</a><br><span>' . __('Tracking Id : ', 'dc-woocommerce-multi-vendor') . '</span>' . $tracking_id, '1', true);
+        // update comment author & email
+        wp_update_comment(array('comment_ID' => $comment_id, 'comment_author' => $this->page_title, 'comment_author_email' => $this->user_data->user_email));
         add_comment_meta($comment_id, '_vendor_id', $this->id);
     }
 
@@ -1054,6 +1058,7 @@ class WCMp_Vendor {
                 $addresses[$key] = $value;
             }
         }
+        $addresses = apply_filters( 'wcmp_vendor_before_get_formatted_address', $addresses );
 
         $formatted_address = implode($sep, $addresses);
 

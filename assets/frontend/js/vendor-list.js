@@ -43,15 +43,34 @@
 
                 map.setCenter(pos);
                 map.fitBounds(bounds);
-            }, function() {
-                handleLocationError(true, infoWindow, map.getCenter());
+            }, function(error) {
+                handleLocationError(true, infoWindow, map.getCenter(), error);
             });
         } else {
             // Browser doesnt support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
+            handleLocationError(false, infoWindow, map.getCenter(), -1);
         }
 
-        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        function handleLocationError(browserHasGeolocation, infoWindow, pos, error) {
+            if( error == -1 ){
+                alert( wcmp_vendor_list_script_data.lang.geolocation_doesnt_support );
+            }else{
+                switch( error.code ) {
+                    case error.PERMISSION_DENIED:
+                    alert( wcmp_vendor_list_script_data.lang.geolocation_permission_denied );
+                    break;
+                    case error.POSITION_UNAVAILABLE:
+                    alert( wcmp_vendor_list_script_data.lang.geolocation_position_unavailable );
+                    break;
+                    case error.TIMEOUT:
+                    alert( wcmp_vendor_list_script_data.lang.geolocation_timeout );
+                    break;
+                    case error.UNKNOWN_ERROR:
+                    alert( wcmp_vendor_list_script_data.lang.geolocation_service_failed );
+                    break;
+                }
+            }
+        
             infoWindow.setPosition(pos);
             infoWindow.setContent(browserHasGeolocation ? wcmp_vendor_list_script_data.lang.geolocation_service_failed : wcmp_vendor_list_script_data.lang.geolocation_doesnt_support);
             infoWindow.open(map);
@@ -90,7 +109,7 @@
                 }
             });
         });
-
+  
     }
     
     google.maps.event.addDomListener(window, "load", initialize);

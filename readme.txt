@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
 Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: 3.1.5
+Stable tag: 3.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,19 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.1.6 - 2018-10-13 =
+* Added - Backend vendor wise commission list filter.
+* Added - Vendor dashboard product list bulk action.
+* Added - Vendor dashboard product list filter by product types.
+* Added - Country-state dropdown on vendor registration page.
+* Added - Skip withdrawal request for vendor-end shipping and COD order.
+* UI - Payment gateways credentials view.
+* Fix - Vendor list php notice issue.
+* Fix - Vendor list map hooks issue.
+* Fix - Widget product category term duplication issue.
+* Fix - WCMp email parameter issue. 
+* Updated - Language file.
+
 = 3.1.5 - 2018-09-24 =
 * Added - Store locators map on vendor list page.
 * Added - Pagination on vendor list page.

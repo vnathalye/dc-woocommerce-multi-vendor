@@ -182,6 +182,8 @@ class WCMp_Vendor_Order_Page extends WP_List_Table {
                 }
                 $order = new WC_Order($order_id);
                 $comment_id = $order->add_order_note(__('Vendor ', 'dc-woocommerce-multi-vendor') . $vendor->page_title . __(' has shipped his part of order to customer.', 'dc-woocommerce-multi-vendor'), true);
+                // update comment author & email
+                wp_update_comment(array('comment_ID' => $comment_id, 'comment_author' => $vendor->page_title, 'comment_author_email' => $vendor->user_data->user_email));
                 add_comment_meta($comment_id, '_vendor_id', $user_id);
             }
             return true;

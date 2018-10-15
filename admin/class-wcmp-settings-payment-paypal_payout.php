@@ -40,8 +40,8 @@ class WCMp_Settings_Payment_Paypal_Payout {
             "sections" => array(
                 "wcmp_payment_paypal_payout_settings_section" => array("title" => '', // Section one
                     "fields" => array(
-                        "client_id" => array('title' => __('Client ID', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'client_id', 'label_for' => 'client_id', 'name' => 'client_id', 'dfvalue' => $this->paypal_client_id),
-                        "client_secret" => array('title' => __('Client Secret', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'client_secret', 'label_for' => 'client_secret', 'name' => 'client_secret', 'dfvalue' => $this->paypal_client_secret),
+                        "client_id" => array('title' => __('Client ID', 'dc-woocommerce-multi-vendor'), 'type' => 'password', 'id' => 'client_id', 'label_for' => 'client_id', 'name' => 'client_id', 'dfvalue' => $this->paypal_client_id),
+                        "client_secret" => array('title' => __('Client Secret', 'dc-woocommerce-multi-vendor'), 'type' => 'password', 'id' => 'client_secret', 'label_for' => 'client_secret', 'name' => 'client_secret', 'dfvalue' => $this->paypal_client_secret),
                         "is_asynchronousmode" => array('title' => __('Enable Asynchronous Mode', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_asynchronousmode', 'label_for' => 'is_asynchronousmode', 'name' => 'is_asynchronousmode', 'value' => 'Enable'), // Checkbox
                         "is_testmode" => array('title' => __('Enable Test Mode', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_testmode', 'label_for' => 'is_testmode', 'name' => 'is_testmode', 'value' => 'Enable'), // Checkbox
                     ),

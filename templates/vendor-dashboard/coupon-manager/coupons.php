@@ -19,6 +19,7 @@ $coupon_list_table_headers = apply_filters('wcmp_datatable_coupon_list_table_hea
     'amount'    => array('label' => __( 'Coupon Amount', 'dc-woocommerce-multi-vendor' )),
     'uses_limit'=> array('label' => __( 'Usage / Limit', 'dc-woocommerce-multi-vendor' )),
     'expiry_date'  => array('label' => __( 'Expiry Date', 'dc-woocommerce-multi-vendor' )),
+    'actions'  => array('label' => __( 'Actions', 'dc-woocommerce-multi-vendor' )),
 ), get_current_user_id());
 ?>
 <div class="col-md-12">
@@ -62,6 +63,9 @@ jQuery(document).ready(function($) {
      <?php }
         } ?>
     vendor_coupons = $('#coupons_table').DataTable({
+        columnDefs: [
+            { width: 80, targets: 5 }
+        ],
         ordering  : false,
         searching  : false,
         processing: true,

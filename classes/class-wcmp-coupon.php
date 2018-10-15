@@ -26,8 +26,8 @@ class WCMp_Coupon {
                 // coupon delete action
                 $this->wcmp_delete_coupon_action();
 	}
-	
-	/**
+
+        /**
 	* validate vendor coupon
 	*
 	* @param boolean $true
@@ -177,6 +177,18 @@ class WCMp_Coupon {
                     wp_delete_post( $coupon_id );
                     wc_add_notice(__('Coupon Deleted!', 'dc-woocommerce-multi-vendor'), 'success');
                     wp_redirect( $delete_coupon_redirect_url );
+                    exit;
+                }
+                if($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_untrash_coupon') && $coupon_id && get_current_user_id() == $coupon->post_author){
+                    wp_untrash_post($coupon_id);
+                    wc_add_notice(__('Coupon restored from the Trash', 'dc-woocommerce-multi-vendor'), 'success');
+                    wp_redirect($delete_coupon_redirect_url);
+                    exit;
+                }
+                if($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_trash_coupon') && $coupon_id && get_current_user_id() == $coupon->post_author){
+                    wp_trash_post($coupon_id);
+                    wc_add_notice(__('Coupon moved to the Trash', 'dc-woocommerce-multi-vendor'), 'success');
+                    wp_redirect($delete_coupon_redirect_url);
                     exit;
                 }
             }

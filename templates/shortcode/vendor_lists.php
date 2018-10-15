@@ -43,6 +43,7 @@ global $WCMp;
                         <option value="M" <?php echo selected( $selected_distance, "M", false ); ?>><?php _e('Miles', 'dc-woocommerce-multi-vendor'); ?></option>
                         <option value="K" <?php echo selected( $selected_distance, "K", false ); ?>><?php _e('Kilometers', 'dc-woocommerce-multi-vendor'); ?></option>
                         <option value="N" <?php echo selected( $selected_distance, "N", false ); ?>><?php _e('Nautical miles', 'dc-woocommerce-multi-vendor'); ?></option>
+                        <?php do_action('wcmp_vendor_list_sort_distanceSelect_extra_options'); ?>
                     </select>
                 </div>
                 <?php do_action('wcmp_vendor_list_vendor_sort_map_extra_filters'); ?>
@@ -58,7 +59,11 @@ global $WCMp;
                         printf( _n( 'Viewing the single vendor', 'Viewing all %d vendors', $vendor_total, 'dc-woocommerce-multi-vendor' ), $vendor_total );
                 } else {
                         $first = ( $per_page * $current ) - $per_page + 1;
-                        $last  = min( $vendor_total, $per_page * $current );
+                        if(!apply_filters('wcmp_vendor_list_ignore_pagination', false)) {
+                            $last  = min( $vendor_total, $per_page * $current );
+                        }else{
+                            $last  = $vendor_total;
+                        }
                         /* translators: 1: first result 2: last result 3: total results */
                         printf( _nx( 'Viewing the single vendor', 'Viewing %1$d&ndash;%2$d of %3$d vendors', $vendor_total, 'with first and last result', 'dc-woocommerce-multi-vendor' ), $first, $last, $vendor_total );
                 }
@@ -94,7 +99,7 @@ global $WCMp;
                         if ($vendor_sort_type && is_array($vendor_sort_type)) {
                             foreach ($vendor_sort_type as $key => $label) {
                                 $selected = '';
-                                if ($request['vendor_sort_type'] == $key) {
+                                if (isset($request['vendor_sort_type']) && $request['vendor_sort_type'] == $key) {
                                     $selected = 'selected="selected"';
                                 }
                                 echo '<option value="' . $key . '" ' . $selected . '>' . $label . '</option>';
@@ -180,6 +185,7 @@ global $WCMp;
         ?>
     </div>
     <!-- pagination --> 
+    <?php if(!apply_filters('wcmp_vendor_list_ignore_pagination', false)) : ?>
     <div class="wcmp-pagination">
         <?php
             echo paginate_links( apply_filters( 'wcmp_vendor_list_pagination_args', array( 
@@ -203,4 +209,5 @@ global $WCMp;
         <li><a href="#">10</a></li>
         <li class="next-pag pag-nav"><a href="#">Next</a></li-->
     </div>
+    <?php endif; ?>
 </div> 

@@ -473,6 +473,7 @@ class WCMp_Vendor_Hooks {
         if ( is_user_logged_in() && is_user_wcmp_vendor( get_current_vendor_id() ) ) {
             $WCMp->library->load_dataTable_lib();
             $products_table_headers = array(
+                'select_product' => '',
                 'image'      => '<i class="wcmp-font ico-image-icon"></i>',
                 'name'       => __( 'Product', 'dc-woocommerce-multi-vendor' ),
                 'price'      => __( 'Price', 'dc-woocommerce-multi-vendor' ),
@@ -480,11 +481,12 @@ class WCMp_Vendor_Hooks {
                 'categories' => __( 'Categories', 'dc-woocommerce-multi-vendor' ),
                 'date'       => __( 'Date', 'dc-woocommerce-multi-vendor' ),
                 'status'     => __( 'Status', 'dc-woocommerce-multi-vendor' ),
+                'actions'     => __( 'Actions', 'dc-woocommerce-multi-vendor' ),
             );
             $products_table_headers = apply_filters( 'wcmp_vendor_dashboard_product_list_table_headers', $products_table_headers );
             $table_init = apply_filters( 'wcmp_vendor_dashboard_product_list_table_init', array(
                 'ordering'    => 'true',
-                'searching'   => 'true',
+                'searching'   => 'false',
                 'emptyTable'  => __( 'No products found!', 'dc-woocommerce-multi-vendor' ),
                 'processing'  => __( 'Processing...', 'dc-woocommerce-multi-vendor' ),
                 'info'        => __( 'Showing _START_ to _END_ of _TOTAL_ products', 'dc-woocommerce-multi-vendor' ),

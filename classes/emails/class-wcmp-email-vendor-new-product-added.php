@@ -123,7 +123,8 @@ if (!class_exists('WC_Email_Vendor_New_Product_Added')) :
                 'vendor_name' => $this->vendor_name,
                 'post_id' => $this->post_id,
                 'post_type' => $this->post_type,
-                'email_heading' => $this->get_heading()
+                'email_heading' => $this->get_heading(),
+                'email'         => $this,
                     ), 'dc-product-vendor/', $this->template_base);
 
             return ob_get_clean();
@@ -142,7 +143,8 @@ if (!class_exists('WC_Email_Vendor_New_Product_Added')) :
                 'vendor_name' => $this->vendor_name,
                 'post_id' => $this->post_id,
                 'post_type' => $this->post_type,
-                'email_heading' => $this->get_heading()
+                'email_heading' => $this->get_heading(),
+                'email'         => $this,
                     ), 'dc-product-vendor/', $this->template_base);
 
             return ob_get_clean();

@@ -297,6 +297,10 @@ a.wcmp_sub_sction {
     color: #F86A7C;
 }
 
+.wcmp_subtab_container .wcmpsubtabadmin li a{
+    white-space: normal;
+}
+
 @media screen and (min-width: 768px) {
     .wcmp_subtab_container .subsubsub.wcmpsubtabadmin,
     .wcmp-ui-tabs ul.ui-tabs-nav {

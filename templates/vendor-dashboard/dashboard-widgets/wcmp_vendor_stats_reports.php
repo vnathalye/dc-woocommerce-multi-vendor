@@ -54,7 +54,7 @@ do_action('before_wcmp_vendor_stats_reports');
             </div>
             <div class="col-md-8">
                 <h2><?php _e('Store Insights', 'dc-woocommerce-multi-vendor'); ?></h2>
-                <p class="stat-detail-info"><span><i class="wcmp-font ico-avarage-order-value-icon"></i></span> <?php printf( __( 'Your average order value%1$s for this span was %2$s', 'dc-woocommerce-multi-vendor' ), '<strong>(AOV)</strong>', '<span class="_wcmp_stats_aov stats-aov"></span>'); ?> </p>
+                <p class="stat-detail-info"><span><i class="wcmp-font ico-avarage-order-value-icon"></i></span> <?php printf( __( 'Your average order value %1$s for this span was %2$s', 'dc-woocommerce-multi-vendor' ), '<strong>(AOV)</strong>', '<span class="_wcmp_stats_aov stats-aov"></span>'); ?> </p>
                 <p class="stat-detail-info"><span><i class="wcmp-font ico-revenue-icon"></i></span> <?php printf( __( 'During this span, %1$s has been credited to your %2$s account, as commission.', 'dc-woocommerce-multi-vendor' ), '<mark class="_wcmp_stats_table current_withdrawal withdrawal-label mark-green"></mark>', $payment_mode); ?></p>
                 <div class="compare-stat-info">
                     <span><b><?php _e('Compare your store performance against', 'dc-woocommerce-multi-vendor'); ?></b></span>

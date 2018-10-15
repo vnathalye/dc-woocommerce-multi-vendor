@@ -626,6 +626,19 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 										} else {
 											echo '<span> <input type="checkbox" name="" disabled /></span>';
 										}
+									} else if ($value['type'] == 'vendor_country') {
+                                                                                $country_code = $value['value'];
+                                                                                $country_data = WC()->countries->get_countries();
+                                                                                $country_name = ( isset( $country_data[ $country_code ] ) ) ? $country_data[ $country_code ] : $country_code; //To get country name by code
+										echo '<span> ' . $country_name . '</span>';
+									} else if ($value['type'] == 'vendor_state') {
+                                                                                $country_field_key = array_search('vendor_country', array_column($vendor_application_data, 'type'));
+                                                                                $country_field = $vendor_application_data[$country_field_key];
+                                                                                $country_code = $country_field['value'];
+                                                                                $state_code = $value['value'];
+                                                                                $state_data = WC()->countries->get_states($country_code);
+                                                                                $state_name = ( isset( $state_data[$state_code] ) ) ? $state_data[$state_code] : $state_code; //to get State name by state code
+										echo '<span> ' . $state_name . '</span>';
 									} else {
 										if (is_array($value['value'])) {
 											echo '<span> ' . implode(', ', $value['value']) . '</span>';

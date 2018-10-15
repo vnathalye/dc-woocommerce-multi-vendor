@@ -45,8 +45,8 @@ class WCMp_Settings_Payment_Paypal_Masspay {
                 "wcmp_payment_paypal_masspay_settings_section" => array("title" => '', // Section one
                     "fields" => array(
                         "api_username" => array('title' => __('API Username', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'api_username', 'label_for' => 'api_username', 'dfvalue' => $this->paypal_api_username, 'name' => 'api_username'),
-                        "api_pass" => array('title' => __('API Password', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'api_pass', 'label_for' => 'api_pass', 'name' => 'api_pass', 'dfvalue' => $this->paypal_api_password),
-                        "api_signature" => array('title' => __('API Signature', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'api_signature', 'label_for' => 'api_signature', 'name' => 'api_signature', 'dfvalue' => $this->paypal_api_signature),
+                        "api_pass" => array('title' => __('API Password', 'dc-woocommerce-multi-vendor'), 'type' => 'password', 'id' => 'api_pass', 'label_for' => 'api_pass', 'name' => 'api_pass', 'dfvalue' => $this->paypal_api_password),
+                        "api_signature" => array('title' => __('API Signature', 'dc-woocommerce-multi-vendor'), 'type' => 'password', 'id' => 'api_signature', 'label_for' => 'api_signature', 'name' => 'api_signature', 'dfvalue' => $this->paypal_api_signature),
                         "is_testmode" => array('title' => __('Enable Test Mode', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'id' => 'is_testmode', 'label_for' => 'is_testmode', 'name' => 'is_testmode', 'value' => 'Enable'), // Checkbox
                     ),
                 )

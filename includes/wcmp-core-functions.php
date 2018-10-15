@@ -1935,7 +1935,7 @@ if (!function_exists('WCMpGenerateTaxonomyHTML')) {
             }
             $product_child_categories = get_terms($taxonomy, 'orderby=name&hide_empty=0&parent=' . absint($cat->term_id));
             if ($product_child_categories) {
-                WCMpGenerateTaxonomyHTML($taxonomy, $product_child_categories, $categories, $nbsp . '&nbsp;&nbsp;');
+                WCMpGenerateTaxonomyHTML($taxonomy, $product_child_categories, $categories, $nbsp . '<span class="sub-cat-pre">&nbsp;&nbsp;</span>');
             }
         }
     }
@@ -2774,6 +2774,7 @@ if (!function_exists('wcmp_get_latlng_distance')) {
         } else if ($unit == "N") {
             return ($miles * 0.8684);
         } else {
+            do_action( 'wcmp_get_latlng_distance', $lat1, $lon1, $lat2, $lon2, $unit, $dist );
             return $miles;
         }
     }
@@ -2854,7 +2855,7 @@ if (!function_exists('wcmp_get_vendor_list_map_store_data')) {
                 $map_stores['vendors'][] = $vendor_id;
             }
         }
-        return $map_stores;
+        return apply_filters( 'wcmp_get_vendor_list_map_store_data', $map_stores, $vendors, $request);
     }
 }
 
@@ -2953,5 +2954,32 @@ if (!function_exists('wcmp_get_geocoder_components')) {
             }
         }
         return $address_components;
+    }
+}
+
+
+if (!function_exists('wcmp_get_available_product_types')) {
+    function wcmp_get_available_product_types() {
+        global $WCMp;
+        $available_product_types = array();
+        $terms = get_terms( 'product_type' );
+        foreach ( $terms as $term ) {
+            if($term->name == 'simple' && $WCMp->vendor_caps->vendor_can('simple')){
+                $available_product_types['simple'] = __( 'Simple product', 'dc-woocommerce-multi-vendor' );
+                if($WCMp->vendor_caps->vendor_can('virtual')){
+                    $available_product_types['virtual'] = __( 'Virtual product', 'dc-woocommerce-multi-vendor' );
+                }
+                if($WCMp->vendor_caps->vendor_can('downloadable')){
+                    $available_product_types['downloadable'] = __( 'Downloadable product', 'dc-woocommerce-multi-vendor' );
+                }
+            }elseif($term->name == 'variable' && $WCMp->vendor_caps->vendor_can('variable')){
+                $available_product_types['variable'] = __( 'Variable product', 'dc-woocommerce-multi-vendor' );
+            }elseif($term->name == 'grouped' && $WCMp->vendor_caps->vendor_can('grouped')){
+                $available_product_types['grouped'] = __( 'Grouped product', 'dc-woocommerce-multi-vendor' );
+            }elseif($term->name == 'external' && $WCMp->vendor_caps->vendor_can('external')){
+                $available_product_types['external'] = __( 'External/Affiliate product', 'dc-woocommerce-multi-vendor' );
+            }else{}
+        }
+        return apply_filters('wcmp_get_available_product_types', $available_product_types);
     }
 }

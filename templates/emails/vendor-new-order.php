@@ -21,9 +21,11 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 <table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;" border="1" bordercolor="#eee">
     <thead>
         <tr>
+            <?php do_action('wcmp_before_vendor_order_table_header', $order, $vendor->term_id); ?>
             <th scope="col" style="text-align:left; border: 1px solid #eee;"><?php _e('Product', 'dc-woocommerce-multi-vendor'); ?></th>
             <th scope="col" style="text-align:left; border: 1px solid #eee;"><?php _e('Quantity', 'dc-woocommerce-multi-vendor'); ?></th>
             <th scope="col" style="text-align:left; border: 1px solid #eee;"><?php _e('Commission', 'dc-woocommerce-multi-vendor'); ?></th>
+            <?php do_action('wcmp_after_vendor_order_table_header', $order, $vendor->term_id); ?>
         </tr>
     </thead>
     <tbody>

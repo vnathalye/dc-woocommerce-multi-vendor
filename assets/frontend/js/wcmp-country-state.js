@@ -49,7 +49,7 @@ jQuery( function( $ ) {
                             
                             if ( $statebox.is( 'input' ) ) {
                                     // Change for select
-                                    $statebox.replaceWith( '<select name="' + input_name + '" id="' + input_id + '" class="state_select form-control inp-btm-margin regular-select" data-placeholder="' + placeholder + '"></select>' );
+                                    $statebox.replaceWith( '<select name="' + input_name + '" id="' + input_id + '" class="state_select select_box form-control inp-btm-margin regular-select" data-placeholder="' + placeholder + '"></select>' );
                                     //$statebox = $wrapper.find( '#vendor_state' );
                                     $statebox   = $( '#vendor_state' );
                             }

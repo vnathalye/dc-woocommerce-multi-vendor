@@ -41,7 +41,7 @@ i.wcmp-font {
     font-size: 15px;
     word-wrap: break-word;
 }
-#wcmp-store-conatiner img:not(.wcmp-store-locator-wrap img){
+#wcmp-store-conatiner .wcmp-store-list img{
     max-width: 100%;
     max-height: 100%;
     width: auto;
@@ -167,6 +167,7 @@ i.wcmp-font {
 #wcmp-store-conatiner .wcmp-store-detail-list li{
     padding-left: 45px;
     position: relative;
+    list-style: none;
 }
 #wcmp-store-conatiner .wcmp-store-detail-list li i{
     position: absolute;

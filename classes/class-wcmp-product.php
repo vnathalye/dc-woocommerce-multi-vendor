@@ -1364,6 +1364,18 @@ class WCMp_Product {
                 exit;
             }
         }
+        if($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_untrash_product') && $product_id && get_current_user_id() == $vendor->id){
+            wp_untrash_post($product_id);
+            wc_add_notice(__('Product restored from the Trash', 'dc-woocommerce-multi-vendor'), 'success');
+            wp_redirect($delete_product_redirect_url);
+            exit;
+        }
+        if($wpnonce && wp_verify_nonce($wpnonce, 'wcmp_trash_product') && $product_id && get_current_user_id() == $vendor->id){
+            wp_trash_post($product_id);
+            wc_add_notice(__('Product moved to the Trash', 'dc-woocommerce-multi-vendor'), 'success');
+            wp_redirect($delete_product_redirect_url);
+            exit;
+        }
     }
 
     /**

@@ -159,7 +159,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
             // backward supports
             $query = apply_filters('wcmp_vendor_list_get_wcmp_vendors_args', $query, $order_by, $_REQUEST);
 
-            $vendors_query = self::get_vendors_query($query, $_REQUEST);
+            $vendors_query = self::get_vendors_query($query, $_REQUEST, apply_filters('wcmp_vendor_list_ignore_pagination', false));
             $vendors = $vendors_query->get_results();
             $vendors_total = $vendors_query->get_total();
             if(isset($_REQUEST['wcmp_vlist_center_lat']) && isset($_REQUEST['wcmp_vlist_center_lng'])){
@@ -178,6 +178,9 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                 'stores'    => $listed_stores['stores'],
                 'lang'      => array(
                     'geolocation_service_failed' => __('Error: The Geolocation service failed.', 'dc-woocommerce-multi-vendor'),
+                    'geolocation_permission_denied' => __('Error: User denied the request for Geolocation.', 'dc-woocommerce-multi-vendor'),
+                    'geolocation_position_unavailable' => __('Error: Location information is unavailable.', 'dc-woocommerce-multi-vendor'),
+                    'geolocation_timeout' => __('Error: The request to get user location timed out.', 'dc-woocommerce-multi-vendor'),
                     'geolocation_doesnt_support' => __('Error: Your browser does not support geolocation.', 'dc-woocommerce-multi-vendor'),
                 ),
                 'map_data' => array(

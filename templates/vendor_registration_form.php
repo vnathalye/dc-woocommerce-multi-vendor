@@ -177,8 +177,8 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
             case 'vendor_address_1':
             case 'vendor_address_2':
             case 'vendor_phone':
-            case 'vendor_country':
-            case 'vendor_state':
+            //case 'vendor_country':
+            //case 'vendor_state':
             case 'vendor_city':
             case 'vendor_postcode':
             case 'vendor_paypal_email':
@@ -188,6 +188,37 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                     <input type="text" value="<?php if (!empty($form_data['wcmp_vendor_fields'][$key]["value"])) echo esc_attr($form_data['wcmp_vendor_fields'][$key]["value"]); ?>" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" placeholder="<?php echo $value['placeholder']; ?>" <?php if($value['required']){ echo 'required="required"'; }?> />
                     <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][label]" value="<?php echo htmlentities($value['label']); ?>" />
                     <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][type]" value="<?php echo $value['type']; ?>" />
+                </div>
+                <?php
+                break;
+            case 'vendor_country':
+                ?>
+                <div class="wcmp-regi-form-row <?php if(!empty($value['cssClass'])){ echo $value['cssClass']; } else {  echo 'wcmp-regi-12'; } ?>">
+                    <label><?php echo __($value['label'],'dc-woocommerce-multi-vendor'); ?><?php if($value['required']){ echo ' <span class="required">*</span>'; }?></label>
+                    <!--input type="text" value="<?php if (!empty($form_data['wcmp_vendor_fields'][$key]["value"])) echo esc_attr($form_data['wcmp_vendor_fields'][$key]["value"]); ?>" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" placeholder="<?php echo $value['placeholder']; ?>" <?php if($value['required']){ echo 'required="required"'; }?> /-->
+                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][label]" value="<?php echo htmlentities($value['label']); ?>" />
+                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][type]" value="<?php echo $value['type']; ?>" />
+                    <select class="country_to_state select_box" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" <?php if($value['required']){ echo 'required="required"'; }?>>
+                        <option value=""><?php _e( 'Select a country&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
+                        <?php 
+                            foreach ( WC()->countries->get_shipping_countries() as $key => $value ) {
+                                echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $value ) . '</option>';
+                            }
+                        ?>
+                    </select>
+                </div>
+                <?php
+                break;
+            case 'vendor_state':
+                ?>
+                <div class="vendor_state_wrapper wcmp-regi-form-row <?php if(!empty($value['cssClass'])){ echo $value['cssClass']; } else {  echo 'wcmp-regi-12'; } ?>">
+                    <label><?php echo __($value['label'],'dc-woocommerce-multi-vendor'); ?><?php if($value['required']){ echo ' <span class="required">*</span>'; }?></label>
+                    <!--input type="text" value="<?php if (!empty($form_data['wcmp_vendor_fields'][$key]["value"])) echo esc_attr($form_data['wcmp_vendor_fields'][$key]["value"]); ?>" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" placeholder="<?php echo $value['placeholder']; ?>" <?php if($value['required']){ echo 'required="required"'; }?> /-->
+                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][label]" value="<?php echo htmlentities($value['label']); ?>" />
+                    <input type="hidden" name="wcmp_vendor_fields[<?php echo $key; ?>][type]" value="<?php echo $value['type']; ?>" />
+                    <select id="vendor_state" class="state_select select_box" name="wcmp_vendor_fields[<?php echo $key; ?>][value]" <?php if($value['required']){ echo 'required="required"'; }?>>
+                        
+                    </select>
                 </div>
                 <?php
                 break;

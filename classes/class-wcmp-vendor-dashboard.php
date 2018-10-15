@@ -425,6 +425,8 @@ Class WCMp_Admin_Dashboard {
                 $order = wc_get_order($_POST['order_id']);
                 $comment = esc_textarea($_POST['comment_text']);
                 $comment_id = $order->add_order_note($comment, 1);
+                // update comment author & email
+                wp_update_comment(array('comment_ID' => $comment_id, 'comment_author' => $vendor->page_title, 'comment_author_email' => $vendor->user_data->user_email));
                 add_comment_meta($comment_id, '_vendor_id', $vendor->id);
                 wp_redirect(esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_orders_endpoint', 'vendor', 'general', 'vendor-orders'), $order->get_id())));
                 die();
@@ -1286,7 +1288,8 @@ Class WCMp_Admin_Dashboard {
         $has_updated_store_addresses = get_user_meta(get_current_user_id(), '_vendor_store_country_state_updated', true);
         $has_rejected_store_updater = get_user_meta(get_current_user_id(), '_vendor_rejected_store_country_state_update', true);
         $has_country = get_user_meta(get_current_user_id(), '_vendor_country', true);
-        if($has_country && !$has_updated_store_addresses && !$has_rejected_store_updater && !$WCMp->endpoints->get_current_endpoint()){
+        $has_country_code = get_user_meta(get_current_user_id(), '_vendor_country_code', true);
+        if($has_country && !$has_country_code && !$has_updated_store_addresses && !$has_rejected_store_updater && !$WCMp->endpoints->get_current_endpoint()){
             ?>
             <div class="modal fade" id="vendor-setuo-updater-info-modal" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
                 <div class="modal-dialog">

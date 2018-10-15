@@ -150,7 +150,13 @@ $subtotal = 0;
                         $last_added = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
                         ?>
                         <li class="list-group-item list-group-item-action flex-column align-items-start">
-                            <p><?php printf(__('Added %s ago', 'dc-woocommerce-multi-vendor'), $last_added); ?></p>
+                            <p><?php printf(__('Added %s ago', 'dc-woocommerce-multi-vendor'), $last_added); ?>
+                            <?php
+                            if ( 'WooCommerce' !== $comment->comment_author ) :
+                                /* translators: %s: note author */
+                                printf( ' ' . __( 'by %s', 'dc-woocommerce-multi-vendor' ), $comment->comment_author );
+                            endif;
+                            ?></p>
                             <p><?php echo $comment->comment_content; ?></p>
                         </li>
                     <?php

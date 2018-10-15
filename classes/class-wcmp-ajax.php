@@ -2380,8 +2380,8 @@ class WCMp_Ajax {
                     foreach ($products_array as $product_single) {
                         $row = array();
                         $product = wc_get_product($product_single->ID);
-                        $edit_product_link = '';
-                        if (current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') {
+                        $edit_product_link = $product->get_permalink(); // changed by Vivek Athalye @vnathalye
+                        if ((current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') || in_array($product->get_status(), array('draft', 'pending'))) { // changed by Vivek Athalye @vnathalye
                             $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $product->get_id()));
                         }
                         // Get actions
@@ -2396,7 +2396,7 @@ class WCMp_Ajax {
                             'delete' => '<a class="productDelete" href="' . esc_url(wp_nonce_url(add_query_arg(array('product_id' => $product->get_id()), wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products'))), 'wcmp_delete_product')) . '" onclick="' . $onclick . '">' . __('Delete Permanently', 'dc-woocommerce-multi-vendor') . '</a>',
                             'view' => '<a href="' . esc_url($product->get_permalink()) . '" target="_blank">' . $view_title . '</a>',
                         );
-                        if (!current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') != 'Enable') {
+                        if (!current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') != 'Enable' && !in_array($product->get_status(), array('draft', 'pending'))) { // changed by Vivek Athalye @vnathalye
                             unset($actions['edit']);
                             unset($actions['delete']);
                         }

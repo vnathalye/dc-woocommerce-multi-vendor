@@ -417,7 +417,7 @@ class WCMp_Vendor_Hooks {
             $end_date = $_POST['wcmp_stat_end_dt'];
         } else {
             // hard-coded '01' for first day
-            $end_date = date( 'Y-m-t' );
+            $end_date = date( 'Y-m-d' );
         }
         $vendor = get_wcmp_vendor( get_current_vendor_id() );
         $WCMp_Plugin_Post_Reports = new WCMp_Report();
@@ -552,7 +552,7 @@ class WCMp_Vendor_Hooks {
             if ( ! empty( $_POST['wcmp_end_date_order'] ) ) {
                 $end_date = $_POST['wcmp_end_date_order'];
             } else {
-                $end_date = date( 'Y-m-t' );
+                $end_date = date( 'Y-m-d' );
             }
             //wp_localize_script('vendor_orders_js', 'vendor_orders_args', array('start_date' => strtotime($start_date), 'end_date' => strtotime($end_date . ' +1 day')));
             $WCMp->template->get_template( 'vendor-dashboard/vendor-orders.php', array( 'vendor' => $vendor, 'start_date' => strtotime( $start_date ), 'end_date' => strtotime( $end_date . ' +1 day' ) ) );

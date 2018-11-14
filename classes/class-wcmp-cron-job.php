@@ -15,9 +15,10 @@ class WCMp_Cron_Job {
         add_action('vendor_weekly_order_stats', array(&$this, 'vendor_weekly_order_stats_report'));
         // vendor monthly order stats reports
         add_action('vendor_monthly_order_stats', array(&$this, 'vendor_monthly_order_stats_report'));
-
-        add_action('migrate_multivendor_table', array(&$this, 'migrate_multivendor_table'));
-
+        // migrate all products having parent-child concept
+        add_action('migrate_spmv_multivendor_table', array(&$this, 'migrate_spmv_multivendor_table'));
+        // bind spmv excluded products mapping 
+        add_action('wcmp_spmv_excluded_products_map', array(&$this, 'wcmp_spmv_excluded_products_map'));
         $this->wcmp_clear_scheduled_event();
     }
 
@@ -29,7 +30,8 @@ class WCMp_Cron_Job {
             'masspay_cron_start',
             'vendor_weekly_order_stats',
             'vendor_monthly_order_stats',
-            'migrate_multivendor_table',
+            'migrate_spmv_multivendor_table',
+            'wcmp_spmv_excluded_products_map',
         ));
         if ($cron_hook_identifier) {
             foreach ($cron_hook_identifier as $cron_hook) {
@@ -243,44 +245,58 @@ class WCMp_Cron_Job {
         }
     }
 
-    public function migrate_multivendor_table() {
-        global $wpdb;
-        $start = get_option('wcmp_products_map_table_start', 0);
-        $length = apply_filters('wcmp_products_map_table_length', 50);
-        $results = $wpdb->get_results("SELECT product_ids FROM `{$wpdb->prefix}wcmp_products_map` LIMIT {$start},{$length};");
-        if ($results) {
-            foreach ($results as $result) {
-                $product_ids = explode(',', $result->product_ids);
-                $parent_id = $this->get_parent_id($product_ids);
-                if ($parent_id && $product_ids && count($product_ids) > 1) {
-                    foreach ($product_ids as $product_id) {
-                        if ($product = wc_get_product($product_id)) {
-                            $product->set_parent_id($parent_id);
-                            update_post_meta($product->get_id(), '_wcmp_child_product', true);
-                            $product->save();
-                        }
+    public function migrate_spmv_multivendor_table() {
+        global $WCMp, $wpdb;
+        $length = apply_filters('wcmp_migrate_spmv_multivendor_table_length', 50);
+        $args = apply_filters('wcmp_migrate_spmv_table_products_query_args', array(
+            'numberposts' => $length,
+            'post_type' => 'product',
+            'meta_key' => '_wcmp_child_product',
+            'meta_value' => '1',
+            'fields' => 'id=>parent',
+        ));
+        $products = get_posts($args);
+        
+        if($products){
+            foreach ($products as $product_id => $parent_id) {
+                if($parent_id){
+                    delete_post_meta($product_id, '_wcmp_child_product');
+                    wp_update_post(array('ID' => $product_id, 'post_parent' => 0), true);
+                    $data = array('product_id' => $product_id);
+                    if(get_post_meta($product_id, '_wcmp_spmv_map_id', true) || get_post_meta($parent_id, '_wcmp_spmv_map_id', true)){
+                        $product_map_id = (get_post_meta($product_id, '_wcmp_spmv_map_id', true)) ? get_post_meta($product_id, '_wcmp_spmv_map_id', true) : 0;
+                        $product_map_id = (get_post_meta($parent_id, '_wcmp_spmv_map_id', true)) ? get_post_meta($parent_id, '_wcmp_spmv_map_id', true) : $product_map_id;
+                        $data['product_map_id'] = $product_map_id;
+                    }
+                    
+                    $map_id = wcmp_spmv_products_map($data, 'insert');
+                    if($map_id){
+                        $data['product_map_id'] = $map_id;
+                        $data['product_id'] = $parent_id;
+                        wcmp_spmv_products_map($data, 'insert');
+                        //update meta
+                        update_post_meta($product_id, '_wcmp_spmv_product', true);
+                        update_post_meta($parent_id, '_wcmp_spmv_product', true);
+                        update_post_meta($product_id, '_wcmp_spmv_map_id', $map_id);
+                        update_post_meta($parent_id, '_wcmp_spmv_map_id', $map_id);
                     }
                 }
             }
-            update_option('wcmp_products_map_table_start', $start + $length);
-        } else {
-            update_option('multivendor_table_migrated', true);
-            wp_clear_scheduled_hook('migrate_multivendor_table');
+            // SPMV terms object update
+            do_wcmp_spmv_set_object_terms();
+            $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+
+        }else{
+            update_option('spmv_multivendor_table_migrated', true);
+            wp_clear_scheduled_hook('migrate_spmv_multivendor_table');
         }
     }
 
-    public function get_parent_id($product_ids) {
-        if ($product_ids && count($product_ids) > 1) {
-            $parent_id = current($product_ids);
-            $product = wc_get_product($parent_id);
-            if (!$product) {
-                unset($product_ids[0]);
-                $this->get_parent_id($product_ids);
-            } else {
-                return $product->get_id();
-            }
-        }
-        return false;
+    public function wcmp_spmv_excluded_products_map() {
+        do_wcmp_spmv_set_object_terms();
+        $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+        set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
     }
 
 }

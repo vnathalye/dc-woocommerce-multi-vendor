@@ -46,10 +46,11 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
         $this->secret_key = $this->is_testmode ? get_wcmp_vendor_settings('test_secret_key', 'payment', 'stripe_gateway') : get_wcmp_vendor_settings('live_secret_key', 'payment', 'stripe_gateway');
         
         if ($this->validate_request()) {
-            if($this->process_stripe_payment($transfer_args)){
+            $transfer_obj = $this->process_stripe_payment($transfer_args);
+            if($transfer_obj){
                 $this->record_transaction();
                 if ($this->transaction_id) {
-                    return array('message' => __('New transaction has been initiated', 'dc-woocommerce-multi-vendor'), 'type' => 'success', 'transaction_id' => $this->transaction_id);
+                    return array('message' => __('New transaction has been initiated', 'dc-woocommerce-multi-vendor'), 'type' => 'success', 'transaction_id' => $this->transaction_id, 'transfer_obj' => $transfer_obj);
                 }
             } else{
                 return $this->message;

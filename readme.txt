@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
 Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: 3.1.6
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,24 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.2.0 - 2018-11-14 =
+* Added - Product specific GTIN supports for backend.
+* Added - Vendor `store_name` in Rest API product objects.
+* Added - Show ingle product multiple vendor ( SPMV ) products based on WCMp settings > Genenal.
+* Tweak - Single product multiple vendor concept.
+* UI - Vendor store logo display UI.
+* Dev - WCMp Rest API `before_wcmp_rest_prepare_product_object_data` filter added.
+* Dev - WCMp Rest API `wcmp_rest_prepare_vendor_object_args` filter added.
+* Updated - Language file.
+
+= 3.1.7 - 2018-10-30 =
+* Added - Vendor wise commission field added on WCMp > vendors.
+* Added - Allow editing of draft products, even `edit_publish_product` cap is disabled.
+* Fix - `pre_get_posts` filter issue.
+* Fix - Stripe load checking.
+* Fix - Vendor order details order exists issue. 
+* Updated - Language file.
+
 = 3.1.6 - 2018-10-13 =
 * Added - Backend vendor wise commission list filter.
 * Added - Vendor dashboard product list bulk action.

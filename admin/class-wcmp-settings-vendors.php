@@ -161,7 +161,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 			$vendor_permalink = ''; 
 			$status = "";
 			if($vendor) {
-				$vendor_products = $vendor->get_products();
+				$vendor_products = $vendor->get_products(array('fields' => 'ids'));
 				$vendor_permalink = $vendor->permalink;
 				$product_count = count($vendor_products);
 			}
@@ -363,7 +363,9 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 					
 					$user_id = wp_update_user( $userdata ) ;
 					
-					foreach($_POST as $key => $value) {
+					foreach($_POST as $key => $value) { 
+                                            $skip_vendor_update_data = apply_filters('wcmp_skipped_vendor_update_keys', array('wcmp_commission_type'));
+                                            if(in_array($key, $skip_vendor_update_data)) continue;
 						if($value != '') {
 							if ($key == 'vendor_page_title') {
 								if (!$vendor->update_page_title(wc_clean($value))) {
@@ -420,6 +422,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 					if(isset($_POST['vendor_profile_image']) && $_POST['vendor_profile_image'] != '') update_user_meta($user_id, "_vendor_profile_image", $_POST['vendor_profile_image']);
 					echo '<div class="notice notice-success"><p>' . __( 'Vendor successfully created!', 'dc-woocommerce-multi-vendor' ) . '</p></div>';
 				}
+                                wp_safe_redirect(apply_filters('wcmp_add_new_vendor_redirect_url', admin_url('admin.php?page=vendors&action=edit&ID='.$user_id)));
 			}
 		}
 		
@@ -478,7 +481,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							$tzstring = 'UTC+' . $current_offset;
 						}
 					}
-					$states = ($vendor_obj->country_code) ? WC()->countries->get_states( $vendor_obj->country_code ) : array();
+					$states = ($vendor_obj->country_code && WC()->countries->get_states( $vendor_obj->country_code )) ? WC()->countries->get_states( $vendor_obj->country_code ) : array();
 					$store_tab_options =  array(
 								"vendor_page_title" => array('label' => __('Store Name *', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_page_title', 'label_for' => 'vendor_page_title', 'name' => 'vendor_page_title', 'value' => $vendor_obj->page_title ),
 								"vendor_page_slug" => array('label' => __('Store Slug *', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_page_slug', 'label_for' => 'vendor_page_slug', 'name' => 'vendor_page_slug', 'desc' => sprintf(__('Store URL will be something like - %s', 'dc-woocommerce-multi-vendor'), trailingslashit(get_home_url()) . 'vendor_slug'), 'value' => $vendor_obj->page_slug, 'attributes' => array('readonly' => true)),
@@ -522,10 +525,12 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 						'current' => __('Current', 'dc-woocommerce-multi-vendor'),
 						'savings' => __('Savings', 'dc-woocommerce-multi-vendor'),
 					);
-					
+					$available_commission_types = wcmp_get_available_commission_types();
 					$payment_tab_options =  array(
 							"vendor_payment_mode" => array('label' => __('Choose Payment Method', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'vendor_payment_mode', 'label_for' => 'vendor_payment_mode', 'name' => 'vendor_payment_mode', 'options' => $vendor_payment_mode_select, 'value' => $vendor_obj->payment_mode),
-							"vendor_paypal_email" => array('label' => __('Paypal Email', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_paypal_email', 'label_for' => 'vendor_paypal_email', 'name' => 'vendor_paypal_email', 'value' => $vendor_obj->paypal_email, 'wrapper_class' => 'payment-gateway-paypal_masspay payment-gateway-paypal_payout payment-gateway'),
+                                                        "wcmp_commission_type" => array('label' => __('Commission Type', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_commission_type', 'label_for' => 'wcmp_commission_type', 'name' => 'wcmp_commission_type', 'value' => isset($available_commission_types[get_wcmp_vendor_settings('commission_type', 'payment')]) ? $available_commission_types[get_wcmp_vendor_settings('commission_type', 'payment')] : '', 'attributes' => array('readonly' => true)),
+							"vendor_commission" => array('label' => __('Commission Amount', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_commission', 'label_for' => 'vendor_commission', 'name' => 'vendor_commission', 'value' => $vendor_obj->commission),
+                                                        "vendor_paypal_email" => array('label' => __('Paypal Email', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_paypal_email', 'label_for' => 'vendor_paypal_email', 'name' => 'vendor_paypal_email', 'value' => $vendor_obj->paypal_email, 'wrapper_class' => 'payment-gateway-paypal_masspay payment-gateway-paypal_payout payment-gateway'),
 							"vendor_bank_account_type" => array('label' => __('Account type', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'id' => 'vendor_bank_account_type', 'label_for' => 'vendor_bank_account_type', 'name' => 'vendor_bank_account_type', 'options' => $vendor_bank_account_type_select, 'value' => $vendor_obj->bank_account_type, 'wrapper_class' => 'payment-gateway-direct_bank payment-gateway'),
 							"vendor_bank_name" => array('label' => __('Bank Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_bank_name', 'label_for' => 'vendor_bank_name', 'name' => 'vendor_bank_name', 'value' => $vendor_obj->bank_name, 'wrapper_class' => 'payment-gateway-direct_bank payment-gateway'),
 							"vendor_aba_routing_number" => array('label' => __('ABA Routing Number', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_aba_routing_number', 'label_for' => 'vendor_aba_routing_number', 'name' => 'vendor_aba_routing_number', 'value' => $vendor_obj->aba_routing_number, 'wrapper_class' => 'payment-gateway-direct_bank payment-gateway'),
@@ -535,6 +540,38 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 							"vendor_account_holder_name" => array('label' => __('Account Holder Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_account_holder_name', 'label_for' => 'vendor_account_holder_name', 'name' => 'vendor_account_holder_name', 'value' => $vendor_obj->account_holder_name, 'wrapper_class' => 'payment-gateway-direct_bank payment-gateway'),
 							"vendor_bank_account_number" => array('label' => __('Account Number', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'vendor_bank_account_number', 'label_for' => 'vendor_bank_account_number', 'name' => 'vendor_bank_account_number', 'value' => $vendor_obj->bank_account_number, 'wrapper_class' => 'payment-gateway-direct_bank payment-gateway'),
 						);
+                                        
+                                        if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage') {
+                                            unset($payment_tab_options['vendor_commission']);
+                                            $payment_tab_options['vendor_commission_percentage'] = array(
+                                                'label' => __('Commission Percentage(%)', 'dc-woocommerce-multi-vendor'),
+                                                'type' => 'text',
+                                                'value' => $vendor_obj->commission_percentage,
+                                                'class' => ''
+                                            );
+                                            $payment_tab_options['vendor_commission_fixed_with_percentage'] = array(
+                                                'label' => __('Commission(fixed), Per Transaction', 'dc-woocommerce-multi-vendor'),
+                                                'type' => 'text',
+                                                'value' => $vendor_obj->commission_fixed_with_percentage,
+                                                'class' => ''
+                                            );
+                                        }
+
+                                        if ($WCMp->vendor_caps->payment_cap['commission_type'] == 'fixed_with_percentage_qty') {
+                                            unset($payment_tab_options['vendor_commission']);
+                                            $payment_tab_options['vendor_commission_percentage'] = array(
+                                                'label' => __('Commission Percentage(%)', 'dc-woocommerce-multi-vendor'),
+                                                'type' => 'text',
+                                                'value' => $vendor_obj->commission_percentage,
+                                                'class' => ''
+                                            );
+                                            $payment_tab_options['vendor_commission_fixed_with_percentage_qty'] = array(
+                                                'label' => __('Commission Fixed Per Unit', 'dc-woocommerce-multi-vendor'),
+                                                'type' => 'text',
+                                                'value' => $vendor_obj->commission_fixed_with_percentage_qty,
+                                                'class' => ''
+                                            );
+                                        }
 				}
 			} else {
 				$personal_tab_options =  array(

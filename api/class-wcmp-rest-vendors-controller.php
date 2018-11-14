@@ -262,7 +262,7 @@ class WCMp_REST_API_Vendors_Controller extends WC_REST_Controller {
     	$vendor_review_info = wcmp_get_vendor_review_info($vendor_term_id);
     	$avg_rating = number_format(floatval($vendor_review_info['avg_rating']), 1);
     	$rating_count = $vendor_review_info['total_rating'];
-    	$vendor_object = array(
+    	$vendor_object = apply_filters("wcmp_rest_prepare_vendor_object_args", array(
     		'id' => $method->id,
     		'login' => $method->user_data->data->user_login,
     		'first_name' => get_user_meta($method->id, 'first_name', true),
@@ -318,7 +318,7 @@ class WCMp_REST_API_Vendors_Controller extends WC_REST_Controller {
 			'rating_count' => $rating_count,
 			'avg_rating' => $avg_rating,
 		  
-		);
+		), $method, $request );
 
         $vendor_object = array_merge( $vendor_object, $additional_fields );
         $response = rest_ensure_response( $vendor_object );

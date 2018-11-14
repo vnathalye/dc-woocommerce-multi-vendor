@@ -211,7 +211,7 @@ Class WCMp_Admin_Dashboard {
             if (isset($_POST['wcmp_stat_export']) && !empty($_POST['wcmp_stat_export']) && $vendor && apply_filters('can_wcmp_vendor_export_orders_csv', true, $vendor->id)) {
                 $vendor = apply_filters('wcmp_order_details_export_vendor', $vendor);
                 $start_date = isset($_POST['wcmp_stat_start_dt']) ? $_POST['wcmp_stat_start_dt'] : date('Y-m-01');
-                $end_date = isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-t');
+                $end_date = isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-d');
                 $start_date = strtotime('-1 day', strtotime($start_date));
                 $end_date = strtotime('+1 day', strtotime($end_date));
                 $query = array(

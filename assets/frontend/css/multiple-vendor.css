@@ -276,6 +276,13 @@ span.wcmp_norating {
     }
 
 }
+/* policies */
+.wcmp-product-policies h2.wcmp_policies_heading {
+    margin: 0 0 7px 0 !important;
+}
+.wcmp-product-policies .wcmp_policies_description {
+    margin-bottom: 25px;
+}
 /* Q and A  */
 h2.custqna-title{
     margin: 0;

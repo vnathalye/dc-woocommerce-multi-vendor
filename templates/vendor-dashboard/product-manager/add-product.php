@@ -553,7 +553,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     <div class="col-md-6 col-sm-9">
                         <select id="wcmp-product-tags" name="product_tags[]" multiple="multiple" style="width: 100%;">
                             <?php 
-                            $tags = get_terms( 'product_tag', apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'hide_empty' => false, 'orderby' => 'count', 'order' => 'DESC' )));
+                            $tags = get_terms( wp_parse_args(apply_filters('wcmp_add_product_tag_query_args', array( 'number' => 45, 'hide_empty' => false, 'orderby' => 'count', 'order' => 'DESC' )), array('taxonomy' => 'product_tag')));
                             if($tags) :
                                 foreach ($tags as $tag) {
                                     echo '<option value="'.$tag->name.'" '.selected(in_array($tag->name, $product_tag_list), true, false).'>'.$tag->name.'</option>';

@@ -25,7 +25,7 @@ global $WCMp;
                     </div>
                     <div class="form-group">
                         <span class="date-inp-wrap">
-                        <input type="text" name="wcmp_stat_end_dt" value="<?php echo isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-t'); ?>" class="pickdate wcmp_stat_end_dt form-control">
+                        <input type="text" name="wcmp_stat_end_dt" value="<?php echo isset($_POST['wcmp_stat_end_dt']) ? $_POST['wcmp_stat_end_dt'] : date('Y-m-d'); ?>" class="pickdate wcmp_stat_end_dt form-control">
                         </span>
                     </div>
                     <div class="form-group">

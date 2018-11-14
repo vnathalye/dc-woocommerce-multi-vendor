@@ -33,8 +33,7 @@ class WCMp_Capabilities {
         add_filter('product_type_selector', array(&$this, 'wcmp_product_type_selector'), 10, 1);
         add_filter('product_type_options', array(&$this, 'wcmp_product_type_options'), 10);
         add_filter('wc_product_sku_enabled', array(&$this, 'wcmp_wc_product_sku_enabled'), 30);
-        //add_filter('woocommerce_product_data_tabs', array(&$this, 'wcmp_woocommerce_product_data_tabs'), 30);
-        //add_action('admin_print_styles', array(&$this, 'output_capability_css'));
+
         add_action('woocommerce_get_item_data', array(&$this, 'add_sold_by_text_cart'), 30, 2);
         add_action('woocommerce_new_order_item', array(&$this, 'order_item_meta_2'), 20, 3);
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'wcmp_after_add_to_cart_form'), 30);
@@ -85,20 +84,6 @@ class WCMp_Capabilities {
             return false;
         }
     }
-
-    /**
-     * Vendor Capability from Capability Settings 
-     *
-     * @param capability
-     * @return boolean 
-     */
-//    public function vendor_frontend_settings($cap) {
-//        if (is_array($this->frontend_cap) && array_key_exists($cap, $this->frontend_cap)) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
 
     /**
      * Vendor Capability from Capability Settings 
@@ -160,90 +145,11 @@ class WCMp_Capabilities {
      */
     public function wcmp_wc_product_sku_enabled($state) {
         $user = wp_get_current_user();
-        if (is_user_wcmp_vendor($user)) {
+        if (is_admin() && is_user_wcmp_vendor($user)) {
             return apply_filters( 'wcmp_vendor_product_sku_enabled', true , $user->ID );
         }
         return $state;
     }
-
-    /**
-     * Set woocommerce product tab according settings
-     *
-     * @param panels
-     * @return panels 
-     */
-//    public function wcmp_woocommerce_product_data_tabs($panels) {
-//        $settings_product = get_option('wcmp_product_settings_name');
-//        $user = wp_get_current_user();
-//        if (is_user_wcmp_vendor($user)) {
-//            $vendor_can = $this->vendor_can('inventory');
-//            if (!$vendor_can) {
-//                unset($panels['inventory']);
-//            }
-//            $vendor_can = $this->vendor_can('shipping');
-//            if (!$vendor_can) {
-//                unset($panels['shipping']);
-//            }
-//            if (!$this->vendor_can('linked_products')) {
-//                unset($panels['linked_product']);
-//            }
-//            $vendor_can = $this->vendor_can('attribute');
-//            if (!$vendor_can) {
-//                unset($panels['attribute']);
-//            }
-//            $vendor_can = $this->vendor_can('advanced');
-//            if (!$vendor_can) {
-//                unset($panels['advanced']);
-//            }
-//        }
-//        return $panels;
-//    }
-
-    /**
-     * Set output capability css
-     */
-//    public function output_capability_css() {
-//        global $post;
-//        $screen = get_current_screen();
-//        $custom_css = '';
-//        if (isset($screen->id) && in_array($screen->id, array('product'))) {
-//            if (is_user_wcmp_vendor(get_current_vendor_id())) {
-//                if (!$this->vendor_can('taxes')) {
-//                    $custom_css .= '
-//					._tax_status_field, ._tax_class_field {
-//						display: none !important;
-//					}
-//					';
-//                }
-//                if (!$this->vendor_can('add_comment')) {
-//                    $custom_css .= '
-//					.comments-box {
-//						display: none !important;
-//					}
-//					';
-//                }
-//                if (!$this->vendor_can('comment_box')) {
-//                    $custom_css .= '
-//					#add-new-comment {
-//						display: none !important;
-//					}
-//					';
-//                }
-//                if ($this->vendor_can('stylesheet')) {
-//                    $custom_css .= $this->wcmp_capability['stylesheet'];
-//                }
-//
-//                $vendor_id = get_current_vendor_id();
-//                $vendor = get_wcmp_vendor($vendor_id);
-//                if ($vendor && $post->post_author != $vendor_id) {
-//                    $custom_css .= '.options_group.pricing.show_if_simple.show_if_external {
-//														display: none !important;
-//													}';
-//                }
-//                wp_add_inline_style('woocommerce_admin_styles', $custom_css);
-//            }
-//        }
-//    }
 
     /**
      * Add Sold by Vendor text

@@ -70,14 +70,17 @@ class WCMp_Product {
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
             add_filter( 'wp_insert_post_data', array( $this, 'override_wc_product_post_parent' ), 99, 2 );
-            //add_action('before_delete_post', array($this, 'remove_prent_product_from_childs'), 10);
-            //add_action('delete_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
-            //add_action('trashed_post', array($this, 'remove_product_from_multiple_seller_mapping'), 10);
-            //add_action('untrash_post', array($this, 'restore_multiple_seller_mapping'), 10);
+
             if (!defined('WCMP_HIDE_MULTIPLE_PRODUCT')) {
                 add_action('woocommerce_shop_loop', array(&$this, 'woocommerce_shop_loop_callback'), 5);
                 add_action('woocommerce_product_query', array(&$this, 'woocommerce_product_query'), 10);
             }
+            // SPMV terms updates
+            add_action( 'woocommerce_product_quick_edit_save', array( $this, 'wcmp_spmv_bulk_quick_edit_save_post' ), 99 );
+            add_action( 'woocommerce_product_bulk_edit_save', array( $this, 'wcmp_spmv_bulk_quick_edit_save_post' ), 99 );
+            add_action( 'save_post_product', array( $this, 'wcmp_spmv_bulk_quick_edit_save_post' ), 99 );
+            add_action( 'wcmp_create_duplicate_product', array( $this, 'wcmp_spmv_bulk_quick_edit_save_post' ), 99 );
+            add_action( 'woocommerce_update_product', array( $this, 'wcmp_spmv_bulk_quick_edit_save_post' ), 99 );
         }
         add_action('woocommerce_product_query_tax_query', array(&$this, 'wcmp_filter_product_category'), 10);
         $this->vendor_product_restriction();
@@ -89,6 +92,13 @@ class WCMp_Product {
         add_action('product_cat_edit_form_fields', array($this, 'edit_product_cat_commission_fields'), 10);
         add_action('created_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
         add_action('edit_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
+        // GTIN
+        add_action( 'woocommerce_product_options_sku', array( $this, 'wcmp_gtin_product_option') );
+        add_action( 'save_post_product', array( $this, 'wcmp_save_gtin_product_option'), 99 );
+        if(apply_filters( 'wcmp_enable_product_search_by_gtin_code', true) ){
+            add_action( 'pre_get_posts', array( $this, 'wcmp_gtin_product_search'), 99 );
+            add_filter( 'get_search_query', array($this, 'wcmp_gtin_get_search_query_vars'));
+        }
     }
     
     public function override_wc_product_post_parent( $data, $postarr ){
@@ -101,6 +111,20 @@ class WCMp_Product {
             }
         }
         return $data;
+    }
+    
+    public function wcmp_spmv_bulk_quick_edit_save_post( $product ){
+        global $WCMp;
+        if (!is_object($product)) {
+            $product = wc_get_product(absint($product));
+        }
+        $is_wcmp_spmv_product = get_post_meta($product->get_id(), '_wcmp_spmv_product', true);
+        $has_wcmp_spmv_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
+        if($is_wcmp_spmv_product){
+            do_wcmp_spmv_set_object_terms($has_wcmp_spmv_map_id);
+            $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+        }
     }
 
     function product_single_product_multivendor_tab_link() {
@@ -147,59 +171,58 @@ class WCMp_Product {
         $post = get_post($post_id);
         $product = wc_get_product($post_id);
         $more_product_array = array();
-        $have_parent = $product->get_parent_id();
-        $parent_product = $product->get_id();
-        if($have_parent != 0){
-            $parent_product = $product->get_parent_id();
-        }
-        $mapped_products = wc_get_products(array('post_parent' => $parent_product, 'posts_per_page' => -1));
-        $mapped_products[] = wc_get_product($parent_product);
-        if($mapped_products && count($mapped_products) > 1){
-            $i = 0;
-            foreach ($mapped_products as $result) {
-                $result_post = get_post($result->get_id());
-                $vendor_data = get_wcmp_product_vendors($result->get_id());
-                //$_product = wc_get_product($result->ID);
-                $_product = $result;
-                $other_user = new WP_User($result_post->post_author);
-                if ($_product->is_visible() && !is_user_wcmp_pending_vendor($other_user) && !is_user_wcmp_rejected_vendor($other_user) && $post->post_author != $result_post->post_author) {
-                    if ($vendor_data) {
-                        if (isset($vendor_data->page_title)) {
-                            $more_product_array[$i]['seller_name'] = $vendor_data->page_title;
-                            $more_product_array[$i]['is_vendor'] = 1;
-//                            $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
-//                            if (!empty($terms)) {
-                                $more_product_array[$i]['shop_link'] = $vendor_data->permalink;
-                                $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($vendor_data->term_id);
-                            //}
+        $has_product_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
+        if($has_product_map_id){
+            $products_map_data_ids = get_wcmp_spmv_products_map_data($has_product_map_id);
+            $mapped_products = array_diff($products_map_data_ids, array($product->get_id()));
+            if($mapped_products && count($mapped_products) >= 1){
+                $i = 0;
+                foreach ($mapped_products as $result) {
+                    $result = wc_get_product($result);
+                    $result_post = get_post($result->get_id());
+                    $vendor_data = get_wcmp_product_vendors($result->get_id());
+                    //$_product = wc_get_product($result->ID);
+                    $_product = $result;
+                    $other_user = new WP_User($result_post->post_author);
+                    if ($_product->is_visible() && !is_user_wcmp_pending_vendor($other_user) && !is_user_wcmp_rejected_vendor($other_user) && $post->post_author != $result_post->post_author) {
+                        if ($vendor_data) {
+                            if (isset($vendor_data->page_title)) {
+                                $more_product_array[$i]['seller_name'] = $vendor_data->page_title;
+                                $more_product_array[$i]['is_vendor'] = 1;
+    //                            $terms = get_the_terms($result, $WCMp->taxonomy->taxonomy_name);
+    //                            if (!empty($terms)) {
+                                    $more_product_array[$i]['shop_link'] = $vendor_data->permalink;
+                                    $more_product_array[$i]['rating_data'] = wcmp_get_vendor_review_info($vendor_data->term_id);
+                                //}
+                            }
+                        } else {
+                            $more_product_array[$i]['seller_name'] = isset($other_user->data->display_name) ? $other_user->data->display_name : '';
+                            $more_product_array[$i]['is_vendor'] = 0;
+                            $more_product_array[$i]['shop_link'] = get_permalink(wc_get_page_id('shop'));
+                            $more_product_array[$i]['rating_data'] = 'admin';
                         }
-                    } else {
-                        $more_product_array[$i]['seller_name'] = isset($other_user->data->display_name) ? $other_user->data->display_name : '';
-                        $more_product_array[$i]['is_vendor'] = 0;
-                        $more_product_array[$i]['shop_link'] = get_permalink(wc_get_page_id('shop'));
-                        $more_product_array[$i]['rating_data'] = 'admin';
+                        $currency_symbol = get_woocommerce_currency_symbol();
+                        $regular_price_val = $result->get_regular_price();
+                        $sale_price_val = $result->get_sale_price();
+                        $price_val = $result->get_price();
+                        $more_product_array[$i]['product_name'] = $result->get_title();
+                        $more_product_array[$i]['regular_price_val'] = $regular_price_val;
+                        $more_product_array[$i]['sale_price_val'] = $sale_price_val;
+                        $more_product_array[$i]['price_val'] = $price_val;
+                        $more_product_array[$i]['product_id'] = $result->get_id();
+                        $more_product_array[$i]['product_type'] = $result->get_type();
+                        if ($result->get_type() == 'variable') {
+                            $more_product_array[$i]['_min_variation_price'] = get_post_meta($result->get_id(), '_min_variation_price', true);
+                            $more_product_array[$i]['_max_variation_price'] = get_post_meta($result->get_id(), '_max_variation_price', true);
+                            $variable_min_sale_price = get_post_meta($result->get_id(), '_min_variation_sale_price', true);
+                            $variable_max_sale_price = get_post_meta($result->get_id(), '_max_variation_sale_price', true);
+                            $more_product_array[$i]['_min_variation_sale_price'] = $variable_min_sale_price ? $variable_min_sale_price : $more_product_array[$i]['_min_variation_price'];
+                            $more_product_array[$i]['_max_variation_sale_price'] = $variable_max_sale_price ? $variable_max_sale_price : $more_product_array[$i]['_max_variation_price'];
+                            $more_product_array[$i]['_min_variation_regular_price'] = get_post_meta($result->get_id(), '_min_variation_regular_price', true);
+                            $more_product_array[$i]['_max_variation_regular_price'] = get_post_meta($result->get_id(), '_max_variation_regular_price', true);
+                        }
+                        $i++;
                     }
-                    $currency_symbol = get_woocommerce_currency_symbol();
-                    $regular_price_val = $result->get_regular_price();
-                    $sale_price_val = $result->get_sale_price();
-                    $price_val = $result->get_price();
-                    $more_product_array[$i]['product_name'] = $result->get_title();
-                    $more_product_array[$i]['regular_price_val'] = $regular_price_val;
-                    $more_product_array[$i]['sale_price_val'] = $sale_price_val;
-                    $more_product_array[$i]['price_val'] = $price_val;
-                    $more_product_array[$i]['product_id'] = $result->get_id();
-                    $more_product_array[$i]['product_type'] = $result->get_type();
-                    if ($result->get_type() == 'variable') {
-                        $more_product_array[$i]['_min_variation_price'] = get_post_meta($result->get_id(), '_min_variation_price', true);
-                        $more_product_array[$i]['_max_variation_price'] = get_post_meta($result->get_id(), '_max_variation_price', true);
-                        $variable_min_sale_price = get_post_meta($result->get_id(), '_min_variation_sale_price', true);
-                        $variable_max_sale_price = get_post_meta($result->get_id(), '_max_variation_sale_price', true);
-                        $more_product_array[$i]['_min_variation_sale_price'] = $variable_min_sale_price ? $variable_min_sale_price : $more_product_array[$i]['_min_variation_price'];
-                        $more_product_array[$i]['_max_variation_sale_price'] = $variable_max_sale_price ? $variable_max_sale_price : $more_product_array[$i]['_max_variation_price'];
-                        $more_product_array[$i]['_min_variation_regular_price'] = get_post_meta($result->get_id(), '_min_variation_regular_price', true);
-                        $more_product_array[$i]['_max_variation_regular_price'] = get_post_meta($result->get_id(), '_max_variation_regular_price', true);
-                    }
-                    $i++;
                 }
             }
         }
@@ -260,9 +283,27 @@ class WCMp_Product {
     function wcmp_product_duplicate_update_meta($duplicate, $product) {
         $singleproductmultiseller = isset($_REQUEST['singleproductmultiseller']) ? absint($_REQUEST['singleproductmultiseller']) : '';
         if ($singleproductmultiseller == 1) {
+            $has_wcmp_spmv_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
+            if($has_wcmp_spmv_map_id){
+                $data = array('product_id' => $duplicate->get_id(), 'product_map_id' => $has_wcmp_spmv_map_id);
+                update_post_meta($duplicate->get_id(), '_wcmp_spmv_map_id', $has_wcmp_spmv_map_id);
+                wcmp_spmv_products_map($data, 'insert');
+            }else{
+                $data = array('product_id' => $duplicate->get_id());
+                $map_id = wcmp_spmv_products_map($data, 'insert');
+                if($map_id){
+                    update_post_meta($duplicate->get_id(), '_wcmp_spmv_map_id', $map_id);
+                    // Enroll in SPMV parent product too 
+                    $data = array('product_id' => $product->get_id(), 'product_map_id' => $map_id);
+                    wcmp_spmv_products_map($data, 'insert');
+                    update_post_meta($product->get_id(), '_wcmp_spmv_map_id', $map_id);
+                    update_post_meta($product->get_id(), '_wcmp_spmv_product', true);
+                }
+            }
+            update_post_meta($duplicate->get_id(), '_wcmp_spmv_product', true);
             //update_post_meta($duplicate->get_id(), '_wcmp_parent_product_id', $product->get_id());
-            $duplicate->set_parent_id($product->get_id());
-            update_post_meta($duplicate->get_id(), '_wcmp_child_product', true);
+            //$duplicate->set_parent_id($product->get_id());
+            //update_post_meta($duplicate->get_id(), '_wcmp_child_product', true);
             $duplicate->save();
         }
     }
@@ -1195,14 +1236,13 @@ class WCMp_Product {
                     foreach ($get_blocked as $get_block) {
                         $get_block_array[] = (int) $get_block->term_id;
                     }
-                    $taxquery = array(
-                        array(
+                    $taxquery = ($query->get('tax_query')) ? $query->get('tax_query') : array();
+                    $taxquery[] = array(
                             'taxonomy' => $WCMp->taxonomy->taxonomy_name,
                             'field' => 'id',
                             'terms' => $get_block_array,
                             'operator' => 'NOT IN'
-                        )
-                    );
+                        );
 
                     $query->set('tax_query', $taxquery);
                 }
@@ -1293,7 +1333,13 @@ class WCMp_Product {
         if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             return;
         }
-        $q->set('post_parent', 0);
+        //$q->set('post_parent', 0);
+        // new
+        if (get_transient('wcmp_spmv_exclude_products_data')) {
+            $spmv_excludes = get_transient('wcmp_spmv_exclude_products_data');
+            $excluded_order = (get_wcmp_vendor_settings('singleproductmultiseller_show_order', 'general')) ? get_wcmp_vendor_settings('singleproductmultiseller_show_order', 'general') : 'min-price';
+            $q->set('post__not_in', $spmv_excludes[$excluded_order]);
+        }
     }
 
     /**
@@ -1499,6 +1545,89 @@ class WCMp_Product {
         if (isset($_POST['fixed_with_percentage_qty']) && 'product_cat' === $taxonomy) {
             update_woocommerce_term_meta($term_id, 'fixed_with_percentage_qty', absint($_POST['fixed_with_percentage_qty']));
         }
+    }
+    
+    /**
+     * Add GTIN fields for product
+     */
+    public function wcmp_gtin_product_option() {
+        global $WCMp, $post;
+        $gtin_data = wp_get_post_terms($post->ID, $WCMp->taxonomy->wcmp_gtin_taxonomy);
+        $gtin_type = '';
+        if($gtin_data){
+            $gtin_type = isset($gtin_data[0]->term_id) ? $gtin_data[0]->term_id : '';
+        }
+        $gtin_type_options = array('' => __( 'Select type', 'dc-woocommerce-multi-vendor' )) + $WCMp->taxonomy->get_wcmp_gtin_terms(array('fields' => 'id=>name', 'orderby' => 'id'));
+        woocommerce_wp_select( array(
+                'id'            => '_wcmp_gtin_type',
+                'value'         => $gtin_type,
+                'wrapper_class' => 'wcmp_gtin_type',
+                'label'         => __( 'GTIN type', 'dc-woocommerce-multi-vendor' ),
+                'options'       => $gtin_type_options,
+                'desc_tip'      => true,
+                'description'   => __( 'Add the GTIN code for this product.', 'dc-woocommerce-multi-vendor' ),
+        ) );
+        woocommerce_wp_text_input( array(
+                'id'          => '_wcmp_gtin_code',
+                'label'       => __( 'GTIN Code:', 'dc-woocommerce-multi-vendor' ),
+                'placeholder' => '',
+                'desc_tip'    => true,
+                'description' => __( 'Add the GTIN code for this product.', 'dc-woocommerce-multi-vendor' ),
+        ) );
+    }
+    
+    /**
+     * Save the GTIN Code of product.
+     *
+     * @param $product_id Product ID
+     */
+    public function wcmp_save_gtin_product_option( $product_id ) {
+        global $WCMp;
+        if(isset($_POST['_wcmp_gtin_type'])){
+            $term = get_term($_POST['_wcmp_gtin_type'], $WCMp->taxonomy->wcmp_gtin_taxonomy);
+            if ($term) {
+                wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->wcmp_gtin_taxonomy);
+                wp_set_object_terms($product_id, $term->term_id, $WCMp->taxonomy->wcmp_gtin_taxonomy, true);
+            }
+        }
+        if ( isset( $_POST['_wcmp_gtin_code'] ) ) {
+            update_post_meta($product_id, '_wcmp_gtin_code', wc_clean( wp_unslash( $_POST['_wcmp_gtin_code'] ) ));
+        }
+    }
+    
+    /**
+     * Search products by GTIN Code
+     * @param $query
+     */
+    public function wcmp_gtin_product_search( $query  ) {
+        global $wpdb;
+
+        if( !isset( $query->query['s'] ) || !isset( $query->query['post_type'] ) || $query->query['post_type'] != 'product'){
+                return;
+        }
+
+        $posts = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wcmp_gtin_code' AND meta_value LIKE %s;", esc_sql( '%'.$query->query['s'].'%' ) ) );
+        if ( ! $posts ) {
+                return;
+        }
+
+        unset( $query->query['s'] );
+        unset( $query->query_vars['s'] );
+        $query->query['post__in'] = array();
+        foreach($posts as $id){
+            $post = get_post($id);
+            if($post->post_type == 'product_variation'){
+                $query->query['post__in'][] = $post->post_parent;
+                $query->query_vars['post__in'][] = $post->post_parent;
+            } else {
+                $query->query_vars['post__in'][] = $post->ID;
+            }
+        }
+    }
+    
+    public function wcmp_gtin_get_search_query_vars(){
+        if(isset($_REQUEST['s']))
+            return $_REQUEST['s'];
     }
 
 }

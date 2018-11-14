@@ -33,7 +33,7 @@ $transactions_list_table_headers = apply_filters('wcmp_datatable_vendor_transact
                 </div>
                 <div class="form-group">
                     <span class="date-inp-wrap">
-                        <input id="wcmp_to_date" class="form-control" name="to_date" class="pickdate" placeholder="To" value ="<?php echo   date('Y-m-t'); ?>"/>
+                        <input id="wcmp_to_date" class="form-control" name="to_date" class="pickdate" placeholder="To" value ="<?php echo   date('Y-m-d'); ?>"/>
                     </span>
                 </div>
                 <button type="button" name="order_export_submit" id="do_filter"  class="btn btn-default" ><?php _e('Show', 'dc-woocommerce-multi-vendor') ?></button>
@@ -63,7 +63,7 @@ $transactions_list_table_headers = apply_filters('wcmp_datatable_vendor_transact
                 </div>
                 <div id="export_transaction_wrap" class="wcmp-action-container wcmp_table_loader" style="display: none;">
                     <input type="hidden" id="export_transaction_start_date" name="from_date" value="<?php echo date('Y-m-01'); ?>" />
-                    <input id="export_transaction_end_date" type="hidden" name="to_date" value="<?php echo date('Y-m-t'); ?>" />
+                    <input id="export_transaction_end_date" type="hidden" name="to_date" value="<?php echo date('Y-m-d'); ?>" />
                     <button type="submit" name="export_transaction" class="btn btn-default"><?php _e('Download CSV', 'dc-woocommerce-multi-vendor'); ?></button>
                     <div class="clear"></div>
                 </div>

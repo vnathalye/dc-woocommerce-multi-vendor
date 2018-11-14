@@ -14,6 +14,8 @@ class WCMp_Taxonomy {
 
     public $taxonomy_name;
     public $taxonomy_slug;
+    public $wcmp_spmv_taxonomy;
+    public $wcmp_gtin_taxonomy;
 
     public function __construct() {
         $permalinks = get_option('dc_vendors_permalinks');
@@ -22,6 +24,10 @@ class WCMp_Taxonomy {
         $this->register_post_taxonomy();
         //add_action('created_term', array($this, 'created_term'), 10, 3);
         add_filter('get_the_terms', array(&$this, 'wcmp_get_the_terms'), 10, 3);
+        // register WCMp single product multiple vendors (SPMV) taxonomy
+        $this->init_wcmp_spmv_taxonomy();
+        // register WCMp GTIN
+        $this->init_wcmp_gtin_taxonomy();
     }
 
     /**
@@ -111,6 +117,138 @@ class WCMp_Taxonomy {
                 }
             }
         }
+        return $terms;
+    }
+    
+    public function init_wcmp_spmv_taxonomy(){
+        // register WCMp single product multiple vendors (SPMV) taxonomy
+        $this->wcmp_spmv_taxonomy = apply_filters('wcmp_spmv_taxonomy_slug', 'wcmp_spmv');
+        register_taxonomy(
+            $this->wcmp_spmv_taxonomy,
+            'product',
+            array(
+                'label' => __( 'WCMp SPMV', 'dc-woocommerce-multi-vendor' ),
+                'public' => false,
+                'rewrite' => false,
+                'hierarchical' => false,
+                'show_admin_column' => false,
+                'show_ui' => false,
+            )
+        );
+        
+        // Add default spmv terms
+        $wcmp_spmv_default_terms = apply_filters('wcmp_spmv_default_terms', array(
+            'min-price' => array(
+                'label'=> __('Min Price', 'dc-woocommerce-multi-vendor'), 
+                'description' => __('Used for minimum price products under all single product multi vendor concept.', 'dc-woocommerce-multi-vendor'),
+            ),
+            'max-price' => array(
+                'label'=> __('Max Price', 'dc-woocommerce-multi-vendor'), 
+                'description' => __('Used for maximum price products under all single product multi vendor concept.', 'dc-woocommerce-multi-vendor'),
+            ),
+            'top-rated-vendor' => array(
+                'label'=> __('Top rated vendor', 'dc-woocommerce-multi-vendor'), 
+                'description' => __('Used for top rated vendor products under all single product multi vendor concept.', 'dc-woocommerce-multi-vendor'),
+            ),
+        ));
+        
+        if( $wcmp_spmv_default_terms ) :
+            foreach ($wcmp_spmv_default_terms as $slug => $term_data) {
+                $name = isset($term_data['label']) ? $term_data['label'] : $slug;
+                $desc = isset($term_data['description']) ? $term_data['description'] : '';
+                $term = term_exists( $name, $this->wcmp_spmv_taxonomy );
+                
+                if ( 0 === $term || NULL === $term ) { 
+                    wp_insert_term(
+                        $name, // the term 
+                        $this->wcmp_spmv_taxonomy, // the taxonomy
+                        array(
+                            'description'=> $desc,
+                            'slug' => $slug,
+                            'parent'=> $term 
+                        )
+                    );
+                }
+            }
+        endif;
+    }
+    
+    public function init_wcmp_gtin_taxonomy(){
+        // register GTIN taxonomy
+        $this->wcmp_gtin_taxonomy = apply_filters('wcmp_gtin_taxonomy_slug', 'wcmp_gtin');
+        register_taxonomy(
+            $this->wcmp_gtin_taxonomy,
+            'product',
+            array(
+                'label' => apply_filters('wcmp_taxonomy_gtin_label_text',__( 'GTIN', 'dc-woocommerce-multi-vendor' )),
+                'public' => false,
+                'rewrite' => false,
+                'hierarchical' => false,
+                'show_admin_column' => false,
+                'show_ui' => false,
+            )
+        );
+        
+        // Add default spmv terms
+        $wcmp_gtin_default_terms = apply_filters('wcmp_gtin_default_terms', array(
+            'upc' => __('UPC', 'dc-woocommerce-multi-vendor'),
+            'ean' => __('EAN', 'dc-woocommerce-multi-vendor'),
+            'mpuin' => __('MPUIN', 'dc-woocommerce-multi-vendor'),
+            
+        ));
+        
+        if( $wcmp_gtin_default_terms ) :
+            foreach ($wcmp_gtin_default_terms as $slug => $label) {
+                $name = isset($label) ? $label : $slug;
+                $term = term_exists( $name, $this->wcmp_gtin_taxonomy );
+                
+                if ( 0 === $term || NULL === $term ) { 
+                    wp_insert_term(
+                        $name, // the term 
+                        $this->wcmp_gtin_taxonomy, // the taxonomy
+                        array(
+                            'slug' => $slug,
+                            'parent'=> $term 
+                        )
+                    );
+                }
+            }
+        endif;
+    }
+    
+    /**
+     * Get SPMV terms
+     * 
+     * @param array $args
+     * @return array of WP_Term
+     */
+    public function get_wcmp_spmv_terms($args = array()) {
+        $default = array(
+            'taxonomy' => $this->wcmp_spmv_taxonomy,
+            'hide_empty' => false,
+        );
+        $args = wp_parse_args($args, $default);
+        if( isset($args['taxonomy']) && $args['taxonomy'] != $this->wcmp_spmv_taxonomy )
+            $args['taxonomy'] = $this->wcmp_spmv_taxonomy;
+        $terms = get_terms( $args );
+        return $terms;
+    }
+    
+    /**
+     * Get GTIN terms
+     * 
+     * @param array $args
+     * @return array of WP_Term
+     */
+    public function get_wcmp_gtin_terms($args = array()) {
+        $default = array(
+            'taxonomy' => $this->wcmp_gtin_taxonomy,
+            'hide_empty' => false,
+        );
+        $args = wp_parse_args($args, $default);
+        if( isset($args['taxonomy']) && $args['taxonomy'] != $this->wcmp_gtin_taxonomy )
+            $args['taxonomy'] = $this->wcmp_gtin_taxonomy;
+        $terms = get_terms( $args );
         return $terms;
     }
 

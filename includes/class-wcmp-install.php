@@ -26,7 +26,7 @@ class WCMp_Install {
             $this->wcmp_product_vendor_plugin_create_pages();
             update_option("dc_product_vendor_plugin_page_install", 1);
         }
-        $this->do_wcmp_migrate();
+        //$this->do_wcmp_migrate();
         if(!get_option('dc_product_vendor_plugin_installed') && apply_filters('wcmp_enable_setup_wizard', true)){
             set_transient( '_wcmp_activation_redirect', 1, 30 );
         }
@@ -212,9 +212,9 @@ class WCMp_Install {
 
         $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_products_map` (
 		`ID` bigint(20) NOT NULL AUTO_INCREMENT,
-		`product_title` varchar(255) NOT NULL,
-		`product_ids` text NOT NULL,						
-		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,				
+		`product_map_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+		`product_id` BIGINT UNSIGNED NOT NULL DEFAULT 0,						
+		`created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,			
 		PRIMARY KEY (`ID`)
 		) $collate;";
         
@@ -333,7 +333,7 @@ class WCMp_Install {
             'read' => true,
             'manage_product' => true,
             'edit_posts' => true,
-            'delete_posts' => false,
+            'delete_posts' => true,
             'view_woocommerce_reports' => true,
             'assign_product_terms' => true,
             'upload_files' => true,
@@ -358,6 +358,9 @@ class WCMp_Install {
         }
         if (apply_filters('wcmp_do_schedule_cron_vendor_weekly_order_stats', true) && !wp_next_scheduled('vendor_monthly_order_stats')) {
             wp_schedule_event(time(), 'monthly', 'vendor_monthly_order_stats');
+        }
+        if (apply_filters('wcmp_do_schedule_cron_wcmp_spmv_excluded_products_map', true) && !wp_next_scheduled('wcmp_spmv_excluded_products_map')) {
+            wp_schedule_event(time(), 'every_5minute', 'wcmp_spmv_excluded_products_map');
         }
     }
 }

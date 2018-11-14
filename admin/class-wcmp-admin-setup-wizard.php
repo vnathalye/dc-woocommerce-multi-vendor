@@ -83,6 +83,7 @@ class WCMp_Admin_Setup_Wizard {
         $this->step = $current_step ? sanitize_key($current_step) : current(array_keys($this->steps));
         $suffix = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min';
         wp_register_script('jquery-blockui', WC()->plugin_url() . '/assets/js/jquery-blockui/jquery.blockUI' . $suffix . '.js', array('jquery'), '2.70', true);
+        wp_register_script( 'jquery-tiptip', WC()->plugin_url() . '/assets/js/jquery-tiptip/jquery.tipTip' . $suffix . '.js', array( 'jquery' ), WC_VERSION, true );
         wp_register_script( 'selectWoo', WC()->plugin_url() . '/assets/js/selectWoo/selectWoo.full' . $suffix . '.js', array( 'jquery' ), '1.0.0' );
         wp_register_script('wc-enhanced-select', WC()->plugin_url() . '/assets/js/admin/wc-enhanced-select' . $suffix . '.js', array('jquery', 'selectWoo'), WC_VERSION);
         wp_localize_script('wc-enhanced-select', 'wc_enhanced_select_params', array(
@@ -103,7 +104,7 @@ class WCMp_Admin_Setup_Wizard {
 
         wp_enqueue_style('woocommerce_admin_styles', WC()->plugin_url() . '/assets/css/admin.css', array(), WC_VERSION);
         wp_enqueue_style('wc-setup', WC()->plugin_url() . '/assets/css/wc-setup.css', array('dashicons', 'install'), WC_VERSION);
-        wp_register_script('wc-setup', WC()->plugin_url() . '/assets/js/admin/wc-setup' . $suffix . '.js', array('jquery', 'wc-enhanced-select', 'jquery-blockui'), WC_VERSION);
+        wp_register_script('wc-setup', WC()->plugin_url() . '/assets/js/admin/wc-setup' . $suffix . '.js', array('jquery', 'wc-enhanced-select', 'jquery-blockui', 'jquery-tiptip'), WC_VERSION);
         wp_register_script('wcmp-setup', $WCMp->plugin_url . '/assets/admin/js/setup-wizard.js', array('wc-setup'), WC_VERSION);
         wp_localize_script('wc-setup', 'wc_setup_params', array(
             'locale_info' => json_encode(include( WC()->plugin_path() . '/i18n/locale-info.php' )),

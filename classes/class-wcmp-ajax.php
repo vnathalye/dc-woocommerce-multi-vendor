@@ -119,7 +119,7 @@ class WCMp_Ajax {
         // Image crop for vendor banner and logo
         add_action('wp_ajax_wcmp_crop_image', array(&$this, 'wcmp_crop_image'));
     }
-
+    
     /**
      * Ajax callback
      * creates a new attachment from the cropped image
@@ -135,8 +135,8 @@ class WCMp_Ajax {
 		wp_send_json_error();
 	}
 
-        $crop_details = $_POST['cropDetails'];
-        $crop_options = $_POST['cropOptions'];
+        $crop_details = apply_filters( 'before_wcmp_crop_image_cropDetails_data', $_POST['cropDetails'], $attachment_id );
+        $crop_options = apply_filters( 'before_wcmp_crop_image_cropOptions_data', $_POST['cropOptions'], $attachment_id );
 
         $cropped = wp_crop_image(
             $attachment_id, (int) $crop_details['x1'], (int) $crop_details['y1'], (int) $crop_details['width'], (int) $crop_details['height'], $crop_options['maxWidth'], $crop_options['maxHeight']
@@ -147,7 +147,7 @@ class WCMp_Ajax {
         }
 
         /** This filter is documented in wp-admin/custom-header.php */
-        $cropped = apply_filters('wp_create_file_in_uploads', $cropped, $attachment_id); // For replication
+        $cropped = apply_filters('wcmp_create_file_in_uploads', $cropped, $attachment_id, $crop_details, $crop_options); // For replication
 
         $parent = get_post( $attachment_id );
         $parent_url = $parent->guid;
@@ -379,9 +379,39 @@ class WCMp_Ajax {
             wp_update_post(array('ID' => $duplicate_product->get_id(), 'post_author' => get_current_vendor_id()));
             wp_set_object_terms($duplicate_product->get_id(), absint(get_current_vendor()->term_id), $WCMp->taxonomy->taxonomy_name);
             //update_post_meta($duplicate_product->get_id(), '_wcmp_parent_product_id', $product->get_id());
-            $duplicate_product->set_parent_id($product->get_id());
-            update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
+            //$duplicate_product->set_parent_id($product->get_id());
+            //update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
+            
+            // Add GTIN, if exists
+            $gtin_data = wp_get_post_terms($product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
+            if($gtin_data){
+                $gtin_type = isset($gtin_data[0]->term_id) ? $gtin_data[0]->term_id : '';
+                wp_set_object_terms($duplicate_product->get_id(), $gtin_type, $WCMp->taxonomy->wcmp_gtin_taxonomy, true);
+            }
+            $gtin_code = get_post_meta($product->get_id(), '_wcmp_gtin_code', true);
+            if($gtin_code) update_post_meta($duplicate_product->get_id(), '_wcmp_gtin_code', $gtin_code);
+            
+            $has_wcmp_spmv_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
+            if($has_wcmp_spmv_map_id){
+                $data = array('product_id' => $duplicate_product->get_id(), 'product_map_id' => $has_wcmp_spmv_map_id);
+                update_post_meta($duplicate_product->get_id(), '_wcmp_spmv_map_id', $has_wcmp_spmv_map_id);
+                wcmp_spmv_products_map($data, 'insert');
+            }else{
+                $data = array('product_id' => $duplicate_product->get_id());
+                $map_id = wcmp_spmv_products_map($data, 'insert');
+                
+                if($map_id){
+                    update_post_meta($duplicate_product->get_id(), '_wcmp_spmv_map_id', $map_id);
+                    // Enroll in SPMV parent product too 
+                    $data = array('product_id' => $product->get_id(), 'product_map_id' => $map_id);
+                    wcmp_spmv_products_map($data, 'insert');
+                    update_post_meta($product->get_id(), '_wcmp_spmv_map_id', $map_id);
+                }
+                update_post_meta($product->get_id(), '_wcmp_spmv_product', true);
+            }
+            update_post_meta($duplicate_product->get_id(), '_wcmp_spmv_product', true);
             $duplicate_product->save();
+            do_action('wcmp_create_duplicate_product', $duplicate_product);
             $permalink_structure = get_option('permalink_structure');
             if (!empty($permalink_structure)) {
                 $redirect_url .= $duplicate_product->get_id();
@@ -395,7 +425,7 @@ class WCMp_Ajax {
     }
 
     function wcmp_auto_suggesion_product() {
-        global $WCMp;
+        global $WCMp, $wpdb;
         check_ajax_referer('search-products', 'security');
         $user = wp_get_current_user();
         $term = wc_clean(empty($term) ? stripslashes($_REQUEST['protitle']) : $term);
@@ -410,9 +440,20 @@ class WCMp_Ajax {
 
         $include = array();
         foreach ($ids as $id) {
-            $_product = wc_get_product($id);
-            if ($_product && !$_product->get_parent_id()) {
-                $include[] = $_product->get_id();
+//            $_product = wc_get_product($id);
+//            if ($_product && !$_product->get_parent_id()) {
+//                $include[] = $_product->get_id();
+//            }
+            $product_map_id = get_post_meta($id, '_wcmp_spmv_map_id', true);
+            if($product_map_id){
+                $results = $wpdb->get_results( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_products_map WHERE product_map_id=%d", $product_map_id) );
+                $product_ids = wp_list_pluck($results, 'product_id');
+                $first_inserted_map_pro_key = array_search(min(wp_list_pluck($results, 'ID')), wp_list_pluck($results, 'ID'));
+                if(isset($product_ids[$first_inserted_map_pro_key])){
+                    $include[] = $product_ids[$first_inserted_map_pro_key];
+                }
+            }else{
+                $include[] = $id;
             }
         }
 
@@ -2698,7 +2739,7 @@ class WCMp_Ajax {
                 $requestData = $_REQUEST;
                 $vendor = apply_filters('wcmp_transaction_vendor', $vendor);
                 $start_date = isset($requestData['from_date']) ? $requestData['from_date'] : date('Y-m-01');
-                $end_date = isset($requestData['to_date']) ? $requestData['to_date'] : date('Y-m-t');
+                $end_date = isset($requestData['to_date']) ? $requestData['to_date'] : date('Y-m-d');
                 $transaction_details = $WCMp->transaction->get_transactions($vendor->term_id, $start_date, $end_date, array('wcmp_processing', 'wcmp_completed'));
 
                 $data = array();
@@ -2769,6 +2810,7 @@ class WCMp_Ajax {
                         $no_data = 0;
                         $msg = __("Your question submitted successfully!", 'dc-woocommerce-multi-vendor');
                         wc_add_notice($msg, 'success');
+                        do_action('wcmp_product_qna_after_question_submitted', $product_id, $cust_id, $cust_question);
                     }
                 }
             } elseif ($handler == 'search') {
@@ -2878,6 +2920,7 @@ class WCMp_Ajax {
                         } else {
                             $msg = '';
                         }
+                        do_action('wcmp_product_qna_after_answer_submitted', $ques_ID, $vendor, $reply);
                         $qna_data = '';
                         $no_data = 0;
                     } else {
@@ -2906,6 +2949,7 @@ class WCMp_Ajax {
                         $msg = __("Thanks for your vote!", 'dc-woocommerce-multi-vendor');
                         $no_data = 0;
                         wc_add_notice($msg, 'success');
+                        do_action('wcmp_product_qna_after_vote_submitted', $ans_ID, $vote_type);
                     } else {
                         $no_data = 1;
                     }
@@ -2922,6 +2966,7 @@ class WCMp_Ajax {
                     $msg = __("Answer updated successfully!", 'dc-woocommerce-multi-vendor');
                     $no_data = 0;
                     wc_add_notice($msg, 'success');
+                    do_action('wcmp_product_qna_after_update_answer_submitted', $ans_ID, $answer);
                 } else {
                     $no_data = 1;
                 }

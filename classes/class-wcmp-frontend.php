@@ -391,6 +391,9 @@ class WCMp_Frontend {
         if (is_woocommerce()) {
             wp_enqueue_style('product_css');
             wp_enqueue_style('multiple_vendor');
+            // add styly to product page
+            $pstyle = '.wcmp-product-policies .description { margin: 0 0 1.41575em;}';
+            wp_add_inline_style('woocommerce-inline', $pstyle);
         }
         if (is_tax($WCMp->taxonomy->taxonomy_name)) {
             wp_enqueue_style('frontend_css');

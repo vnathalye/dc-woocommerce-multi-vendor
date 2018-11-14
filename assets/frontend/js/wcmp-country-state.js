@@ -80,7 +80,7 @@ jQuery( function( $ ) {
 
             $( document.body ).trigger( 'country_to_state_changing', [country, $wrapper ] );
 
-    });
+    }).trigger('change');
 
     $(function() {
             $( ':input.country_to_state' ).change();

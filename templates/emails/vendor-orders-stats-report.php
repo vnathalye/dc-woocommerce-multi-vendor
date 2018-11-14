@@ -36,20 +36,20 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
         </tbody>
         <tfoot>
             <tr>
-                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php printf(__( '%s no of orders:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
-                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo $t_orders_no; ?></td>
+                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;"><?php printf(__( '%s no of orders:', 'dc-woocommerce-multi-vendor' ), ucfirst($report_data['period'])); ?></th>
+                <td class="td" style="text-align:<?php echo $text_align; ?>;"><?php echo $t_orders_no; ?></td>
             </tr>
             <tr>
-                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php _e( 'Period', 'dc-woocommerce-multi-vendor' ); ?></th>
-                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo isset($report_data['period']) ? ucfirst($report_data['period']) : ''; ?></td>
+                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;"><?php _e( 'Period', 'dc-woocommerce-multi-vendor' ); ?></th>
+                <td class="td" style="text-align:<?php echo $text_align; ?>;"><?php echo isset($report_data['period']) ? ucfirst($report_data['period']) : ''; ?></td>
             </tr>
             <tr>
-                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php _e( 'From Date', 'dc-woocommerce-multi-vendor' ); ?></th>
-                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo isset($report_data['start_date']) ? $report_data['start_date'] : ''; ?></td>
+                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;"><?php _e( 'From Date', 'dc-woocommerce-multi-vendor' ); ?></th>
+                <td class="td" style="text-align:<?php echo $text_align; ?>;"><?php echo isset($report_data['start_date']) ? $report_data['start_date'] : ''; ?></td>
             </tr>
             <tr>
-                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php _e( 'To Date', 'dc-woocommerce-multi-vendor' ); ?></th>
-                <td class="td" style="text-align:<?php echo $text_align; ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo isset($report_data['end_date']) ? $report_data['end_date'] : ''; ?></td>
+                <th class="td" scope="row" colspan="2" style="text-align:<?php echo $text_align; ?>;"><?php _e( 'To Date', 'dc-woocommerce-multi-vendor' ); ?></th>
+                <td class="td" style="text-align:<?php echo $text_align; ?>;"><?php echo isset($report_data['end_date']) ? $report_data['end_date'] : ''; ?></td>
             </tr>
         </tfoot>
     </table>

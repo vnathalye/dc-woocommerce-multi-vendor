@@ -30,7 +30,7 @@ class WCMp_Vendor_Dashboard_Shortcode {
             if (( 'no' === get_option('woocommerce_registration_generate_password') && !is_user_logged_in())) {
                 wp_enqueue_script('wc-password-strength-meter');
             }
-            echo '<div class="woocommerce">';
+            echo '<div class="wcmp-dashboard woocommerce">';
             wc_get_template('myaccount/form-login.php');
             echo '</div>';
         } else if (!is_user_wcmp_vendor(get_current_vendor_id())) {

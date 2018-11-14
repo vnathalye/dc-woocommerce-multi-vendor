@@ -76,7 +76,8 @@ function return_vendor_info_on_list_product_query($response, $object, $request) 
 	if(isset($vendor->user_data->roles) && in_array('dc_vendor', $vendor->user_data->roles)) {
 		$data = $response->get_data();
 		$data['vendor'] = $vendor_id;
-		$response->set_data($data);
+                $data['store_name'] = $vendor->page_title;
+		$response->set_data( apply_filters( 'before_wcmp_rest_prepare_product_object_data', $data, $vendor, $object, $request ) );
 	}
 	return $response;
 }

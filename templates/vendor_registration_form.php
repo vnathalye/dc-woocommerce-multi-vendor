@@ -202,7 +202,7 @@ if (!empty($wcmp_vendor_registration_form_data) && is_array($wcmp_vendor_registr
                         <option value=""><?php _e( 'Select a country&hellip;', 'dc-woocommerce-multi-vendor' ); ?></option>
                         <?php 
                             foreach ( WC()->countries->get_shipping_countries() as $key => $value ) {
-                                echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $value ) . '</option>';
+                                echo '<option value="' . esc_attr( $key ) . '" '. selected(apply_filters('wcmp_vendor_registration_form_default_country_code', '', $key), $key).'>' . esc_html( $value ) . '</option>';
                             }
                         ?>
                     </select>

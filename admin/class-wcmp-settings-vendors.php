@@ -231,7 +231,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 	
 	public function process_bulk_action() {
 		if ( 'delete' === $this->current_action() ) {
-			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
+			$nonce = esc_attr( $_REQUEST[''] );
 			$action = 'bulk-' . $this->_args['plural'];
 			if ( ! wp_verify_nonce( $nonce, $action ) ) {
 				wp_die( __('You are not permitted to do this', 'dc-woocommerce-multi-vendor') );
@@ -338,7 +338,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 			$h1_title = __( "Add New Vendor", "dc-woocommerce-multi-vendor" );
 		} else {
 			$h1_title = __( "Vendors", "dc-woocommerce-multi-vendor" ) .  
-				'<a href="' . admin_url('admin.php?page=' . $this->_args['plural'] . '&action=add_new') . '" class="page-title-action">' . __( 'Add New', 'dc-woocommerce-multi-vendor' ) . '</a>';
+				'<a href="' . admin_url('admin.php?page=vendors&action=add_new') . '" class="page-title-action">' . __( 'Add New', 'dc-woocommerce-multi-vendor' ) . '</a>';
 		}
 		
 		echo '<h1 class="wp-heading-inline">' . apply_filters( 'wcmp_vendor_tab_header', $h1_title ) . '</h1>';

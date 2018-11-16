@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
 Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,11 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.2.1 - 2018-11-16 =
+* Added - Media delete capabilities for vendor.
+* Fix - Single product multiple vendor's products showing issues for vendor non-published capability.
+* Fix - Backend WCMp > Vendors > Add new link issue.
+
 = 3.2.0 - 2018-11-14 =
 * Added - Product specific GTIN supports for backend.
 * Added - Vendor `store_name` in Rest API product objects.

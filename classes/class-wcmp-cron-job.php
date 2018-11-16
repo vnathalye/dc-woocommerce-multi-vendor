@@ -19,6 +19,8 @@ class WCMp_Cron_Job {
         add_action('migrate_spmv_multivendor_table', array(&$this, 'migrate_spmv_multivendor_table'));
         // bind spmv excluded products mapping 
         add_action('wcmp_spmv_excluded_products_map', array(&$this, 'wcmp_spmv_excluded_products_map'));
+        // bind spmv excluded products mapping 
+        add_action('wcmp_spmv_product_meta_update', array(&$this, 'wcmp_spmv_product_meta_update'));
         $this->wcmp_clear_scheduled_event();
     }
 
@@ -32,6 +34,7 @@ class WCMp_Cron_Job {
             'vendor_monthly_order_stats',
             'migrate_spmv_multivendor_table',
             'wcmp_spmv_excluded_products_map',
+            'wcmp_spmv_product_meta_update',
         ));
         if ($cron_hook_identifier) {
             foreach ($cron_hook_identifier as $cron_hook) {
@@ -297,6 +300,28 @@ class WCMp_Cron_Job {
         do_wcmp_spmv_set_object_terms();
         $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
         set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+    }
+    
+    public function wcmp_spmv_product_meta_update() {
+        $products_map_data = get_wcmp_spmv_products_map_data();
+        if($products_map_data){
+            foreach ($products_map_data as $product_map_id => $product_ids) {
+                if($product_ids){
+                    foreach ($product_ids as $product_id) {
+                        $is_wcmp_spmv_product = get_post_meta($product_id, '_wcmp_spmv_product', true);
+                        $has_wcmp_spmv_map_id = get_post_meta($product_id, '_wcmp_spmv_map_id', true);
+                        if(!$is_wcmp_spmv_product || !$has_wcmp_spmv_map_id){
+                            update_post_meta($product_id, '_wcmp_spmv_product', true);
+                            update_post_meta($product_id, '_wcmp_spmv_map_id', $product_map_id);
+                        }
+                    }
+                }
+            }
+            do_wcmp_spmv_set_object_terms();
+            $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+            update_option('wcmp_spmv_product_meta_migrated', true);
+        }
     }
 
 }

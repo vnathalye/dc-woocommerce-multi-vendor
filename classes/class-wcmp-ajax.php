@@ -2538,6 +2538,8 @@ class WCMp_Ajax {
                             $status = __('Draft', 'dc-woocommerce-multi-vendor');
                         } elseif ($product->get_status() == 'private') {
                             $status = __('Private', 'dc-woocommerce-multi-vendor');
+                        } elseif ($product->get_status() == 'trash') {
+                            $status = __('Trash', 'dc-woocommerce-multi-vendor');
                         } else {
                             $status = ucfirst($product->get_status());
                         }

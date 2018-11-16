@@ -64,7 +64,7 @@ $_wp_editor_settings = apply_filters('wcmp_vendor_storefront_wp_editor_settings'
                             <div class="vendor-profile-pic-wraper pull-left">
                                 <img id="vendor-profile-img" src="<?php echo (isset($vendor_image['url']) && (!empty($vendor_image['url']))) ? $vendor_image['url'] : $WCMp->plugin_url . 'assets/images/logo_placeholder.jpg'; ?>" alt="dp">
                                 <div class="wcmp-media profile-pic-btn">
-                                    <button type="button" class="wcmp_upload_btn" data-target="vendor-profile"><i class="wcmp-font ico-edit-pencil-icon"></i> <?php _e('Upload Store Logo', 'dc-woocommerce-multi-vendor'); ?></button>
+                                    <button type="button" class="wcmp_upload_btn" data-target="vendor-profile"><i class="wcmp-font ico-edit-pencil-icon"></i> <?php _e('Store Logo', 'dc-woocommerce-multi-vendor'); ?></button>
                                 </div>
                                 <input type="hidden" name="vendor_image" id="vendor-profile-img-id" class="user-profile-fields" value="<?php echo (isset($vendor_image['value']) && (!empty($vendor_image['value']))) ? $vendor_image['value'] : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png'; ?>"  />
                             </div>

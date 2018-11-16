@@ -17,6 +17,9 @@ global $wpdb, $wp_version;
 wp_clear_scheduled_hook('masspay_cron_start');
 wp_clear_scheduled_hook('vendor_monthly_order_stats');
 wp_clear_scheduled_hook('vendor_weekly_order_stats');
+wp_clear_scheduled_hook('migrate_spmv_multivendor_table');
+wp_clear_scheduled_hook('wcmp_spmv_excluded_products_map');
+wp_clear_scheduled_hook('wcmp_spmv_product_meta_update');
 
 /*
  * Only remove ALL product and page data if WC_REMOVE_ALL_DATA constant is set to true in user's

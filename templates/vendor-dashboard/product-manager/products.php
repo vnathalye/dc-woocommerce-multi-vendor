@@ -80,7 +80,7 @@ do_action('before_wcmp_vendor_dashboard_product_list_table');
                     <?php 
                     $product_taxonomy_terms = get_terms('product_cat', 'orderby=name&hide_empty=0&parent=0');
                     if ($product_taxonomy_terms) {
-                        WCMpGenerateTaxonomyHTML('product_cat', $product_taxonomy_terms, '');
+                        WCMpGenerateTaxonomyHTML('product_cat', $product_taxonomy_terms, array());
                     }
                     ?>
                 </select>
@@ -90,7 +90,14 @@ do_action('before_wcmp_vendor_dashboard_product_list_table');
                     $product_types = wcmp_get_available_product_types();
                     if($product_types) :
                         foreach ($product_types as $key => $label) {
+                            if(in_array($key, array( 'virtual', 'downloadable'))) continue;
                             echo '<option value="'.$key.'">'.$label.'</option>';
+                            if ( 'simple' === $key ) {
+                                if(array_key_exists('downloadable', $product_types))
+                                        echo '<option value="downloadable">' . ( is_rtl() ? '&larr;' : '&rarr;' ) . ' ' . $product_types['downloadable'].'</option>';
+                                if(array_key_exists('virtual', $product_types))
+                                        echo '<option value="virtual">' . ( is_rtl() ? '&larr;' : '&rarr;' ) . ' ' . $product_types['virtual'].'</option>';
+                            }
                         }
                     endif;
                     ?>

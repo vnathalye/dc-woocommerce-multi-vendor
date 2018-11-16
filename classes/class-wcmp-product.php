@@ -114,7 +114,7 @@ class WCMp_Product {
     }
     
     public function wcmp_spmv_bulk_quick_edit_save_post( $product ){
-        global $WCMp;
+        global $WCMp, $wpdb;
         if (!is_object($product)) {
             $product = wc_get_product(absint($product));
         }
@@ -124,6 +124,15 @@ class WCMp_Product {
             do_wcmp_spmv_set_object_terms($has_wcmp_spmv_map_id);
             $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
             set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+        }else{
+            $data = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_products_map WHERE product_id=%d", $product->get_id()) );
+            if($data && $data->product_map_id){
+                update_post_meta($product->get_id(), '_wcmp_spmv_product', true);
+                update_post_meta($product->get_id(), '_wcmp_spmv_map_id', $data->product_map_id);
+                do_wcmp_spmv_set_object_terms($data->product_map_id);
+                $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+                set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+            }
         }
     }
 
@@ -170,7 +179,7 @@ class WCMp_Product {
         global $woocommerce, $WCMp, $wpdb;
         $post = get_post($post_id);
         $product = wc_get_product($post_id);
-        $more_product_array = array();
+        $more_product_array = $mapped_products = array();
         $has_product_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
         if($has_product_map_id){
             $products_map_data_ids = get_wcmp_spmv_products_map_data($has_product_map_id);
@@ -1585,7 +1594,7 @@ class WCMp_Product {
         global $WCMp;
         if(isset($_POST['_wcmp_gtin_type'])){
             $term = get_term($_POST['_wcmp_gtin_type'], $WCMp->taxonomy->wcmp_gtin_taxonomy);
-            if ($term) {
+            if ($term && !is_wp_error( $term )) {
                 wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->wcmp_gtin_taxonomy);
                 wp_set_object_terms($product_id, $term->term_id, $WCMp->taxonomy->wcmp_gtin_taxonomy, true);
             }

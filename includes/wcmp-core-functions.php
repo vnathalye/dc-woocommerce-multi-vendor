@@ -1558,6 +1558,11 @@ if (!function_exists('do_wcmp_data_migrate')) {
                 if( !$dc_role->has_cap( 'delete_posts' ) )
                     $dc_role->add_cap( 'delete_posts' );
             }
+            if (version_compare($previous_plugin_version, '3.2.1', '<=')) {
+                if (!wp_next_scheduled('wcmp_spmv_product_meta_update') && !get_option('wcmp_spmv_product_meta_migrated', false)) {
+                    wp_schedule_event(time(), 'hourly', 'wcmp_spmv_product_meta_update');
+                }
+            }
             /* Migrate commission data into table */
             do_wcmp_commission_data_migrate();
         }
@@ -3001,7 +3006,7 @@ if (!function_exists('wcmp_get_available_product_types')) {
                 $available_product_types['external'] = __( 'External/Affiliate product', 'dc-woocommerce-multi-vendor' );
             }else{}
         }
-        return apply_filters('wcmp_get_available_product_types', $available_product_types);
+        return apply_filters('wcmp_get_available_product_types', $available_product_types, $terms);
     }
 }
 
@@ -3017,7 +3022,7 @@ if (!function_exists('wcmp_spmv_products_map')) {
                     $wpdb->update($table, array('product_map_id' => $inserted_id), array('product_id' => $data['product_id']));
                     return $inserted_id;
                 }else{
-                    return false;
+                    return $data['product_map_id'];
                 }
             }else{
                 do_action('wcmp_spmv_products_map_do_action', $action, $data);
@@ -3241,7 +3246,7 @@ if (!function_exists('get_wcmp_spmv_excluded_products_map_data')) {
                     $object_ids = get_objects_in_term($term->term_id, $WCMp->taxonomy->wcmp_spmv_taxonomy);
                     if($object_ids){
                         foreach ($object_ids as $product_id) {
-                            if($product_id){
+                            if($product_id && get_post_status( $product_id ) == 'publish' ){
                                 $product_map_id = get_post_meta($product_id, '_wcmp_spmv_map_id', true);
                                 if($product_map_id){
                                     $products_map_data_ids = get_wcmp_spmv_products_map_data($product_map_id);
@@ -3259,7 +3264,7 @@ if (!function_exists('get_wcmp_spmv_excluded_products_map_data')) {
                     $object_ids = get_objects_in_term($term->term_id, $WCMp->taxonomy->wcmp_spmv_taxonomy);
                     if($object_ids){
                         foreach ($object_ids as $product_id) {
-                            if($product_id){
+                            if($product_id && get_post_status( $product_id ) == 'publish' ){
                                 $product_map_id = get_post_meta($product_id, '_wcmp_spmv_map_id', true);
                                 if($product_map_id){
                                     $products_map_data_ids = get_wcmp_spmv_products_map_data($product_map_id);
@@ -3278,7 +3283,7 @@ if (!function_exists('get_wcmp_spmv_excluded_products_map_data')) {
                     $object_ids = get_objects_in_term($term->term_id, $WCMp->taxonomy->wcmp_spmv_taxonomy);
                     if($object_ids){
                         foreach ($object_ids as $product_id) {
-                            if($product_id){
+                            if($product_id && get_post_status( $product_id ) == 'publish' ){
                                 $product_map_id = get_post_meta($product_id, '_wcmp_spmv_map_id', true);
                                 if($product_map_id){
                                     $products_map_data_ids = get_wcmp_spmv_products_map_data($product_map_id);

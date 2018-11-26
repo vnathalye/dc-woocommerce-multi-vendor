@@ -1615,21 +1615,23 @@ class WCMp_Product {
                 return;
         }
 
-        $posts = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wcmp_gtin_code' AND meta_value LIKE %s;", esc_sql( '%'.$query->query['s'].'%' ) ) );
-        if ( ! $posts ) {
-                return;
-        }
+        if(!empty($query->query['s'])){
+            $posts = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wcmp_gtin_code' AND meta_value LIKE %s;", esc_sql( '%'.$query->query['s'].'%' ) ) );
+            if ( ! $posts ) {
+                    return;
+            }
 
-        unset( $query->query['s'] );
-        unset( $query->query_vars['s'] );
-        $query->query['post__in'] = array();
-        foreach($posts as $id){
-            $post = get_post($id);
-            if($post->post_type == 'product_variation'){
-                $query->query['post__in'][] = $post->post_parent;
-                $query->query_vars['post__in'][] = $post->post_parent;
-            } else {
-                $query->query_vars['post__in'][] = $post->ID;
+            unset( $query->query['s'] );
+            unset( $query->query_vars['s'] );
+            $query->query['post__in'] = array();
+            foreach($posts as $id){
+                $post = get_post($id);
+                if($post->post_type == 'product_variation'){
+                    $query->query['post__in'][] = $post->post_parent;
+                    $query->query_vars['post__in'][] = $post->post_parent;
+                } else {
+                    $query->query_vars['post__in'][] = $post->ID;
+                }
             }
         }
     }

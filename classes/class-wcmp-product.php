@@ -267,11 +267,12 @@ class WCMp_Product {
 
     function update_duplicate_product_title($post_ID, $post, $update) {
         global $wpdb;
-        $parent_product_id = wp_get_post_parent_id($post_ID);
-        if ($parent_product_id && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
-            $parent_post = get_post(absint($parent_product_id));
-            if($parent_post){
-                $wpdb->update($wpdb->posts, array('post_title' => $parent_post->post_title), array('ID' => $post_ID));
+        $is_spmv_pro = get_post_meta($post_ID, '_wcmp_spmv_product', true);
+        if ($is_spmv_pro && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
+            $post = get_post(absint($post_ID));
+            if($post){
+                $title = str_replace(" (Copy)","",$post->post_title);
+                $wpdb->update($wpdb->posts, array('post_title' => $title), array('ID' => $post_ID));
             }
         }
     }
@@ -340,7 +341,8 @@ class WCMp_Product {
             $current_post_id = $_GET['post'];
             if (get_post_type($current_post_id) == 'product') {
                 $product = wc_get_product($current_post_id);
-                if (in_array($screen->id, array('product', 'edit-product')) && $product->get_parent_id('edit') && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
+                $is_spmv_pro = get_post_meta($current_post_id, '_wcmp_spmv_product', true);
+                if (in_array($screen->id, array('product', 'edit-product')) && $is_spmv_pro && apply_filters('wcmp_singleproductmultiseller_edit_product_title_disabled', true)) {
                     wp_add_inline_script('wcmp-admin-product-js', '(function ($) { 
                       $("#titlewrap #title").prop("disabled", true);
                   })(jQuery)');

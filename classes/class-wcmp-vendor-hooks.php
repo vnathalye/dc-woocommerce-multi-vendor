@@ -459,7 +459,8 @@ class WCMp_Vendor_Hooks {
         $pro_id = $wp->query_vars[get_wcmp_vendor_settings( 'wcmp_add_product_endpoint', 'vendor', 'general', 'add-product' )];
         if ( $pro_id ) {
             $product = wc_get_product( $pro_id );
-            if ( $product->get_parent_id( 'edit' ) && apply_filters( 'wcmp_singleproductmultiseller_edit_product_title_disabled', true ) ) {
+            $is_spmv_pro = get_post_meta($pro_id, '_wcmp_spmv_product', true);
+            if ( $is_spmv_pro && apply_filters( 'wcmp_singleproductmultiseller_edit_product_title_disabled', true ) ) {
                 wp_add_inline_script( 'product_manager_js', '(function ($) { 
                   $("#product_manager_form #title").prop("disabled", true);
               })(jQuery)' );

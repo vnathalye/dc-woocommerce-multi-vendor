@@ -145,12 +145,12 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
             
             wp_enqueue_style('wcmp_vendor_list');
             extract(shortcode_atts(array('orderby' => 'registered', 'order' => 'ASC'), $atts, 'wcmp_vendorslist'));
-            $order_by = isset($_REQUEST['vendor_sort_type']) ? $_REQUEST['vendor_sort_type'] : 'registered';
+            $order_by = isset($_REQUEST['vendor_sort_type']) ? $_REQUEST['vendor_sort_type'] : $orderby;
             
             $query = apply_filters('wcmp_vendor_list_vendors_query_args', array(
                 'number' => 12,
                 'orderby' => $order_by, 
-                'order' => 'ASC',
+                'order' => $order,
             ));
             if($order_by == 'name'){
                 $query['meta_key'] = '_vendor_page_title';

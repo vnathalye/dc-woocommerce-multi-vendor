@@ -394,7 +394,12 @@ class WCMp_Vendor_Hooks {
         $wcmp_payment_settings_name = get_option( 'wcmp_payment_settings_name' );
         $_vendor_give_shipping = get_user_meta( get_current_vendor_id(), '_vendor_give_shipping', true );
         if ( isset( $wcmp_payment_settings_name['give_shipping'] ) && empty( $_vendor_give_shipping ) ) {
-            $WCMp->template->get_template( 'vendor-dashboard/vendor-shipping.php' );
+            if (wp_script_is('wcmp-vendor-shipping', 'registered') &&
+                !wp_script_is('wcmp-vendor-shipping', 'enqueued')) {
+                wp_enqueue_script('wcmp-vendor-shipping');
+            }
+
+            $WCMp->template->get_template('vendor-dashboard/vendor-shipping.php');
         } else {
             echo '<p class="wcmp_headding3">' . __( 'Sorry you are not authorized for this pages. Please contact with admin.', 'dc-woocommerce-multi-vendor' ) . '</p>';
         }
@@ -728,7 +733,7 @@ class WCMp_Vendor_Hooks {
     public function wcmp_vendor_dashboard_menu_vendor_shipping_capability( $cap ) {
         $vendor = get_wcmp_vendor( get_current_vendor_id() );
         if ( $vendor ) {
-            return $vendor->is_shipping_tab_enable();
+            return $vendor->is_shipping_enable();
         } else {
             return false;
         }

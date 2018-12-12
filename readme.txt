@@ -3,9 +3,9 @@ Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
-Tested up to: 4.9.8
+Tested up to: 5.0
 Requires PHP: 5.6
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,19 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.2.2 - 2018-12-11 =
+* Added - Vendor wise shipping module.
+* Added - Bulk product delete on vendor dashboard product list.
+* Tweak - SPMV product save time complexity.
+* UI - Vendor store shipping section.
+* UI - Vendor dashboard Q&As section.
+* Fix - Add media issue on vendor dashboard policy.
+* Fix - Vendor list shortcode attributes issue.
+* Fix - Backend search product filter issue.
+* Fix - Backend delete vendor issue from WCMp > Vendors.
+* Fix - `get_url_from_upload_field_value` function media fetch.
+* Updated - Language file.
+
 = 3.2.1 - 2018-11-16 =
 * Added - Media delete capabilities for vendor.
 * Fix - Single product multiple vendor's products showing issues for vendor non-published capability.

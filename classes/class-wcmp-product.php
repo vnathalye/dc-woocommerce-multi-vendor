@@ -121,17 +121,13 @@ class WCMp_Product {
         $is_wcmp_spmv_product = get_post_meta($product->get_id(), '_wcmp_spmv_product', true);
         $has_wcmp_spmv_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
         if($is_wcmp_spmv_product){
-            do_wcmp_spmv_set_object_terms($has_wcmp_spmv_map_id);
-            $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
-            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+            wp_schedule_single_event( time(), 'wcmp_reset_product_mapping_data', array( $has_wcmp_spmv_map_id ) );
         }else{
             $data = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_products_map WHERE product_id=%d", $product->get_id()) );
             if($data && $data->product_map_id){
                 update_post_meta($product->get_id(), '_wcmp_spmv_product', true);
                 update_post_meta($product->get_id(), '_wcmp_spmv_map_id', $data->product_map_id);
-                do_wcmp_spmv_set_object_terms($data->product_map_id);
-                $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
-                set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+                wp_schedule_single_event( time(), 'wcmp_reset_product_mapping_data', array( $data->product_map_id ) );
             }
         }
     }
@@ -1616,7 +1612,6 @@ class WCMp_Product {
         if( !isset( $query->query['s'] ) || !isset( $query->query['post_type'] ) || $query->query['post_type'] != 'product'){
                 return;
         }
-
         if(!empty($query->query['s'])){
             $posts = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wcmp_gtin_code' AND meta_value LIKE %s;", esc_sql( '%'.$query->query['s'].'%' ) ) );
             if ( ! $posts ) {

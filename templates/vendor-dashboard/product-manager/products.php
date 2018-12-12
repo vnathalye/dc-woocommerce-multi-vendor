@@ -56,12 +56,16 @@ do_action('before_wcmp_vendor_dashboard_product_list_table');
                 <?php $pro_bulk_actions = apply_filters( 'wcmp_product_list_bulk_actions', array(
                     'trash' => __('Move to trash', 'dc-woocommerce-multi-vendor'),
                     'untrash' => __('Restore', 'dc-woocommerce-multi-vendor'),
+                    'delete' => __('Delete Permanently', 'dc-woocommerce-multi-vendor'),
                 ));
                 // Filter bulk actions according to post status
                 if(isset($_REQUEST['post_status']) && $_REQUEST['post_status'] == 'trash'){
                     if(isset($pro_bulk_actions['trash'])) unset($pro_bulk_actions['trash']);
                 }else{
-                    if(isset($pro_bulk_actions['untrash'])) unset($pro_bulk_actions['untrash']);
+                    if(isset($pro_bulk_actions['untrash'])) { 
+                        unset($pro_bulk_actions['untrash']);
+                        unset($pro_bulk_actions['delete']);
+                    }
                 }
                 ?>
                 <select id="product_bulk_actions" name="bulk_action" class="wcmp-filter-dtdd wcmp_product_bulk_actions form-control inline-input">
@@ -188,6 +192,16 @@ if ($products_table_headers) {
 //                if(settings.oAjaxData.product_cat){
 //                    product_cat_sel.val(settings.oAjaxData.product_cat);
 //                }
+                if(settings.json.notices.length > 0 ){
+                    $('.wcmp-wrapper .notice-wrapper').html('');
+                    $.each(settings.json.notices, function( index, notice ) {
+                        if(notice.type == 'success'){
+                            $('.wcmp-wrapper .notice-wrapper').append('<div class="woocommerce-message" role="alert">'+notice.message+'</div>');
+                        }else{
+                            $('.wcmp-wrapper .notice-wrapper').append('<div class="woocommerce-error" role="alert">'+notice.message+'</div>');
+                        }
+                    });
+                }
             },
             "ajax": {
                 url: '<?php echo add_query_arg( 'action', 'wcmp_vendor_product_list', $WCMp->ajax_url() ); ?>',

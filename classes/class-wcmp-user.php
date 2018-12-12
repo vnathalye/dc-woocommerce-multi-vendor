@@ -52,6 +52,8 @@ class WCMp_User {
         // Disable backend access for suspended vendor
         add_filter('wcmp_vendor_dashboard_header_right_panel_nav', array( &$this, 'remove_backend_access_for_suspended_vendor'));
         add_action('init', array( &$this, 'remove_wp_admin_access_for_suspended_vendor'), 11);
+        // Enable media handler caps for vendor, mainly for policy media handler
+        add_filter( 'map_meta_cap', array( &$this, 'media_handler_map_meta_cap'), 99, 4 );
     }
     
     function remove_wp_admin_access_for_suspended_vendor() {
@@ -1076,6 +1078,23 @@ class WCMp_User {
         }else{
             return $avatar; 
         }
+    }
+    
+    /**
+     * Enable edit_post capability for vendor in dashboard store policies.
+     *
+     * @param  array  $caps    The user's capabilities.
+     * @param  string $cap     Capability name.
+     * @param  int    $user_id The user ID.
+     * @return array  $caps    The user's capabilities, with 'edit_post' potentially added.
+     */
+    public function media_handler_map_meta_cap( $caps, $cap, $user_id, $args ){
+        // media upload caps added for vendor policies page
+        $is_policy_page = (isset($args[0]) && get_wcmp_vendor_settings( 'wcmp_vendor', 'vendor', 'general') == $args[0]) ? true : false;
+        if ( 'edit_post' == $cap && is_user_wcmp_vendor($user_id) && apply_filters('wcmp_vendor_has_policy_media_handle_meta_cap', $is_policy_page) ) {
+            return array('edit_post');
+        }
+        return $caps;
     }
     
 }

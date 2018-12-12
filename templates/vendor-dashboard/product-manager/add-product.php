@@ -794,7 +794,7 @@ $attribute_taxonomies = wc_get_attribute_taxonomies();
                     }
                     if (isset($group['__show_meta_box']) && $group['__show_meta_box'] == false)
                         continue;
-                    $field_group_load = Types_Field_Group_Post_Factory::load($field_group['slug']);
+                    $field_group_load = apply_filters('wcmp_add_product_toolset_field_load_class', Types_Field_Group_Post_Factory::load($field_group['slug']), $field_group);
                     if (null === $field_group_load)
                         continue;
 

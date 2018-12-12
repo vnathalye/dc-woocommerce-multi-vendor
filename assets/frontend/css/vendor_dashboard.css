@@ -327,37 +327,53 @@ i.wcmp-font {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
+  vertical-align: middle;
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
+.ico-back-arrow:before {
+  content: "\e94d"; }
+
+.ico-search-icon:before {
+  content: "\e94c";
+  color: #5d5e5e; }
+
 .ico-export:before {
-  content: "\e91b"; }
+  content: "\e91b";
+  color: #5d5e5e; }
 
 .ico-import:before {
-  content: "\e921"; }
+  content: "\e921";
+  color: #5d5e5e; }
 
 .ico-message:before {
-  content: "\e92b"; }
+  content: "\e92b";
+  color: #5d5e5e; }
 
 .ico-notification:before {
-  content: "\e930"; }
+  content: "\e930";
+  color: #5d5e5e; }
 
 .ico-quote:before {
-  content: "\e937"; }
+  content: "\e937";
+  color: #5d5e5e; }
 
 .ico-rental-calender:before {
-  content: "\e940"; }
+  content: "\e940";
+  color: #5d5e5e; }
 
 .ico-resources:before {
   content: "\e941";
   color: #5d5d5d; }
 
 .ico-subscriptions:before {
-  content: "\e94a"; }
+  content: "\e94a";
+  color: #5d5e5e; }
 
 .ico-add-booking:before {
-  content: "\e94b"; }
+  content: "\e94b";
+  color: #5d5e5e; }
 
 .ico-uncheckbox-icon:before {
   content: "\e915"; }
@@ -610,6 +626,10 @@ img {
   max-width: 100%;
   height: auto; }
 
+label, .label {
+  font-weight: normal;
+  color: inherit; }
+
 body textarea.form-control {
   height: 100px;
   overflow-x: hidden; }
@@ -650,6 +670,16 @@ ul {
   padding: 0;
   margin: 0; }
 
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 21px;
+    line-height: 28px; }
+
+  h2 {
+    font-size: 16px; }
+
+  .heading-underline {
+    margin-bottom: 25px; } }
 .zero-radius {
   border-radius: 0; }
 
@@ -677,6 +707,9 @@ ul {
     .content-padding {
       padding: 15px; } }
 
+.m-0 {
+  margin: 0 !important; }
+
 .mt-0 {
   margin-top: 0 !important; }
 
@@ -694,6 +727,136 @@ ul {
 
 .mb-15 {
   margin-bottom: 15px !important; }
+
+.p-0 {
+  padding: 0 !important; }
+
+.pt-0 {
+  padding-top: 0 !important; }
+
+.pt-10 {
+  padding-top: 10px !important; }
+
+.pt-15 {
+  padding-top: 15px !important; }
+
+.pb-0 {
+  padding-bottom: 0 !important; }
+
+.pb-10 {
+  padding-bottom: 10px !important; }
+
+.pb-15 {
+  padding-bottom: 15px !important; }
+
+.p-15 {
+  padding: 15px !important; }
+
+.border-top {
+  border-top: solid 1px #d3dbe2; }
+
+.border {
+  border: solid 1px #d3dbe2; }
+
+@media screen and (max-width: 767px) {
+  .mt-md-10 {
+    margin-top: 10px; }
+
+  .mt-md-15 {
+    margin-top: 15px; } }
+#tiptip_holder {
+  display: none;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0; }
+  #tiptip_holder.tip_top {
+    padding-bottom: 5px; }
+  #tiptip_holder.tip_top #tiptip_arrow_inner {
+    margin-top: -7px;
+    margin-left: -6px;
+    border-top-color: #333; }
+  #tiptip_holder .tip_bottom {
+    padding-top: 5px; }
+  #tiptip_holder .tip_bottom #tiptip_arrow_inner {
+    margin-top: -5px;
+    margin-left: -6px;
+    border-bottom-color: #333; }
+  #tiptip_holder .tip_right {
+    padding-left: 5px; }
+  #tiptip_holder .tip_right #tiptip_arrow_inner {
+    margin-top: -6px;
+    margin-left: -5px;
+    border-right-color: #333; }
+  #tiptip_holder .tip_left {
+    padding-right: 5px; }
+  #tiptip_holder .tip_left #tiptip_arrow_inner {
+    margin-top: -6px;
+    margin-left: -7px;
+    border-left-color: #333; }
+
+#tiptip_content,
+.chart-tooltip,
+.wc_error_tip {
+  color: #fff;
+  font-size: .8em;
+  max-width: 150px;
+  background: #333;
+  text-align: center;
+  border-radius: 3px;
+  padding: .618em 1em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+
+#tiptip_content code,
+.chart-tooltip code,
+.wc_error_tip code {
+  padding: 1px;
+  background: #888; }
+
+#tiptip_arrow,
+#tiptip_arrow_inner {
+  position: absolute;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 6px;
+  height: 0;
+  width: 0; }
+
+#tiptip_content,
+.chart-tooltip,
+.wc_error_tip {
+  color: #fff;
+  font-size: .8em;
+  max-width: 150px;
+  background: #333;
+  text-align: center;
+  border-radius: 3px;
+  padding: .618em 1em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+
+#tiptip_content code,
+.chart-tooltip code,
+.wc_error_tip code {
+  padding: 1px;
+  background: #888; }
+
+#tiptip_arrow,
+#tiptip_arrow_inner {
+  position: absolute;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 6px;
+  height: 0;
+  width: 0; }
+
+.wc_error_tip {
+  max-width: 20em;
+  line-height: 1.8em;
+  position: absolute;
+  white-space: normal;
+  background: #d82223;
+  margin: 1.5em 1px 0 -1em;
+  z-index: 9999999; }
 
 .inp-btm-margin {
   margin-bottom: 15px; }
@@ -750,6 +913,100 @@ ul {
     margin: auto;
     bottom: -10px; }
 
+.pos-rel {
+  position: relative; }
+
+.wcmp-panel-loader {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  z-index: 9;
+  display: none; }
+  .wcmp-panel-loader .wcmp-spinner {
+    z-index: 2;
+    color: #232e2e;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    right: 50%; }
+
+.wcmp-spinner {
+  display: inline-block;
+  animation-name: anim-spinner;
+  animation-duration: 0.7s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; }
+  .wcmp-spinner .circle {
+    width: 2em;
+    height: 1em;
+    overflow: hidden; }
+  .wcmp-spinner .circle-inner {
+    transform: rotate(45deg);
+    border-radius: 50%;
+    border: 0.1666666667em solid #3f85b9;
+    border-right: 0.1666666667em solid transparent;
+    border-bottom: 0.1666666667em solid transparent;
+    width: 100%;
+    height: 200%;
+    animation-name: anim-circle-1;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.5, 1); }
+  .wcmp-spinner .circle-2 {
+    transform: rotate(180deg); }
+    .wcmp-spinner .circle-2 .circle-inner {
+      animation-name: anim-circle-2; }
+@keyframes anim-circle-1 {
+  from {
+    transform: rotate(60deg); }
+  to {
+    transform: rotate(205deg); } }
+@keyframes anim-circle-2 {
+  from {
+    transform: rotate(30deg); }
+  to {
+    transform: rotate(-115deg); } }
+@keyframes anim-spinner {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+.circonf {
+  margin: 1em;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: 4px solid silver;
+  animation: circ-anim 0.7s linear infinite; }
+
+.circonf-6 {
+  border-width: 0px;
+  border-radius: 50%;
+  border-top: 3px solid #3f85b9;
+  border-right: 3px solid transparent; }
+
+@keyframes circ-anim {
+  from {
+    transform: rotate(0); }
+  to {
+    transform: rotate(360deg); } }
+@-webkit-keyframes roundAnimation {
+  0% {
+    transform: rotate(360deg); }
+  100% {
+    transform: rotate(0deg); } }
+@keyframes roundAnimation {
+  0% {
+    transform: rotate(360deg); }
+  100% {
+    transform: rotate(0deg); } }
+hr {
+  border-color: #d3dbe2; }
+
 .table > tbody > tr > td {
   padding: 20px; }
 
@@ -805,6 +1062,8 @@ table.table-bordered {
     border-top: solid 2px #d3dbe2; } }
 table.table-outer-border {
   border: 1px solid #ddd; }
+  table.table-outer-border .table-outer-border thead th:last-of-type, table.table-outer-border .table-outer-border tbody td:last-of-type {
+    border-right: 1px solid #ddd; }
 table input[type="checkbox"] {
   margin: 0 !important; }
 
@@ -957,6 +1216,17 @@ body .mCSB_scrollTools {
       border: 1px solid #d3dbe2;
       border-top: 0; }
 
+.panel-custom {
+  border: 1px solid #d3dbe2;
+  border-radius: 0; }
+  .panel-custom .panel-heading {
+    background-color: #eff1f5;
+    color: #252525;
+    border-bottom: 1px solid #d3dbe2;
+    padding: 14px 20px; }
+  .panel-custom .panel-body {
+    padding: 20px; }
+
 .wcmp_vendor_pending_shipping .panel-body, .wcmp_vendor_product_sales_report .panel-body {
   border: 0 !important; }
 
@@ -1004,10 +1274,19 @@ mark {
   border-radius: 4px;
   color: #a94442;
   background-color: #f2dede;
-  margin-bottom: 20px; }
+  margin-bottom: 20px;
+  list-style-type: disc;
+  list-style-position: inside; }
   .woocommerce-error:focus {
     outline: none;
     box-shadow: none; }
+  .woocommerce-error div {
+    display: inline-block;
+    vertical-align: top;
+    width: auto !important;
+    padding: 0; }
+  .woocommerce-error li:not(:first-child) {
+    margin-top: 5px; }
 
 .notice-wrapper .message-container.container {
   width: 100%; }
@@ -1028,6 +1307,13 @@ mark {
       font-size: 16px;
       vertical-align: middle;
       margin-right: 5px; }
+      .wcmp-action-container .btn i:before {
+        color: #fff; }
+    @media screen and (max-width: 480px) {
+      .wcmp-action-container .btn span {
+        font-size: 0; }
+      .wcmp-action-container .btn i {
+        margin: 0; } }
   @media screen and (max-width: 767px) {
     .wcmp-action-container {
       top: 61px;
@@ -1096,7 +1382,8 @@ label.nolabel {
   margin-bottom: 0; }
 
 .form-control {
-  border-color: #c5c5c5; }
+  border-color: #c5c5c5;
+  max-width: 100%; }
   @media screen and (max-width: 480px) {
     .form-control {
       height: 30px; } }
@@ -1134,6 +1421,9 @@ select.input-sm {
     .btn.btn-default, .btn.btn-secondary {
       font-size: 13px;
       padding: 3px 9px; } }
+  .btn.btn-default.btn-sm, .btn.btn-secondary.btn-sm {
+    font-size: 14px;
+    padding: 4px 12px; }
 
 .btn.btn-secondary {
   padding-right: 10px;
@@ -1175,24 +1465,30 @@ textarea {
   .form-horizontal {
     font-size: 13px; } }
 
-.select2-container {
-  width: 100% !important; }
-  .select2-container .select2-selection.select2-selection--multiple {
+body .select2-container {
+  width: 100% !important;
+  min-height: 34px !important; }
+  body .select2-container .select2-selection.select2-selection--multiple {
     height: auto;
-    min-height: 28px;
+    min-height: 34px;
     line-height: 17px;
-    width: 100%; }
-    .select2-container .select2-selection.select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
-      padding: 1px 7px;
-      font-size: 11px;
-      margin: 2px 8px 0 0; }
-  .select2-container .select2-search--inline {
+    width: 100%;
+    border: 1px solid #c5c5c5; }
+    body .select2-container .select2-selection.select2-selection--multiple .select2-selection__rendered {
+      padding: 3px 5px; }
+      body .select2-container .select2-selection.select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+        padding: 1px 7px;
+        font-size: 11px;
+        margin: 2px 8px 0 0; }
+  body .select2-container .select2-search--inline {
     margin-top: 4px; }
-    .select2-container .select2-search--inline .select2-search__field {
+    body .select2-container .select2-search--inline .select2-search__field {
       margin: 0 !important;
       font-size: 14px !important; }
-  .select2-container .select2-selection--single .select2-selection__rendered {
-    line-height: 26px !important; }
+  body .select2-container .select2-selection--single {
+    height: 34px; }
+    body .select2-container .select2-selection--single .select2-selection__rendered {
+      line-height: 33px !important; }
 
 blockquote {
   background: #fff;
@@ -1210,6 +1506,17 @@ blockquote {
       border: 1px solid #d3dbe2; }
     .pagination li.active a {
       background: #3f85b9; }
+
+.modal-title {
+  width: calc(100% - 25px);
+  display: inline-block;
+  vertical-align: top; }
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 0 auto; } }
+#wcmp-afm-bulk-edit-form .form-group {
+  margin-bottom: 10px; }
 
 .star-rating {
   text-align: left;
@@ -1245,6 +1552,21 @@ blockquote {
       position: absolute;
       left: 0;
       color: #3f85b9; }
+
+.taxonomy-widget {
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow: auto; }
+  .taxonomy-widget label {
+    margin: 0; }
+  .taxonomy-widget li {
+    margin-top: 13px; }
+  .taxonomy-widget ul {
+    padding: 0 0 0 15px; }
+
+.panel-body > .taxonomy-widget > li:first-child {
+  margin-top: 0; }
 
 .media-body h4.media-heading {
   color: #3f85b9; }
@@ -1450,6 +1772,8 @@ table.dataTable tbody td.price {
   max-width: 85px; }
 table.dataTable tbody td.stock {
   width: 63px; }
+  table.dataTable tbody td.stock .label {
+    color: #fff; }
 table.dataTable tbody td.date {
   width: 130px; }
 table.dataTable tbody td.status {
@@ -2805,6 +3129,18 @@ td:focus {
   margin-top: 5px; }
 .vendor-products-qna-filters li + li.select2-search.select2-search--inline input.select2-search__field {
   width: 0.75em !important; }
+@media screen and (max-width: 1070px) {
+  .vendor-products-qna-filters {
+    float: right;
+    width: 100%;
+    padding-bottom: 13px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 12px; }
+    .vendor-products-qna-filters .form-group {
+      float: left;
+      width: calc(100% - 100px);
+      max-width: initial;
+      margin-bottom: 0; } }
 
 #vendor_products_qna_table span.unanswered.label-default {
   font-size: 12px;
@@ -3037,6 +3373,9 @@ input[type=radio], input[type=checkbox] {
   -webkit-appearance: none;
   transition: .05s border-color ease-in-out;
   border-radius: 3px; }
+  input[type=radio]:focus, input[type=checkbox]:focus {
+    border-color: #cecdcd;
+    box-shadow: none; }
 
 input[type=radio]:checked:before, input[type=checkbox]:checked:before {
   float: left;
@@ -3511,54 +3850,167 @@ body .wc_bookings_calendar_form .tablenav {
 body .wc_bookings_calendar_form .tablenav {
   margin: 0 0 25px;
   display: inline-block;
-  width: 100%; }
-  body .wc_bookings_calendar_form .tablenav .date_selector a.prev, body .wc_bookings_calendar_form .tablenav .date_selector a.next {
+  width: 100%;
+  border-bottom: solid 1px #d3dbe2;
+  padding-bottom: 20px; }
+  body .wc_bookings_calendar_form .tablenav .date_selector {
+    margin-left: 5px;
+    display: block;
+    float: left; }
+    body .wc_bookings_calendar_form .tablenav .date_selector a {
+      display: block;
+      text-indent: -9999px;
+      position: relative;
+      height: 1em;
+      width: 1em;
+      font-size: 1.3em;
+      padding: .6em; }
+      body .wc_bookings_calendar_form .tablenav .date_selector a.prev, body .wc_bookings_calendar_form .tablenav .date_selector a.next {
+        padding: 0;
+        margin: 6px 6px 0;
+        width: 29px;
+        height: 29px;
+        position: relative; }
+      body .wc_bookings_calendar_form .tablenav .date_selector a:before {
+        font: normal normal normal 25px/1 LineAwesome;
+        speak: none;
+        font-weight: 400;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        margin: 0;
+        text-indent: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center; }
+      body .wc_bookings_calendar_form .tablenav .date_selector a.prev {
+        float: left; }
+        body .wc_bookings_calendar_form .tablenav .date_selector a.prev:before {
+          content: "←";
+          font-size: 30px; }
+      body .wc_bookings_calendar_form .tablenav .date_selector a.next {
+        float: right; }
+        body .wc_bookings_calendar_form .tablenav .date_selector a.next:before {
+          content: "→";
+          font-size: 30px; }
+    body .wc_bookings_calendar_form .tablenav .date_selector div {
+      padding: 5px 0;
+      float: left; }
+      body .wc_bookings_calendar_form .tablenav .date_selector div:first-of-type select {
+        margin-right: 5px; }
+    body .wc_bookings_calendar_form .tablenav .date_selector select {
+      vertical-align: middle;
+      width: 6em; }
+  body .wc_bookings_calendar_form .tablenav .views {
+    float: right;
     padding: 0;
-    margin: 6px 6px 0;
-    width: 29px;
-    height: 29px;
-    position: relative; }
-  body .wc_bookings_calendar_form .tablenav .date_selector a:before {
-    font: normal normal normal 25px/1 LineAwesome;
-    speak: none;
-    font-weight: 400;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    margin: 0;
-    text-indent: 0;
+    border-left: 1px solid #ddd; }
+    body .wc_bookings_calendar_form .tablenav .views a {
+      padding: 11px 20px;
+      display: block;
+      text-decoration: none; }
+      body .wc_bookings_calendar_form .tablenav .views a i {
+        font-size: 19px;
+        margin-right: 7px; }
+  body .wc_bookings_calendar_form .tablenav .filters {
+    float: left;
+    line-height: 30px;
+    padding: 5px 15px 5px 5px;
+    border-right: 1px solid #ddd; }
+body .wc_bookings_calendar_form .calendar_days {
+  overflow: auto;
+  position: relative;
+  height: 1440px;
+  overflow: hidden;
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA8CAYAAACn8dD6AAAAIElEQVQYGWO4e/fuf4afP3/+Z2IAgsFCfP36lWHQuQoAvaoOvF/jxHkAAAAASUVORK5CYII=);
+  background-repeat: repeat;
+  background-position: 0 0; }
+  body .wc_bookings_calendar_form .calendar_days .hours {
+    list-style: none;
+    padding: 0;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    margin: -0.5em 0 0 0; }
+  body .wc_bookings_calendar_form .calendar_days .hours li {
+    height: 60px;
+    vertical-align: top;
+    padding: 0;
+    margin: 0; }
+  body .wc_bookings_calendar_form .calendar_days .hours li label {
+    float: left;
+    background: #f9f9f9;
+    padding: 0 8px; }
+  body .wc_bookings_calendar_form .calendar_days .bookings {
+    margin: 0 0 0 100px;
+    padding: 0;
     height: 100%;
-    text-align: center; }
-  body .wc_bookings_calendar_form .tablenav .date_selector a.prev:before {
-    content: "←";
-    font-size: 30px; }
-  body .wc_bookings_calendar_form .tablenav .date_selector a.next:before {
-    content: "→";
-    font-size: 30px; }
-  body .wc_bookings_calendar_form .tablenav .views a:before {
-    font-family: 'wcmp';
-    font-size: inherit;
-    vertical-align: middle;
-    text-decoration: inherit;
-    text-rendering: optimizeLegibility;
-    text-transform: none;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    content: "\e914";
-    font-size: 19px;
-    margin-right: 7px; }
-  body .wc_bookings_calendar_form .tablenav .filters {
-    padding-right: 15px; }
-body .wc_bookings_calendar_form .calendar_days {
-  overflow: auto; }
-  body .wc_bookings_calendar_form .calendar_days .hours {
+    white-space: nowrap;
+    position: relative; }
+  body .wc_bookings_calendar_form .calendar_days .bookings li {
+    position: absolute;
+    width: 98px;
+    background: #000;
+    border-radius: 2px;
+    margin: 0;
+    overflow: hidden;
+    color: #fff; }
+  body .wc_bookings_calendar_form .calendar_days .bookings li a {
+    display: block;
+    padding: 2px 4px;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    color: #fff;
+    text-decoration: none; }
+body .wc_bookings_calendar_form .wc_bookings_calendar .calendar-diff-month {
+  background: #efefef; }
+body .wc_bookings_calendar_form .wc_bookings_calendar td {
+  color: #bbb;
+  text-align: right;
+  padding: 8px 8px 0 0;
+  font-size: 20px;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  height: 120px; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings {
+    overflow: auto;
+    height: 100px;
+    width: 100%;
+    text-align: left;
+    font-size: 15px; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul {
+    padding: 0;
+    margin: 0; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul li {
+    padding: 0;
+    margin: 0 0 4px 0;
+    list-style: none; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul li a {
+    border-left: 4px solid #eee;
+    padding: 3px 3px 3px 8px;
+    display: block; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul li a ul {
+    padding: 0;
+    margin: 0; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul li a ul li {
     list-style: none;
-    padding: 0; }
+    font-size: .75em;
+    padding: 0;
+    margin: 0;
+    border: 0; }
+  body .wc_bookings_calendar_form .wc_bookings_calendar td .bookings ul li a:hover {
+    border-left-color: #ccc;
+    background: #fafafa; }
+
+div.dataTables_wrapper div.dataTables_length select.wcmp_filter_bookings {
+  width: auto; }
 
 .wc_bookings_calendar tr th {
   padding-bottom: 10px; }
@@ -3601,6 +4053,32 @@ body .wc_bookings_calendar_form .calendar_days {
 .mce-container.mce-panel.mce-foot button {
   color: #fff; }
 
+@media screen and (max-width: 1100px) {
+  .product_search {
+    width: 100%;
+    padding: 15px 0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd; }
+    .product_search .pro_search_key {
+      width: calc(100% - 74px); }
+
+  #product_bulk_actions {
+    width: calc(100% - 63px);
+    margin: 8px 0; }
+
+  body .product-filter-actions .alignleft.actions button:not(:last-of-type) {
+    margin-right: 0; }
+
+  .product_filters li {
+    float: none;
+    margin-bottom: 15px; }
+
+  #product_cat {
+    max-width: calc(100% - 270px);
+    min-width: 147px; } }
+body .select2-container--default .select2-search--inline .select2-search__field[placeholder="Search for a product…"] {
+  min-width: 150px; }
+
 @media screen and (max-width: 480px) {
   body .woocommerce table.form-table .select2-container {
     min-width: auto !important; }
@@ -3608,15 +4086,32 @@ body .wc_bookings_calendar_form .calendar_days {
   body .woocommerce-exporter .woocommerce-exporter-options td .select2-container {
     width: auto !important; }
 
-  .product_filters {
-    text-align: center; }
-    .product_filters li {
-      float: none;
-      margin-bottom: 5px; }
-
   .products.content-padding #product_cat {
-    display: block;
-    margin: 5px auto 10px; } }
+    max-width: calc(100% - 203px);
+    min-width: 120px;
+    margin: 0;
+    display: inline-block;
+    font-size: 12px;
+    padding-right: 15px !important;
+    background-position: right 3px top 50%; }
+  .products.content-padding #product_types {
+    font-size: 12px;
+    width: 139px;
+    padding-left: 3px;
+    padding-right: 15px !important;
+    background-position: right 3px top 50%; }
+
+  .product_search .pro_search_key {
+    width: calc(100% - 69px); } }
+#wc_bookings_field_duration {
+  display: inline-block;
+  vertical-align: middle; }
+
+.wc_bookings_field_start_date legend .label {
+  padding: 0;
+  margin-top: 26px;
+  display: inline-block; }
+
 .product_filters {
   line-height: 0.7;
   margin-top: 13px; }
@@ -3655,6 +4150,11 @@ body .wc_bookings_calendar_form .calendar_days {
     .select-product-cat-wrapper .cat-intro .serach-product-cat-wrapper form .form-control {
       max-width: 100%;
       width: 395px; }
+    @media screen and (max-width: 892px) {
+      .select-product-cat-wrapper .cat-intro .serach-product-cat-wrapper form .form-control {
+        width: 100%; }
+      .select-product-cat-wrapper .cat-intro .serach-product-cat-wrapper form > .btn {
+        margin-top: 10px; } }
     .select-product-cat-wrapper .cat-intro .serach-product-cat-wrapper form:after {
       content: '...';
       position: absolute;
@@ -3665,10 +4165,35 @@ body .wc_bookings_calendar_form .calendar_days {
       margin: auto;
       color: rgba(110, 114, 115, 0.7);
       pointer-events: none; }
+.select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm {
+  border-bottom: 1px solid #d3dbe2;
+  padding: 20px;
+  overflow: hidden; }
+  .select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm img {
+    margin: 0 25px 0 0;
+    float: left;
+    border: 1px solid #d3dbe2;
+    padding: 10px;
+    max-height: 98px;
+    width: auto;
+    max-width: 130px; }
+  .select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm .result-content {
+    width: calc(100% - 312px);
+    display: inline-block;
+    vertical-align: middle; }
+  .select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm a {
+    margin-left: 30px; }
+  @media screen and (max-width: 1000px) {
+    .select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm .result-content {
+      width: 100%;
+      margin: 15px 0; }
+    .select-product-cat-wrapper .cat-intro .search-result-holder .search-result-clm a {
+      margin-left: 0; } }
 .select-product-cat-wrapper .select-cat-step-wrapper .cat-list-holder {
   position: relative;
   height: 367px;
-  overflow: hidden; }
+  overflow: hidden;
+  background: url("../../images/icon-bg.png") repeat top; }
 .select-product-cat-wrapper .select-cat-step-wrapper .cat-column-scroller {
   position: absolute;
   width: 50px;
@@ -3701,6 +4226,8 @@ body .wc_bookings_calendar_form .calendar_days {
   height: 100%; }
   .select-product-cat-wrapper .select-cat-step-wrapper .cat-column-wrapper .cat-column:nth-last-of-type(3) {
     border-right: 1px solid #d3dbe2; }
+  .select-product-cat-wrapper .select-cat-step-wrapper .cat-column-wrapper .cat-column:not(:first-child) {
+    margin-left: -1px; }
 .select-product-cat-wrapper .select-cat-step-wrapper .select-category-graphic {
   float: left;
   width: 66.67%;
@@ -3714,13 +4241,27 @@ body .wc_bookings_calendar_form .calendar_days {
   .select-product-cat-wrapper .select-cat-step-wrapper .select-category-graphic h1 {
     font-weight: 300;
     color: #4e5a5d; }
+  .select-product-cat-wrapper .select-cat-step-wrapper .select-category-graphic:after {
+    position: absolute;
+    content: '';
+    width: 471px;
+    height: 261px;
+    box-shadow: 1px 1px 176px white;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: -27px;
+    bottom: 0;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 240px 240px 25px 25px; }
 .select-product-cat-wrapper .select-cat-step-wrapper .cat-column {
   width: 33.33%;
   float: left;
   border: 1px solid #d3dbe2;
-  border-right: 0;
   height: 100%;
-  overflow: auto; }
+  overflow: auto;
+  background: #fff; }
   .select-product-cat-wrapper .select-cat-step-wrapper .cat-column li {
     position: relative; }
     .select-product-cat-wrapper .select-cat-step-wrapper .cat-column li:after {
@@ -3793,8 +4334,7 @@ body .wc_bookings_calendar_form .calendar_days {
     margin: auto;
     width: 193px;
     max-width: 100%;
-    height: 168px;
-    background: url("../../images/select-cat-btn-graphic.png") no-repeat center center; }
+    height: 168px; }
     .select-product-cat-wrapper .select-cat-step-wrapper .select-cat-button-holder .final-cat-button button {
       position: absolute;
       top: 50%;
@@ -3849,7 +4389,8 @@ body .wc_bookings_calendar_form .calendar_days {
   top: 15px;
   display: inline-block;
   max-height: 326px;
-  overflow: auto; }
+  overflow: auto;
+  width: 700px; }
   .select-product-cat-wrapper .select-cat-step-wrapper .product-search-wrapper .list-group .list-group-item {
     border-radius: 0 !important;
     padding: 20px 28px;
@@ -3896,14 +4437,14 @@ body .wc_bookings_calendar_form .calendar_days {
 .select-product-cat-wrapper .select-cat-step-wrapper .panel-heading h1 .primary-color span {
   opacity: 0.7; }
 
-.editable-content-button {
+.editable-content-button, .editabble-button {
   background: transparent;
   padding: 0;
   color: #7eaed1;
   box-shadow: none;
   border: none;
   margin: 0 0 0 10px; }
-  .editable-content-button i, .editable-content-button span {
+  .editable-content-button i, .editabble-button i, .editable-content-button span, .editabble-button span {
     text-decoration: underline; }
 
 .cat-step3 .panel-heading {
@@ -3918,7 +4459,9 @@ body .wc_bookings_calendar_form .calendar_days {
   width: 100%; }
   .cat-step3 .product-title-wrap .grey-blockquote {
     position: relative;
-    padding-left: 25px; }
+    padding-left: 25px;
+    width: calc(100% - 450px);
+    max-width: 100%; }
     .cat-step3 .product-title-wrap .grey-blockquote::after {
       position: absolute;
       content: '';
@@ -3927,13 +4470,21 @@ body .wc_bookings_calendar_form .calendar_days {
       left: 0;
       width: 3px;
       background: #c8d2db; }
+    .cat-step3 .product-title-wrap .grey-blockquote > div {
+      min-height: 34px;
+      margin-bottom: 5px;
+      line-height: 32px; }
+  .cat-step3 .product-title-wrap .editing-content {
+    vertical-align: middle;
+    display: none; }
   .cat-step3 .product-title-wrap #product_visiblity {
     background: #fff;
     width: 238px;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.11);
     border: 1px solid #d3dbe2;
     position: absolute;
-    right: 16px; }
+    right: 16px;
+    z-index: 1; }
     .cat-step3 .product-title-wrap #product_visiblity form {
       padding: 15px; }
     .cat-step3 .product-title-wrap #product_visiblity .form-group {
@@ -3942,6 +4493,14 @@ body .wc_bookings_calendar_form .calendar_days {
         margin-right: 6px; }
     .cat-step3 .product-title-wrap #product_visiblity hr {
       margin: 9px 0 19px; }
+    .cat-step3 .product-title-wrap #product_visiblity .btn-sm {
+      margin-right: 5px; }
+
+.fc-content-skeleton tr {
+  background: transparent; }
+
+.fc-toolbar .fc-state-active, .fc-toolbar .ui-state-active {
+  z-index: 1; }
 
 .inline-select {
   width: auto;
@@ -4461,6 +5020,36 @@ select[name="wcmp-vendor-orders_length"] {
     text-align: center;
     margin-top: 10px; }
 
+.top-order-note td {
+  padding: 5px; }
+.top-order-note th {
+  padding-right: 10px; }
+
+@media screen and (min-width: 992px) {
+  .order-address-info > .row {
+    display: flex; } }
+.order-address-info .col-md-4 .border {
+  padding: 20px 25px;
+  height: 100%; }
+  .order-address-info .col-md-4 .border h3 {
+    margin-bottom: 8px; }
+  .order-address-info .col-md-4 .border p {
+    margin-bottom: 3px; }
+  .order-address-info .col-md-4 .border .customer-detail {
+    display: table; }
+    .order-address-info .col-md-4 .border .customer-detail .icon {
+      display: table-cell;
+      vertical-align: top; }
+      .order-address-info .col-md-4 .border .customer-detail .icon i {
+        font-size: 25px;
+        margin-right: 10px;
+        background: #d3dce1;
+        padding: 13px;
+        vertical-align: top;
+        display: inline-block; }
+    .order-address-info .col-md-4 .border .customer-detail p {
+      margin-bottom: 1px; }
+
 .transaction-details #vendor_transactions_date_filter {
   margin: 0 0 -33px 0; }
 @media screen and (max-width: 1030px) {
@@ -4611,5 +5200,15 @@ select[name="wcmp-vendor-orders_length"] {
 
 .wcmp-do-change-pass {
   margin-top: 6px; }
+
+.zone-component {
+  position: relative; }
+  .zone-component .shipping-zone-list i {
+    margin-right: 8px; }
+  .zone-component .shipping-zone-list + .form-group {
+    margin-top: 15px; }
+
+.wcmp-shipping-zone-methods .method_disabled {
+  text-decoration: line-through; }
 
 /*# sourceMappingURL=vendor_dashboard.css.map */

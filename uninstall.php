@@ -42,6 +42,8 @@ if (defined('WCMP_REMOVE_ALL_DATA') && true === WCMP_REMOVE_ALL_DATA) {
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_visitors_stats");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_cust_questions");
     $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_cust_answers");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_shipping_zone_methods");
+    $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wcmp_shipping_zone_locations");
 
     // Delete options.
     $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE 'wcmp\_%';");

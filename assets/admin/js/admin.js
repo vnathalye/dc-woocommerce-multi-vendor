@@ -28,6 +28,31 @@ jQuery(document).ready(function ($) {
             changeYear: true
         });
     });
+    
+    $( '.wcmp-shipping-zone-method' ).on( 'change', '.wcmp-shipping-zone-method-enabled input', function() {
+            if ( $( this ).is( ':checked' ) ) {
+                    $( this ).closest( '.wcmp-input-toggle' ).removeClass( 'woocommerce-input-toggle--disabled' );
+                    $( this ).closest( '.wcmp-input-toggle' ).addClass( 'checked' );
+                    $( this ).closest( '.wcmp-input-toggle' ).find( '.wcmp-input-toggle' ).removeClass( 'hide' );
+            } else {
+                    $( this ).closest( '.wcmp-input-toggle' ).addClass( 'woocommerce-input-toggle--disabled' );
+                    $( this ).closest( '.wcmp-input-toggle' ).removeClass( 'checked' );
+                    $( this ).closest( '.wcmp-input-toggle' ).find( '.wcmp-shipping-zone-method' ).addClass( 'hide' );
+            }
+    } );
+
+    $( '.wcmp-shipping-zone-method' ).on( 'click', '.wcmp-shipping-zone-method-enabled', function( e ) {
+            var eventTarget = $( e.target );
+
+            if ( eventTarget.is( 'input' ) ) {
+                    e.stopPropagation();
+                    return;
+            }
+
+            var $checkbox = $( this ).find( 'input[type="checkbox"]' );
+
+            $checkbox.prop( 'checked', ! $checkbox.prop( 'checked' ) ).change();
+    } );
 
     $('.multi_input_holder').each(function () {
         var multi_input_holder = $(this);

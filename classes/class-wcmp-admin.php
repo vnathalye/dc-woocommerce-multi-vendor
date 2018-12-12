@@ -40,6 +40,7 @@ class WCMp_Admin {
         add_action('wp_dashboard_setup', array(&$this, 'wcmp_remove_wp_dashboard_widget'));
         add_filter('woocommerce_order_actions', array(&$this, 'woocommerce_order_actions'));
         add_action('woocommerce_order_action_regenerate_order_commissions', array(&$this, 'regenerate_order_commissions'));
+        add_filter('woocommerce_screen_ids', array(&$this, 'add_wcmp_screen_ids'));
     }
 
     function add_hidden_order_items($order_items) {
@@ -324,7 +325,7 @@ class WCMp_Admin {
         global $WCMp;
         $screen = get_current_screen();
         $suffix = defined('WCMP_SCRIPT_DEBUG') && WCMP_SCRIPT_DEBUG ? '' : '.min';
-
+        
         $wcmp_admin_screens = apply_filters('wcmp_enable_admin_script_screen_ids', array(
             'wcmp_page_wcmp-setting-admin',
             'wcmp_page_wcmp-to-do',
@@ -339,6 +340,7 @@ class WCMp_Admin {
             'users',
             'wcmp_page_wcmp-extensions',
             'wcmp_page_vendors',
+            'toplevel_page_dc-vendor-shipping',
 	));
         
         // Register scripts.
@@ -354,6 +356,8 @@ class WCMp_Admin {
         wp_register_script('wcmp_admin_product_auto_search_js', $WCMp->plugin_url . 'assets/admin/js/admin-product-auto-search' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_report_js', $WCMp->plugin_url . 'assets/admin/js/report' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_vendor_js', $WCMp->plugin_url . 'assets/admin/js/vendor' . $suffix . '.js', array('jquery', 'woocommerce_admin'), $WCMp->version, true);
+        wp_register_script('wcmp_vendor_shipping',$WCMp->plugin_url . 'assets/admin/js/vendor-shipping' . $suffix . '.js', array( 'jquery', 'wp-util', 'underscore', 'backbone', 'jquery-ui-sortable', 'wc-backbone-modal' ), $WCMp->version );
+
         $WCMp->localize_script('wcmp_admin_js', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'vendors_nonce' => wp_create_nonce('wcmp-vendors'),
@@ -456,6 +460,16 @@ class WCMp_Admin {
         if (is_user_wcmp_vendor(get_current_vendor_id())) {
             wp_enqueue_script('wcmp_vendor_js');
         }
+        
+        // hide coupon allow free shipping option for vendor
+        if (is_user_wcmp_vendor(get_current_vendor_id())) {
+            $custom_css = "
+            #general_coupon_data .free_shipping_field{
+                    display: none;
+            }";
+            wp_add_inline_style( 'woocommerce_admin_styles', $custom_css );
+            wp_enqueue_script('wcmp_vendor_js');
+        }
     }
 
     function wcmp_kill_auto_save() {
@@ -537,6 +551,11 @@ class WCMp_Admin {
         delete_post_meta($order->get_id(), '_commission_ids');
         $wpdb->delete($table_name, array('order_id' => $order->get_id()), array('%d'));
         $WCMp->commission->wcmp_process_commissions($order->get_id());
+    }
+    
+    public function add_wcmp_screen_ids($screen_ids){
+        $screen_ids[] = 'toplevel_page_dc-vendor-shipping';
+        return $screen_ids;
     }
 
 }

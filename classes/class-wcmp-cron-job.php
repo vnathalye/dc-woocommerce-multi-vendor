@@ -21,6 +21,8 @@ class WCMp_Cron_Job {
         add_action('wcmp_spmv_excluded_products_map', array(&$this, 'wcmp_spmv_excluded_products_map'));
         // bind spmv excluded products mapping 
         add_action('wcmp_spmv_product_meta_update', array(&$this, 'wcmp_spmv_product_meta_update'));
+        // Reset product mapping
+        add_action('wcmp_reset_product_mapping_data', array(&$this, 'wcmp_reset_product_mapping_data'), 10, 1);
         $this->wcmp_clear_scheduled_event();
     }
 
@@ -259,7 +261,7 @@ class WCMp_Cron_Job {
             'fields' => 'id=>parent',
         ));
         $products = get_posts($args);
-        
+
         if($products){
             foreach ($products as $product_id => $parent_id) {
                 if($parent_id){
@@ -283,12 +285,14 @@ class WCMp_Cron_Job {
                         update_post_meta($product_id, '_wcmp_spmv_map_id', $map_id);
                         update_post_meta($parent_id, '_wcmp_spmv_map_id', $map_id);
                     }
+                }else{
+                    delete_post_meta($product_id, '_wcmp_child_product');
                 }
             }
             // SPMV terms object update
             do_wcmp_spmv_set_object_terms();
             $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
-            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products, YEAR_IN_SECONDS);
 
         }else{
             update_option('spmv_multivendor_table_migrated', true);
@@ -299,7 +303,7 @@ class WCMp_Cron_Job {
     public function wcmp_spmv_excluded_products_map() {
         do_wcmp_spmv_set_object_terms();
         $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
-        set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+        set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products, YEAR_IN_SECONDS);
     }
     
     public function wcmp_spmv_product_meta_update() {
@@ -319,9 +323,15 @@ class WCMp_Cron_Job {
             }
             do_wcmp_spmv_set_object_terms();
             $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
-            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products);
+            set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products, YEAR_IN_SECONDS);
             update_option('wcmp_spmv_product_meta_migrated', true);
         }
+    }
+    
+    public function wcmp_reset_product_mapping_data($map_id){
+        do_wcmp_spmv_set_object_terms($map_id);
+        $exclude_spmv_products = get_wcmp_spmv_excluded_products_map_data();
+        set_transient('wcmp_spmv_exclude_products_data', $exclude_spmv_products, YEAR_IN_SECONDS);
     }
 
 }

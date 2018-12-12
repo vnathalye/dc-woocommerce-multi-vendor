@@ -44,6 +44,7 @@ final class WCMp {
     public $cron_job;
     public $product_qna;
     public $commission;
+    public $shipping_gateway;
 
     /**
      * Class construct
@@ -82,6 +83,8 @@ final class WCMp {
         
         // Add wcmp namespace support along with WooCommerce.
         add_filter( 'woocommerce_rest_is_request_to_rest_api', 'wcmp_namespace_approve', 10, 1 );
+        // Load Vendor Shipping
+        add_action( 'woocommerce_loaded', array( &$this, 'load_vendor_shipping' ) );
     }
     
     public function exclude_order_comments($clauses) {
@@ -369,6 +372,21 @@ final class WCMp {
     private function init_payment_gateway() {
         $this->load_class('payment-gateway');
     }
+    
+    /**
+     * WCMp Shipping
+     * 
+     * Load vendor shipping
+     * @since  3.2.2 
+     * @access public
+     * @package WCMp/Classes/Shipping
+    */
+    public function load_vendor_shipping() {
+        $this->load_class( 'shipping-gateway' );
+        $this->shipping_gateway = new WCMp_Shipping_Gateway();
+        WCMp_Shipping_Gateway::load_class( 'shipping-zone', 'helpers' );
+        //require_once ( $this->plugin_path . 'includes/shipping-gateways/helpers/' . 'wcmp-shipping-zone.php' );
+    }
 
     /**
      * Init Vendor Coupon
@@ -495,6 +513,16 @@ final class WCMp {
                         'review_error_msg_txt' => __('Please review your vendor and minimum 10 Character required', 'dc-woocommerce-multi-vendor'),
                         'review_success_msg_txt' => __('Your review submitted successfully', 'dc-woocommerce-multi-vendor'),
                         'review_failed_msg_txt' => __('Error in system please try again later', 'dc-woocommerce-multi-vendor'),
+                    ),
+                );
+                break;
+            
+            case 'wcmp-vendor-shipping' :
+            case 'wcmp_vendor_shipping' :    
+                $params = array(
+                    'ajaxurl'	=> $this->ajax_url(),
+                    'i18n' 	=> array(
+			'deleteShippingMethodConfirmation'	=> __( 'Are you absolutely sure to delete this shipping method?', 'dc-woocommerce-multi-vendor' ),
                     ),
                 );
                 break;

@@ -164,8 +164,10 @@ abstract class WCMp_Payment_Gateway {
             case 'direct_bank':
                 $email_vendor = WC()->mailer()->emails['WC_Email_Vendor_Direct_Bank'];
                 $email_vendor->trigger($this->transaction_id, $this->vendor->term_id);
+                if(!current_user_can('administrator')) :
                 $email_admin = WC()->mailer()->emails['WC_Email_Admin_Widthdrawal_Request'];
                 $email_admin->trigger($this->transaction_id, $this->vendor->term_id);
+                endif;
                 break;
             case 'paypal_masspay':
             case 'paypal_payout':

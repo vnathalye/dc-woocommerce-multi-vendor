@@ -321,13 +321,15 @@ class WCMp_Frontend {
         wp_register_script('wcmp_customer_qna_js', $frontend_script_path . 'wcmp-customer-qna' . $suffix . '.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_custom_scroller_js', $frontend_script_path . 'jquery.mCustomScrollbar.concat.min.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_country_state_js', $frontend_script_path . 'wcmp-country-state.js', array('jquery'), $WCMp->version, true);
-        
+        wp_register_script('wcmp-vendor-shipping', $frontend_script_path . 'vendor-shipping.js', array( 'jquery' ), $WCMp->version, true );
+     
         /** localize script data * */
         $WCMp->localize_script('frontend_js');
         $WCMp->localize_script('wcmp_frontend_vdashboard_js');
         $WCMp->localize_script('wcmp_single_product_multiple_vendors');
         $WCMp->localize_script('wcmp_seller_review_rating_js');
         $WCMp->localize_script('wcmp_customer_qna_js');
+        $WCMp->localize_script('wcmp-vendor-shipping');
         
         if (is_vendor_dashboard()) {
             wp_enqueue_script('jquery-ui-core');

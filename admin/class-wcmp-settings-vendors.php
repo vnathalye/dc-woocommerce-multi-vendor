@@ -231,7 +231,7 @@ class WCMp_Settings_WCMp_Vendors extends WP_List_Table {
 	
 	public function process_bulk_action() {
 		if ( 'delete' === $this->current_action() ) {
-			$nonce = esc_attr( $_REQUEST[''] );
+			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
 			$action = 'bulk-' . $this->_args['plural'];
 			if ( ! wp_verify_nonce( $nonce, $action ) ) {
 				wp_die( __('You are not permitted to do this', 'dc-woocommerce-multi-vendor') );

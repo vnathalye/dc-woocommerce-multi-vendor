@@ -265,6 +265,25 @@ class WCMp_Install {
 		PRIMARY KEY (`ans_ID`),
                 CONSTRAINT ques_id UNIQUE (ques_ID)
 		) $collate;";
+        
+        $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_shipping_zone_methods` (
+                `instance_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `method_id` varchar(255) NOT NULL DEFAULT '',
+                `zone_id` int(11) unsigned NOT NULL,
+                `vendor_id` int(11) NOT NULL,
+                `is_enabled` tinyint(1) NOT NULL DEFAULT '1',
+                `settings` longtext,
+                PRIMARY KEY (`instance_id`)
+                ) $collate;";												
+																		
+        $create_tables_query[] = "CREATE TABLE IF NOT EXISTS `" . $wpdb->prefix . "wcmp_shipping_zone_locations` (
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `vendor_id` int(11) DEFAULT NULL,
+                `zone_id` int(11) DEFAULT NULL,
+                `location_code` varchar(255) DEFAULT NULL,
+                `location_type` varchar(255) DEFAULT NULL,
+                PRIMARY KEY (`id`)
+                ) $collate;";
 
         foreach ($create_tables_query as $create_table_query) {
             $wpdb->query($create_table_query);
@@ -332,6 +351,7 @@ class WCMp_Install {
         add_role('dc_vendor', apply_filters('dc_vendor_role', __('Vendor', 'dc-woocommerce-multi-vendor')), array(
             'read' => true,
             'manage_product' => true,
+            'edit_post' => true,
             'edit_posts' => true,
             'delete_posts' => true,
             'view_woocommerce_reports' => true,

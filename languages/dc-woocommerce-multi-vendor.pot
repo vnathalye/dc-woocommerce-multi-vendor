@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: WC Marketplace 3.0.5\n"
 "Report-Msgid-Bugs-To: https://github.com/dualcube/dc-woocommerce-multi-"
 "vendor/issues\n"
-"POT-Creation-Date: 2018-12-10 13:14+0000\n"
+"POT-Creation-Date: 2018-12-14 12:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -206,7 +206,7 @@ msgstr ""
 #: classes/class-wcmp-ajax.php:2369
 #: classes/class-wcmp-vendor-dashboard.php:1527
 #: templates/vendor-dashboard/vendor-products-qna.php:38
-#: templates/emails/vendor-notify-shipped.php:28
+#: templates/emails/vendor-notify-shipped.php:29
 #: templates/emails/vendor-new-order.php:25 templates/emails/new-product.php:17
 #: templates/vendor-dashboard/vendor-orders/vendor-order-details.php:53
 #: templates/vendor-dashboard/dashboard-widgets/wcmp_vendor_product_sales_report.php:17
@@ -859,7 +859,7 @@ msgstr ""
 #: classes/class-wcmp-vendor-dashboard.php:675
 #: classes/class-wcmp-vendor-dashboard.php:815
 #: classes/class-wcmp-vendor-dashboard.php:815
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:86
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:85
 msgid "Edit"
 msgstr ""
 
@@ -1565,7 +1565,7 @@ msgstr ""
 #: admin/class-wcmp-settings-vendors.php:258
 #: classes/class-wcmp-vendor-dashboard.php:677
 #: classes/class-wcmp-vendor-dashboard.php:677
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:88
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:87
 #: templates/vendor-dashboard/vendor-announcements/vendor-announcements-all.php:33
 #: templates/vendor-dashboard/vendor-announcements/vendor-announcements-read.php:29
 #: templates/vendor-dashboard/vendor-announcements/vendor-announcements-unread.php:29
@@ -2701,7 +2701,7 @@ msgid "Sorry you are not authorized for this pages. Please contact with admin."
 msgstr ""
 
 #: classes/class-wcmp-vendor-hooks.php:485 classes/class-wcmp-ajax.php:2370
-#: templates/emails/vendor-notify-shipped.php:30
+#: templates/emails/vendor-notify-shipped.php:31
 #: templates/single-product/multiple_vendors_products.php:28
 #: templates/vendor-dashboard/product-manager/add-product.php:452
 msgid "Price"
@@ -3396,7 +3396,7 @@ msgstr ""
 #: templates/vendor-dashboard/vendor-shipping/vendor-edit-shipping-method.php:41
 #: templates/vendor-dashboard/vendor-shipping/vendor-edit-shipping-method.php:74
 #: templates/vendor-dashboard/vendor-shipping/vendor-edit-shipping-method.php:107
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:62
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:61
 msgid "Description"
 msgstr ""
 
@@ -3724,47 +3724,47 @@ msgstr ""
 msgid "Choose Media"
 msgstr ""
 
-#: classes/class-wcmp.php:480
+#: classes/class-wcmp.php:484
 msgid ""
 "Are you sure and want to delete this Product?\n"
 "You can't undo this action ..."
 msgstr ""
 
-#: classes/class-wcmp.php:512
+#: classes/class-wcmp.php:516
 msgid "Please rate the vendor"
 msgstr ""
 
-#: classes/class-wcmp.php:513
+#: classes/class-wcmp.php:517
 msgid "Please review your vendor and minimum 10 Character required"
 msgstr ""
 
-#: classes/class-wcmp.php:514
+#: classes/class-wcmp.php:518
 msgid "Your review submitted successfully"
 msgstr ""
 
-#: classes/class-wcmp.php:515
+#: classes/class-wcmp.php:519
 msgid "Error in system please try again later"
 msgstr ""
 
-#: classes/class-wcmp.php:525
+#: classes/class-wcmp.php:529
 msgid "Are you absolutely sure to delete this shipping method?"
 msgstr ""
 
-#: classes/class-wcmp.php:588
+#: classes/class-wcmp.php:592
 #, php-format
 msgid ""
 "%sWCMp Stripe Gateway%s requires PHP 5.3.29 or greater. We recommend "
 "upgrading to PHP %s or greater."
 msgstr ""
 
-#: classes/class-wcmp.php:596 classes/class-wcmp.php:604
+#: classes/class-wcmp.php:600 classes/class-wcmp.php:608
 #, php-format
 msgid ""
 "%sWCMp Stripe gateway depends on the %s PHP extension. Please enable it, or "
 "ask your hosting provider to enable it."
 msgstr ""
 
-#: classes/class-wcmp.php:612
+#: classes/class-wcmp.php:616
 #, php-format
 msgid ""
 "%sWCMp Vendor Membership Stripe gateway depends on the %s PHP extension. "
@@ -3849,6 +3849,10 @@ msgstr ""
 
 #: classes/class-wcmp-vendor-details.php:905
 msgid "Tracking Id : "
+msgstr ""
+
+#: classes/class-wcmp-vendor-details.php:1109
+msgid "Shipping cost:"
 msgstr ""
 
 #: classes/class-wcmp-ajax.php:154
@@ -4450,7 +4454,7 @@ msgid "Items bought"
 msgstr ""
 
 #: classes/class-wcmp-vendor-dashboard.php:269
-#: templates/emails/vendor-notify-shipped.php:29
+#: templates/emails/vendor-notify-shipped.php:30
 #: templates/emails/vendor-new-order.php:26
 msgid "Quantity"
 msgstr ""
@@ -4543,24 +4547,24 @@ msgstr ""
 #: templates/vendor-dashboard/product-manager/add-product.php:450
 #: templates/vendor-dashboard/product-manager/add-product.php:730
 #: templates/vendor-dashboard/coupon-manager/add-coupons.php:103
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:60
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:59
 msgid "Title"
 msgstr ""
 
 #: classes/class-wcmp-vendor-dashboard.php:641
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:61
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:60
 msgid "Enabled"
 msgstr ""
 
 #: classes/class-wcmp-vendor-dashboard.php:643
 #: classes/class-wcmp-vendor-dashboard.php:1531
 #: templates/vendor-dashboard/vendor-orders.php:23
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:63
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:62
 msgid "Action"
 msgstr ""
 
 #: classes/class-wcmp-vendor-dashboard.php:656
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:70
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:69
 msgid ""
 "You can add multiple shipping methods within this zone. Only customers "
 "within the zone will see them."
@@ -5940,14 +5944,14 @@ msgstr ""
 msgid "Clear transients"
 msgstr ""
 
-#: templates/emails/vendor-notify-shipped.php:19
+#: templates/emails/vendor-notify-shipped.php:20
 #: templates/emails/plain/vendor-notify-shipped.php:15
 msgid ""
 "Some of the items you had ordered have been shipped. The items that have "
 "been shipped are as follows:"
 msgstr ""
 
-#: templates/emails/vendor-notify-shipped.php:23
+#: templates/emails/vendor-notify-shipped.php:24
 #, php-format
 msgid "Order: %s"
 msgstr ""
@@ -7251,7 +7255,7 @@ msgstr ""
 msgid "Shipping Zones"
 msgstr ""
 
-#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:100
+#: templates/vendor-dashboard/vendor-shipping/vendor-shipping-zone-settings.php:99
 msgid "Add Shipping Method"
 msgstr ""
 

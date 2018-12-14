@@ -1064,5 +1064,85 @@ class WCMp_Vendor {
 
         return $formatted_address;
     }
+    
+    /**
+     * Get order totals for display on pages and in emails.
+     *
+     * since WCMp 3.2.3
+     * @param integer $order_id Order id.
+     * @param string $split_tax Tax to display.
+     * @param string $html_price Price to display.
+     * @return array
+    */
+    public function get_vendor_order_item_totals($order_id, $split_tax = false, $html_price = true) {
+        if($order_id){
+            $order = wc_get_order(absint($order_id));
+            $order_total_arr = array();
+            $vendor_items = get_wcmp_vendor_orders(array('order_id' => $order_id, 'vendor_id' => $this->id));
+            $vendor_order_amount = get_wcmp_vendor_order_amount(array('order_id' => $order_id, 'vendor_id' => $this->id));
+            $vendor_shipping_method = get_wcmp_vendor_order_shipping_method($order_id, $this->id);
+            $total_rows  = array();
+            // items subtotals
+            if($vendor_items){
+                $subtotal = 0;
+                foreach ($vendor_items as $item) {
+                    $item_obj = $order->get_item($item->order_item_id); 
+                    $subtotal += $item_obj->get_subtotal();
+                }
+                $order_total_arr[] = $subtotal;
+                $total_rows['order_subtotal'] = array(
+                    'label' => __( 'Subtotal:', 'woocommerce' ),
+                    'value' => ($html_price) ? wc_price($subtotal) : $subtotal,
+                );
+            }
+            // shipping methods
+            if ( $this->is_shipping_enable() && $vendor_shipping_method ) {
+                $total_rows['shipping'] = array(
+                    'label' => __( 'Shipping:', 'woocommerce' ),
+                    'value' => $vendor_shipping_method->get_name(),
+                );
+            }
+            // shipping cost
+            if ( $this->is_shipping_enable() && $vendor_order_amount['shipping_amount'] ) {
+                $order_total_arr[] = $vendor_order_amount['shipping_amount'];
+                $total_rows['shipping_cost'] = array(
+                    'label' => __( 'Shipping cost:', 'dc-woocommerce-multi-vendor' ),
+                    'value' => ($html_price) ? wc_price($vendor_order_amount['shipping_amount']) : $vendor_order_amount['shipping_amount'],
+                );
+            }
+            // tax
+            if(!apply_filters('wcmp_get_vendor_order_item_totals_split_taxes', $split_tax, $order_id, $vendor_order_amount, $this->id)){
+                $order_total_arr[] = $vendor_order_amount['tax_amount'] + $vendor_order_amount['shipping_tax_amount'];
+                $total_rows['tax'] = array(
+                    'label' => WC()->countries->tax_or_vat() . ':',
+                    'value' => ($html_price) ? wc_price($vendor_order_amount['tax_amount'] + $vendor_order_amount['shipping_tax_amount']) : $vendor_order_amount['tax_amount'] + $vendor_order_amount['shipping_tax_amount'],
+                );
+            }else{
+                $order_total_arr[] = $vendor_order_amount['shipping_tax_amount'];
+                $total_rows['shipping_tax'] = array(
+                    'label' => __( 'Shipping:', 'woocommerce' ).' '.WC()->countries->tax_or_vat() . ':',
+                    'value' => ($html_price) ? wc_price($vendor_order_amount['shipping_tax_amount']) : $vendor_order_amount['shipping_tax_amount'],
+                );
+                $order_total_arr[] = $vendor_order_amount['tax_amount'];
+                $total_rows['tax'] = array(
+                    'label' => WC()->countries->tax_or_vat() . ':',
+                    'value' => ($html_price) ? wc_price($vendor_order_amount['tax_amount']) : $vendor_order_amount['tax_amount'],
+                );
+            }
+            // payment methods
+            $total_rows['payment_method'] = array(
+                'label' => __( 'Payment method:', 'woocommerce' ),
+                'value' => $order->get_payment_method_title(),
+            );
+            // Order totals
+            $total_rows['order_total'] = array(
+                'label' => __( 'Total:', 'woocommerce' ),
+                'value' => ($html_price) ? wc_price(array_sum($order_total_arr)) : array_sum($order_total_arr),
+            );
+            
+            return apply_filters( 'wcmp_get_vendor_order_item_totals', $total_rows, $order_id, $this->id );
+        }
+        return false;
+    }
 
 }

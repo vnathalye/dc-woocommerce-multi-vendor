@@ -12,6 +12,7 @@
  
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly 
 global  $WCMp;
+$vendor = get_wcmp_vendor_by_term($vendor_id);
 ?>
 
 <?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
@@ -31,8 +32,7 @@ global  $WCMp;
 		</tr>
 	</thead>
 	<tbody>
-		<?php 
-		 	$vendor = get_wcmp_vendor_by_term($vendor_id);
+		<?php 	
 			$vendor_items_dtl = $vendor->vendor_order_item_table($order, $vendor_id, true); 
 			echo $vendor_items_dtl;
 		?>
@@ -40,7 +40,7 @@ global  $WCMp;
 </table>
 <table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;" border="1" bordercolor="#eee">
 	<?php
-		if ( $totals = $order->get_order_item_totals() ) {
+		if ( $totals = $vendor->get_vendor_order_item_totals($order->get_id()) ) {
 			$i = 0;
 			foreach ( $totals as $total ) {
 				$i++;

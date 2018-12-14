@@ -84,7 +84,11 @@ final class WCMp {
         // Add wcmp namespace support along with WooCommerce.
         add_filter( 'woocommerce_rest_is_request_to_rest_api', 'wcmp_namespace_approve', 10, 1 );
         // Load Vendor Shipping
-        add_action( 'woocommerce_loaded', array( &$this, 'load_vendor_shipping' ) );
+        if( !defined('WP_ALLOW_MULTISITE')){
+            add_action( 'woocommerce_loaded', array( &$this, 'load_vendor_shipping' ) );
+        }else{
+            $this->load_vendor_shipping();
+        }
     }
     
     public function exclude_order_comments($clauses) {

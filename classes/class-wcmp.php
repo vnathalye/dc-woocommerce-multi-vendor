@@ -67,6 +67,8 @@ final class WCMp {
 
         // Intialize Crons
         $this->init_cron_job();
+        // Load Woo helper
+        $this->load_woo_helper();
 
         // Intialize WCMp
         add_action('init', array(&$this, 'init'));
@@ -240,10 +242,14 @@ final class WCMp {
     /**
      * Helper method to load other class
      * @param type $class_name
+     * @param type $dir
      */
-    public function load_class($class_name = '') {
+    public function load_class($class_name = '', $dir = '') {
         if ('' != $class_name && '' != $this->token) {
-            require_once ( 'class-' . esc_attr($this->token) . '-' . esc_attr($class_name) . '.php' );
+            if(!$dir)
+                require_once ( 'class-' . esc_attr($this->token) . '-' . esc_attr($class_name) . '.php' );
+            else
+                require_once ( trailingslashit( $dir ) . 'class-' . esc_attr($this->token) . '-' . strtolower($dir) . '-' . esc_attr($class_name) . '.php' );
         }
     }
 
@@ -389,7 +395,21 @@ final class WCMp {
         $this->load_class( 'shipping-gateway' );
         $this->shipping_gateway = new WCMp_Shipping_Gateway();
         WCMp_Shipping_Gateway::load_class( 'shipping-zone', 'helpers' );
-        //require_once ( $this->plugin_path . 'includes/shipping-gateways/helpers/' . 'wcmp-shipping-zone.php' );
+    }
+    
+    /**
+     * WCMp Woo Helper
+     * 
+     * Load woo helper
+     * @since  3.2.3
+     * @access public
+     * @package WCMp/Include/Woo_Helper
+    */
+    public function load_woo_helper(){
+        //common woo methods
+        if ( ! class_exists( 'WCMp_Woo_Helper' ) ) {
+            require_once ( $this->plugin_path . 'includes/class-wcmp-woo-helper.php' );
+        }
     }
 
     /**
@@ -485,21 +505,6 @@ final class WCMp {
                 );
                 break;
             
-            case 'product_manager_js' :
-                $params = array(
-                    'ajax_url' => $this->ajax_url(),
-                    'add_tags' => apply_filters('wcmp_vendor_can_add_product_tag', true, get_current_vendor_id()),
-                    'messages' => get_frontend_product_manager_messages(),
-                );
-                break;
-
-            case 'coupon_manager_js' :
-                $params = array(
-                    'ajax_url' => $this->ajax_url(),
-                    'messages' => get_frontend_coupon_manager_messages(),
-                );
-                break;
-            
             case 'wcmp_frontend_vdashboard_js' :
             case 'wcmp_single_product_multiple_vendors' :
             case 'wcmp_customer_qna_js' :
@@ -532,7 +537,7 @@ final class WCMp {
                 break;
 
             default:
-                $params = array();
+                $params = array('ajax_url' => $this->ajax_url());
         }
         if($default && is_array($default)) $params = array_merge($default,$params);
         return apply_filters('wcmp_get_script_data', $params, $handle);

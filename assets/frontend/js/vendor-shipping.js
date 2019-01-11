@@ -30,7 +30,7 @@
         bindEvents: function () {
             $(this.modify_shipping_methods).on('click', this.modifyShippingMethods.bind(this));
             $(document).on('zone_settings_loaded', this.zoneLoadedEvents.bind(this));
-
+            $( document.body ).on( 'change', '.wc-shipping-zone-method-selector select', this.onChangeShippingMethodSelector );
             /* delegate events */
             $(document).delegate(this.shipping_zone_list, 'click', this.goToShippingZones.bind(this));
             $(document).delegate(this.show_shipping_methods, 'click', this.showShippingMethods.bind(this));
@@ -45,7 +45,14 @@
 
         modifyShippingMethods: function (event, zoneID) {
             var appObj = this;
-
+            $('#wcmp_settings_form_shipping_by_zone').block({
+                message: null,
+                overlayCSS: {
+                    background: '#fff',
+                    opacity: 0.6
+                }
+            });
+            
             if (typeof event !== "undefined") {
                 event.preventDefault();
                 zoneID = $(event.currentTarget).data('zoneId');
@@ -63,6 +70,7 @@
                     $(appObj.shipping_zone_table).hide();
                 },
                 complete: function () {
+                    $('#wcmp_settings_form_shipping_by_zone').unblock();
                     $(document).trigger('zone_settings_loaded');
                 }
             });
@@ -77,6 +85,12 @@
             $(this.vendor_shipping_methods).html('').hide();
             $(this.shipping_zone_table).show();
             window.location.reload();
+        },
+        
+        onChangeShippingMethodSelector: function() {
+            var description = $( this ).find( 'option:selected' ).data( 'description' );
+            $( this ).parents('.wc-shipping-zone-method-selector').find( '.wc-shipping-zone-method-description' ).html( '' );
+            $( this ).parents('.wc-shipping-zone-method-selector').find( '.wc-shipping-zone-method-description' ).html( description );
         },
 
         showShippingMethods: function (event) {

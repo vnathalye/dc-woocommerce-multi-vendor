@@ -35,7 +35,7 @@ $shop_link = $rating_val_array['shop_link'];
 	<a href="<?php echo $shop_link; ?>#reviews" target="_blank">
 		<?php 
 		if($count > 0 ) {?>	
-		<?php echo __(sprintf(' %s Stars out of 5 based on %s Reviews',$rating, $count));	 ?>			
+		<?php echo sprintf( __(' %s Stars out of 5 based on %s Reviews','dc-woocommerce-multi-vendor'), $rating, $count);	 ?>			
 		<?php 
 		}
 		else {

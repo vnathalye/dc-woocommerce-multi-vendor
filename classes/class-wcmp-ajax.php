@@ -78,18 +78,12 @@ class WCMp_Ajax {
         add_action('wp_ajax_vendor_list_by_search_keyword', array($this, 'vendor_list_by_search_keyword'));
         add_action('wp_ajax_nopriv_vendor_list_by_search_keyword', array($this, 'vendor_list_by_search_keyword'));
 
-
-        //frontend product manager ajax
-        add_action('wp_ajax_frontend_product_manager', array(&$this, 'frontend_product_manager'));
-        add_action('wp_ajax_generate_taxonomy_attributes', array(&$this, 'generate_taxonomy_attributes'));
         add_action('wp_ajax_wcmp_product_tag_add', array(&$this, 'wcmp_product_tag_add'));
 
         //add_action('wp_ajax_generate_variation_attributes', array(&$this, 'generate_variation_attributes'));
 
         add_action('wp_ajax_delete_fpm_product', array(&$this, 'delete_fpm_product'));
 
-        // Frontend Coupon Manager
-        add_action('wp_ajax_frontend_coupon_manager', array(&$this, 'frontend_coupon_manager'));
         // Vendor dashboard product list
         add_action('wp_ajax_wcmp_vendor_product_list', array(&$this, 'wcmp_vendor_product_list'));
         // Vendor dashboard withdrawal list
@@ -125,6 +119,16 @@ class WCMp_Ajax {
         add_action('wp_ajax_wcmp-delete-shipping-method', array($this, 'wcmp_delete_shipping_method'));
         add_action('wp_ajax_wcmp-toggle-shipping-method', array($this, 'wcmp_toggle_shipping_method'));
         add_action('wp_ajax_wcmp-configure-shipping-method', array($this, 'wcmp_configure_shipping_method'));
+        
+        // product add new listing
+        add_action('wp_ajax_wcmp_product_classify_next_level_list_categories', array($this, 'wcmp_product_classify_next_level_list_categories'));
+        add_action('wp_ajax_wcmp_product_classify_search_category_level', array($this, 'wcmp_product_classify_search_category_level'));
+        add_action('wp_ajax_show_product_classify_next_level_from_searched_term', array($this, 'show_product_classify_next_level_from_searched_term'));
+        add_action('wp_ajax_wcmp_list_a_product_by_name_or_gtin', array($this, 'wcmp_list_a_product_by_name_or_gtin'));
+        add_action('wp_ajax_wcmp_set_classified_product_terms', array($this, 'wcmp_set_classified_product_terms'));
+        //ajax call to get the product attributes
+        add_action( 'wp_ajax_wcmp_edit_product_attribute', array( $this, 'edit_product_attribute_callback' ) );
+        add_action( 'wp_ajax_wcmp_product_save_attributes', array( $this, 'save_product_attributes_callback' ) );
         
     }
 
@@ -375,7 +379,8 @@ class WCMp_Ajax {
     public function wcmp_create_duplicate_product() {
         global $WCMp;
         $product_id = $_POST['product_id'];
-        $redirect_url = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')));
+        $parent_post = get_post($product_id);
+        $redirect_url = isset($_POST['redirect_url']) ? $_POST['redirect_url'] : esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product')));
         $product = wc_get_product($product_id);
         if (!function_exists('duplicate_post_plugin_activation')) {
             include_once( WC_ABSPATH . 'includes/admin/class-wc-admin-duplicate-product.php' );
@@ -384,11 +389,11 @@ class WCMp_Ajax {
         $duplicate_product = $duplicate_product_class->product_duplicate($product);
         $response = array('status' => false);
         if ($duplicate_product && is_user_wcmp_vendor(get_current_user_id())) {
-            wp_update_post(array('ID' => $duplicate_product->get_id(), 'post_author' => get_current_vendor_id()));
+            // if Product title have Copy string
+            $title = str_replace(" (Copy)","",$parent_post->post_title);
+            wp_update_post(array('ID' => $duplicate_product->get_id(), 'post_author' => get_current_vendor_id(), 'post_title' => $title));
             wp_set_object_terms($duplicate_product->get_id(), absint(get_current_vendor()->term_id), $WCMp->taxonomy->taxonomy_name);
-            //update_post_meta($duplicate_product->get_id(), '_wcmp_parent_product_id', $product->get_id());
-            //$duplicate_product->set_parent_id($product->get_id());
-            //update_post_meta($duplicate_product->get_id(), '_wcmp_child_product', true);
+
             // Add GTIN, if exists
             $gtin_data = wp_get_post_terms($product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
             if ($gtin_data) {
@@ -1554,58 +1559,6 @@ class WCMp_Ajax {
         die();
     }
 
-    //frontend product managet ajax callback functions
-    public function generate_taxonomy_attributes() {
-        global $WCMp, $wc_product_attributes;
-
-        $att_taxonomy = $_POST['taxonomy'];
-        $attribute_taxonomy = $wc_product_attributes[$att_taxonomy];
-        $attributes = array();
-        $attributes[0]['term_name'] = $att_taxonomy;
-        $attributes[0]['name'] = wc_attribute_label($att_taxonomy);
-        $attributes[0]['value'] = '';
-        $attributes[0]['tax_name'] = $att_taxonomy;
-        $attributes[0]['is_taxonomy'] = 1;
-        $args = array(
-            'orderby' => 'name',
-            'hide_empty' => 0
-        );
-        $all_terms = get_terms($att_taxonomy, apply_filters('woocommerce_product_attribute_terms', $args));
-
-        if ('select' === $attribute_taxonomy->attribute_type) {
-            if ($all_terms) {
-                foreach ($all_terms as $term) {
-                    $attributes_option[$term->term_id] = esc_attr(apply_filters('woocommerce_product_attribute_term_name', $term->name, $term));
-                }
-            }
-
-            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_generate_taxonomy_attributes', array(
-                "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
-                        "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
-                        "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title'),
-                        "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'select', 'attributes' => array('multiple' => 'multiple'), 'class' => 'regular-select pro_ele simple variable external', 'options' => $attributes_option, 'label_class' => 'pro_title'),
-                        "is_visible" => array('label' => __('Visible on the product page', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele simple variable external', 'label_class' => 'pro_title checkbox_title'),
-                        "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
-                        "tax_name" => array('type' => 'hidden'),
-                        "is_taxonomy" => array('type' => 'hidden')
-                    )))
-            ));
-        } else {
-            $WCMp->wcmp_frontend_fields->wcmp_generate_form_field(apply_filters('wcmp_fpm_generate_taxonomy_attributes', array(
-                "attributes" => array('label' => __('Attributes', 'dc-woocommerce-multi-vendor'), 'type' => 'multiinput', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title', 'value' => $attributes, 'options' => array(
-                        "term_name" => array('type' => 'hidden', 'label_class' => 'pro_title'),
-                        "name" => array('label' => __('Name', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'class' => 'regular-text pro_ele simple variable external', 'label_class' => 'pro_title'),
-                        "value" => array('label' => __('Value(s):', 'dc-woocommerce-multi-vendor'), 'type' => 'textarea', 'class' => 'regular-textarea pro_ele simple variable external', 'placeholder' => sprintf(esc_attr__('Enter some text, or some attributes by "%s" separating values.', 'dc-woocommerce-multi-vendor'), WC_DELIMITER), 'label_class' => 'pro_title'),
-                        "is_visible" => array('label' => __('Visible on the product page', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele simple variable external', 'label_class' => 'pro_title checkbox_title'),
-                        "is_variation" => array('label' => __('Use as Variation', 'dc-woocommerce-multi-vendor'), 'type' => 'checkbox', 'value' => 'enable', 'class' => 'regular-checkbox pro_ele variable variable-subscription', 'label_class' => 'pro_title checkbox_title pro_ele variable variable-subscription'),
-                        "tax_name" => array('type' => 'hidden'),
-                        "is_taxonomy" => array('type' => 'hidden')
-                    )))
-            ));
-        }
-        die();
-    }
-
     public function generate_variation_attributes() {
 
 
@@ -1675,547 +1628,6 @@ class WCMp_Ajax {
         die();
     }
 
-    public function frontend_product_manager() {
-        global $WCMp;
-
-        $product_manager_form_data = array();
-        parse_str($_POST['product_manager_form'], $product_manager_form_data);
-        $WCMp_fpm_messages = get_frontend_product_manager_messages();
-        $has_error = false;
-        if (isset($product_manager_form_data['title']) && !empty($product_manager_form_data['title'])) {
-            $is_update = false;
-            $is_publish = false;
-            $is_vendor = false;
-            $is_new_pro = 0;
-
-            $current_user_id = $vendor_id = apply_filters('wcmp_current_loggedin_vendor_id', get_current_user_id());
-            if (is_user_wcmp_vendor($current_user_id))
-                $is_vendor = true;
-
-            if (isset($_POST['status']) && ($_POST['status'] == 'draft')) {
-                $product_status = 'draft';
-            } else {
-                if ($is_vendor) {
-                    if (!apply_filters('wcmp_vendor_can_publish_products', current_user_can('publish_products'), get_current_user_id())) {
-                        $product_status = 'pending';
-                    } else {
-                        $product_status = 'publish';
-                    }
-                } else {
-                    $product_status = 'publish';
-                }
-            }
-            //tinymce media support
-//            $post_content = stripslashes(html_entity_decode($_POST['description'], ENT_QUOTES, 'UTF-8'));
-//            preg_match('/<iframe.*src=\"(.*)\".*><\/iframe>/isU', $post_content, $matches);
-//            if($matches){
-//                $post_content = str_replace($matches[0], '[embed]'.$matches[1].'[/embed]', $post_content);
-//            }
-            do_action('before_wcmp_frontend_product_manager_save', $product_manager_form_data);
-
-            // Creating new product
-            $new_product = array(
-                'post_title' => wc_clean($product_manager_form_data['title']),
-                'post_status' => $product_status,
-                'post_type' => 'product',
-                'post_excerpt' => $_POST['excerpt'],
-                'post_content' => $_POST['description'],
-                'post_author' => $vendor_id
-                    //'post_name' => sanitize_title($product_manager_form_data['title'])
-            );
-
-            if (isset($product_manager_form_data['pro_id']) && $product_manager_form_data['pro_id'] == 0) {
-                $is_new_pro = 1;
-                if ($product_status != 'draft') {
-                    $is_publish = true;
-                }
-                $new_product_id = wp_insert_post($new_product, true);
-            } else { // For Update
-                $is_update = true;
-                $new_product['ID'] = $product_manager_form_data['pro_id'];
-                if (!$is_vendor)
-                    unset($new_product['post_author']);
-                if (get_post_status($new_product['ID']) != 'draft') {
-                    unset($new_product['post_status']);
-                } else if ((get_post_status($new_product['ID']) == 'draft') && ($product_status != 'draft')) {
-                    $is_publish = true;
-                }
-                $new_product['post_status'] = $product_status;
-                $new_product_id = wp_update_post($new_product, true);
-            }
-
-            if (!is_wp_error($new_product_id)) {
-                // For Update
-                if ($is_update)
-                    $new_product_id = $product_manager_form_data['pro_id'];
-
-                // Set Product SKU
-                if (isset($product_manager_form_data['sku']) && !empty($product_manager_form_data['sku'])) {
-                    update_post_meta($new_product_id, '_sku', $product_manager_form_data['sku']);
-                    $unique_sku = wc_product_has_unique_sku($new_product_id, $product_manager_form_data['sku']);
-                    if (!$unique_sku) {
-                        update_post_meta($new_product_id, '_sku', '');
-                        echo '{"status": false, "message": "' . $WCMp_fpm_messages['sku_unique'] . '", "id": "' . $new_product_id . '", "redirect": "' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id)) . '"}';
-                        $has_error = true;
-                    }
-                } else {
-                    update_post_meta($new_product_id, '_sku', '');
-                }
-
-                // Set Product Type
-                wp_set_object_terms($new_product_id, $product_manager_form_data['product_type'], 'product_type');
-
-                // Group Products
-                $grouped_products = isset($product_manager_form_data['grouped_products']) ? array_filter(array_map('intval', (array) $product_manager_form_data['grouped_products'])) : array();
-
-                // file paths will be stored in an array keyed off md5(file path)
-                $downloadables = array();
-                if (isset($product_manager_form_data['is_downloadable']) && isset($product_manager_form_data['downloadable_files'])) {
-                    foreach ($product_manager_form_data['downloadable_files'] as $downloadable_files) {
-                        if (!empty($downloadable_files['file'])) {
-                            $downloadables[] = array(
-                                'name' => wc_clean($downloadable_files['name']),
-                                'file' => wp_unslash(trim($downloadable_files['file'])),
-                                'previous_hash' => md5($downloadable_files['file']),
-                            );
-                        }
-                    }
-                }
-
-                // Attributes
-                $pro_attributes = array();
-                $default_attributes = array();
-                if (isset($product_manager_form_data['attributes']) && !empty($product_manager_form_data['attributes'])) {
-                    foreach ($product_manager_form_data['attributes'] as $attributes) {
-                        if (!empty($attributes['name']) && !empty($attributes['value'])) {
-
-                            $attribute_name = ( $attributes['term_name'] ) ? $attributes['term_name'] : $attributes['name'];
-
-                            $is_visible = 0;
-                            if (isset($attributes['is_visible']))
-                                $is_visible = 1;
-
-                            $is_variation = 0;
-                            if (isset($attributes['is_variation']))
-                                $is_variation = 1;
-                            if (( $product_manager_form_data['product_type'] != 'variable' ) && ( $product_manager_form_data['product_type'] != 'variable-subscription' ))
-                                $is_variation = 0;
-
-                            $is_taxonomy = 0;
-                            if ($attributes['is_taxonomy'] == 1)
-                                $is_taxonomy = 1;
-
-                            $attribute_id = wc_attribute_taxonomy_id_by_name($attributes['term_name']);
-                            $options = isset($attributes['value']) ? $attributes['value'] : '';
-
-                            if (is_array($options)) {
-                                // Term ids sent as array.
-                                $options = wp_parse_id_list($options);
-                            } else {
-                                // Terms or text sent in textarea.
-                                $options = 0 < $attribute_id ? wc_sanitize_textarea(wc_sanitize_term_text_based($options)) : wc_sanitize_textarea($options);
-                                $options = wc_get_text_attributes($options);
-                            }
-
-                            if (empty($options)) {
-                                continue;
-                            }
-
-                            $attribute = new WC_Product_Attribute();
-                            $attribute->set_id($attribute_id);
-                            $attribute->set_name(wc_clean($attribute_name));
-                            $attribute->set_options($options);
-                            //$attribute->set_position( $attribute_position[ $i ] );
-                            $attribute->set_visible($is_visible);
-                            //$attribute->set_variation($is_variation);
-                            $pro_attributes[] = $attribute;
-
-                            if ($is_variation) {
-                                //$attribute_key = $attribute_name;
-                                //$value                        = $attribute->is_taxonomy() ? sanitize_title( $value ) : wc_clean( $value ); // Don't use wc_clean as it destroys sanitized characters in terms.
-                                //$default_attributes[ $attribute_key ] = $value;
-                            }
-                        }
-                    }
-                }
-                $pro_attributes = apply_filters('wcmp_fpm_product_attributes', $pro_attributes, $new_product_id, $product_manager_form_data);
-                // Set default Attributes
-                if (isset($product_manager_form_data['default_attributes']) && !empty($product_manager_form_data['default_attributes'])) {
-                    $default_attributes = array();
-                    if ($pro_attributes) {
-                        foreach ($pro_attributes as $p_attribute) {
-                            if ($p_attribute->get_variation()) {
-                                $attribute_key = sanitize_title($p_attribute->get_name());
-
-                                $value = isset($product_manager_form_data['default_attributes']["attribute_" . $attribute_key]) ? stripslashes($product_manager_form_data['default_attributes']["attribute_" . $attribute_key]) : '';
-
-                                $value = $p_attribute->is_taxonomy() ? sanitize_title($value) : wc_clean($value); // Don't use wc_clean as it destroys sanitized characters in terms.
-                                $default_attributes[$attribute_key] = $value;
-                            }
-                        }
-                    }
-                }
-
-                // Process product type first so we have the correct class to run setters.
-                $product_type = empty($product_manager_form_data['product_type']) ? WC_Product_Factory::get_product_type($new_product_id) : sanitize_title(stripslashes($product_manager_form_data['product_type']));
-                $classname = WC_Product_Factory::get_product_classname($new_product_id, $product_type ? $product_type : 'simple');
-                $product = new $classname($new_product_id);
-                $errors = $product->set_props(array(
-                    'sku' => isset($product_manager_form_data['sku']) ? wc_clean($product_manager_form_data['sku']) : null,
-                    'purchase_note' => wp_kses_post(stripslashes($product_manager_form_data['purchase_note'])),
-                    'downloadable' => isset($product_manager_form_data['is_downloadable']),
-                    'virtual' => isset($product_manager_form_data['is_virtual']),
-                    'featured' => isset($product_manager_form_data['featured']),
-                    'catalog_visibility' => wc_clean($product_manager_form_data['visibility']),
-                    'tax_status' => isset($product_manager_form_data['tax_status']) ? wc_clean($product_manager_form_data['tax_status']) : null,
-                    'tax_class' => isset($product_manager_form_data['tax_class']) ? wc_clean($product_manager_form_data['tax_class']) : null,
-                    'weight' => wc_clean($product_manager_form_data['weight']),
-                    'length' => wc_clean($product_manager_form_data['length']),
-                    'width' => wc_clean($product_manager_form_data['width']),
-                    'height' => wc_clean($product_manager_form_data['height']),
-                    'shipping_class_id' => absint($product_manager_form_data['shipping_class']),
-                    'sold_individually' => !empty($product_manager_form_data['sold_individually']),
-                    'upsell_ids' => isset($product_manager_form_data['upsell_ids']) ? array_map('intval', (array) $product_manager_form_data['upsell_ids']) : array(),
-                    'cross_sell_ids' => isset($product_manager_form_data['crosssell_ids']) ? array_map('intval', (array) $product_manager_form_data['crosssell_ids']) : array(),
-                    'regular_price' => wc_clean($product_manager_form_data['regular_price']),
-                    'sale_price' => wc_clean($product_manager_form_data['sale_price']),
-                    'date_on_sale_from' => wc_clean($product_manager_form_data['sale_date_from']),
-                    'date_on_sale_to' => wc_clean($product_manager_form_data['sale_date_upto']),
-                    'manage_stock' => !empty($product_manager_form_data['manage_stock']),
-                    'backorders' => wc_clean($product_manager_form_data['backorders']),
-                    'stock_status' => wc_clean($product_manager_form_data['stock_status']),
-                    'stock_quantity' => wc_stock_amount($product_manager_form_data['stock_qty']),
-                    'download_limit' => '' === $product_manager_form_data['download_limit'] ? '' : absint($product_manager_form_data['download_limit']),
-                    'download_expiry' => '' === $product_manager_form_data['download_expiry'] ? '' : absint($product_manager_form_data['download_expiry']),
-                    'downloads' => $downloadables,
-                    //'product_url' => esc_url_raw($product_manager_form_data['product_url']),
-                    //'button_text' => wc_clean($product_manager_form_data['button_text']),
-                    //'children' => 'grouped' === $product_type ? $grouped_products : null,
-                    'reviews_allowed' => !empty($product_manager_form_data['enable_reviews']),
-                    'menu_order' => absint($product_manager_form_data['menu_order']),
-                    'attributes' => $pro_attributes,
-                    'default_attributes' => $default_attributes,
-                ));
-
-                if (is_wp_error($errors)) {
-                    echo '{"status": false, "message": "' . $errors->get_error_message() . '", "id": "' . $new_product_id . '", "redirect": "' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id)) . '"}';
-                    $has_error = true;
-                }
-
-
-                /**
-                 * @since 3.0.0 to set props before save.
-                 */
-                //do_action( 'woocommerce_admin_process_product_object', $product );
-                $product->save();
-
-                // Set Product Category
-
-                if (isset($product_manager_form_data['product_cats']) && !empty($product_manager_form_data['product_cats'])) {
-
-                    $is_first = true;
-                    foreach ($product_manager_form_data['product_cats'] as $product_cats) {
-                        if ($is_first) {
-                            $is_first = false;
-                            wp_set_object_terms($new_product_id, (int) $product_cats, 'product_cat');
-                        } else {
-                            wp_set_object_terms($new_product_id, (int) $product_cats, 'product_cat', true);
-                        }
-                    }
-                } else {
-
-                    wp_set_object_terms($new_product_id, array(), 'product_cat');
-                }
-
-
-                // Set Product Custom Taxonomies
-                if (isset($product_manager_form_data['product_custom_taxonomies']) && !empty($product_manager_form_data['product_custom_taxonomies'])) {
-                    foreach ($product_manager_form_data['product_custom_taxonomies'] as $taxonomy => $taxonomy_values) {
-                        if (!empty($taxonomy_values)) {
-                            $is_first = true;
-                            foreach ($taxonomy_values as $taxonomy_value) {
-                                if ($is_first) {
-                                    $is_first = false;
-                                    wp_set_object_terms($new_product_id, (int) $taxonomy_value, $taxonomy);
-                                } else {
-                                    wp_set_object_terms($new_product_id, (int) $taxonomy_value, $taxonomy, true);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Set Product Tags
-                if (isset($product_manager_form_data['product_tags']) && !empty($product_manager_form_data['product_tags'])) {
-                    if (is_array($product_manager_form_data['product_tags'])) {
-                        wp_set_object_terms($new_product_id, $product_manager_form_data['product_tags'], 'product_tag', false);
-                    } else {
-                        wp_set_post_terms($new_product_id, $product_manager_form_data['product_tags'], 'product_tag');
-                    }
-                }
-
-                // Set Product Featured Image
-                $wp_upload_dir = wp_upload_dir();
-                if (isset($product_manager_form_data['featured_img']) && !empty($product_manager_form_data['featured_img'])) {
-                    $featured_img_id = get_attachment_id_by_url($product_manager_form_data['featured_img']);
-                    set_post_thumbnail($new_product_id, $featured_img_id);
-                } else {
-                    delete_post_thumbnail($new_product_id);
-                }
-
-                // Set Product Image Gallery
-                if (isset($product_manager_form_data['gallery_img']) && !empty($product_manager_form_data['gallery_img'])) {
-                    $gallery = array();
-                    foreach ($product_manager_form_data['gallery_img'] as $gallery_imgs) {
-                        if (isset($gallery_imgs['image']) && !empty($gallery_imgs['image'])) {
-                            $gallery_img_id = get_attachment_id_by_url($gallery_imgs['image']);
-                            $gallery[] = $gallery_img_id;
-                        }
-                    }
-                    if (!empty($gallery)) {
-                        update_post_meta($new_product_id, '_product_image_gallery', implode(',', $gallery));
-                    }
-                }
-                do_action('after_wcmp_fpm_data_meta_save', $new_product_id, $product_manager_form_data, $pro_attributes);
-                // Set product basic options for simple and external products
-                /* if (( $product_manager_form_data['product_type'] == 'variable' ) || ( $product_manager_form_data['product_type'] == 'variable-subscription' )) {
-                  // Create Variable Product Variations
-                  if (isset($product_manager_form_data['variations']) && !empty($product_manager_form_data['variations'])) {
-                  foreach ($product_manager_form_data['variations'] as $variations) {
-                  $variation_status = isset($variations['enable']) ? 'publish' : 'private';
-
-                  $variation_id = absint($variations['id']);
-
-                  // Generate a useful post title
-                  $variation_post_title = sprintf(__('Variation #%s of %s', 'dc-woocommerce-multi-vendor'), absint($variation_id), esc_html(get_the_title($new_product_id)));
-
-                  if (!$variation_id) { // Adding New Variation
-                  $variation = array(
-                  'post_title' => $variation_post_title,
-                  'post_content' => '',
-                  'post_status' => $variation_status,
-                  'post_author' => $current_user_id,
-                  'post_parent' => $new_product_id,
-                  'post_type' => 'product_variation'
-                  );
-
-                  $variation_id = wp_insert_post($variation);
-                  }
-
-                  // Only continue if we have a variation ID
-                  if (!$variation_id) {
-                  continue;
-                  }
-
-                  // Set Variation Thumbnail
-                  $variation_img_id = 0;
-                  if (isset($variations['image']) && !empty($variations['image'])) {
-                  $variation_img_id = $this->fpm_get_image_id($variations['image']);
-                  }
-
-                  // Variation Download options
-                  $downloadables = array();
-                  if (isset($variations['is_downloadable']) && isset($variations['downloadable_file']) && $variations['downloadable_file'] && !empty($variations['downloadable_file'])) {
-                  $downloadables[] = array(
-                  'name' => wc_clean($variations['downloadable_file_name']),
-                  'file' => wp_unslash(trim($variations['downloadable_file'])),
-                  'previous_hash' => md5($variations['downloadable_file']),
-                  );
-                  }
-
-                  // Update Attributes
-                  $var_attributes = array();
-                  if ($pro_attributes) {
-                  foreach ($pro_attributes as $p_attribute) {
-                  if ($p_attribute->get_variation()) {
-                  $attribute_key = sanitize_title($p_attribute->get_name());
-
-                  $value = isset($variations["attribute_" . $attribute_key]) ? stripslashes($variations["attribute_" . $attribute_key]) : '';
-
-                  $value = $p_attribute->is_taxonomy() ? sanitize_title($value) : wc_clean($value); // Don't use wc_clean as it destroys sanitized characters in terms.
-                  $var_attributes[$attribute_key] = $value;
-                  }
-                  }
-                  }
-
-                  $wc_variation = new WC_Product_Variation($variation_id);
-                  $errors = $wc_variation->set_props(apply_filters('fpm_product_variation_data_factory', array(
-                  //'status'            => 'publish' //isset( $variations['enable'] ) ? 'publish' : 'private',
-                  'menu_order' => wc_clean($variations['menu_order']),
-                  'regular_price' => wc_clean($variations['regular_price']),
-                  'sale_price' => wc_clean($variations['sale_price']),
-                  'manage_stock' => isset($variations['manage_stock']),
-                  'stock_quantity' => wc_clean($variations['stock_qty']),
-                  'backorders' => wc_clean($variations['backorders']),
-                  'stock_status' => wc_clean($variations['stock_status']),
-                  'image_id' => wc_clean($variation_img_id),
-                  'attributes' => $var_attributes,
-                  'sku' => isset($variations['sku']) ? wc_clean($variations['sku']) : '',
-                  'virtual' => isset($variations['is_virtual']),
-                  'downloadable' => isset($variations['is_downloadable']),
-                  'date_on_sale_from' => wc_clean($variations['sale_price_dates_from']),
-                  'date_on_sale_to' => wc_clean($variations['sale_price_dates_to']),
-                  'description' => wp_kses_post($variations['description']),
-                  'download_limit' => wc_clean($variations['download_limit']),
-                  'download_expiry' => wc_clean($variations['download_expiry']),
-                  'downloads' => $downloadables,
-                  'weight' => isset($variations['weight']) ? wc_clean($variations['weight']) : '',
-                  'length' => isset($variations['length']) ? wc_clean($variations['length']) : '',
-                  'width' => isset($variations['width']) ? wc_clean($variations['width']) : '',
-                  'height' => isset($variations['height']) ? wc_clean($variations['height']) : '',
-                  'shipping_class_id' => wc_clean($variations['shipping_class']),
-                  'tax_class' => isset($variations['tax_class']) ? wc_clean($variations['tax_class']) : null,
-                  ), $new_product_id, $variation_id, $variations, $product_manager_form_data));
-
-                  if (is_wp_error($errors)) {
-                  echo '{"status": false, "message": "' . $errors->get_error_message() . '", "id": "' . $new_product_id . '", "redirect": "' . get_permalink($new_product_id) . '"}';
-                  $has_error = true;
-                  }
-
-                  $wc_variation->save();
-                  }
-                  }
-
-                  // Remove Variations
-                  if (isset($_POST['removed_variations']) && !empty($_POST['removed_variations'])) {
-                  foreach ($_POST['removed_variations'] as $removed_variations) {
-                  wp_delete_post($removed_variations, true);
-                  }
-                  }
-
-                  $product->get_data_store()->sync_variation_names($product, wc_clean($product_manager_form_data['title']), wc_clean($product_manager_form_data['title']));
-                  } */
-
-                // Yoast SEO Support
-                if (WC_Dependencies_Product_Vendor::fpm_yoast_plugin_active_check()) {
-                    if (isset($product_manager_form_data['yoast_wpseo_focuskw_text_input'])) {
-                        update_post_meta($new_product_id, '_yoast_wpseo_focuskw_text_input', $product_manager_form_data['yoast_wpseo_focuskw_text_input']);
-                        update_post_meta($new_product_id, '_yoast_wpseo_focuskw', $product_manager_form_data['yoast_wpseo_focuskw_text_input']);
-                    }
-                    if (isset($product_manager_form_data['yoast_wpseo_metadesc'])) {
-                        update_post_meta($new_product_id, '_yoast_wpseo_metadesc', strip_tags($product_manager_form_data['yoast_wpseo_metadesc']));
-                    }
-                }
-
-                // WooCommerce Custom Product Tabs Lite Support
-                if (WC_Dependencies_Product_Vendor::fpm_wc_tabs_lite_plugin_active_check()) {
-                    if (isset($product_manager_form_data['product_tabs'])) {
-                        $frs_woo_product_tabs = array();
-                        if (!empty($product_manager_form_data['product_tabs'])) {
-                            foreach ($product_manager_form_data['product_tabs'] as $frs_woo_product_tab) {
-                                if ($frs_woo_product_tab['title']) {
-                                    // convert the tab title into an id string
-                                    $tab_id = strtolower(wc_clean($frs_woo_product_tab['title']));
-
-                                    // remove non-alphas, numbers, underscores or whitespace
-                                    $tab_id = preg_replace("/[^\w\s]/", '', $tab_id);
-
-                                    // replace all underscores with single spaces
-                                    $tab_id = preg_replace("/_+/", ' ', $tab_id);
-
-                                    // replace all multiple spaces with single dashes
-                                    $tab_id = preg_replace("/\s+/", '-', $tab_id);
-
-                                    // prepend with 'tab-' string
-                                    $tab_id = 'tab-' . $tab_id;
-
-                                    $frs_woo_product_tabs[] = array(
-                                        'title' => wc_clean($frs_woo_product_tab['title']),
-                                        'id' => $tab_id,
-                                        'content' => $frs_woo_product_tab['content']
-                                    );
-                                }
-                            }
-                            update_post_meta($new_product_id, 'frs_woo_product_tabs', $frs_woo_product_tabs);
-                        } else {
-                            delete_post_meta($new_product_id, 'frs_woo_product_tabs');
-                        }
-                    }
-                }
-
-                // WooCommerce Product Fees Support
-                if (WC_Dependencies_Product_Vendor::fpm_wc_product_fees_plugin_active_check()) {
-                    update_post_meta($new_product_id, 'product-fee-name', $product_manager_form_data['product-fee-name']);
-                    update_post_meta($new_product_id, 'product-fee-amount', $product_manager_form_data['product-fee-amount']);
-                    $product_fee_multiplier = ( $product_manager_form_data['product-fee-multiplier'] ) ? 'yes' : 'no';
-                    update_post_meta($new_product_id, 'product-fee-multiplier', $product_fee_multiplier);
-                }
-
-                // WooCommerce Bulk Discount Support
-                if (WC_Dependencies_Product_Vendor::fpm_wc_bulk_discount_plugin_active_check()) {
-                    $_bulkdiscount_enabled = ( $product_manager_form_data['_bulkdiscount_enabled'] ) ? 'yes' : 'no';
-                    update_post_meta($new_product_id, '_bulkdiscount_enabled', $_bulkdiscount_enabled);
-                    update_post_meta($new_product_id, '_bulkdiscount_text_info', $product_manager_form_data['_bulkdiscount_text_info']);
-                    update_post_meta($new_product_id, '_bulkdiscounts', $product_manager_form_data['_bulkdiscounts']);
-
-                    $bulk_discount_rule_counter = 0;
-                    foreach ($product_manager_form_data['_bulkdiscounts'] as $bulkdiscount) {
-                        $bulk_discount_rule_counter++;
-                        update_post_meta($new_product_id, '_bulkdiscount_quantity_' . $bulk_discount_rule_counter, $bulkdiscount['quantity']);
-                        update_post_meta($new_product_id, '_bulkdiscount_discount_' . $bulk_discount_rule_counter, $bulkdiscount['discount']);
-                    }
-
-                    if ($bulk_discount_rule_counter < 5) {
-                        for ($bdrc = ($bulk_discount_rule_counter + 1); $bdrc <= 5; $bdrc++) {
-                            update_post_meta($new_product_id, '_bulkdiscount_quantity_' . $bdrc, '');
-                            update_post_meta($new_product_id, '_bulkdiscount_discount_' . $bdrc, '');
-                        }
-                    }
-                }
-
-                if (WC_Dependencies_Product_Vendor::fpm_toolset_plugin_active_check()) {
-                    if (isset($product_manager_form_data['wpcf']) && !empty($product_manager_form_data['wpcf'])) {
-                        foreach ($product_manager_form_data['wpcf'] as $toolset_types_filed_key => $toolset_types_filed_value) {
-                            update_post_meta($new_product_id, $toolset_types_filed_key, $toolset_types_filed_value);
-                        }
-                    }
-                }
-
-                do_action('after_wcmp_fpm_meta_save', $new_product_id, $product_manager_form_data);
-
-                // Set Product Vendor Data
-                if ($is_vendor && !$is_update) {
-                    $vendor_term = get_user_meta($current_user_id, '_vendor_term_id', true);
-                    $term = get_term($vendor_term, $WCMp->taxonomy->taxonomy_name);
-                    wp_delete_object_term_relationships($new_product_id, $WCMp->taxonomy->taxonomy_name);
-                    //wp_set_post_terms($new_product_id, $term->name, $WCMp->taxonomy->taxonomy_name, true);
-                    wp_set_object_terms($new_product_id, (int) $term->term_id, $WCMp->taxonomy->taxonomy_name, true);
-                }
-
-                // Notify Admin on New Product Creation
-                if ($is_publish) {
-                    $WCMp->product->on_all_status_transitions($product_status, '', get_post($new_product_id));
-                }
-
-                if (!$has_error) {
-                    if (get_post_status($new_product_id) == 'publish' || (current_user_can('publish_products') && $product_status == 'publish')) {
-                        if (!$has_error) {
-                            if ($is_new_pro == 0) {
-                                $WCMp_fpm_messages['product_published'] = __('Product updated successfully!', 'dc-woocommerce-multi-vendor');
-                            }
-                            set_transient('wcmp_fpm_product_added_msg', $WCMp_fpm_messages['product_published']);
-                            $redirect_url = wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id);
-                            if (!current_user_can('edit_published_products')) {
-                                $redirect_url = apply_filters('wcmp_vendor_products', wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products')));
-                            }
-                            echo '{"status": true, "is_new": "' . $new_product_id . '", "message": "' . $WCMp_fpm_messages['product_published'] . '", "redirect": "' . esc_url($redirect_url) . '"}';
-                        }
-                    } else {
-                        if (!$has_error) {
-                            set_transient('wcmp_fpm_product_added_msg', $WCMp_fpm_messages['product_saved']);
-                            echo '{"status": true, "is_new": "' . $new_product_id . '", "message": "' . $WCMp_fpm_messages['product_saved'] . '", "redirect": "' . esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $new_product_id)) . '"}';
-                        }
-                    }
-                }
-                die;
-            }
-        } else {
-            echo '{"status": false, "message": "' . $WCMp_fpm_messages['no_title'] . '"}';
-        }
-        do_action('after_wcmp_frontend_product_manager_save', $new_product_id, $product_manager_form_data);
-        die;
-    }
-
     public function delete_fpm_product() {
 
         $proid = $_POST['proid'];
@@ -2253,113 +1665,8 @@ class WCMp_Ajax {
         return $attachment_id;
     }
 
-    // Frontend Coupon Manager
-    public function frontend_coupon_manager() {
-
-        $coupon_manager_form_data = array();
-        parse_str($_POST['coupon_manager_form'], $coupon_manager_form_data);
-        //print_r($coupon_manager_form_data);
-        $WCMp_fpm_coupon_messages = get_frontend_coupon_manager_messages();
-        $has_error = false;
-
-        if (isset($coupon_manager_form_data['title']) && !empty($coupon_manager_form_data['title'])) {
-            $is_update = false;
-            $is_publish = false;
-            $is_vendor = false;
-            $current_user_id = $vendor_id = apply_filters('wcmp_current_loggedin_vendor_id', get_current_user_id());
-            if (is_user_wcmp_vendor($current_user_id))
-                $is_vendor = true;
-
-            if (isset($_POST['status']) && ($_POST['status'] == 'draft')) {
-                $coupon_status = 'draft';
-            } else {
-                if ($is_vendor) {
-                    if (!current_user_can('publish_shop_coupons')) {
-                        $coupon_status = 'pending';
-                    } else {
-                        $coupon_status = 'publish';
-                    }
-                } else {
-                    $coupon_status = 'publish';
-                }
-            }
-
-            // Creating new coupon
-            $new_coupon = array(
-                'post_title' => wc_clean($coupon_manager_form_data['title']),
-                'post_status' => $coupon_status,
-                'post_type' => 'shop_coupon',
-                'post_excerpt' => $coupon_manager_form_data['description'],
-                'post_author' => $vendor_id
-                    //'post_name' => sanitize_title($coupon_manager_form_data['title'])
-            );
-
-            if (isset($coupon_manager_form_data['coupon_id']) && $coupon_manager_form_data['coupon_id'] == 0) {
-                if ($coupon_status != 'draft') {
-                    $is_publish = true;
-                }
-                $new_coupon_id = wp_insert_post($new_coupon, true);
-            } else { // For Update
-                $is_update = true;
-                $new_coupon['ID'] = $coupon_manager_form_data['coupon_id'];
-                if (!$is_vendor)
-                    unset($new_coupon['post_author']);
-                if (get_post_status($new_coupon['ID']) != 'draft') {
-                    unset($new_coupon['post_status']);
-                } else if ((get_post_status($new_coupon['ID']) == 'draft') && ($coupon_status != 'draft')) {
-                    $is_publish = true;
-                }
-                $new_coupon_id = wp_update_post($new_coupon, true);
-            }
-
-            if (!is_wp_error($new_coupon_id)) {
-                // For Update
-                if ($is_update)
-                    $new_coupon_id = $coupon_manager_form_data['coupon_id'];
-                $coupon_obj = new WC_Coupon($new_coupon_id);
-                // Coupon General
-                update_post_meta($new_coupon_id, 'discount_type', $coupon_manager_form_data['discount_type']);
-                update_post_meta($new_coupon_id, 'coupon_amount', $coupon_manager_form_data['coupon_amount'] ? $coupon_manager_form_data['coupon_amount'] : '' );
-                update_post_meta($new_coupon_id, 'free_shipping', isset($coupon_manager_form_data['free_shipping']) ? 'yes' : 'no' );
-                //update_post_meta($new_coupon_id, 'expiry_date', $coupon_manager_form_data['expiry_date'] ? $coupon_manager_form_data['expiry_date'] : '' );
-                $coupon_obj->set_date_expires($coupon_manager_form_data['expiry_date']);
-
-                // Usage Restrictin
-                update_post_meta($new_coupon_id, 'minimum_amount', $coupon_manager_form_data['minimum_amount'] ? $coupon_manager_form_data['minimum_amount'] : '' );
-                update_post_meta($new_coupon_id, 'maximum_amount', $coupon_manager_form_data['maximum_amount'] ? $coupon_manager_form_data['maximum_amount'] : '' );
-                update_post_meta($new_coupon_id, 'individual_use', isset($coupon_manager_form_data['individual_use']) ? 'yes' : 'no' );
-                update_post_meta($new_coupon_id, 'exclude_sale_items', isset($coupon_manager_form_data['exclude_sale_items']) ? 'yes' : 'no' );
-                update_post_meta($new_coupon_id, 'product_ids', $coupon_manager_form_data['product_ids'] ? implode(',', $coupon_manager_form_data['product_ids']) : '' );
-                update_post_meta($new_coupon_id, 'exclude_product_ids', $coupon_manager_form_data['exclude_product_ids'] ? implode(',', $coupon_manager_form_data['exclude_product_ids']) : '' );
-                update_post_meta($new_coupon_id, 'product_categories', isset($coupon_manager_form_data['product_categories']) ? array_map('intval', $coupon_manager_form_data['product_categories']) : array() );
-                update_post_meta($new_coupon_id, 'exclude_product_categories', isset($coupon_manager_form_data['exclude_product_categories']) ? array_map('intval', $coupon_manager_form_data['exclude_product_categories']) : array() );
-                update_post_meta($new_coupon_id, 'customer_email', $coupon_manager_form_data['customer_email'] ? array_filter(array_map('trim', explode(',', wc_clean($coupon_manager_form_data['customer_email'])))) : array() );
-
-                // Usage Limits
-                update_post_meta($new_coupon_id, 'usage_limit', $coupon_manager_form_data['usage_limit'] ? $coupon_manager_form_data['usage_limit'] : '' );
-                update_post_meta($new_coupon_id, 'usage_limit_per_user', $coupon_manager_form_data['usage_limit_per_user'] ? $coupon_manager_form_data['usage_limit_per_user'] : '' );
-
-                // limit_usage_to_x_items
-                update_post_meta($new_coupon_id, 'limit_usage_to_x_items', $coupon_manager_form_data['limit_usage_to_x_items'] ? $coupon_manager_form_data['limit_usage_to_x_items'] : '' );
-
-                $coupon_obj->save();
-                if (!$has_error) {
-                    if (get_post_status($new_coupon_id) == 'publish') {
-                        if (!$has_error)
-                            echo '{"status": true, "message": "' . $WCMp_fpm_coupon_messages['coupon_published'] . '", "redirect": "' . wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_coupons_endpoint', 'vendor', 'general', 'coupons')) . '"}';
-                    } else {
-                        if (!$has_error)
-                            echo '{"status": true, "message": "' . $WCMp_fpm_coupon_messages['coupon_saved'] . '", "redirect": "' . add_query_arg('fpm_msg', 'coupon_saved', wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon'), $new_coupon_id)) . '"}';
-                    }
-                }
-                die;
-            }
-        } else {
-            echo '{"status": false, "message": "' . $WCMp_fpm_coupon_messages['no_title'] . '"}';
-        }
-    }
-
     public function wcmp_vendor_product_list() {
+        global $WCMp;
         if (is_user_logged_in() && is_user_wcmp_vendor(get_current_user_id())) {
             $vendor = get_current_vendor();
             $enable_ordering = apply_filters('wcmp_vendor_dashboard_product_list_table_orderable_columns', array('name', 'date'));
@@ -2492,7 +1799,7 @@ class WCMp_Ajax {
                     $product = wc_get_product($product_single->ID);
                     $edit_product_link = '';
                     if ((current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') || in_array($product->get_status(), apply_filters('wcmp_enable_edit_product_options_for_statuses', array('draft', 'pending')))) {
-                        $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $product->get_id()));
+                        $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product'), $product->get_id()));
                     }
                     $edit_product_link = apply_filters('wcmp_vendor_product_list_product_edit_link', $edit_product_link, $product);
                     // Get actions
@@ -2504,6 +1811,18 @@ class WCMp_Ajax {
                     $actions = array(
                         'id' => sprintf(__('ID: %d', 'dc-woocommerce-multi-vendor'), $product->get_id()),
                     );
+                    // Add GTIN if have
+                    $gtin_terms = wp_get_post_terms( $product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
+                    $gtin_label = '';
+                    if($gtin_terms && isset($gtin_terms[0])){
+                        $gtin_label = $gtin_terms[0]->name;
+                    }
+                    $gtin_code = get_post_meta( $product->get_id(), '_wcmp_gtin_code', true );
+                    
+                    if( $gtin_code ){
+                        $actions['gtin'] = ( $gtin_label ) ? $gtin_label . ': ' . $gtin_code : __( 'GTIN', 'dc-woocommerce-multi-vendor' ) . ': ' . $gtin_code;
+                    }
+                    
                     $actions_col = array(
                         'view' => '<a href="' . esc_url($product->get_permalink()) . '" target="_blank" title="' . $view_title . '"><i class="wcmp-font ico-eye-icon"></i></a>',
                         'edit' => '<a href="' . esc_url($edit_product_link) . '" title="' . __('Edit', 'dc-woocommerce-multi-vendor') . '"><i class="wcmp-font ico-edit-pencil-icon"></i></a>',
@@ -2552,15 +1871,17 @@ class WCMp_Ajax {
                     // product cat
                     $product_cats = '';
                     $termlist = array();
-                    if (!$terms = get_the_terms($product->get_id(), 'product_cat')) {
+                    $terms = get_the_terms($product->get_id(), 'product_cat');
+                    if (!$terms ) {
                         $product_cats = '<span class="na">&ndash;</span>';
                     } else {
+                        $terms = apply_filters( 'wcmp_vendor_product_list_row_product_categories', $terms, $product );
                         foreach ($terms as $term) {
                             $termlist[] = $term->name;
                         }
                     }
                     if ($termlist) {
-                        $product_cats = implode(' | ', $termlist);
+                        $product_cats = implode(' | ', $termlist );
                     }
                     $date = '&ndash;';
                     if ($product->get_status() == 'publish') {
@@ -3813,11 +3134,12 @@ class WCMp_Ajax {
                             . '<div class="col-md-9 col-sm-9">'
                             . '<input id="minimum_order_amount_fs" class="form-control" type="text" name="minimum_order_amount" value="'.$vendor_shipping_method['settings']['min_amount'].'" placholder="'.__( '0.00', 'dc-woocommerce-multi-vendor' ).'">'
                             . '</div></div>'
-                            . '<div class="form-group">'
+                            . '<input type="hidden" id="method_description_fs" name="method_description" value="'.$vendor_shipping_method['settings']['description'].'" />'
+                            . '<!--div class="form-group">'
                             . '<label for="" class="control-label col-sm-3 col-md-3">'.__( 'Description', 'dc-woocommerce-multi-vendor' ).'</label>'
                             . '<div class="col-md-9 col-sm-9">'
                             . '<textarea id="method_description_fs" class="form-control" name="method_description">'.$vendor_shipping_method['settings']['description'].'</textarea>'
-                            . '</div></div></div>';
+                            . '</div></div--></div>';
                 }elseif($vendor_shipping_method['id'] == 'local_pickup'){
                     $settings_html = '<!-- Local Pickup -->'
                             . '<div class="shipping_form " id="'.$vendor_shipping_method['id'].'">'
@@ -3841,11 +3163,12 @@ class WCMp_Ajax {
                                  } 
                             $settings_html .= '</select></div></div>';
                             }
-                    $settings_html .= '<div class="form-group">'
+                    $settings_html .= '<input type="hidden" id="method_description_lp" name="method_description" value="'.$vendor_shipping_method['settings']['description'].'" />'
+                            . '<!--div class="form-group">'
                             . '<label for="" class="control-label col-sm-3 col-md-3">'.__( 'Description', 'dc-woocommerce-multi-vendor' ).'</label>'
                             . '<div class="col-md-9 col-sm-9">'
                             . '<textarea id="method_description_lp" class="form-control" name="method_description">'.$vendor_shipping_method['settings']['description'].'</textarea>'
-                            . '</div></div></div>';
+                            . '</div></div--></div>';
                 }elseif($vendor_shipping_method['id'] == 'flat_rate'){
                     $settings_html = '<!-- Flat rate -->'
                             . '<div class="shipping_form" id="'.$vendor_shipping_method['id'].'">'
@@ -3869,11 +3192,12 @@ class WCMp_Ajax {
                                 } 
                             $settings_html .= '</select></div></div>';
                             }
-                            $settings_html .= '<div class="form-group">'
+                            $settings_html .= '<input type="hidden" id="method_description_fr" name="method_description" value="'.$vendor_shipping_method['settings']['description'].'" />'
+                                    . '<!--div class="form-group">'
                                     . '<label for="" class="control-label col-sm-3 col-md-3">'.__( 'Description', 'dc-woocommerce-multi-vendor' ).'</label>'
                                     . '<div class="col-md-9 col-sm-9">'
                                     . '<textarea id="method_description_fr" class="form-control" name="method_description">'.$vendor_shipping_method['settings']['description'].'</textarea>'
-                                    . '</div></div>';
+                                    . '</div--></div>';
                             if (!apply_filters( 'wcmp_hide_vendor_shipping_classes', false )) { 
                             $settings_html .= '<div class="wcmp_shipping_classes"><hr>'
                                     . '<h2>'.__('Shipping Class Cost', 'dc-woocommerce-multi-vendor').'</h2>'
@@ -3913,6 +3237,297 @@ class WCMp_Ajax {
             $html_settings = isset($config_settings[$method_id]) ? $config_settings[$method_id] : '';
             wp_send_json($html_settings);
         }
+    }
+    
+    
+    public function wcmp_product_classify_next_level_list_categories() {
+        $term_id = isset($_POST['term_id']) ? (int) $_POST['term_id'] : 0;
+        $taxonomy = isset($_POST['taxonomy']) ? $_POST['taxonomy'] : '';
+        $cat_level = isset($_POST['cat_level']) ? $_POST['cat_level'] : 0;
+        $term = get_term( $term_id , $taxonomy );
+        $child_terms = get_term_children( $term_id, $taxonomy );
+        $html_level = '';
+        $level = $cat_level + 1;
+        $final = false;
+        $hierarchy = get_ancestors( $term_id, $taxonomy );
+        $crumb = array();
+        foreach ( array_reverse($hierarchy) as $id ) {
+            $h_term = get_term( $id, $taxonomy );
+            $crumb[] = $h_term->name;
+        }
+        $crumb[] = $term->name;
+        $html_hierarchy = implode( ' <i class="wcmp-font ico-right-arrow-icon"></i> ', $crumb );
+        if($child_terms) {  
+            $html_level .= '<ul class="wcmp-product-categories '.$level.'-level" data-cat-level="'.$level.'">';
+            $html_level .= wcmp_list_categories( apply_filters( "wcmp_vendor_product_classify_{$level}_level_categories", array(
+                            'taxonomy' => 'product_cat', 
+                            'hide_empty' => false,
+                            'html_list' => true,
+                            'parent' => $term_id,
+                            'cat_link'  => '#',
+                            ) ) );
+            $html_level .= '</ul>';
+        } else {
+            $final = true;
+            //$level = 'final';
+            $html_level .= '<div class="final-cat-button">'
+                        . '<p>'.$term->name.'<p>'
+                        . '<button class="classified-pro-cat-btn btn btn-default" data-term-id="'.$term->term_id.'" data-taxonomy="'.$taxonomy.'">'. strtoupper(__( 'Select', 'dc-woocommerce-multi-vendor' )).'</button>'
+                        . '</div>';
+        }
+        wp_send_json( array( 'html_level' => $html_level, 'level' => $level, 'is_final' => $final, 'hierarchy' => $html_hierarchy ) );
+        die;
+    }
+    
+    public function show_product_classify_next_level_from_searched_term(){
+        $term_id = isset($_POST['term_id']) ? (int) $_POST['term_id'] : 0;
+        $taxonomy = isset($_POST['taxonomy']) ? $_POST['taxonomy'] : '';
+        $hierarchy = get_ancestors( $term_id, $taxonomy );
+        $html_level = $html_hierarchy = '';
+        //print_r($hierarchy);die;
+        $level = 1;
+        $parent = 0;
+        if($hierarchy){
+            foreach ( array_reverse($hierarchy) as $id ) {
+                $html_level .= '<div class="wcmp-product-cat-level '.$level.'-level-cat cat-column" data-level="'.$level.'">'
+                    . '<ul class="wcmp-product-categories '.$level.'-level" data-cat-level="'.$level.'">';
+                $html_level .= wcmp_list_categories( apply_filters( 'wcmp_vendor_product_classify_'.$level.'_level_categories', array(
+                                        'taxonomy' => 'product_cat', 
+                                        'hide_empty' => false, 
+                                        'html_list' => true,
+                                        'parent' => $parent,
+                                        'cat_link'  => '#',
+                                        'selected' => $id,
+                                        ) ) );
+                $html_level .= '</ul></div>';
+                $level++;
+                $parent = $id;
+            }
+        }
+        $html_level .= '<div class="wcmp-product-cat-level '.$level.'-level-cat cat-column" data-level="'.$level.'">'
+            . '<ul class="wcmp-product-categories '.$level.'-level" data-cat-level="'.$level.'">';
+        $html_level .= wcmp_list_categories( apply_filters( 'wcmp_vendor_product_classify_1_level_categories', array(
+                                'taxonomy' => 'product_cat', 
+                                'hide_empty' => false, 
+                                'html_list' => true,
+                                'parent' => $parent,
+                                'cat_link'  => '#',
+                                'selected' => $term_id,
+                                ) ) );
+        $html_level .= '</ul></div>';
+        // add final level step
+        $level = $level + 1;
+        $h_term = get_term( $term_id, $taxonomy );
+        $html_level .= '<div class="wcmp-product-cat-level '.$level.'-level-cat cat-column select-cat-button-holder" data-level="'.$level.'">'
+                .'<div class="final-cat-button">'
+                . '<p>'.$h_term->name.'<p>'
+                . '<button class="classified-pro-cat-btn btn btn-default" data-term-id="'.$h_term->term_id.'" data-taxonomy="'.$taxonomy.'">'. strtoupper(__( 'Select', 'dc-woocommerce-multi-vendor' )).'</button>'
+                . '</div></div>';
+            
+        wp_send_json( array( 'html_level' => $html_level ) );
+        die;
+    }
+    
+    public function wcmp_product_classify_search_category_level(){
+        global $WCMp, $wpdb;
+        $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+        if(!empty($keyword)){
+            $query = apply_filters( "wcmp_product_classify_search_category_level_args", array(
+                'taxonomy' => 'product_cat', 
+                'search'    => $keyword,
+                'hide_empty' => false, 
+                'parent' => '',
+                'fields'    => 'ids',     
+            ) );
+            $search_terms = wcmp_list_categories( $query );
+            $html_search_result = '';
+            if( $search_terms ){
+                foreach ( $search_terms as $term_id ) {
+                    $term = get_term( $term_id, $query['taxonomy'] );
+                    $hierarchy = get_ancestors( $term_id, $query['taxonomy'] );
+                    $hierarchy = array_reverse($hierarchy);
+                    $hierarchy[] = $term_id;
+                    $html_search_result .= '<li class="list-group-item" data-term-id="'.$term->term_id.'" data-taxonomy="'.$query['taxonomy'].'">'
+                        . '<p><strong>' . $term->name . '</strong></p>'
+                        . '<ul class="breadcrumb">';
+                    foreach ($hierarchy as $id) {
+                        $h_term = get_term( $id, $query['taxonomy'] );
+                        $html_search_result .= '<li>' . $h_term->name . '</li>';
+                    }
+                    $html_search_result .= '</ul></li>';
+                    
+                    //$html_search_result .= '<a class="list-group-item"><span class="add-term" data-term-id="'.$term_id.'">&plus;</span>&nbsp;&nbsp;'.implode( ' <i class="wcmp-font ico-right-arrow-icon"></i> ', $term_crumb ).'</a>';
+                }
+     
+            }else{
+                $html_search_result .= '<li class="list-group-item"><p>'.__('No results found', 'dc-woocommerce-multi-vendor').'</p></li>';
+            }
+            wp_send_json( array('results' => $html_search_result) );
+            die;
+        }
+    }
+    
+    public function wcmp_list_a_product_by_name_or_gtin() {
+        global $WCMp, $wpdb;
+        $keyword = isset($_POST['keyword']) ? $_POST['keyword'] : '';
+        $html = '';
+        if(!empty($keyword)){
+            $ids = array();
+            $posts = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wcmp_gtin_code' AND meta_value LIKE %s;", esc_sql( '%'.$keyword.'%' ) ) );
+            if ( ! $posts ) {
+                $data_store = WC_Data_Store::load('product');
+                $ids = $data_store->search_products($keyword, '', false);
+                $include = array();
+                foreach ($ids as $id) {
+                    $product = wc_get_product($id);
+                    $product_map_id = get_post_meta($id, '_wcmp_spmv_map_id', true);
+                    if( $product && $product_map_id ){
+                        $results = $wpdb->get_results( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_products_map WHERE product_map_id=%d", $product_map_id) );
+                        $product_ids = wp_list_pluck($results, 'product_id');
+                        $first_inserted_map_pro_key = array_search(min(wp_list_pluck($results, 'ID')), wp_list_pluck($results, 'ID'));
+                        if(isset($product_ids[$first_inserted_map_pro_key])){
+                            $include[] = $product_ids[$first_inserted_map_pro_key];
+                        }
+                    }elseif($product) {
+                        $include[] = $id;
+                    }
+                }
+
+                if ($include) {
+                    $ids = array_slice(array_intersect($ids, $include), 0, 10);
+                } else {
+                    $ids = array();
+                }
+            }else{
+                $unique_gtin_arr = array();
+                foreach ($posts as $post_id) {
+                    $unique_gtin_arr[$post_id] = get_post_meta($post_id, '_wcmp_gtin_code', true);
+                }
+                $ids = array_keys(array_unique($unique_gtin_arr));
+            }
+            
+            $product_objects = apply_filters( 'wcmp_list_a_products_objects',array_map('wc_get_product', $ids) );
+            $user_id = get_current_user_id();
+            
+            if (count($product_objects) > 0) {
+                foreach ($product_objects as $product_object) {
+                    if ($product_object) {
+                        $gtin_code = get_post_meta($product_object->get_id(), '_wcmp_gtin_code', true);
+                        if (is_user_wcmp_vendor($user_id) && $WCMp->vendor_caps->vendor_can($product_object->get_type())) {
+                            // product cat
+                            $product_cats = '';
+                            $termlist = array();
+                            //$terms = wp_get_post_terms( $product_object->get_id(), 'product_cat', array( 'fields' => 'ids' ) );
+                            $terms = get_the_terms($product_object->get_id(), 'product_cat');
+                            if (!$terms) {
+                                $product_cats = '<span class="na">&ndash;</span>';
+                            } else {
+                                $terms_arr = array();
+                                $terms = apply_filters( 'wcmp_vendor_product_list_row_product_categories', $terms, $product_object );
+                                foreach ($terms as $term) {
+                                    //$h_term = get_term_by('term_id', $term_id, 'product_cat');
+                                    $terms_arr[] = $term->name;
+                                }
+                                $product_cats = implode(' | ', $terms_arr);
+                            }
+
+                            $html .= '<div class="search-result-clm">'
+                            .  $product_object->get_image(apply_filters('wcmp_searched_name_gtin_product_list_image_size', array(98, 98)))
+                            . '<div class="result-content">'
+                            . '<p><strong>'.rawurldecode($product_object->get_formatted_name()).'</strong></p>'
+                            . '<p>'.$product_object->get_price_html().'</p>'
+                            . '<p>'.$product_cats.'</p>'
+                            . '</div>'
+                            . '<a href="javascript:void(0)" data-product_id="'.$product_object->get_id().'" class="wcmp-create-pro-duplicate-btn btn btn-default item-sell">'.__('Sell yours', 'dc-woocommerce-multi-vendor').'</a>'
+                            . '</div>';
+                            
+                        } else {
+                            
+                        }
+                    }
+                }
+                
+            } else {
+                $html .= '<div class="search-result-clm"><div class="result-content">' . __('No Suggestions found', 'dc-woocommerce-multi-vendor') . "</div></div>";
+            }
+        }else{
+            $html .= '<div class="search-result-clm"><div class="result-content">' . __('Empty search field! Enter a text to search.', 'dc-woocommerce-multi-vendor') . "</div></div>";
+        }
+        wp_send_json( array( 'results' => $html ) );
+        die;
+    }
+    
+    public function wcmp_set_classified_product_terms(){
+        $term_id = isset($_POST['term_id']) ? (int) $_POST['term_id'] : 0;
+        $taxonomy = isset($_POST['taxonomy']) ? $_POST['taxonomy'] : '';
+        $user_id = get_current_user_id();
+        $url = '';
+        if(is_user_wcmp_vendor($user_id)){
+            $data = array(
+                'term_id'   => $term_id,
+                'taxonomy'  => $taxonomy,
+            );
+            set_transient( 'classified_product_terms_vendor'.$user_id , $data, HOUR_IN_SECONDS );
+            $url = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product')));
+        }
+        wp_send_json( array( 'url' => $url ) );
+        die;
+    }
+    
+    /**
+     * Add an attribute row.
+     */
+    public function edit_product_attribute_callback() {
+        global $WCMp;
+        ob_start();
+
+        check_ajax_referer( 'add-attribute', 'security' );
+
+        if ( ! current_user_can( 'edit_products' ) || ( ! apply_filters( 'wcmp_vendor_can_add_custom_attribute', true ) && empty( sanitize_text_field( $_POST['taxonomy'] ) ) ) ) {
+            wp_die( -1 );
+        }
+
+        $i = absint( $_POST['i'] );
+        $metabox_class = array();
+        $attribute = new WC_Product_Attribute();
+
+        $attribute->set_id( wc_attribute_taxonomy_id_by_name( sanitize_text_field( $_POST['taxonomy'] ) ) );
+        $attribute->set_name( sanitize_text_field( $_POST['taxonomy'] ) );
+        $attribute->set_visible( apply_filters( 'woocommerce_attribute_default_visibility', 1 ) );
+        $attribute->set_variation( apply_filters( 'woocommerce_attribute_default_is_variation', 0 ) );
+
+        if ( $attribute->is_taxonomy() ) {
+            $metabox_class[] = 'taxonomy';
+            $metabox_class[] = $attribute->get_name();
+        }
+
+        include( $WCMp->plugin_path . 'templates/vendor-dashboard/product-manager/views/html-product-attribute.php' );
+        wp_die();
+    }
+    
+    /**
+     * Save attributes
+     */
+    public function save_product_attributes_callback() {
+        check_ajax_referer( 'save-attributes', 'security' );
+
+        if ( ! current_user_can( 'edit_products' ) ) {
+            wp_die( -1 );
+        }
+
+        parse_str( $_POST['data'], $data );
+
+        $attr_data = isset( $data['wc_attributes'] ) ? $data['wc_attributes'] : array();
+
+        $attributes = wcmp_woo()->prepare_attributes( $attr_data );
+        $product_id = absint( $_POST['post_id'] );
+        $product_type = ! empty( $_POST['product_type'] ) ? wc_clean( $_POST['product_type'] ) : 'simple';
+        $classname = WC_Product_Factory::get_product_classname( $product_id, $product_type );
+        $product = new $classname( $product_id );
+
+        $product->set_attributes( $attributes );
+        $product->save();
+        wp_die();
     }
 
 }

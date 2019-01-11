@@ -22,13 +22,14 @@
 
             bindEvents: function () {
                 /* events */
-                $(document.body).on( 'click', this.show_shipping_methods, this.showShippingMethods);
-                $(document.body).on( 'wc_backbone_modal_response', this.addShippingMethod );
-                $(document.body).on( 'wc_backbone_modal_response', this.updateShippingMethod );
-                $(document.body).on( 'click', this.edit_shipping_methods, this.editShippingMethod);
-                $(document.body).on( 'click', this.delete_shipping_method, this.deleteShippingMethod);
-                $(document.body).on( 'change', this.method_status, this.toggleShippingMethod);
-                $(document.body).on( 'change', this.limit_zone_location, this.limitZoneLocation);
+                $( document.body ).on( 'click', this.show_shipping_methods, this.showShippingMethods);
+                $( document.body ).on( 'wc_backbone_modal_response', this.addShippingMethod );
+                $( document.body ).on( 'wc_backbone_modal_response', this.updateShippingMethod );
+                $( document.body ).on( 'click', this.edit_shipping_methods, this.editShippingMethod);
+                $( document.body ).on( 'click', this.delete_shipping_method, this.deleteShippingMethod);
+                $( document.body ).on( 'change', this.method_status, this.toggleShippingMethod);
+                $( document.body ).on( 'change', this.limit_zone_location, this.limitZoneLocation);
+                $( document.body ).on( 'change', '.wc-shipping-zone-method-selector select', this.onChangeShippingMethodSelector );
                 this.limitZoneLocation();
             },
 
@@ -43,6 +44,13 @@
                 });
 
                 $( '.wc-shipping-zone-method-selector select' ).change();
+            },
+            
+            onChangeShippingMethodSelector: function() {
+                    var description = $( this ).find( 'option:selected' ).data( 'description' );
+                    $( this ).parent().find( '.wc-shipping-zone-method-description' ).remove();
+                    $( this ).after( '<div class="wc-shipping-zone-method-description">' + description + '</div>' );
+                    $( this ).closest( 'article' ).height( $( this ).parent().height() );
             },
 
             addShippingMethod: function (event, target, posted_data) {
@@ -92,7 +100,15 @@
             },
 
             editShippingMethod: function (event) {
-                event.preventDefault();		
+                event.preventDefault();
+                $( '.wcmp-shipping-zone-methods' ).block({
+                        message: null,
+                        overlayCSS: {
+                                background: '#fff',
+                                opacity: 0.6
+                        }
+                });
+				
                 var instanceId = $(event.currentTarget).data('instance_id'),
                         methodId = $(event.currentTarget).data('method_id'),
                         zoneId = $(event.currentTarget).data('zone_id'),
@@ -111,6 +127,7 @@
                     data: data,
                     success: function (response) {
                         if(response){
+                            $( '.wcmp-shipping-zone-methods' ).unblock();
                             /* make popup */
                             $( this ).WCBackboneModal({
                                     template : 'wcmp-modal-update-shipping-method',
@@ -190,14 +207,14 @@
 
                 if (confirm(script_data.i18n.deleteShippingMethodConfirmation)) {
                     var currentTarget = $(event.target).is(this.delete_shipping_method) ? event.target : $(event.target).closest(this.delete_shipping_method),
-                            instance_id = $(currentTarget).parents('.edit_del_actions').attr('data-instance_id'),
+                            instance_id = $(event.target).attr('data-instance_id'),
                             zoneId = $('#zone_id').val();
                     var data = data = {
                         action: 'wcmp-delete-shipping-method',
                         zoneID: zoneId,
                         instance_id: instance_id
                     };
-                    
+
                     if (zoneId == '') {
                         // alert( wcmp_dashboard_messages.shiping_zone_not_found );
                     } else if (instance_id == '') {

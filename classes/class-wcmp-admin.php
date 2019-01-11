@@ -34,13 +34,15 @@ class WCMp_Admin {
 
         add_action('admin_menu', array(&$this, 'wcmp_admin_menu'));
         add_action('admin_head', array($this, 'menu_commission_count'));
-        if (!get_option('_is_dismiss_service_notice', false) && current_user_can('manage_options')) {
+        //if (!get_option('_is_dismiss_service_notice', false) && current_user_can('manage_options')) {
             //add_action('admin_notices', array(&$this, 'wcmp_service_page_notice'));
-        }
+        //}
         add_action('wp_dashboard_setup', array(&$this, 'wcmp_remove_wp_dashboard_widget'));
         add_filter('woocommerce_order_actions', array(&$this, 'woocommerce_order_actions'));
         add_action('woocommerce_order_action_regenerate_order_commissions', array(&$this, 'regenerate_order_commissions'));
         add_filter('woocommerce_screen_ids', array(&$this, 'add_wcmp_screen_ids'));
+        // Admin notice for advance frontend modules (Temp)
+        add_action('admin_notices', array(&$this, 'advance_frontend_manager_notice'));
     }
 
     function add_hidden_order_items($order_items) {
@@ -470,6 +472,15 @@ class WCMp_Admin {
             wp_add_inline_style( 'woocommerce_admin_styles', $custom_css );
             wp_enqueue_script('wcmp_vendor_js');
         }
+        
+        // hide product cat from quick & bulk edit
+        if(is_user_wcmp_vendor(get_current_vendor_id()) && in_array($screen->id, array('edit-product'))){
+            $custom_css = "
+            .inline-edit-product .inline-edit-categories, .bulk-edit-product .inline-edit-categories{
+                display: none;
+            }";
+            wp_add_inline_style( 'woocommerce_admin_styles', $custom_css );
+        }
     }
 
     function wcmp_kill_auto_save() {
@@ -556,6 +567,17 @@ class WCMp_Admin {
     public function add_wcmp_screen_ids($screen_ids){
         $screen_ids[] = 'toplevel_page_dc-vendor-shipping';
         return $screen_ids;
+    }
+    
+    public function advance_frontend_manager_notice(){
+        if(!class_exists('WCMp_AFM') && WC_Dependencies_Product_Vendor::is_advance_frontend_manager_active()) :
+        ?>
+        <div id="message" class="error settings-error notice is-dismissible">
+            <p><?php printf(__('%sAdvance Frontend Manager%s will not work with latest WCMp (v%s), so please update Advance Frontend Manager with latest one (v3.0.0).', 'dc-woocommerce-multi-vendor'
+), '<strong>', '</strong>', WCMp_PLUGIN_VERSION); ?></p>
+        </div>
+        <?php 
+        endif;
     }
 
 }

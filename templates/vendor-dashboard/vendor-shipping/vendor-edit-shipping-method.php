@@ -16,7 +16,7 @@
         <div class="wcmp-modal-content">
             <section class="wcmp-modal-main" role="main">
                 <header class="wcmp-modal-header page_collapsible modal_head" id="wcmp_shipping_method_edit_general_head">
-                    <h1><?php _e( 'Edit Shipping Methods', 'wcmp' ); ?></h1>
+                    <h1><?php _e( 'Edit Shipping Methods', 'dc-woocommerce-multi-vendor' ); ?></h1>
                     <button class="modal-close modal-close-link dashicons dashicons-no-alt">
                         <span class="screen-reader-text"><?php _e( 'Close modal panel', 'dc-woocommerce-multi-vendor' ); ?></span>
                     </button>  
@@ -37,12 +37,13 @@
                                 <input id="minimum_order_amount_fs" class="form-control" type="text" name="minimum_order_amount" placholder="<?php _e( '0.00', 'dc-woocommerce-multi-vendor' ); ?>">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <input type="hidden" id="method_description_fs" name="method_description" value="" />
+                        <!--div class="form-group">
                             <label for="" class="control-label col-sm-3 col-md-3"><?php _e( 'Description', 'dc-woocommerce-multi-vendor' ); ?></label>
                             <div class="col-md-9 col-sm-9">
                                 <textarea id="method_description_fs" class="form-control" name="method_description"></textarea>
                             </div>
-                        </div>
+                        </div-->
                     </div>
                     <!-- Local Pickup -->
                     <div class="shipping_form" id="local_pickup">
@@ -70,12 +71,13 @@
                                 </div>
                             </div>
                         <?php } ?>
-                        <div class="form-group">
+                        <input type="hidden" id="method_description_lp" name="method_description" value="" />
+                        <!--div class="form-group">
                             <label for="" class="control-label col-sm-3 col-md-3"><?php _e( 'Description', 'dc-woocommerce-multi-vendor' ); ?></label>
                             <div class="col-md-9 col-sm-9">
                                 <textarea id="method_description_lp" class="form-control" name="method_description"></textarea>
                             </div>
-                        </div>
+                        </div-->
                     </div>
                     
                     <div class="shipping_form" id="flat_rate">
@@ -103,12 +105,13 @@
                                 </div>
                             </div>
                         <?php } ?>
-                        <div class="form-group">
+                        <input type="hidden" id="method_description_fr" name="method_description" value="" />
+                        <!--div class="form-group">
                             <label for="" class="control-label col-sm-3 col-md-3"><?php _e( 'Description', 'dc-woocommerce-multi-vendor' ); ?></label>
                             <div class="col-md-9 col-sm-9">
                                 <textarea id="method_description_fr" class="form-control" name="method_description"></textarea>
                             </div>
-                        </div>
+                        </div-->
                     <?php
 
                         if (!apply_filters( 'hide_vendor_shipping_classes', false )) { ?>

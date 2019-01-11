@@ -31,6 +31,16 @@ class WC_Dependencies_Product_Vendor {
     public static function is_woocommerce_active() {
         return self::woocommerce_active_check();
     }
+    
+    /**
+     * Check if Advance frontend manager
+     * @return Boolean
+     */
+    public static function is_advance_frontend_manager_active() {
+        if (!self::$active_plugins)
+            self::init();
+        return in_array('wcmp-frontend_product_manager/wcmp_frontend_product_manager.php', self::$active_plugins) || array_key_exists('wcmp-frontend_product_manager/wcmp_frontend_product_manager.php', self::$active_plugins);
+    }
 
     /**
      * Check if Woocommerce Extra Checkout Fields For Brazil plugin active

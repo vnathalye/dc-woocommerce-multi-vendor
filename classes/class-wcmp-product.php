@@ -61,7 +61,6 @@ class WCMp_Product {
         add_action('woocommerce_variation_options_tax', array($this, 'remove_filter_for_shipping_class'), 10, 3);
         add_action('admin_footer', array($this, 'wcmp_edit_product_footer'));
         if (get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable') {
-            //add_action('woocommerce_after_single_product_summary', array($this, 'get_multiple_vendors_products_of_single_product'),5);
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'), 10, 2);
@@ -98,6 +97,21 @@ class WCMp_Product {
         if(apply_filters( 'wcmp_enable_product_search_by_gtin_code', true) ){
             add_action( 'pre_get_posts', array( $this, 'wcmp_gtin_product_search'), 99 );
             add_filter( 'get_search_query', array($this, 'wcmp_gtin_get_search_query_vars'));
+        }
+        //add the column GTIN on product list
+        add_filter( 'manage_product_posts_columns', array( $this, 'manage_product_columns' ), 99 );
+        add_action( 'manage_product_posts_custom_column', array( $this, 'show_gtin_code' ) );
+        // product classify
+        add_filter( 'wcmp_get_product_terms_html_selected_terms', array($this, 'wcmp_get_product_terms_html_selected_terms'), 99, 3);
+        add_action( 'wcmp_process_product_object', array($this, 'reset_vendor_classified_product_terms'), 99 );
+        add_action( 'before_wcmp_vendor_dashboard_content', array($this, 'reset_vendor_classified_product_terms'), 99  );
+        // Hide products backend fields as per new product modifications
+        add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ), 99 );
+        // show default product categories
+        if( !apply_filters( 'wcmp_show_product_default_categories_hierarchy', false ) ) {
+            add_filter( 'wcmp_vendor_product_list_row_product_categories', array($this, 'show_default_product_cats_in_vendor_list'), 10, 2);
+            add_filter( 'woocommerce_admin_product_term_list', array($this, 'show_default_product_cats_in_wp_backend'), 99, 5);
+            add_filter( 'term_links-product_cat', array($this, 'show_default_product_cats_product_single'), 99);
         }
     }
     
@@ -287,6 +301,7 @@ class WCMp_Product {
     }
 
     function wcmp_product_duplicate_update_meta($duplicate, $product) {
+        global $WCMp;
         $singleproductmultiseller = isset($_REQUEST['singleproductmultiseller']) ? absint($_REQUEST['singleproductmultiseller']) : '';
         if ($singleproductmultiseller == 1) {
             $has_wcmp_spmv_map_id = get_post_meta($product->get_id(), '_wcmp_spmv_map_id', true);
@@ -307,17 +322,19 @@ class WCMp_Product {
                 }
             }
             update_post_meta($duplicate->get_id(), '_wcmp_spmv_product', true);
-            //update_post_meta($duplicate->get_id(), '_wcmp_parent_product_id', $product->get_id());
-            //$duplicate->set_parent_id($product->get_id());
-            //update_post_meta($duplicate->get_id(), '_wcmp_child_product', true);
+
             $duplicate->save();
         }
+        // Update GTIN if available
+        $gtin_data = wp_get_post_terms($product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
+        if ($gtin_data) {
+            $gtin_type = isset($gtin_data[0]->term_id) ? $gtin_data[0]->term_id : '';
+            wp_set_object_terms($duplicate->get_id(), $gtin_type, $WCMp->taxonomy->wcmp_gtin_taxonomy, true);
+        }
+        $gtin_code = get_post_meta($product->get_id(), '_wcmp_gtin_code', true);
+        if ($gtin_code)
+            update_post_meta($duplicate->get_id(), '_wcmp_gtin_code', $gtin_code);
     }
-
-//    public function get_multiple_vendors_products_of_single_product() {
-//        global $WCMp;
-//        $WCMp->template->get_template('single-product/multiple_vendors_products.php');
-//    }
 
     public function add_filter_for_shipping_class($loop, $variation_data, $variation) {
         $this->loop = $loop;
@@ -1376,7 +1393,7 @@ class WCMp_Product {
             ?>
             <div class="wcmp_fpm_buttons">
                 <?php if (current_user_can('edit_published_products')) { ?>
-                    <a class="wcmp_fpm_button" href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $pro_id)); ?>">
+                    <a class="wcmp_fpm_button" href="<?php echo esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product'), $pro_id)); ?>">
                         <img width="16" height="16" src="<?php echo $WCMp->plugin_url; ?>/assets/images/edit.png" />
                     </a>
                 <?php } ?>
@@ -1564,6 +1581,10 @@ class WCMp_Product {
         if($gtin_data){
             $gtin_type = isset($gtin_data[0]->term_id) ? $gtin_data[0]->term_id : '';
         }
+        $custom_attributes = array();
+        if(is_user_wcmp_vendor(get_current_user_id()) && isset( $_REQUEST['post'] ) && isset( $_REQUEST['action'] ) &&  $_REQUEST['action'] == 'edit' ){
+            $custom_attributes['disabled'] = 'disabled';
+        }
         $gtin_type_options = array('' => __( 'Select type', 'dc-woocommerce-multi-vendor' )) + $WCMp->taxonomy->get_wcmp_gtin_terms(array('fields' => 'id=>name', 'orderby' => 'id'));
         woocommerce_wp_select( array(
                 'id'            => '_wcmp_gtin_type',
@@ -1573,6 +1594,7 @@ class WCMp_Product {
                 'options'       => $gtin_type_options,
                 'desc_tip'      => true,
                 'description'   => __( 'Add the GTIN code for this product.', 'dc-woocommerce-multi-vendor' ),
+                'custom_attributes' => $custom_attributes,
         ) );
         woocommerce_wp_text_input( array(
                 'id'          => '_wcmp_gtin_code',
@@ -1580,6 +1602,7 @@ class WCMp_Product {
                 'placeholder' => '',
                 'desc_tip'    => true,
                 'description' => __( 'Add the GTIN code for this product.', 'dc-woocommerce-multi-vendor' ),
+                'custom_attributes' => $custom_attributes,
         ) );
     }
     
@@ -1590,15 +1613,30 @@ class WCMp_Product {
      */
     public function wcmp_save_gtin_product_option( $product_id ) {
         global $WCMp;
-        if(isset($_POST['_wcmp_gtin_type'])){
-            $term = get_term($_POST['_wcmp_gtin_type'], $WCMp->taxonomy->wcmp_gtin_taxonomy);
+        if( isset( $_POST['_wcmp_gtin_type'] ) && !empty( $_POST['_wcmp_gtin_type'] ) ){
+            $term = get_term( $_POST['_wcmp_gtin_type'], $WCMp->taxonomy->wcmp_gtin_taxonomy );
             if ($term && !is_wp_error( $term )) {
-                wp_delete_object_term_relationships($product_id, $WCMp->taxonomy->wcmp_gtin_taxonomy);
-                wp_set_object_terms($product_id, $term->term_id, $WCMp->taxonomy->wcmp_gtin_taxonomy, true);
+                wp_delete_object_term_relationships( $product_id, $WCMp->taxonomy->wcmp_gtin_taxonomy );
+                wp_set_object_terms( $product_id, $term->term_id, $WCMp->taxonomy->wcmp_gtin_taxonomy, true );
             }
         }
         if ( isset( $_POST['_wcmp_gtin_code'] ) ) {
-            update_post_meta($product_id, '_wcmp_gtin_code', wc_clean( wp_unslash( $_POST['_wcmp_gtin_code'] ) ));
+            update_post_meta( $product_id, '_wcmp_gtin_code', wc_clean( wp_unslash( $_POST['_wcmp_gtin_code'] ) ) );
+        }
+
+        // if product has different multi level categories hierarchy, save the default
+        if( isset( $_POST['_default_cat_hierarchy_term_id'] ) ){
+            update_post_meta( $product_id, '_default_cat_hierarchy_term_id', absint( $_POST['_default_cat_hierarchy_term_id'] ) );
+        }
+        // Or update default cat if someone remove the default cat
+        if( get_post_meta( $product_id, '_default_cat_hierarchy_term_id', true) ){
+            $default_cat_id = ( get_post_meta( $product_id, '_default_cat_hierarchy_term_id', true ) ) ? (int) get_post_meta( $product_id, '_default_cat_hierarchy_term_id', true ) : 0;
+            $catagories = isset( $_POST['tax_input']['product_cat'] ) ? array_filter( array_map( 'intval', (array) $_POST['tax_input']['product_cat'] ) ) : array();
+            if( !in_array($default_cat_id, $catagories) ){
+                $get_different_terms_hierarchy = get_wcmp_different_terms_hierarchy( $catagories );
+                $new_default_id = reset(array_values($get_different_terms_hierarchy));
+                update_post_meta( $product_id, '_default_cat_hierarchy_term_id', absint( $new_default_id ) );
+            }
         }
     }
     
@@ -1637,6 +1675,174 @@ class WCMp_Product {
     public function wcmp_gtin_get_search_query_vars(){
         if(isset($_REQUEST['s']))
             return $_REQUEST['s'];
+    }
+    
+    /**
+     * Add the column GTIN inside the product list table.
+     *
+     * @param $columns
+     *
+     * @return array
+     */
+    public function manage_product_columns( $columns ){
+        $product_items = array( 'wcmp_product_gtin' => __( 'GTIN', 'dc-woocommerce-multi-vendor' ) );
+        $ref_pos       = array_search ( 'sku', array_keys ( $columns ) );
+        $columns = array_slice ( $columns, 0, $ref_pos + 1, true ) + $product_items + array_slice ( $columns, $ref_pos + 1, count ( $columns ) - 1, true );
+        return $columns;
+    }
+    
+    /**
+     * Show the GTIN code inside the product list.
+     *
+     * @param $column
+     * @return void
+     *
+     */
+    public function show_gtin_code( $column ) {
+        global $WCMp, $post;
+        if( $post->post_type != 'product' ) return;
+        
+        if ( 'wcmp_product_gtin' == $column ) {
+
+            $gtin_terms = wp_get_post_terms( $post->ID, $WCMp->taxonomy->wcmp_gtin_taxonomy);
+            $gtin_label = '';
+            if($gtin_terms && isset($gtin_terms[0])){
+                $gtin_label = $gtin_terms[0]->name;
+            }
+            $gtin_code = get_post_meta( $post->ID, '_wcmp_gtin_code', true );
+            
+            echo ( $gtin_label || $gtin_code ) ? esc_html( $gtin_label . ' - '. $gtin_code ) : '<span class="na">&ndash;</span>';
+        }
+    }
+    
+    public function wcmp_get_product_terms_html_selected_terms( $terms, $taxonomy = '', $id = '' ){
+        $user_id = get_current_user_id();
+        if(is_user_wcmp_vendor($user_id) && get_transient( 'classified_product_terms_vendor'.$user_id )){
+            $classified_terms = get_transient( 'classified_product_terms_vendor'.$user_id );
+            if( isset($classified_terms['taxonomy']) && $classified_terms['taxonomy'] == $taxonomy ){
+                $hierarchy_ids = get_ancestors( $classified_terms['term_id'], $taxonomy );
+                $hierarchy_ids[] = $classified_terms['term_id'];
+                return $hierarchy_ids;
+            }
+        }
+        return $terms;
+    }
+    
+    public function reset_vendor_classified_product_terms( $maybe_product_or_endpoints ){
+        global $WCMp;
+        if ( 'edit-product' === $WCMp->endpoints->get_current_endpoint() ) {
+            return;
+        }
+        $user_id = get_current_user_id();
+        if(is_user_wcmp_vendor($user_id) && get_transient( 'classified_product_terms_vendor' . $user_id )){
+            delete_transient( 'classified_product_terms_vendor' . $user_id );
+        }
+    }
+    
+    public function remove_meta_boxes(){
+        global $post;
+        if( $post && $post->post_type != 'product' ) return;
+        if( !is_user_wcmp_vendor( get_current_user_id() ) ) return;
+        if( isset( $_REQUEST['post'] ) && isset( $_REQUEST['action'] ) &&  $_REQUEST['action'] == 'edit' ){
+            // product category
+            remove_meta_box( 'product_catdiv', 'product', 'side' );
+            
+            add_meta_box( 'wcmp_product_cat_hierarchy', __( 'Category hierarchy', 'dc-woocommerce-multi-vendor' ), array( $this, 'wcmp_product_cat_hierarchy_meta_box' ), $post->post_type, 'side' );
+        }
+    }
+    
+    public function wcmp_product_cat_hierarchy_meta_box(){
+        global $post;
+        if( $post && $post->post_type == 'product' ) {
+            $terms = wp_get_post_terms( $post->ID, 'product_cat', array( 'fields' => 'ids' ) );
+            $get_different_terms_hierarchy = get_wcmp_different_terms_hierarchy( $terms );
+            if( $get_different_terms_hierarchy ) {
+                $nos_hierarchy = count( $get_different_terms_hierarchy );
+                $default_cat_hierarchy = get_post_meta( $post->ID, '_default_cat_hierarchy_term_id', true );
+                echo '<div class="wcmp-pro-cat-hierarchy" id="wcmp-pro-cat-hierarchy">';
+                if( $nos_hierarchy > 1 ){
+                    echo '<p class="howto" id="new-tag-product_tag-desc">'.__( 'This product has multiple categories hierarchy.', 'dc-woocommerce-multi-vendor' ) . " " . __( 'Choose default', 'dc-woocommerce-multi-vendor' ) . '-</p>';
+                }
+                echo '<ul class="hierarchy-wrapper">';
+                foreach ( $get_different_terms_hierarchy as $term_id ) {
+                    echo '<li>' 
+                        . '<label>'
+                        . '<input type="radio" name="_default_cat_hierarchy_term_id" id="_default_cat_hierarchy_term_id_' . esc_attr( $term_id ) . '" value="' . esc_attr( $term_id ) . '" ' . checked( $default_cat_hierarchy, $term_id, false ) . ' data-label="' . esc_attr( $term_id ) . '" /> '
+                        . '<span for="_visibility_hierarchy_' . esc_attr( $term_id ) . '">'
+                        . wcmp_generate_term_breadcrumb_html( 
+                            array( 
+                                'term_id' => $term_id, 
+                                'taxonomy' => 'product_cat',
+                                'wrap_before'           => '',
+                                'wrap_after'            => '',
+                                'wrap_child_before'     => '',
+                                'wrap_child_after'      => '',
+                            ) ).'</span>' 
+                        . '</label>'
+                        . '</li>';
+                }
+                echo '</ul></div>';
+            }
+        }
+    }
+    
+    public function show_default_product_cats_in_vendor_list($termlist = array(), $product = null){
+        if($product){
+            $taxonomy = 'product_cat';
+            $default_cat_hierarchy = get_post_meta( $product->get_id(), '_default_cat_hierarchy_term_id', true );
+            if( !$default_cat_hierarchy ) return $termlist;
+            
+            $hierarchy = get_ancestors( $default_cat_hierarchy, $taxonomy );
+            $hierarchy = array_reverse( $hierarchy );
+            $hierarchy[] = $default_cat_hierarchy;
+            $terms = array();
+            foreach ( $hierarchy as $id ) {
+                $terms[] = get_term( $id, $taxonomy );
+            }
+            return $terms;
+        }
+    }
+    
+    public function show_default_product_cats_in_wp_backend( $termlist_html, $taxonomy = 'product_cat', $product_id, $termlist = array(), $terms = array() ){
+        $default_cat_hierarchy = get_post_meta( $product_id, '_default_cat_hierarchy_term_id', true );
+        if( $taxonomy != 'product_cat' ) return $termlist_html;
+        if( !$default_cat_hierarchy ) return $termlist_html;
+
+        $hierarchy = get_ancestors( $default_cat_hierarchy, $taxonomy );
+        $hierarchy = array_reverse( $hierarchy );
+        $hierarchy[] = $default_cat_hierarchy;
+        $termlist = array();
+        foreach ( $hierarchy as $id ) {
+            $term = get_term( $id, $taxonomy );
+            if($term) {
+                $termlist[] = '<a href="' . esc_url( admin_url( 'edit.php?product_cat=' . $term->slug . '&post_type=product' ) ) . ' ">' . esc_html( $term->name ) . '</a>';
+            }
+        }
+        
+        return implode( ', ', $termlist );
+    }
+    
+    public function show_default_product_cats_product_single( $terms = array() ){
+        global $product;
+        if(is_product() && $product){
+            $default_cat_hierarchy = get_post_meta( $product->get_id(), '_default_cat_hierarchy_term_id', true );
+            if( !$default_cat_hierarchy ) return $terms;
+            $taxonomy = 'product_cat';
+            $hierarchy = get_ancestors( $default_cat_hierarchy, $taxonomy );
+            $hierarchy = array_reverse( $hierarchy );
+            $hierarchy[] = $default_cat_hierarchy;
+            $links = array();
+            foreach ( $hierarchy as $id ) {
+                $term = get_term( $id, $taxonomy );
+                $link = get_term_link( $term, $taxonomy );
+                if ( is_wp_error( $link ) ) {
+                        return $link;
+                }
+                $links[] = '<a href="' . esc_url( $link ) . '" rel="tag">' . $term->name . '</a>';
+            }
+
+            return $links;
+        }
     }
 
 }

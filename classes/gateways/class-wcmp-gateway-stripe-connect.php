@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 }
 use Stripe\Stripe;
 use Stripe\Transfer;
+use Stripe\OAuth;
 
 class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
 
@@ -158,6 +159,7 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
             $vendor = get_wcmp_vendor($user_id);
             $stripe_settings = get_wcmp_vendor_settings( 'payment_method_stripe_masspay', 'payment' );
             $stripe_user_id = get_user_meta($user_id, 'stripe_user_id', true);
+            
             if (isset($stripe_settings) && $stripe_settings != 'Enable' && empty($stripe_user_id)) {
                 return;
             }
@@ -167,30 +169,28 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
             $secret_key = $testmode ? get_wcmp_vendor_settings('test_secret_key', 'payment', 'stripe_gateway') : get_wcmp_vendor_settings('live_secret_key', 'payment', 'stripe_gateway');
             $token_request_body = array(
                 'client_id' => $client_id,
-                'stripe_user_id' => $stripe_user_id,
-                'client_secret' => $secret_key
-            );
-            $req = curl_init('https://connect.stripe.com/oauth/deauthorize');
-            curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($req, CURLOPT_POST, true);
-            curl_setopt($req, CURLOPT_POSTFIELDS, http_build_query($token_request_body));
-            curl_setopt($req, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($req, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($req, CURLOPT_VERBOSE, true);
-            // TODO: Additional error handling
-            $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
-            $resp = json_decode(curl_exec($req), true);
-            curl_close($req);
-            if ($vendor && isset($resp['stripe_user_id'])) {
-                delete_user_meta($user_id, 'vendor_connected');
-                delete_user_meta($user_id, 'admin_client_id');
-                delete_user_meta($user_id, 'access_token');
-                delete_user_meta($user_id, 'refresh_token');
-                delete_user_meta($user_id, 'stripe_publishable_key');
-                delete_user_meta($user_id, 'stripe_user_id');
-                wc_add_notice(__('Your account has been disconnected', 'dc-woocommerce-multi-vendor'), 'success');
-            } else {
-                wc_add_notice(__('Unable to disconnect your account please try again', 'dc-woocommerce-multi-vendor'), 'error');
+                'stripe_user_id' => $stripe_user_id
+                    );
+
+            Stripe::setApiKey($secret_key);
+            
+            try {
+                $resp = OAuth::deauthorize($token_request_body);
+                if ($vendor && isset($resp->stripe_user_id)) {
+                    delete_user_meta($user_id, 'vendor_connected');
+                    delete_user_meta($user_id, 'admin_client_id');
+                    delete_user_meta($user_id, 'access_token');
+                    delete_user_meta($user_id, 'refresh_token');
+                    delete_user_meta($user_id, 'stripe_publishable_key');
+                    delete_user_meta($user_id, 'stripe_user_id');
+                    wc_add_notice(__('Your account has been disconnected', 'dc-woocommerce-multi-vendor'), 'success');
+                } else {
+                    wc_add_notice(__('Unable to disconnect your account please try again', 'dc-woocommerce-multi-vendor'), 'error');
+                }
+            } catch (\Stripe\Error\OAuth\OAuthBase $e) {
+                doProductVendorLOG("Stripe deauthorize error: " . $e->getMessage());
+                doProductVendorLOG(json_encode($resp));
+                wc_add_notice($e->getMessage(), 'error');
             }
         }
     }
@@ -213,34 +213,32 @@ class WCMp_Gateway_Stripe_Connect extends WCMp_Payment_Gateway {
                         $user_id = get_current_user_id();
                     }
                     $token_request_body = array(
-                        'grant_type' => 'authorization_code',
                         'client_id' => $client_id,
-                        'code' => $code,
-                        'client_secret' => $secret_key
+                        'grant_type' => 'authorization_code',
+                        'code' => $code
                     );
-                    $req = curl_init('https://connect.stripe.com/oauth/token');
-                    curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($req, CURLOPT_POST, true);
-                    curl_setopt($req, CURLOPT_POSTFIELDS, http_build_query($token_request_body));
-                    curl_setopt($req, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($req, CURLOPT_SSL_VERIFYHOST, 2);
-                    curl_setopt($req, CURLOPT_VERBOSE, true);
-                    // TODO: Additional error handling
-                    $respCode = curl_getinfo($req, CURLINFO_HTTP_CODE);
-                    $resp = json_decode(curl_exec($req), true);
-                    curl_close($resp);
 
-                    if (!isset($resp['error'])) {
-                        update_user_meta($user_id, 'vendor_connected', 1);
-                        update_user_meta($user_id, 'admin_client_id', $client_id);
-                        update_user_meta($user_id, 'access_token', $resp['access_token']);
-                        update_user_meta($user_id, 'refresh_token', $resp['refresh_token']);
-                        update_user_meta($user_id, 'stripe_publishable_key', $resp['stripe_publishable_key']);
-                        update_user_meta($user_id, 'stripe_user_id', $resp['stripe_user_id']);
-                        update_user_meta($user_id, '_vendor_payment_mode', 'stripe_masspay');
-                        wp_redirect(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_billing_endpoint', 'vendor', 'general', 'vendor-billing' )));
-                        exit();
-                    }else{
+                    Stripe::setApiKey($secret_key);
+                    try {
+                        $resp = OAuth::token($token_request_body);
+                        if (!isset($resp->error)) {
+                            update_user_meta($user_id, 'vendor_connected', 1);
+                            update_user_meta($user_id, 'admin_client_id', $client_id);
+                            update_user_meta($user_id, 'access_token', $resp->access_token);
+                            update_user_meta($user_id, 'refresh_token', $resp->refresh_token);
+                            update_user_meta($user_id, 'stripe_publishable_key', $resp->stripe_publishable_key);
+                            update_user_meta($user_id, 'stripe_user_id', $resp->stripe_user_id);
+                            update_user_meta($user_id, '_vendor_payment_mode', 'stripe_masspay');
+                            wp_redirect(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_billing_endpoint', 'vendor', 'general', 'vendor-billing' )));
+                            exit();
+                        }else{
+                            update_user_meta($user_id, 'vendor_connected', 0);
+                            wp_redirect(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_billing_endpoint', 'vendor', 'general', 'vendor-billing' )));
+                            exit();
+                        }
+                    } catch (\Stripe\Error\OAuth\OAuthBase $e) {
+                        doProductVendorLOG("Stripe authorize error: " . $e->getMessage());
+                        doProductVendorLOG(json_encode($resp));
                         update_user_meta($user_id, 'vendor_connected', 0);
                         wp_redirect(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_vendor_billing_endpoint', 'vendor', 'general', 'vendor-billing' )));
                         exit();

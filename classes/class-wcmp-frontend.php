@@ -322,6 +322,7 @@ class WCMp_Frontend {
         wp_register_script('wcmp_custom_scroller_js', $frontend_script_path . 'jquery.mCustomScrollbar.concat.min.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp_country_state_js', $frontend_script_path . 'wcmp-country-state.js', array('jquery'), $WCMp->version, true);
         wp_register_script('wcmp-vendor-shipping', $frontend_script_path . 'vendor-shipping.js', array( 'jquery' ), $WCMp->version, true );
+        wp_register_script('wcmp-meta-boxes', $frontend_script_path . 'meta-boxes.js', array( 'jquery' ), $WCMp->version, true );
      
         /** localize script data * */
         $WCMp->localize_script('frontend_js');
@@ -381,6 +382,7 @@ class WCMp_Frontend {
         wp_style_add_data('vandor-dashboard-style', 'rtl', 'replace');
         wp_register_style('multiple_vendor', $frontend_style_path . 'multiple-vendor' . $suffix . '.css', array(), $WCMp->version);
         wp_register_style('wcmp_custom_scroller', $frontend_style_path . 'jquery.mCustomScrollbar.css', array(), $WCMp->version);
+        wp_register_style( 'advance-product-manager', $frontend_style_path . 'advance-product-manager.css', array(), $WCMp->version );
 
         if (is_vendor_dashboard() && is_user_logged_in() && (is_user_wcmp_vendor(get_current_user_id()) || is_user_wcmp_pending_vendor(get_current_user_id()) || is_user_wcmp_rejected_vendor(get_current_user_id()))) {
             wp_enqueue_style('dashicons');

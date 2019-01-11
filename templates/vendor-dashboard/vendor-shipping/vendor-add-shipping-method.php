@@ -19,9 +19,9 @@
                             <div class="form-group">
                                 <div class="col-md-12 col-sm-9">
                                     <select id="shipping_method" class="form-control mt-15" name="wcmp_shipping_method">
-                                        <?php foreach( $vendor_shipping_methods as $key => $value ) { ?>
-                                            <option value="<?php echo $key; ?>"><?php echo $value; ?></option>
-                                        <?php } ?>
+                                        <?php foreach( $vendor_shipping_methods as $key => $method ) { 
+                                            echo '<option data-description="' . esc_attr( wp_kses_post( wpautop( $method->get_method_description() ) ) ) . '" value="' . esc_attr( $method->id ) . '">' . esc_attr( $method->get_method_title() ) . '</option>';
+                                        } ?>
                                     </select>
                                 </div>
                             </div>

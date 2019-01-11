@@ -26,6 +26,9 @@ Class WCMp_Admin_Dashboard {
         add_action('wcmp_dashboard_widget', array(&$this, 'do_wcmp_dashboard_widget'));
         // Vendor store updater info
         add_action('wcmp_dashboard_setup', array(&$this, 'wcmp_dashboard_setup_updater'), 6);
+        // Vendor save product
+        add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
+        add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
 
         // Init export functions
         $this->export_csv();
@@ -656,7 +659,7 @@ Class WCMp_Admin_Dashboard {
                                                     <td colspan="4"><?php _e('You can add multiple shipping methods within this zone. Only customers within the zone will see them.', 'dc-woocommerce-multi-vendor'); ?></td>
                                                 </tr>
                                                 <?php
-                                            } else {
+                                            } else { 
                                                 foreach ($vendor_shipping_methods as $vendor_shipping_method) {
                                                     ?>
                                                     <tr class="wcmp-shipping-zone-method">
@@ -674,7 +677,7 @@ Class WCMp_Admin_Dashboard {
                                                             <div class="col-actions edit_del_actions" data-instance_id="<?php echo $vendor_shipping_method['instance_id']; ?>" data-method_id="<?php echo $vendor_shipping_method['id']; ?>" data-method-settings='<?php echo json_encode($vendor_shipping_method); ?>'>
                                                                 <span class="edit"><a href="javascript:void(0);" class="edit-shipping-method" data-zone_id="<?php echo $zone_id; ?>" data-method_id="<?php echo $vendor_shipping_method['id']; ?>" data-instance_id="<?php echo $vendor_shipping_method['instance_id']; ?>" title="<?php _e('Edit', 'dc-woocommerce-multi-vendor') ?>"><?php _e('Edit', 'dc-woocommerce-multi-vendor') ?></a>
                                                                 </span>|
-                                                                <span class="delete"><a class="delete-shipping-method" href="javascript:void(0);" title="<?php _e('Delete', 'dc-woocommerce-multi-vendor') ?>"><?php _e('Delete', 'dc-woocommerce-multi-vendor') ?></a></span>
+                                                                <span class="delete"><a class="delete-shipping-method" href="javascript:void(0);" data-method_id="<?php echo $vendor_shipping_method['id']; ?>" data-instance_id="<?php echo $vendor_shipping_method['instance_id']; ?>" title="<?php _e('Delete', 'dc-woocommerce-multi-vendor') ?>"><?php _e('Delete', 'dc-woocommerce-multi-vendor') ?></a></span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -705,10 +708,11 @@ Class WCMp_Admin_Dashboard {
                             <p><?php esc_html_e('Choose the shipping method you wish to add. Only shipping methods which support zones are listed.', 'dc-woocommerce-multi-vendor'); ?></p>
                             <?php $shipping_methods = wcmp_get_shipping_methods(); ?>
                             <select id="shipping_method" class="form-control mt-15" name="wcmp_shipping_method">
-                            <?php foreach ($shipping_methods as $key => $value) { ?>
-                                <option value="<?php echo $key; ?>"><?php echo $value; ?></option>
+                            <?php foreach ($shipping_methods as $key => $method) { ?>
+                                <option data-description="<?php echo esc_attr( wp_kses_post( wpautop( $method->get_method_description() ) ) ); ?>" value="<?php echo esc_attr( $method->id ); ?>"><?php echo esc_attr( $method->get_method_title() ); ?></option>
                             <?php } ?>
                             </select>
+                            <div class="wc-shipping-zone-method-description"></div>
                             </div>
                             </form>
                             </article>
@@ -740,7 +744,7 @@ Class WCMp_Admin_Dashboard {
                             <div class="wc-backbone-modal-content">
                             <section class="wc-backbone-modal-main" role="main">
                             <header class="wc-backbone-modal-header">
-                            <h1><?php _e( 'Edit Shipping Methods', 'wcmp' ); ?></h1>
+                            <h1><?php _e( 'Edit Shipping Methods', 'dc-woocommerce-multi-vendor' ); ?></h1>
                             <button class="modal-close modal-close-link dashicons dashicons-no-alt">
                             <span class="screen-reader-text"><?php esc_html_e('Close modal panel', 'dc-woocommerce-multi-vendor'); ?></span>
                             </button>
@@ -1723,6 +1727,391 @@ Class WCMp_Admin_Dashboard {
             }
             wp_redirect(esc_url_raw(get_permalink(wcmp_vendor_dashboard_page_id())));
             die();
+        }
+    }
+    
+    /**
+     * Save product
+     * @ since version 3.2.3
+     */
+    public function save_product() {
+        global $WCMp;
+        if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+            $current_endpoint_key = $WCMp->endpoints->get_current_endpoint();
+            // retrive the actual endpoint name in case admn changes that from settings
+            $current_endpoint = get_wcmp_vendor_settings( 'wcmp_' . str_replace( '-', '_', $current_endpoint_key ) . '_endpoint', 'vendor', 'general', $current_endpoint_key );
+            // retrive edit-product endpoint name in case admn changes that from settings
+            $edit_product_endpoint = get_wcmp_vendor_settings( 'wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product' );
+            //Return if not edit product endpoint
+            if ( $current_endpoint !== $edit_product_endpoint || ! isset( $_POST['wcmp_product_nonce'] ) ) {
+                return;
+            }
+            
+            $vendor_id = get_current_user_id();
+
+            if ( !is_user_wcmp_vendor($vendor_id) || ! current_user_can( 'edit_products' ) || empty( $_POST['post_ID'] ) || ! wp_verify_nonce( $_POST['wcmp_product_nonce'], 'wcmp-product' ) ) {
+                wp_die( -1 );
+            }
+            $errors = array();
+            $product_id = intval( $_POST['post_ID'] );
+            $post_object = get_post( $product_id );
+            $product = wc_get_product( $product_id );
+
+            if ( ! $product->get_id() || ! $post_object || 'product' !== $post_object->post_type ) {
+                wp_die( __( 'Invalid product.', 'woocommerce' ) );
+            }
+
+            if ( ! $product->get_date_created( 'edit' ) ) {
+                $product->set_date_created( current_time( 'timestamp', true ) );
+            }
+
+            $title = ( is_product_wcmp_spmv($product_id) && isset( $_POST['original_post_title'] ) ) ? wc_clean( $_POST['original_post_title'] ) : isset( $_POST['post_title'] ) ? wc_clean( $_POST['post_title'] ) : '';
+
+            if ( isset( $_POST['status'] ) && $_POST['status'] === 'draft' ) {
+                $status = 'draft';
+            } elseif ( isset( $_POST['status'] ) && $_POST['status'] === 'publish' ) {
+                if ( ! current_user_can( 'publish_products' ) ) {
+                    $status = 'pending';
+                } else {
+                    $status = 'publish';
+                }
+            } else {
+                wp_die( __( 'Invalid product status.', 'dc-woocommerce-multi-vendor' ) );
+            }
+
+            $post_data = apply_filters( 'wcmp_submitted_product_data', array(
+                'ID'            => $product_id,
+                'post_title'    => $title,
+                'post_content'  => stripslashes( html_entity_decode( $_POST['product_description'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ),
+                'post_excerpt'  => stripslashes( html_entity_decode( $_POST['product_excerpt'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ),
+                'post_status'   => $status,
+                'post_type'     => 'product',
+                'post_author'   => $vendor_id,
+                'post_date'     => gmdate( 'Y-m-d H:i:s', $product->get_date_created( 'edit' )->getOffsetTimestamp() ),
+                'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $product->get_date_created( 'edit' )->getTimestamp() ),
+                ), $_POST );
+
+            do_action( 'wcmp_before_post_update' );
+
+            $post_id = wp_update_post( $post_data, true );
+
+            if ( $post_id && ! is_wp_error( $post_id ) ) {
+
+                // Set Product Featured Image
+                $featured_img = ! empty( $_POST['featured_img'] ) ? wc_clean( absint( $_POST['featured_img'] ) ) : '';
+                if ( $featured_img ) {
+                    set_post_thumbnail( $post_id, $featured_img );
+                } else {
+                    delete_post_thumbnail( $post_id );
+                }
+
+                // Set Product Image Gallery
+                $attachment_ids = isset( $_POST['product_image_gallery'] ) ? explode( ',', wc_clean( $_POST['product_image_gallery'] ) ) : array();
+
+                $attachment_ids = array_filter( $attachment_ids, function( $attachment_id ) {
+                    //image validity check
+                    $attachment = wp_get_attachment_image( $attachment_id );
+                    return ! empty( $attachment );
+                } );
+
+                update_post_meta( $post_id, '_product_image_gallery', implode( ',', $attachment_ids ) );
+
+                // Policy tab data save
+                if ( get_wcmp_vendor_settings( 'is_policy_on', 'general' ) == 'Enable' && apply_filters( 'wcmp_vendor_can_overwrite_policies', true ) ) {
+                    if ( apply_filters( 'can_vendor_edit_shipping_policy_field', true ) && isset( $_POST['_wcmp_shipping_policy'] ) ) {
+                        update_post_meta( $post_id, '_wcmp_shipping_policy', stripslashes( html_entity_decode( $_POST['_wcmp_shipping_policy'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ) );
+                    }
+                    if ( apply_filters( 'can_vendor_edit_refund_policy_field', true ) && isset( $_POST['_wcmp_refund_policy'] ) ) {
+                        update_post_meta( $post_id, '_wcmp_refund_policy', stripslashes( html_entity_decode( $_POST['_wcmp_refund_policy'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ) );
+                    }
+                    if ( apply_filters( 'can_vendor_edit_cancellation_policy_field', true ) && isset( $_POST['_wcmp_cancallation_policy'] ) ) {
+                        update_post_meta( $post_id, '_wcmp_cancallation_policy', stripslashes( html_entity_decode( $_POST['_wcmp_cancallation_policy'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ) );
+                    }
+                }
+                
+                // if product has different multi level categories hierarchy, save the default
+                if( isset( $_POST['_default_cat_hierarchy_term_id'] ) ){
+                    update_post_meta( $post_id, '_default_cat_hierarchy_term_id', absint( $_POST['_default_cat_hierarchy_term_id'] ) );
+                }
+
+                // Process product type first so we have the correct class to run setters.
+                $product_type = empty( $_POST['product-type'] ) ? WC_Product_Factory::get_product_type( $post_id ) : sanitize_title( stripslashes( $_POST['product-type'] ) );
+
+                wp_set_object_terms( $post_id, $product_type, 'product_type' );
+
+                // Set Product Catagories
+                $catagories = isset( $_POST['tax_input']['product_cat'] ) ? array_filter( array_map( 'intval', (array) $_POST['tax_input']['product_cat'] ) ) : array();
+                wp_set_object_terms( $post_id, $catagories, 'product_cat' );
+                // Set Product Tags
+                $tags = isset( $_POST['tax_input']['product_tag'] ) ? wp_parse_id_list( $_POST['tax_input']['product_tag'] ) : array();
+                wp_set_object_terms( $post_id, $tags, 'product_tag' );
+
+                $custom_terms = isset( $_POST['tax_input'] ) ? array_diff_key( $_POST['tax_input'], array_flip( array( 'product_cat', 'product_tag' ) ) ) : array();
+                // Set Product Custom Terms
+                if ( ! empty( $custom_terms ) ) {
+                    foreach ( $custom_terms as $term => $value ) {
+                        $custom_term = isset( $_POST['tax_input'][$term] ) ? array_filter( array_map( 'intval', (array) $_POST['tax_input'][$term] ) ) : array();
+                        wp_set_object_terms( $post_id, $custom_term, $term );
+                    }
+                }
+                
+                // Set Product GTIN
+                if( isset( $_POST['_wcmp_gtin_type'] ) && !empty( $_POST['_wcmp_gtin_type'] ) ){
+                    $term = get_term( $_POST['_wcmp_gtin_type'], $WCMp->taxonomy->wcmp_gtin_taxonomy );
+                    if ($term && !is_wp_error( $term )) {
+                        wp_delete_object_term_relationships( $post_id, $WCMp->taxonomy->wcmp_gtin_taxonomy );
+                        wp_set_object_terms( $post_id, $term->term_id, $WCMp->taxonomy->wcmp_gtin_taxonomy, true );
+                    }
+                }
+                if ( isset( $_POST['_wcmp_gtin_code'] ) ) {
+                    update_post_meta( $post_id, '_wcmp_gtin_code', wc_clean( wp_unslash( $_POST['_wcmp_gtin_code'] ) ) );
+                }
+
+                //get the correct class
+                $classname = WC_Product_Factory::get_product_classname( $post_id, $product_type ? $product_type : 'simple' );
+                $product = new $classname( $post_id );
+                $attributes = isset( $_POST['wc_attributes'] ) ? wcmp_woo()->prepare_attributes( $_POST['wc_attributes'] ) : array();
+                $stock = null;
+                // Handle stock changes.
+                if ( isset( $_POST['_stock'] ) ) {
+                    if ( isset( $_POST['_original_stock'] ) && wc_stock_amount( $product->get_stock_quantity( 'edit' ) ) !== wc_stock_amount( $_POST['_original_stock'] ) ) {
+                        $error_msg = sprintf( __( 'The stock has not been updated because the value has changed since editing. Product %1$d has %2$d units in stock.', 'woocommerce' ), $product->get_id(), $product->get_stock_quantity( 'edit' ) );
+                        $errors[] = $error_msg;
+                    } else {
+                        $stock = wc_stock_amount( $_POST['_stock'] );
+                    }
+                }
+                // Group Products
+                $grouped_products = isset( $_POST['grouped_products'] ) ? array_filter( array_map( 'intval', (array) $_POST['grouped_products'] ) ) : array();
+
+                // file paths will be stored in an array keyed off md5(file path)
+                $downloads = array();
+                if ( isset( $_POST['_downloadable'] ) && isset( $_POST['_wc_file_urls'] ) ) {
+                    $file_urls = $_POST['_wc_file_urls'];
+                    $file_names = isset( $_POST['_wc_file_names'] ) ? $_POST['_wc_file_names'] : array();
+                    $file_hashes = isset( $_POST['_wc_file_hashes'] ) ? $_POST['_wc_file_hashes'] : array();
+
+                    $file_url_size = sizeof( $file_urls );
+                    for ( $i = 0; $i < $file_url_size; $i ++ ) {
+                        if ( ! empty( $file_urls[$i] ) ) {
+                            $downloads[] = array(
+                                'name'        => wc_clean( $file_names[$i] ),
+                                'file'        => wp_unslash( trim( $file_urls[$i] ) ),
+                                'download_id' => wc_clean( $file_hashes[$i] ),
+                            );
+                        }
+                    }
+                }
+
+                $error = $product->set_props(
+                    array(
+                        'virtual'            => isset( $_POST['_virtual'] ),
+                        'downloadable'       => isset( $_POST['_downloadable'] ),
+                        'featured'           => isset( $_POST['_featured'] ),
+                        'catalog_visibility' => wc_clean( wp_unslash( $_POST['_visibility'] ) ),
+                        'product_url'        => isset( $_POST['_product_url'] ) ? esc_url_raw( $_POST['_product_url'] ) : null,
+                        'button_text'        => isset( $_POST['_button_text'] ) ? wc_clean( $_POST['_button_text'] ) : null,
+                        'children'           => 'grouped' === $product_type ? $grouped_products : null,
+                        'regular_price'      => isset( $_POST['_regular_price'] ) ? wc_clean( $_POST['_regular_price'] ) : null,
+                        'sale_price'         => isset( $_POST['_sale_price'] ) ? wc_clean( $_POST['_sale_price'] ) : null,
+                        'date_on_sale_from'  => isset( $_POST['_sale_price_dates_from'] ) ? wc_clean( $_POST['_sale_price_dates_from'] ) : null,
+                        'date_on_sale_to'    => isset( $_POST['_sale_price_dates_to'] ) ? wc_clean( $_POST['_sale_price_dates_to'] ) : null,
+                        'download_limit'     => empty( $_POST['_download_limit'] ) ? '' : absint( $_POST['_download_limit'] ),
+                        'download_expiry'    => empty( $_POST['_download_expiry'] ) ? '' : absint( $_POST['_download_expiry'] ),
+                        'downloads'          => $downloads,
+                        'tax_status'         => isset( $_POST['_tax_status'] ) ? wc_clean( $_POST['_tax_status'] ) : null,
+                        'tax_class'          => isset( $_POST['_tax_class'] ) ? wc_clean( $_POST['_tax_class'] ) : null,
+                        'sku'                => isset( $_POST['_sku'] ) ? wc_clean( $_POST['_sku'] ) : null,
+                        'manage_stock'       => ! empty( $_POST['_manage_stock'] ),
+                        'stock_quantity'     => $stock,
+                        'backorders'         => isset( $_POST['_backorders'] ) ? wc_clean( $_POST['_backorders'] ) : null,
+                        'stock_status'       => isset( $_POST['_stock_status'] ) ? wc_clean( $_POST['_stock_status'] ) : null,
+                        'sold_individually'  => ! empty( $_POST['_sold_individually'] ),
+                        'weight'             => isset( $_POST['_weight'] ) ? wc_clean( $_POST['_weight'] ) : null,
+                        'length'             => isset( $_POST['_length'] ) ? wc_clean( $_POST['_length'] ) : null,
+                        'width'              => isset( $_POST['_width'] ) ? wc_clean( $_POST['_width'] ) : null,
+                        'height'             => isset( $_POST['_height'] ) ? wc_clean( $_POST['_height'] ) : null,
+                        'shipping_class_id'  => isset( $_POST['product_shipping_class'] ) ? absint( $_POST['product_shipping_class'] ) : null,
+                        'upsell_ids'         => isset( $_POST['upsell_ids'] ) ? array_map( 'intval', (array) $_POST['upsell_ids'] ) : array(),
+                        'cross_sell_ids'     => isset( $_POST['crosssell_ids'] ) ? array_map( 'intval', (array) $_POST['crosssell_ids'] ) : array(),
+                        'purchase_note'      => isset( $_POST['_purchase_note'] ) ? wp_kses_post( stripslashes( $_POST['_purchase_note'] ) ) : null,
+                        'menu_order'         => isset( $_POST['menu_order'] ) ? wc_clean( $_POST['menu_order'] ) : null,
+                        'reviews_allowed'    => ! empty( $_POST['comment_status'] ) && 'open' === $_POST['comment_status'],
+                        'attributes'         => $attributes,
+                        'default_attributes' => wcmp_woo()->prepare_set_attributes( $attributes, 'default_attribute_', $_POST ),
+                    )
+                );
+
+                if ( is_wp_error( $error ) ) {
+                    $errors[] = $error->get_error_message();
+                }
+
+                do_action( 'wcmp_process_product_object', $product );
+
+                $product->save();
+
+                if ( $product->is_type( 'variable' ) ) {
+                    $product->get_data_store()->sync_variation_names( $product, wc_clean( $_POST['original_post_title'] ), wc_clean( $_POST['post_title'] ) );
+                    $error = wcmp_woo()->save_product_variations( $post_id, $_POST );
+                    $errors = array_merge( $errors, $error );
+                }
+
+                // Notify Admin on New Product Creation
+                if ( ( ! $_POST['is_update'] || $_POST['original_post_status'] == 'draft' ) && $status != 'draft' ) {
+                    $WCMp->product->on_all_status_transitions( $status, '', get_post( $post_id ) );
+                }
+
+                do_action( 'wcmp_process_product_meta_' . $product_type, $post_id, $_POST );
+
+                foreach ( $errors as $error ) {
+                    wc_add_notice( $error, 'error' );
+                }
+                $status_msg = '';
+                switch ( $status ) {
+                    case 'draft': $status_msg = __( 'Product is successfully drafted', 'dc-woocommerce-multi-vendor' );
+                        break;
+                    case 'pending': $status_msg = __( 'Product is successfully submitted for review', 'dc-woocommerce-multi-vendor' );
+                        break;
+                    case 'publish': $status_msg = sprintf( __( 'Product updated and live. <a href="%s" target="_blank">View Product</a>', 'dc-woocommerce-multi-vendor' ), esc_attr( get_permalink( $post_id ) ) );
+                        break;
+                }
+                wc_add_notice( $status_msg, 'success' );
+                wp_redirect( wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product' ), $post_id ) );
+                exit;
+            } else {
+                wc_add_notice( $post_id->get_error_message(), 'error' );
+            }
+        }
+    }
+    
+    public function save_coupon() {
+        global $WCMp;
+        $current_endpoint_key = $WCMp->endpoints->get_current_endpoint();
+        // retrive the actual endpoint name in case admn changes that from settings
+        $current_endpoint = get_wcmp_vendor_settings( 'wcmp_' . str_replace( '-', '_', $current_endpoint_key ) . '_endpoint', 'vendor', 'general', $current_endpoint_key );
+        // retrive add-coupon endpoint name in case admn changes that from settings
+        $add_coupon_endpoint = get_wcmp_vendor_settings( 'wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon' );
+        //Return if not add coupon endpoint
+        if ( $current_endpoint !== $add_coupon_endpoint || ! isset( $_POST['wcmp_afm_coupon_nonce'] ) ) {
+            return;
+        }
+
+        $vendor_id = get_current_user_id();
+
+        if ( ! $vendor_id || ! current_vendor_can( 'edit_shop_coupon' ) || empty( $_POST['post_ID'] ) || ! wp_verify_nonce( $_POST['wcmp_afm_coupon_nonce'], 'wcmp-afm-coupon' ) ) {
+            wp_die( -1 );
+        }
+
+        if ( empty( $_POST['post_title'] ) || empty( $_POST['product_ids'] ) ) {
+            if ( empty( $_POST['post_title'] ) ) {
+                wc_add_notice( __( "Coupon code can't be empty.", 'dc-woocommerce-multi-vendor' ), 'error' );
+            }
+            if ( empty( $_POST['product_ids'] ) ) {
+                wc_add_notice( __( 'Select atleast one product.', 'dc-woocommerce-multi-vendor' ), 'error' );
+            }
+            return;
+        }
+
+        $post_id = absint( $_POST['post_ID'] );
+        $post = get_post( $post_id );
+        $coupon = new WC_Coupon( $post_id );
+        // Check for dupe coupons.
+        $coupon_code = wc_format_coupon_code( $_POST['post_title'] );
+        $id_from_code = wc_get_coupon_id_by_code( $coupon_code, $post_id );
+
+        if ( $id_from_code ) {
+            if ( is_current_vendor_coupon( $id_from_code ) ) {
+                wc_add_notice( __( 'Coupon code already exists - customers will use the latest coupon with this code.', 'woocommerce' ), 'error' );
+            } else {
+                wc_add_notice( __( 'Coupon code already exists - provide a different coupon code.', 'dc-woocommerce-multi-vendor' ), 'error' );
+                return;
+            }
+        }
+
+        if ( isset( $_POST['status'] ) && $_POST['status'] === 'draft' ) {
+            $status = 'draft';
+        } elseif ( isset( $_POST['status'] ) && $_POST['status'] === 'publish' ) {
+            if ( ! current_vendor_can( 'publish_shop_coupons' ) ) {
+                $status = 'pending';
+            } else {
+                $status = 'publish';
+            }
+        } else {
+            wp_die( __( 'Invalid coupon status.', 'dc-woocommerce-multi-vendor' ) );
+        }
+
+        if ( ! $coupon->get_date_created( 'edit' ) ) {
+            $coupon->set_date_created( current_time( 'timestamp', true ) );
+        }
+
+        $title = ( isset( $_POST['post_title'] ) ) ? wc_clean( $_POST['post_title'] ) : '';
+
+        $post_data = apply_filters( 'afm_submitted_coupon_data', array(
+            'ID'            => $post_id,
+            'post_title'    => $title,
+            'post_excerpt'  => stripslashes( html_entity_decode( $_POST['coupon_description'], ENT_QUOTES, get_bloginfo( 'charset' ) ) ),
+            'post_status'   => $status,
+            'post_type'     => 'shop_coupon',
+            'post_author'   => $vendor_id,
+            'post_date'     => gmdate( 'Y-m-d H:i:s', $coupon->get_date_created( 'edit' )->getOffsetTimestamp() ),
+            'post_date_gmt' => gmdate( 'Y-m-d H:i:s', $coupon->get_date_created( 'edit' )->getTimestamp() ),
+            ), $_POST );
+
+        do_action( 'wcmp_afm_before_coupon_post_update' );
+
+        $post_id = wp_update_post( $post_data, true );
+
+        if ( $post_id && ! is_wp_error( $post_id ) ) {
+            $product_categories = isset( $_POST['product_categories'] ) ? (array) $_POST['product_categories'] : array();
+            $exclude_product_categories = isset( $_POST['exclude_product_categories'] ) ? (array) $_POST['exclude_product_categories'] : array();
+
+            $errors = array();
+            $coupon = new WC_Coupon( $post_id );
+            $error = $coupon->set_props(
+                array(
+                    'code'                        => $title,
+                    'discount_type'               => wc_clean( $_POST['discount_type'] ),
+                    'amount'                      => wc_format_decimal( $_POST['coupon_amount'] ),
+                    'date_expires'                => wc_clean( $_POST['expiry_date'] ),
+                    'individual_use'              => isset( $_POST['individual_use'] ),
+                    'product_ids'                 => isset( $_POST['product_ids'] ) ? array_filter( array_map( 'intval', (array) $_POST['product_ids'] ) ) : array(),
+                    'excluded_product_ids'        => isset( $_POST['exclude_product_ids'] ) ? array_filter( array_map( 'intval', (array) $_POST['exclude_product_ids'] ) ) : array(),
+                    'usage_limit'                 => absint( $_POST['usage_limit'] ),
+                    'usage_limit_per_user'        => absint( $_POST['usage_limit_per_user'] ),
+                    'limit_usage_to_x_items'      => absint( $_POST['limit_usage_to_x_items'] ),
+                    'free_shipping'               => isset( $_POST['free_shipping'] ),
+                    'product_categories'          => array_filter( array_map( 'intval', $product_categories ) ),
+                    'excluded_product_categories' => array_filter( array_map( 'intval', $exclude_product_categories ) ),
+                    'exclude_sale_items'          => isset( $_POST['exclude_sale_items'] ),
+                    'minimum_amount'              => wc_format_decimal( $_POST['minimum_amount'] ),
+                    'maximum_amount'              => wc_format_decimal( $_POST['maximum_amount'] ),
+                    'email_restrictions'          => array_filter( array_map( 'trim', explode( ',', wc_clean( $_POST['customer_email'] ) ) ) ),
+                )
+            );
+            if ( is_wp_error( $error ) ) {
+                $errors[] = $error->get_error_message();
+            }
+            $coupon->save();
+            do_action( 'wcmp_afm_coupon_options_save', $post_id, $coupon );
+
+            foreach ( $errors as $error ) {
+                wc_add_notice( $error, 'error' );
+            }
+            $status_msg = '';
+            switch ( $status ) {
+                case 'draft': $status_msg = __( 'Coupon is successfully drafted', 'dc-woocommerce-multi-vendor' );
+                    break;
+                case 'pending': $status_msg = __( 'Coupon is successfully submitted for review', 'dc-woocommerce-multi-vendor' );
+                    break;
+                case 'publish': $status_msg = __( 'Coupon updated and live.', 'dc-woocommerce-multi-vendor' );
+                    break;
+            }
+            wc_add_notice( $status_msg, 'success' );
+
+            wp_redirect( wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon' ), $post_id ) );
+            exit;
+        } else {
+            wc_add_notice( $post_id->get_error_message(), 'error' );
         }
     }
 

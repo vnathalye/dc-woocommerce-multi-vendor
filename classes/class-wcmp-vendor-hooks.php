@@ -22,6 +22,7 @@ class WCMp_Vendor_Hooks {
         add_action( 'wcmp_vendor_dashboard_vendor-report_endpoint', array( &$this, 'wcmp_vendor_dashboard_vendor_report_endpoint' ) );
 
         add_action( 'wcmp_vendor_dashboard_add-product_endpoint', array( &$this, 'wcmp_vendor_dashboard_add_product_endpoint' ) );
+        add_action( 'wcmp_vendor_dashboard_edit-product_endpoint', array( &$this, 'wcmp_vendor_dashboard_edit_product_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_products_endpoint', array( &$this, 'wcmp_vendor_dashboard_products_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_add-coupon_endpoint', array( &$this, 'wcmp_vendor_dashboard_add_coupon_endpoint' ) );
         add_action( 'wcmp_vendor_dashboard_coupons_endpoint', array( &$this, 'wcmp_vendor_dashboard_coupons_endpoint' ) );
@@ -455,23 +456,39 @@ class WCMp_Vendor_Hooks {
         wp_enqueue_script( 'jquery-ui-autocomplete' );
         wp_enqueue_script( 'wp-a11y' );
         wp_enqueue_script( 'suggest' );
+        
+        wp_register_script( 'wcmp_product_classify', $WCMp->plugin_url . 'assets/frontend/js/product-classify.js', array( 'jquery', 'jquery-blockui' ), $WCMp->version, true );
+        $script_param = array(
+            'ajax_url' => $WCMp->ajax_url(),
+            'initial_graphic_url' => $WCMp->plugin_url.'assets/images/select-category-graphic.png',
+            'i18n' => array(
+                'select_cat_list' => __( 'Select a category from the list', 'dc-woocommerce-multi-vendor' )
+            )
+        );
+        wp_enqueue_script( 'wcmp_product_classify' );
+        $WCMp->localize_script( 'wcmp_product_classify', apply_filters( 'wcmp_product_classify_script_data_params', $script_param ) );
 
-        wp_enqueue_style( 'product_manager_css', $WCMp->plugin_url . 'assets/frontend/css/product_manager' . $suffix . '.css', array(), $WCMp->version );
-        wp_enqueue_script( 'product_manager_js', $WCMp->plugin_url . 'assets/frontend/js/product_manager' . $suffix . '.js', array( 'jquery', 'jquery-ui-accordion' ), $WCMp->version, true );
-
-        $WCMp->localize_script( 'product_manager_js' );
-
-        $pro_id = $wp->query_vars[get_wcmp_vendor_settings( 'wcmp_add_product_endpoint', 'vendor', 'general', 'add-product' )];
-        if ( $pro_id ) {
-            $product = wc_get_product( $pro_id );
-            $is_spmv_pro = get_post_meta($pro_id, '_wcmp_spmv_product', true);
-            if ( $is_spmv_pro && apply_filters( 'wcmp_singleproductmultiseller_edit_product_title_disabled', true ) ) {
-                wp_add_inline_script( 'product_manager_js', '(function ($) { 
-                  $("#product_manager_form #title").prop("disabled", true);
-              })(jQuery)' );
-            }
-        }
-        $WCMp->template->get_template( 'vendor-dashboard/product-manager/add-product.php', array( 'pro_id' => $pro_id ) );
+        $WCMp->template->get_template( 'vendor-dashboard/product-manager/add-product.php' );
+    }
+    
+    public function wcmp_vendor_dashboard_edit_product_endpoint(){
+        global $WCMp;
+        // load scripts & styles
+        $suffix = defined( 'WCMP_SCRIPT_DEBUG' ) && WCMP_SCRIPT_DEBUG ? '' : '.min';
+        $WCMp->library->load_select2_lib();
+        $WCMp->library->load_datepicker_lib();
+        $WCMp->library->load_jquery_serializejson_library();
+        $WCMp->library->load_tabs_library();
+        wp_enqueue_media();
+        wp_enqueue_script( 'selectWoo' );
+        wp_enqueue_style('advance-product-manager');
+        wp_register_script( 'wcmp-advance-product', $WCMp->plugin_url . 'assets/frontend/js/product.js', array( 'jquery', 'jquery-ui-sortable', 'select2_js', 'jquery-ui-datepicker', 'selectWoo', 'wcmp-serializejson', 'wcmp-tabs' ), $WCMp->version );
+        wp_enqueue_script( 'wcmp-meta-boxes' );
+        $WCMp->localize_script( 'wcmp-meta-boxes');
+        // load classes
+        $WCMp->load_class( 'edit-product', 'products' );
+        $edit_product = new WCMp_Products_Edit_Product();
+        $edit_product->output();
     }
 
     public function wcmp_vendor_dashboard_products_endpoint() {
@@ -510,16 +527,18 @@ class WCMp_Vendor_Hooks {
 
     public function wcmp_vendor_dashboard_add_coupon_endpoint() {
         global $WCMp, $wp;
-        $WCMp->library->load_qtip_lib();
-        $WCMp->library->load_colorpicker_lib();
-        $WCMp->library->load_datepicker_lib();
+              
         $WCMp->library->load_select2_lib();
-        wp_enqueue_script( 'coupon_manager_js', $WCMp->plugin_url . 'assets/frontend/js/coupon_manager.js', array( 'jquery', 'jquery-ui-accordion' ), $WCMp->version, true );
-
-        $WCMp->localize_script( 'coupon_manager_js' );
-
-        $coupon_id = $wp->query_vars[get_wcmp_vendor_settings( 'wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon' )];
-        $WCMp->template->get_template( 'vendor-dashboard/coupon-manager/add-coupons.php', array( 'couponid' => $coupon_id ) );
+        $WCMp->library->load_datepicker_lib();
+        wp_enqueue_script( 'selectWoo' );
+        wp_register_script( 'wcmp-advance-coupon', $WCMp->plugin_url . 'assets/frontend/js/coupon.js', array( 'jquery', 'select2_js', 'jquery-ui-datepicker', 'selectWoo' ), $WCMp->version );
+        wp_enqueue_script( 'wcmp-meta-boxes' );
+        $WCMp->localize_script( 'wcmp-meta-boxes');
+        // load classes
+        $WCMp->load_class( 'add-coupon', 'coupons' );
+        $add_coupon = new WCMp_Coupons_Add_Coupon();
+        $add_coupon->output();
+        
     }
 
     public function wcmp_vendor_dashboard_coupons_endpoint() {

@@ -242,5 +242,20 @@ class WCMp_Library {
             require_once( $this->lib_path . 'Stripe/init.php' );
         }
     }
+    
+    /**
+     * jQuery serializejson Library
+     */
+    public function load_jquery_serializejson_library() {
+        $suffix = defined( 'WCMP_SCRIPT_DEBUG' ) && WCMP_SCRIPT_DEBUG ? '' : '.min';
+        wp_enqueue_script('wcmp-serializejson', $this->lib_url . 'jquery-serializejson/jquery.serializejson' . $suffix . '.js', array('jquery'), '2.8.1');
+    }
+    
+    /**
+     * Load tabs Library
+     */
+    public function load_tabs_library() {
+        wp_enqueue_script( 'wcmp-tabs', $this->lib_url . 'tabs/tabs.js', array( 'jquery' ) );
+    }
 
 }

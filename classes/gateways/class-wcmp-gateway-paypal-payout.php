@@ -98,21 +98,26 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
     }
 
     private function generate_access_token() {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Accept-Language: en_US'));
-        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_URL, $this->token_endpoint);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERPWD, $this->client_id . ':' . $this->client_secret);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
-        curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-        $response = curl_exec($curl);
-        curl_close($curl);
-        $response_array = json_decode($response, true);
-        $this->access_token = isset($response_array['access_token']) ? $response_array['access_token'] : '';
-        $this->token_type = isset($response_array['token_type']) ? $response_array['token_type'] : '';
+
+        // generate access token for paypal payout
+        $auth = base64_encode( $this->client_id . ':' . $this->client_secret );
+        $response = wp_remote_post( $this->token_endpoint, apply_filters( "wcmp_payment_gateway_{$this->id}_http_process_access_token", array(
+                        'timeout' => 60,
+                        'headers' => array(
+                            'Authorization' => "Basic $auth"
+                            ),
+                        'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+                        'httpversion' => '1.1',
+                        'body' => array(
+                            'grant_type' => 'client_credentials'
+                        )
+            ) )
+        );
+        //extract the response details
+        $response_array = json_decode(wp_remote_retrieve_body( $response ));
+
+        $this->access_token = isset($response_array->access_token) ? $response_array->access_token : '';
+        $this->token_type = isset($response_array->token_type) ? $response_array->token_type : '';
     }
 
     private function process_paypal_payout() {
@@ -138,21 +143,24 @@ class WCMp_Gateway_Paypal_Payout extends WCMp_Payment_Gateway {
                   }
                 ]
 	}';
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type:application/json', $api_authorization));
-        curl_setopt($curl, CURLOPT_VERBOSE, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_URL, $this->api_endpoint);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $request_params);
-        curl_setopt($curl, CURLOPT_SSLVERSION, 6);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        $result_array = json_decode($result, true);
-        $batch_status = $result_array['batch_header']['batch_status'];
+        $response = wp_remote_post( $this->api_endpoint, apply_filters( "wcmp_payment_gateway_{$this->id}_http_process", array(
+                        'timeout' => 60,
+                        'headers' => array(
+                            'Content-Type' => 'application/json',
+                            'Authorization' => "$this->token_type $this->access_token"
+                        ),
+                        'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+                        'httpversion' => '1.1',
+                        'body' => $request_params
+            ) )
+        );
+ 
+        //extract the response details
+        $result_array = json_decode(wp_remote_retrieve_body( $response ));
+
+        $batch_status = $result_array->batch_header->batch_status;
         if($this->payout_mode == 'true'){
-            $transaction_status = $result_array['items'][0]['transaction_status'];
+            $transaction_status = $result_array->items[0]->transaction_status;
             if ($batch_status == 'SUCCESS' && $transaction_status == 'SUCCESS') {
                 return $result_array;
             } else {

@@ -3,9 +3,9 @@ Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
-Tested up to: 5.0
+Tested up to: 5.0.3
 Requires PHP: 5.6
-Stable tag: 3.2.2
+Stable tag: 3.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,14 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.3.0 - 2019-01-10 =
+* Added - Marketplace product addition by categories, product GTIN or name.
+* UI - New vendor add product section.
+* UI - New vendor add coupon section.
+* Tweak - WCMp payments gateways process changed curl request.
+* Fix - Vendor shipping methods description.
+* Updated - Language file.
+
 = 3.2.2 - 2018-12-11 =
 * Added - Vendor wise shipping module.
 * Added - Bulk product delete on vendor dashboard product list.
@@ -504,5 +512,5 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 == Upgrade Notice ==
 
-= 3.0.5 =
-WC Marketplace 3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.
+= 3.3.0 =
+WC Marketplace 3.3.0 is a significantly major update and hence please follow some standard steps(staging to live) before upgrading your marketplace to avoid any undesirable situations.

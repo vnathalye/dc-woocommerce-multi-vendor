@@ -94,27 +94,29 @@ class WCMp_Gateway_Paypal_Masspay extends WCMp_Payment_Gateway {
         $amount_to_pay = round($this->get_transaction_total() - $this->transfer_charge($this->transaction_mode) - $this->gateway_charge(), 2);
         $note = sprintf(__('Total commissions earned from %1$s as at %2$s on %3$s', 'dc-woocommerce-multi-vendor'), get_bloginfo('name'), date('H:i:s'), date('d-m-Y'));
         $nvpStr = '&L_EMAIL0=' . urlencode($this->reciver_email) . '&L_Amt0=' . urlencode($amount_to_pay) . '&L_UNIQUEID0=' . urlencode($this->vendor->id) . '&L_NOTE0=' . urlencode($note) . '&EMAILSUBJECT=' . urlencode('You have money!') . '&RECEIVERTYPE=' . urlencode('EmailAddress') . '&CURRENCYCODE=' . urlencode($this->currency);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->api_endpoint);
-        curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
         $nvpStr = $nvpheader . $nvpStr;
         $nvpStr = "&VERSION=" . urlencode(90) . $nvpStr;
         $nvpreq = "METHOD=" . urlencode('MassPay') . $nvpStr;
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $nvpreq);
-        $response = curl_exec($ch);
-        $nvpResArray = $this->deformatNVP($response);
-        curl_close($ch);
-        $ack = strtoupper($nvpResArray["ACK"]);
+
+        //post to PayPal masspay
+        $response = wp_remote_post( $this->api_endpoint, apply_filters( "wcmp_payment_gateway_{$this->id}_http_process", array(
+                        'timeout' => 60,
+                        'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+                        'httpversion' => '1.1',
+                        'body' => $nvpreq
+            ) )
+        );
+        //extract the response details
+        $httpParsedResponseAr = array();
+        parse_str(wp_remote_retrieve_body($response), $httpParsedResponseAr);
+                        
+        $ack = strtoupper($httpParsedResponseAr["ACK"]);
         if ($ack == "SUCCESS" || $ack == "SuccessWithWarning") {
-            return $nvpResArray;
+            return $httpParsedResponseAr;
         } else {
-            doProductVendorLOG(json_encode($nvpResArray));
-            if (isset($nvpResArray['L_LONGMESSAGE0'])) {
-                $this->add_commission_note($this->commissions, 'Error: ' . $nvpResArray['L_LONGMESSAGE0']);
+            doProductVendorLOG(json_encode($httpParsedResponseAr));
+            if (isset($httpParsedResponseAr['L_LONGMESSAGE0'])) {
+                $this->add_commission_note($this->commissions, 'Error: ' . $httpParsedResponseAr['L_LONGMESSAGE0']);
             }
             return false;
         }

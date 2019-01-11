@@ -56,6 +56,7 @@ class WCMp_Settings_Vendor_General {
                         'wcmp_vendor_report_endpoint' => array('title' => __('Vendor Report', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_vendor_report_endpoint', 'label_for' => 'wcmp_vendor_report_endpoint', 'name' => 'wcmp_vendor_report_endpoint', 'hints' => __('Set endpoint for vendor report page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'vendor-report'),
                         
                         'wcmp_add_product_endpoint' => array('title' => __('Add Product', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_add_product_endpoint', 'label_for' => 'wcmp_add_product_endpoint', 'name' => 'wcmp_add_product_endpoint', 'hints' => __('Set endpoint for add new product page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'add-product'),
+                        'wcmp_edit_product_endpoint' => array('title' => __('Edit Product', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_edit_product_endpoint', 'label_for' => 'wcmp_edit_product_endpoint', 'name' => 'wcmp_edit_product_endpoint', 'hints' => __('Set endpoint for edit product page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'edit-product'),
                         'wcmp_products_endpoint' => array('title' => __('Products List', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_products_endpoint', 'label_for' => 'wcmp_products_endpoint', 'name' => 'wcmp_products_endpoint', 'hints' => __('Set endpoint for products list page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'products'),
                         'wcmp_add_coupon_endpoint' => array('title' => __('Add Coupon', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_add_coupon_endpoint', 'label_for' => 'wcmp_add_coupon_endpoint', 'name' => 'wcmp_add_coupon_endpoint', 'hints' => __('Set endpoint for add new coupon page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'add-coupon'),
                         'wcmp_coupons_endpoint' => array('title' => __('Coupons List', 'dc-woocommerce-multi-vendor'), 'type' => 'text', 'id' => 'wcmp_coupons_endpoint', 'label_for' => 'wcmp_coupons_endpoint', 'name' => 'wcmp_coupons_endpoint', 'hints' => __('Set endpoint for coupons list page', 'dc-woocommerce-multi-vendor'), 'placeholder' => 'coupons'),
@@ -129,6 +130,9 @@ class WCMp_Settings_Vendor_General {
         
         if (isset($input['wcmp_add_product_endpoint']) && !empty($input['wcmp_add_product_endpoint'])) {
             $new_input['wcmp_add_product_endpoint'] = sanitize_text_field($input['wcmp_add_product_endpoint']);
+        }
+        if (isset($input['wcmp_edit_product_endpoint']) && !empty($input['wcmp_edit_product_endpoint'])) {
+            $new_input['wcmp_edit_product_endpoint'] = sanitize_text_field($input['wcmp_edit_product_endpoint']);
         }
         if (isset($input['wcmp_products_endpoint']) && !empty($input['wcmp_products_endpoint'])) {
             $new_input['wcmp_products_endpoint'] = sanitize_text_field($input['wcmp_products_endpoint']);

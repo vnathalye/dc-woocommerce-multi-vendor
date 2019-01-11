@@ -59,7 +59,7 @@ $subtotal = 0;
                                 $item_obj = $order->get_item($item->order_item_id); 
                                 $edit_product_link = '';
                                 if (current_user_can('edit_published_products') && get_wcmp_vendor_settings('is_edit_delete_published_product', 'capabilities', 'product') == 'Enable') {
-                                    $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product'), $item->product_id));
+                                    $edit_product_link = esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product'), $item->product_id));
                                 } ?>
                                 <tr>
                                     <td><?php echo $edit_product_link ? '<a href="' . $edit_product_link . '" class="wcmp-order-item-link">' . esc_html( $item_obj->get_name() ) . '</a>' : esc_html( $item_obj->get_name() ); ?> <small class="times">&times;</small> <?php echo esc_html( $item_obj->get_quantity() ); ?></td>

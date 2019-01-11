@@ -99,19 +99,22 @@ class WCMP_Shipping_Zone {
 
         $sql = "SELECT * FROM {$wpdb->prefix}wcmp_shipping_zone_methods WHERE `zone_id`={$zone_id} AND `vendor_id`={$vendor_id}";
         $results = $wpdb->get_results( $sql );
-
+        $vendor_shipping_methods = wcmp_get_shipping_methods();
         $method = array();
 
         foreach ( $results as $key => $result ) {
+            $shipping_method = isset( $vendor_shipping_methods[$result->method_id] ) ? $vendor_shipping_methods[$result->method_id] : array();
             $default_settings = array(
-                'title'       => self::get_method_label( $result->method_id ),
-                'description' => __( 'Lets you charge a rate for shipping', 'dc-woocommerce-multi-vendor' ),
+                'title'       => ( $shipping_method ) ? $shipping_method->get_method_title() : self::get_method_label( $result->method_id ),
+                'description' => ( $shipping_method ) ? $shipping_method->get_method_description() : __( 'Lets you charge a rate for shipping', 'dc-woocommerce-multi-vendor' ),
                 'cost'        => '0',
                 'tax_status'  => 'none'
             );
 
             $method_id = $result->method_id .':'. $result->instance_id;
             $settings = ! empty( $result->settings ) ? maybe_unserialize( $result->settings ) : array();
+            // temp code
+            $settings['description'] = ( $shipping_method ) ? $shipping_method->get_method_description() : $settings['description'];
             $settings = wp_parse_args( $settings, $default_settings );
 
             $method[$method_id]['instance_id'] = $result->instance_id;
@@ -230,15 +233,7 @@ class WCMP_Shipping_Zone {
     public static function get_method_label( $method_id ) {
         $vendor_shipping_methods = wcmp_get_shipping_methods();
         if(isset($vendor_shipping_methods[$method_id])){
-            if ( 'flat_rate' == $method_id ) {
-                return __( $vendor_shipping_methods['flat_rate'], 'dc-woocommerce-multi-vendor' );
-            } elseif ( 'local_pickup' == $method_id ) {
-                return __( $vendor_shipping_methods['local_pickup'], 'dc-woocommerce-multi-vendor' );
-            } elseif ( 'free_shipping' == $method_id ) {
-                return __( $vendor_shipping_methods['free_shipping'], 'dc-woocommerce-multi-vendor' );
-            } else {
-                return __( $vendor_shipping_methods[$method_id], 'dc-woocommerce-multi-vendor' );
-            }
+            return $vendor_shipping_methods['flat_rate']->get_method_title();
         }
     }
 }

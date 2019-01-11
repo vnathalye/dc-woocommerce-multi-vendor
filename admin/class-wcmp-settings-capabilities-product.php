@@ -136,7 +136,7 @@ class WCMp_Settings_Capabilities_Product {
     }
 
     public function default_settings_section_types_info() {
-        if ( ! class_exists( 'WCMp_Frontend_Product_Manager' ) ) {
+        if ( ! class_exists( 'WCMp_Frontend_Product_Manager' ) || ! class_exists( 'WCMp_AFM' ) ) {
             echo '<div class="frontend_manager_promo">';
             _e( 'WCMp 3.0 lets vendors\' add Simple Products from frontend. Grab our best-selling <a href="//wc-marketplace.com/product/wcmp-frontend-manager/">Advanced Frontend Manager</a> and allow all product types to be uploaded from vendor dashboard itself.', 'dc-woocommerce-multi-vendor' );
             echo '</div>';

@@ -66,6 +66,10 @@ class WCMp_Endpoints {
                 'label' => __('Add Product', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_add_product_endpoint', 'vendor', 'general', 'add-product')
             )
+            , 'edit-product' => array(
+                'label' => __('Edit Product', 'dc-woocommerce-multi-vendor'),
+                'endpoint' => get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product')
+            )
             , 'products' => array(
                 'label' => __('Products', 'dc-woocommerce-multi-vendor'),
                 'endpoint' => get_wcmp_vendor_settings('wcmp_products_endpoint', 'vendor', 'general', 'products')

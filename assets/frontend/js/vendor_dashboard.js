@@ -111,6 +111,11 @@ jQuery( document ).ready( function ( $ ) {
         });
     });
 
+    // category scroller
+    $(".wcmp-product-cat-level, .wcmpCustomScroller").mCustomScrollbar();
+
+
+
 } );
 
 

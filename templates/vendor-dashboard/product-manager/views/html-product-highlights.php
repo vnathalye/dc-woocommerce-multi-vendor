@@ -131,6 +131,7 @@ global $WCMp;
                 <?php if( $is_update ) : ?>
                 <p class="pro-view"><?php echo wcmp_get_post_permalink_html( $product_object->get_id() ); ?></p>
                 <?php endif; ?>
+                <?php if( get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable' ) : ?>
                 <p clas="gtin-field-wrap">
                     <?php if( $self->is_spmv() && !empty($self->get_gtin_no()) ) { ?>
                     <label><?php if( $self->get_gtin_term() ) echo $self->get_gtin_term()->name; else _e('GTIN', 'dc-woocommerce-multi-vendor'); ?>: </label>
@@ -142,6 +143,7 @@ global $WCMp;
                     <button type="button" class="editable-content-button"><i class="wcmp-font ico-edit-pencil-icon" title="<?php _e('Edit', 'dc-woocommerce-multi-vendor'); ?>"></i> <!--span>edit</span--></button>
                     <?php endif; ?>
                     <span class="editing-content">
+                        <label><?php _e('GTIN', 'dc-woocommerce-multi-vendor'); ?>:</label>
                         <select class="form-control inline-input" name="_wcmp_gtin_type">
                         <option value=""><?php _e( 'Select type', 'dc-woocommerce-multi-vendor' ); ?></option>  
                         <?php 
@@ -154,6 +156,7 @@ global $WCMp;
                     <input type="text" class="form-control inline-input" name="_wcmp_gtin_code" placeholder="<?php _e( 'GTIN Code', 'dc-woocommerce-multi-vendor' );?>" value="<?php echo $self->get_gtin_no(); ?>">
                     </span> 
                 </p>
+                <?php endif; ?>
             </div>
             <div class="pull-right full-1080">
                 <?php

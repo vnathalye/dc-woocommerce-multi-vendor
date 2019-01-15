@@ -1812,15 +1812,17 @@ class WCMp_Ajax {
                         'id' => sprintf(__('ID: %d', 'dc-woocommerce-multi-vendor'), $product->get_id()),
                     );
                     // Add GTIN if have
-                    $gtin_terms = wp_get_post_terms( $product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
-                    $gtin_label = '';
-                    if($gtin_terms && isset($gtin_terms[0])){
-                        $gtin_label = $gtin_terms[0]->name;
-                    }
-                    $gtin_code = get_post_meta( $product->get_id(), '_wcmp_gtin_code', true );
-                    
-                    if( $gtin_code ){
-                        $actions['gtin'] = ( $gtin_label ) ? $gtin_label . ': ' . $gtin_code : __( 'GTIN', 'dc-woocommerce-multi-vendor' ) . ': ' . $gtin_code;
+                    if (get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable') {
+                        $gtin_terms = wp_get_post_terms( $product->get_id(), $WCMp->taxonomy->wcmp_gtin_taxonomy);
+                        $gtin_label = '';
+                        if($gtin_terms && isset($gtin_terms[0])){
+                            $gtin_label = $gtin_terms[0]->name;
+                        }
+                        $gtin_code = get_post_meta( $product->get_id(), '_wcmp_gtin_code', true );
+
+                        if( $gtin_code ){
+                            $actions['gtin'] = ( $gtin_label ) ? $gtin_label . ': ' . $gtin_code : __( 'GTIN', 'dc-woocommerce-multi-vendor' ) . ': ' . $gtin_code;
+                        }
                     }
                     
                     $actions_col = array(
@@ -2816,7 +2818,8 @@ class WCMp_Ajax {
             $vendor = get_wcmp_vendor(get_current_vendor_id());
             $requestData = $_REQUEST;
             $today = @date('Y-m-d 00:00:00', strtotime("+1 days"));
-            $last_seven_day_date = date('Y-m-d H:i:s', strtotime('-7 days'));
+            $days_range = apply_filters( 'wcmp_widget_vendor_pending_shipping_days_range', 7, $requestData, $vendor );
+            $last_seven_day_date = date('Y-m-d H:i:s', strtotime("-$days_range days"));
 
             $args = apply_filters('wcmp_vendor_pending_shipping_args', array(
                 'start_date' => $last_seven_day_date,
@@ -2899,7 +2902,8 @@ class WCMp_Ajax {
             $vendor = get_wcmp_vendor(get_current_vendor_id());
             $requestData = $_REQUEST;
             $today = @date('Y-m-d 00:00:00', strtotime("+1 days"));
-            $last_seven_day_date = date('Y-m-d H:i:s', strtotime('-7 days'));
+            $days_range = apply_filters( 'wcmp_widget_vendor_product_sales_report_days_range', 7, $requestData, $vendor );
+            $last_seven_day_date = date('Y-m-d H:i:s', strtotime("-$days_range days"));
 
             $sale_results = $wpdb->get_results(
                     $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wcmp_vendor_orders WHERE commission_id != 0 AND vendor_id=%d AND `created` BETWEEN %s AND %s", $vendor->id, $last_seven_day_date, $today

@@ -38,7 +38,7 @@ global $WCMp;
                             <?php
                             $settings = array(
                                 'textarea_name' => 'product_excerpt',
-                                'textarea_rows' => 10,
+                                'textarea_rows' => get_option('default_post_edit_rows', 10),
                                 'quicktags'     => array( 'buttons' => 'em,strong,link' ),
                                 'tinymce'       => array(
                                     'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
@@ -57,7 +57,7 @@ global $WCMp;
                             <?php
                             $settings = array(
                                 'textarea_name' => 'product_description',
-                                'textarea_rows' => 10,
+                                'textarea_rows' => get_option('default_post_edit_rows', 10),
                                 'quicktags'     => array( 'buttons' => 'em,strong,link' ),
                                 'tinymce'       => array(
                                     'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',

@@ -3414,7 +3414,7 @@ if (!function_exists('wcmp_list_categories')) {
             'echo' => false
         );
 
-        $r = wp_parse_args($args, $defaults);
+        $r = apply_filters( 'before_wcmp_list_categories_query_args', wp_parse_args($args, $defaults), $args );
 
         $taxonomy = $r['taxonomy'];
 
@@ -3427,7 +3427,7 @@ if (!function_exists('wcmp_list_categories')) {
             $categories = get_terms($r);
         } else {
             // Prior to 4.5.0, the first parameter of get_terms() was a taxonomy or list of taxonomies
-            $categories = get_terms($taxonomy, $args);
+            $categories = get_terms($taxonomy, $r);
         }
 
         if (is_wp_error($categories)) {

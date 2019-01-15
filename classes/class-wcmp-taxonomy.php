@@ -27,7 +27,9 @@ class WCMp_Taxonomy {
         // register WCMp single product multiple vendors (SPMV) taxonomy
         $this->init_wcmp_spmv_taxonomy();
         // register WCMp GTIN
-        $this->init_wcmp_gtin_taxonomy();
+        if (get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable') {
+            $this->init_wcmp_gtin_taxonomy();
+        }
     }
 
     /**
@@ -191,9 +193,10 @@ class WCMp_Taxonomy {
         
         // Add default spmv terms
         $wcmp_gtin_default_terms = apply_filters('wcmp_gtin_default_terms', array(
-            'upc' => __('UPC', 'dc-woocommerce-multi-vendor'),
-            'ean' => __('EAN', 'dc-woocommerce-multi-vendor'),
-            'mpuin' => __('MPUIN', 'dc-woocommerce-multi-vendor'),
+            'upc'   => __( 'UPC', 'dc-woocommerce-multi-vendor' ),
+            'ean'   => __( 'EAN', 'dc-woocommerce-multi-vendor' ),
+            'isbn'  => __( 'ISBN', 'dc-woocommerce-multi-vendor' ),
+            'mpuin' => apply_filters( 'wcmp_gtin_default_marketplace_unique_item_number_label', __( 'MPUIN', 'dc-woocommerce-multi-vendor' )),
             
         ));
         

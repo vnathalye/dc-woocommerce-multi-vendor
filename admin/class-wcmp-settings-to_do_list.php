@@ -47,7 +47,7 @@ class WCMp_Settings_To_Do_List {
                         <tr>
                             <td style="width:50%" class="username column-username"><?php echo get_avatar($pending_vendor->ID, 32); ?><?php echo $pending_vendor->user_login; ?></td>
                             <?php do_action('wcmp_todo_pending_vendor_approval_table_row_data', $pending_vendor); ?>
-                            <td class="edit"><a target="_blank" href="user-edit.php?user_id=<?php echo $pending_vendor->ID; ?>&amp;wp_http_referer=%2Fwordpress%2Fdc_vendor%2Fwp-admin%2Fusers.php%3Frole%3Ddc_pending_vendor"><input type="button" class="vendor_edit_button" value="Edit" /> </a> </td>
+                            <td class="edit"><a target="_blank" href="<?php echo apply_filters( 'wcmp_todo_pending_user_list_edit_action_url', admin_url('admin.php?page=vendors&action=edit&ID='.$pending_vendor->ID) ); ?>"><input type="button" class="vendor_edit_button" value="Edit" /> </a> </td>
                             <td class="activate"><input class="activate_vendor" type="button" class="activate_vendor" data-id="<?php echo $pending_vendor->ID; ?>" value="Activate" ></td>
                             <td class="reject"><input class="reject_vendor" type="button" class="reject_vendor" data-id="<?php echo $pending_vendor->ID; ?>" value="Reject"></td>
                             <td class="dismiss"><input class="vendor_dismiss_button" type="button" data-type="user" data-id="<?php echo $pending_vendor->ID; ?>" id="dismiss_request" name="dismiss_request" value="Dismiss"></td>

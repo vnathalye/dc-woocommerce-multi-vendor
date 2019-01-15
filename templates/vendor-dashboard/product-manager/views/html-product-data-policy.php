@@ -32,13 +32,13 @@ $_wcmp_cancallation_policy = get_post_meta( $id, '_wcmp_cancallation_policy', tr
                 <div class="col-md-6 col-sm-9"><?php
                     $shipping_policy_settings = array(
                         'textarea_name' => '_wcmp_shipping_policy',
-                        'textarea_rows' => 10,
+                        'textarea_rows' => get_option('default_post_edit_rows', 10),
                         'quicktags'     => array( 'buttons' => 'em,strong,link' ),
                         'tinymce'       => array(
                             'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
                             'theme_advanced_buttons2' => '',
                         ),
-                        'editor_css'    => '<style>#wp-_wcmp_shipping_policy-editor-container .wp-editor-area{height:175px; width:100%;}</style>',
+                        'editor_css'    => '<style>#wp-_wcmp_shipping_policy-editor-container .wp-editor-area{height:100px; width:100%;}</style>',
                     );
                     wp_editor( $_wcmp_shipping_policy, '_wcmp_shipping_policy', $shipping_policy_settings );
                     ?>
@@ -51,13 +51,13 @@ $_wcmp_cancallation_policy = get_post_meta( $id, '_wcmp_cancallation_policy', tr
                 <div class="col-md-6 col-sm-9"><?php
                     $refund_policy_settings = array(
                         'textarea_name' => '_wcmp_refund_policy',
-                        'textarea_rows' => 10,
+                        'textarea_rows' => get_option('default_post_edit_rows', 10),
                         'quicktags'     => array( 'buttons' => 'em,strong,link' ),
                         'tinymce'       => array(
                             'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
                             'theme_advanced_buttons2' => '',
                         ),
-                        'editor_css'    => '<style>#wp-_wcmp_refund_policy-editor-container .wp-editor-area{height:175px; width:100%;}</style>',
+                        'editor_css'    => '<style>#wp-_wcmp_refund_policy-editor-container .wp-editor-area{height:100px; width:100%;}</style>',
                     );
                     wp_editor( $_wcmp_refund_policy, '_wcmp_refund_policy', $refund_policy_settings );
                     ?>
@@ -70,13 +70,13 @@ $_wcmp_cancallation_policy = get_post_meta( $id, '_wcmp_cancallation_policy', tr
                 <div class="col-md-6 col-sm-9"><?php
                     $cancallation_policy_settings = array(
                         'textarea_name' => '_wcmp_cancallation_policy',
-                        'textarea_rows' => 10,
+                        'textarea_rows' => get_option('default_post_edit_rows', 10),
                         'quicktags'     => array( 'buttons' => 'em,strong,link' ),
                         'tinymce'       => array(
                             'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
                             'theme_advanced_buttons2' => '',
                         ),
-                        'editor_css'    => '<style>#wp-_wcmp_cancallation_policy-editor-container .wp-editor-area{height:175px; width:100%;}</style>',
+                        'editor_css'    => '<style>#wp-_wcmp_cancallation_policy-editor-container .wp-editor-area{height:100px; width:100%;}</style>',
                     );
                     wp_editor( $_wcmp_cancallation_policy, '_wcmp_cancallation_policy', $cancallation_policy_settings );
                     ?>

@@ -92,15 +92,17 @@ class WCMp_Product {
         add_action('created_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
         add_action('edit_term', array($this, 'save_product_cat_commission_fields'), 10, 3);
         // GTIN
-        add_action( 'woocommerce_product_options_sku', array( $this, 'wcmp_gtin_product_option') );
-        add_action( 'save_post_product', array( $this, 'wcmp_save_gtin_product_option'), 99 );
-        if(apply_filters( 'wcmp_enable_product_search_by_gtin_code', true) ){
-            add_action( 'pre_get_posts', array( $this, 'wcmp_gtin_product_search'), 99 );
-            add_filter( 'get_search_query', array($this, 'wcmp_gtin_get_search_query_vars'));
+        if (get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable') {
+            add_action( 'woocommerce_product_options_sku', array( $this, 'wcmp_gtin_product_option') );
+            add_action( 'save_post_product', array( $this, 'wcmp_save_gtin_product_option'), 99 );
+            if(apply_filters( 'wcmp_enable_product_search_by_gtin_code', true) ){
+                add_action( 'pre_get_posts', array( $this, 'wcmp_gtin_product_search'), 99 );
+                add_filter( 'get_search_query', array($this, 'wcmp_gtin_get_search_query_vars'));
+            }
+            //add the column GTIN on product list
+            add_filter( 'manage_product_posts_columns', array( $this, 'manage_product_columns' ), 99 );
+            add_action( 'manage_product_posts_custom_column', array( $this, 'show_gtin_code' ) );
         }
-        //add the column GTIN on product list
-        add_filter( 'manage_product_posts_columns', array( $this, 'manage_product_columns' ), 99 );
-        add_action( 'manage_product_posts_custom_column', array( $this, 'show_gtin_code' ) );
         // product classify
         add_filter( 'wcmp_get_product_terms_html_selected_terms', array($this, 'wcmp_get_product_terms_html_selected_terms'), 99, 3);
         add_action( 'wcmp_process_product_object', array($this, 'reset_vendor_classified_product_terms'), 99 );

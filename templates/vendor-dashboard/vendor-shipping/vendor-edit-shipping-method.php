@@ -133,7 +133,7 @@
                                             <label for="" class="control-label col-sm-3 col-md-3"><?php printf( __( 'Cost of Shipping Class: "%s"', 'dc-woocommerce-multi-vendor' ), $shipping_class->name ); ?></label>
                                             <div class="col-md-9 col-sm-9">
                                                 <input id="<?php echo $shipping_class->slug; ?>" class="form-control sc_vals" type="text" name="shipping_class_cost[]" placholder="<?php _e( 'N/A', 'dc-woocommerce-multi-vendor' ); ?>" data-shipping_class_id="<?php echo $shipping_class->term_id; ?>">
-                                                <div class="description"><?php _e( 'Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>.', 'wcmp' ) . '<br/><br/>' . _e( 'Use <code>[qty]</code> for the number of items, <br/><code>[cost]</code> for the total cost of items, and <code>[fee percent="10" min_fee="20" max_fee=""]</code> for percentage based fees.', 'dc-woocommerce-multi-vendor' ); ?></div>
+                                                <div class="description"><?php _e( 'Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>.', 'dc-woocommerce-multi-vendor' ) . '<br/><br/>' . _e( 'Use <code>[qty]</code> for the number of items, <br/><code>[cost]</code> for the total cost of items, and <code>[fee percent="10" min_fee="20" max_fee=""]</code> for percentage based fees.', 'dc-woocommerce-multi-vendor' ); ?></div>
                                             </div>
                                         </div>
                                         <?php 

@@ -1213,35 +1213,55 @@ Class WCMp_Admin_Dashboard {
             add_filter('send_auth_cookies', '__return_false');
 
             $current_user = get_user_by('id', $vendor_user_id);
-
+            $has_error = false;
             $userdata = array(
                 'ID' => $vendor_user_id,
-                'user_email' => $_POST['vendor_profile_data']['user_email'],
+                //'user_email' => $_POST['vendor_profile_data']['user_email'],
                 'first_name' => $_POST['vendor_profile_data']['first_name'],
                 'last_name' => $_POST['vendor_profile_data']['last_name'],
             );
 
-            $pass_cur = !empty($_POST['vendor_profile_data']['password_current']) ? $_POST['vendor_profile_data']['password_current'] : '';
-            $pass1 = !empty($_POST['vendor_profile_data']['password_1']) ? $_POST['vendor_profile_data']['password_1'] : '';
-            $pass2 = !empty($_POST['vendor_profile_data']['password_2']) ? $_POST['vendor_profile_data']['password_2'] : '';
+            $pass_cur = !empty( $_POST['vendor_profile_data']['password_current'] ) ? $_POST['vendor_profile_data']['password_current'] : '';
+            $pass1 = !empty( $_POST['vendor_profile_data']['password_1'] ) ? $_POST['vendor_profile_data']['password_1'] : '';
+            $pass2 = !empty( $_POST['vendor_profile_data']['password_2'] ) ? $_POST['vendor_profile_data']['password_2'] : '';
+            $email = !empty( $_POST['vendor_profile_data']['user_email'] ) ? $_POST['vendor_profile_data']['user_email'] : '';
             $save_pass = true;
+            
+            if ( $email ) {
+                $account_email = sanitize_email( $email );
+                if ( ! is_email( $account_email ) ) {
+                    $has_error = true;
+                    wc_add_notice( __( 'Please provide a valid email address.', 'woocommerce' ), 'error' );
+                } elseif ( email_exists( $account_email ) && $account_email !== $current_user->user_email ) {
+                    $has_error = true;
+                    wc_add_notice( __( 'This email address is already registered.', 'woocommerce' ), 'error' );
+                }
+                $userdata['user_email'] = $account_email;
+            }
 
             if (!empty($pass_cur) && empty($pass1) && empty($pass2)) {
-                wc_add_notice(__('Please fill out all password fields.', 'dc-woocommerce-multi-vendor'), 'error');
+                $has_error = true;
+                wc_add_notice( __('Please fill out all password fields.', 'dc-woocommerce-multi-vendor'), 'error' );
                 $save_pass = false;
             } elseif (!empty($pass1) && empty($pass_cur)) {
-                wc_add_notice(__('Please enter your current password.', 'dc-woocommerce-multi-vendor'), 'error');
+                $has_error = true;
+                wc_add_notice( __('Please enter your current password.', 'dc-woocommerce-multi-vendor'), 'error' );
                 $save_pass = false;
             } elseif (!empty($pass1) && empty($pass2)) {
-                wc_add_notice(__('Please re-enter your password.', 'dc-woocommerce-multi-vendor'), 'error');
+                $has_error = true;
+                wc_add_notice( __('Please re-enter your password.', 'dc-woocommerce-multi-vendor'), 'error' );
                 $save_pass = false;
             } elseif ((!empty($pass1) || !empty($pass2) ) && $pass1 !== $pass2) {
-                wc_add_notice(__('New passwords do not match.', 'dc-woocommerce-multi-vendor'), 'error');
+                $has_error = true;
+                wc_add_notice( __('New passwords do not match.', 'dc-woocommerce-multi-vendor'), 'error' );
                 $save_pass = false;
             } elseif (!empty($pass1) && !wp_check_password($pass_cur, $current_user->user_pass, $current_user->ID)) {
-                wc_add_notice(__('Your current password is incorrect.', 'dc-woocommerce-multi-vendor'), 'error');
+                $has_error = true;
+                wc_add_notice( __('Your current password is incorrect.', 'dc-woocommerce-multi-vendor'), 'error' );
                 $save_pass = false;
             }
+            
+            if( $has_error ) return;
 
             if ($pass1 && $save_pass) {
                 $userdata['user_pass'] = $pass1;
@@ -1252,7 +1272,7 @@ Class WCMp_Admin_Dashboard {
             $profile_updt = update_user_meta($vendor_user_id, '_vendor_profile_image', $_POST['vendor_profile_data']['vendor_profile_image']);
 
             if ($profile_updt || $user_id) {
-                wc_add_notice(__('Profile Data Updated', 'dc-woocommerce-multi-vendor'), 'success');
+                wc_add_notice( __('Profile Data Updated', 'dc-woocommerce-multi-vendor'), 'success' );
             }
         }
     }
@@ -1976,7 +1996,7 @@ Class WCMp_Admin_Dashboard {
                         break;
                 }
                 wc_add_notice( $status_msg, 'success' );
-                wp_redirect( wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product' ), $post_id ) );
+                wp_redirect( apply_filters( 'wcmp_vendor_save_product_redirect_url', wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product' ), $post_id ) ) );
                 exit;
             } else {
                 wc_add_notice( $post_id->get_error_message(), 'error' );
@@ -2108,7 +2128,7 @@ Class WCMp_Admin_Dashboard {
             }
             wc_add_notice( $status_msg, 'success' );
 
-            wp_redirect( wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon' ), $post_id ) );
+            wp_redirect( apply_filters( 'wcmp_vendor_save_coupon_redirect_url', wcmp_get_vendor_dashboard_endpoint_url( get_wcmp_vendor_settings( 'wcmp_add_coupon_endpoint', 'vendor', 'general', 'add-coupon' ), $post_id ) ) );
             exit;
         } else {
             wc_add_notice( $post_id->get_error_message(), 'error' );

@@ -54,6 +54,8 @@ class WCMp_User {
         add_action('init', array( &$this, 'remove_wp_admin_access_for_suspended_vendor'), 11);
         // Enable media handler caps for vendor, mainly for policy media handler
         add_filter( 'map_meta_cap', array( &$this, 'media_handler_map_meta_cap'), 99, 4 );
+        // restrict wp-editor quick-link links query
+        add_filter( 'wp_link_query_args', array( &$this, 'userwise_wp_link_query_args'), 99 );
     }
     
     function remove_wp_admin_access_for_suspended_vendor() {
@@ -1095,6 +1097,12 @@ class WCMp_User {
             return array('edit_post');
         }
         return $caps;
+    }
+    
+    public function userwise_wp_link_query_args( $query ) {
+        if( !is_user_wcmp_vendor( get_current_user_id() ) ) return $query;
+        $query['author'] = get_current_user_id();
+        return $query;
     }
     
 }

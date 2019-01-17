@@ -23,8 +23,8 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                 'role'      => 'dc_vendor',
                 'fields'    => 'ids',
                 'exclude'   => $block_vendors,
-                'orderby'   => 'registered',
-                'order'     => 'ASC',
+                'orderby'   => $args['orderby'],
+                'order'     => $args['order'],
                 'number'    => 12,
             );
             if (isset($request['vendor_sort_type']) && $request['vendor_sort_type'] == 'category' && isset($request['vendor_sort_category'])) {
@@ -48,7 +48,8 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                     }
                 }
                 //
-                $vendor_args = wp_parse_args(array( 'include' => $include_vendors ), $default);
+                $args['include'] = $include_vendors;
+                $vendor_args = wp_parse_args($args, $default);
             } else {
                 $vendor_args = wp_parse_args($args, $default);
             }

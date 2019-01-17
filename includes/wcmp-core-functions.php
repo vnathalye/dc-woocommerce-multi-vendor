@@ -2056,6 +2056,12 @@ if (!function_exists('wcmp_get_vendor_profile_completion')) {
                     } else {
                         $todo[] = $value;
                     }
+                } elseif( $key == 'vendor_shipping_data' ) {
+                    if( has_vendor_config_shipping_methods() ) {
+                        $progress++;
+                    } else {
+                        $todo[] = $value;
+                    }
                 } else {
                     if ($has_value) {
                         $progress++;
@@ -3828,6 +3834,7 @@ if ( ! function_exists( 'generate_non_hierarchical_taxonomy_html' ) ) {
 if ( ! function_exists( 'generate_hierarchical_taxonomy_html' ) ) {
 
     function generate_hierarchical_taxonomy_html( $taxonomy, $terms, $post_terms, $add_cap, $level = 0, $max_depth = 2 ) {
+        $max_depth = apply_filters( 'wcmp_generate_hierarchical_taxonomy_html_max_depth', 5, $taxonomy, $terms, $post_terms, $level );
         $tax_html = '<ul class="taxonomy-widget ' . $taxonomy . ' level-' . $level . '">';
         foreach ( $terms as $term_id => $term_name ) {
             $child_html = '';
@@ -3990,4 +3997,51 @@ if ( ! function_exists( 'is_current_vendor_coupon' ) ) {
         return true;
     }
 
+}
+
+if ( ! function_exists( 'has_vendor_config_shipping_methods' ) ) {
+
+    function has_vendor_config_shipping_methods() {
+        $vendor_shipping_zones = wcmp_get_shipping_zone();
+        $flag = array();
+        if( $vendor_shipping_zones ) :
+            foreach ( $vendor_shipping_zones as $zone ) {
+                $vendor_shipping_methods = $zone['shipping_methods'];
+                if( !empty( $vendor_shipping_methods ) ) {
+                    $flag[] = 'true';
+                }
+            }
+        endif;
+        return (in_array( 'true', $flag) ) ? true : false;
+    }
+
+}
+
+if ( ! function_exists( 'wcmp_get_price_to_display' ) ) {
+    /**
+     * Returns the price including or excluding tax, based on the 'woocommerce_tax_display_shop' setting.
+     *
+     * @since  3.3.1
+     * @param  WC_Product $product WC_Product object.
+     * @param  array      $args Optional arguments to pass product quantity and price.
+     * @return float
+     */
+    function wcmp_get_price_to_display( $product, $args = array() ) {
+        $args = wp_parse_args(
+                $args, array(
+                        'qty'   => 1,
+                        'price' => $product->get_price(),
+                )
+        );
+
+        $price = $args['price'];
+        $qty   = $args['qty'];
+        $price_html = '';
+        if ( 'incl' === get_option( 'woocommerce_tax_display_shop' ) && $product->is_taxable() && wc_prices_include_tax() ) {
+            $price_html = wc_price( $price * $qty );
+        }else{
+            $price_html = $product->get_price_html();
+        }
+        return apply_filters( 'wcmp_get_price_to_display', $price_html, $product, $args );
+    }
 }

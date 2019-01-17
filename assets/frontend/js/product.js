@@ -383,7 +383,7 @@ var wcmpAfmProductEditor = ( function ( $ ) {
                     $( this ).closest( 'tr' ).remove();
                     return false;
                 },
-                fileUploaded: function ( ) {
+                fileUploaded: function ( event ) {
                     var $el = $( this );
 
                     file_path_field = $el.closest( 'tr' ).find( 'td.file_url input' );

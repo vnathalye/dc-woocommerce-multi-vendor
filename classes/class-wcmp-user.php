@@ -56,6 +56,8 @@ class WCMp_User {
         add_filter( 'map_meta_cap', array( &$this, 'media_handler_map_meta_cap'), 99, 4 );
         // restrict wp-editor quick-link links query
         add_filter( 'wp_link_query_args', array( &$this, 'userwise_wp_link_query_args'), 99 );
+        // filter user query, if orderby setted as 'rand'
+        add_filter( 'pre_user_query', array( &$this, 'wcmp_pre_user_query_filtered'), 99 );
     }
     
     function remove_wp_admin_access_for_suspended_vendor() {
@@ -1102,6 +1104,12 @@ class WCMp_User {
     public function userwise_wp_link_query_args( $query ) {
         if( !is_user_wcmp_vendor( get_current_user_id() ) ) return $query;
         $query['author'] = get_current_user_id();
+        return $query;
+    }
+    
+    public function wcmp_pre_user_query_filtered( $query ) {
+        if( $query->query_vars["orderby"] != 'rand' ) return $query;
+        $query->query_orderby = 'ORDER by RAND()';
         return $query;
     }
     

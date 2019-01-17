@@ -23,95 +23,96 @@ global $WCMp;
 <div class="cat-step3">
     <div class="panel-heading">
         <h1><span class="primary-color"><span><?php _e( 'Step 2 of', 'dc-woocommerce-multi-vendor' );?></span> <?php _e( '2:', 'dc-woocommerce-multi-vendor' );?></span> <?php _e( 'Add Product Details', 'dc-woocommerce-multi-vendor' );?></h1>
+        <?php if( get_transient( 'classified_product_terms_vendor'. get_current_user_id() ) || ($self->is_spmv() && $post) || $is_update ) : ?>
         <div class="cat-breadcrumb-wrap">
-            <?php 
-                if( get_transient( 'classified_product_terms_vendor'. get_current_user_id() ) ){
-                    $classified_terms = get_transient( 'classified_product_terms_vendor' . get_current_user_id() );
-                    if( isset( $classified_terms['term_id'] ) && isset( $classified_terms['taxonomy'] ) ){
-                        echo '<input type="hidden" name="_default_cat_hierarchy_term_id" id="_default_cat_hierarchy_term_id_' . esc_attr( $classified_terms['term_id'] ) . '" value="' . esc_attr( $classified_terms['term_id'] ) . '" data-label="' . esc_attr( $classified_terms['term_id'] ) . '" />';
-                        wcmp_generate_term_breadcrumb_html( array(
-                            'term_id' => $classified_terms['term_id'], 
-                            'taxonomy' => $classified_terms['taxonomy'],
-                            'delimiter' => '',
-                            'echo' => true) );
+        <?php 
+            if( get_transient( 'classified_product_terms_vendor'. get_current_user_id() ) ){
+                $classified_terms = get_transient( 'classified_product_terms_vendor' . get_current_user_id() );
+                if( isset( $classified_terms['term_id'] ) && isset( $classified_terms['taxonomy'] ) ){
+                    echo '<input type="hidden" name="_default_cat_hierarchy_term_id" id="_default_cat_hierarchy_term_id_' . esc_attr( $classified_terms['term_id'] ) . '" value="' . esc_attr( $classified_terms['term_id'] ) . '" data-label="' . esc_attr( $classified_terms['term_id'] ) . '" />';
+                    wcmp_generate_term_breadcrumb_html( array(
+                        'term_id' => $classified_terms['term_id'], 
+                        'taxonomy' => $classified_terms['taxonomy'],
+                        'delimiter' => '',
+                        'echo' => true) );
 
-                        // save terms for post save handler 
-                        $hierarchy = get_ancestors( $classified_terms['term_id'], $classified_terms['taxonomy'] );
-                        $hierarchy[] = $classified_terms['term_id'];
-                        foreach ( $hierarchy as $term_id ) {
-                            echo '<input type="hidden" name="tax_input[' . $classified_terms['taxonomy'] . '][]" value="' . $term_id . '" />';
-                        }
-                    }
-                }elseif( ($self->is_spmv() && $post) || $is_update ){
-                    $term_tax = 'product_cat';
-                    $terms = wp_get_post_terms( $post->ID, $term_tax, array( 'fields' => 'ids' ) );
-                    $default_cat_hierarchy = get_post_meta( $post->ID, '_default_cat_hierarchy_term_id', true );
-                    $get_different_terms_hierarchy = get_wcmp_different_terms_hierarchy( $terms );
-                    if( $get_different_terms_hierarchy ){
-                        $nos_hierarchy = count( $get_different_terms_hierarchy );
-                        $class = ( $nos_hierarchy > 1 ) ? "has-multiple-cat" : "";
-                        $flag = 0;
-                        foreach ( $get_different_terms_hierarchy as $term_id ) {
-                            if( $flag >= 1 ) continue;
-                            $term_id = ($default_cat_hierarchy) ? $default_cat_hierarchy : $term_id;
-                            wcmp_generate_term_breadcrumb_html( array(
-                            'term_id' => $term_id, 
-                            'taxonomy' => $term_tax,
-                            'wrap_before' => '<ul class="wcmp-breadcrumb breadcrumb '.$class.'">',
-                            'delimiter' => '',
-                            'echo' => true) );
-                            $flag++;
-                        }
-                        // give option to set default terms hierarchy
-                        if( $nos_hierarchy > 1 ){ ?>
-                        <p class="pull-right multiple-cat-hierarchy"><?php _e( 'Select a different category :', 'dc-woocommerce-multi-vendor' );?>
-                            <strong id="multiple-cat-hierarchy-lbl" class="primary-color">
-                                <button type="button" class="multi-cat-choose-dflt-btn editabble-button" data-toggle="collapse" data-target="#multi_cat_hierarchy_visiblity"><u><?php _e( 'Choose default', 'dc-woocommerce-multi-vendor' );?></u> <i class="wcmp-font ico-downarrow-2-icon"></i></button>
-                            </strong>
-                        </p> 
-                        <div id="multi_cat_hierarchy_visiblity" class="wcmp-clps collapse dropdown-panel">
-                            <div class="product-visibility-toggle-inner">
-                                <?php 
-                                foreach ( $get_different_terms_hierarchy as $term_id ) {
-                                    echo '<div class="form-group">' 
-                                        . '<label>'
-                                        . '<input type="radio" name="_default_cat_hierarchy_term_id" id="_default_cat_hierarchy_term_id_' . esc_attr( $term_id ) . '" value="' . esc_attr( $term_id ) . '" ' . checked( $default_cat_hierarchy, $term_id, false ) . ' data-label="' . esc_attr( $term_id ) . '" data-hierarchy="' . esc_attr(wcmp_generate_term_breadcrumb_html( array( 'term_id' => $term_id, 
-                                            'taxonomy' => $term_tax,
-                                            'wrap_before'           => '',
-                                            'wrap_after'            => '',
-                                            'wrap_child_before'     => '<li>',
-                                            'wrap_child_after'      => '</li>',
-                                            'delimiter'             => ''
-                                            ) )) . '" /> '
-                                        . '<div for="_visibility_hierarchy_' . esc_attr( $term_id ) . '" class="selectit cat-breadcrumb">'.wcmp_generate_term_breadcrumb_html( array( 'term_id' => $term_id, 
-                                            'taxonomy' => $term_tax,
-                                            'wrap_before'           => '',
-                                            'wrap_after'            => '',
-                                            'wrap_child_before'     => '',
-                                            'wrap_child_after'      => '',
-                                            ) ).'</div>' 
-                                        . '</label>'
-                                        . '</div>';
-                                }
-                                ?>
-                                <div class="form-group mb-0">
-                                    <button type="button" class="btn btn-default btn-sm set-default-cat-hierarchy-btn" ><?php _e( 'Ok', 'dc-woocommerce-multi-vendor' ); ?></button>
-                                    <a href="javascript:void(0)" data-toggle="collapse" data-target="#multi_cat_hierarchy_visiblity"><?php _e( 'Cancel', 'dc-woocommerce-multi-vendor' ); ?></a>
-                                </div>
-                            </div>
-                        </div>
-                        <?php }
-                    }
                     // save terms for post save handler 
-                    if( $terms ){
-                        foreach ( $terms as $term_id ) {
-                            echo '<input type="hidden" name="tax_input[' . $term_tax . '][]" value="' . $term_id . '" />';
-                        }
+                    $hierarchy = get_ancestors( $classified_terms['term_id'], $classified_terms['taxonomy'] );
+                    $hierarchy[] = $classified_terms['term_id'];
+                    foreach ( $hierarchy as $term_id ) {
+                        echo '<input type="hidden" name="tax_input[' . $classified_terms['taxonomy'] . '][]" value="' . $term_id . '" />';
                     }
                 }
-            ?>
+            }elseif( ($self->is_spmv() && $post) || $is_update ){
+                $term_tax = 'product_cat';
+                $terms = wp_get_post_terms( $post->ID, $term_tax, array( 'fields' => 'ids' ) );
+                $default_cat_hierarchy = get_post_meta( $post->ID, '_default_cat_hierarchy_term_id', true );
+                $get_different_terms_hierarchy = get_wcmp_different_terms_hierarchy( $terms );
+                if( $get_different_terms_hierarchy ){
+                    $nos_hierarchy = count( $get_different_terms_hierarchy );
+                    $class = ( $nos_hierarchy > 1 ) ? "has-multiple-cat" : "";
+                    $flag = 0;
+                    foreach ( $get_different_terms_hierarchy as $term_id ) {
+                        if( $flag >= 1 ) continue;
+                        $term_id = ($default_cat_hierarchy) ? $default_cat_hierarchy : $term_id;
+                        wcmp_generate_term_breadcrumb_html( array(
+                        'term_id' => $term_id, 
+                        'taxonomy' => $term_tax,
+                        'wrap_before' => '<ul class="wcmp-breadcrumb breadcrumb '.$class.'">',
+                        'delimiter' => '',
+                        'echo' => true) );
+                        $flag++;
+                    }
+                    // give option to set default terms hierarchy
+                    if( $nos_hierarchy > 1 ){ ?>
+                    <p class="pull-right multiple-cat-hierarchy"><?php _e( 'Select a different category :', 'dc-woocommerce-multi-vendor' );?>
+                        <strong id="multiple-cat-hierarchy-lbl" class="primary-color">
+                            <button type="button" class="multi-cat-choose-dflt-btn editabble-button" data-toggle="collapse" data-target="#multi_cat_hierarchy_visiblity"><u><?php _e( 'Choose default', 'dc-woocommerce-multi-vendor' );?></u> <i class="wcmp-font ico-downarrow-2-icon"></i></button>
+                        </strong>
+                    </p> 
+                    <div id="multi_cat_hierarchy_visiblity" class="wcmp-clps collapse dropdown-panel">
+                        <div class="product-visibility-toggle-inner">
+                            <?php 
+                            foreach ( $get_different_terms_hierarchy as $term_id ) {
+                                echo '<div class="form-group">' 
+                                    . '<label>'
+                                    . '<input type="radio" name="_default_cat_hierarchy_term_id" id="_default_cat_hierarchy_term_id_' . esc_attr( $term_id ) . '" value="' . esc_attr( $term_id ) . '" ' . checked( $default_cat_hierarchy, $term_id, false ) . ' data-label="' . esc_attr( $term_id ) . '" data-hierarchy="' . esc_attr(wcmp_generate_term_breadcrumb_html( array( 'term_id' => $term_id, 
+                                        'taxonomy' => $term_tax,
+                                        'wrap_before'           => '',
+                                        'wrap_after'            => '',
+                                        'wrap_child_before'     => '<li>',
+                                        'wrap_child_after'      => '</li>',
+                                        'delimiter'             => ''
+                                        ) )) . '" /> '
+                                    . '<div for="_visibility_hierarchy_' . esc_attr( $term_id ) . '" class="selectit cat-breadcrumb">'.wcmp_generate_term_breadcrumb_html( array( 'term_id' => $term_id, 
+                                        'taxonomy' => $term_tax,
+                                        'wrap_before'           => '',
+                                        'wrap_after'            => '',
+                                        'wrap_child_before'     => '',
+                                        'wrap_child_after'      => '',
+                                        ) ).'</div>' 
+                                    . '</label>'
+                                    . '</div>';
+                            }
+                            ?>
+                            <div class="form-group mb-0">
+                                <button type="button" class="btn btn-default btn-sm set-default-cat-hierarchy-btn" ><?php _e( 'Ok', 'dc-woocommerce-multi-vendor' ); ?></button>
+                                <a href="javascript:void(0)" data-toggle="collapse" data-target="#multi_cat_hierarchy_visiblity"><?php _e( 'Cancel', 'dc-woocommerce-multi-vendor' ); ?></a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php }
+                }
+                // save terms for post save handler 
+                if( $terms ){
+                    foreach ( $terms as $term_id ) {
+                        echo '<input type="hidden" name="tax_input[' . $term_tax . '][]" value="' . $term_id . '" />';
+                    }
+                }
+            }
+        ?>
         </div>
-
+        <?php endif; ?>
         <div class="product-title-wrap <?php echo ( $self->is_spmv() || $is_update ) ? 'product-edit-mode' : 'product-add-mode'; ?>"> <!-- product-add-mode / product-edit-mode according to flow -->
             <div class="pull-left product-title-inner full-1080"> 
                 <p clas="pro-title">

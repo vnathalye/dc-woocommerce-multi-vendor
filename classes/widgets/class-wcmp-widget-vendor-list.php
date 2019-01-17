@@ -60,8 +60,8 @@ class DC_Widget_Vendor_List extends WP_Widget {
         $show_widget = true;
 
         if ($show_widget) {
-
-            $vendors = get_wcmp_vendors();
+            $block_vendors = wp_list_pluck(wcmp_get_all_blocked_vendors(), 'id');
+            $vendors = get_wcmp_vendors(array('exclude'   => $block_vendors));
 
             if (!empty($vendors) && is_array($vendors)) {
                 // Set up widget title

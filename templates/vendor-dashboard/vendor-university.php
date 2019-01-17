@@ -13,14 +13,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 global $woocommerce, $WCMp;
-$university_args = array(
+$university_args = apply_filters( 'wcmp_vendor_knowledgebase_query_args', array(
     'posts_per_page' => -1,
     'orderby' => 'date',
     'order' => 'DESC',
     'post_type' => 'wcmp_university',
     'post_status' => 'publish',
     'suppress_filters' => true
-);
+), get_current_user_id() );
 $university_posts = get_posts($university_args);
 $count_university = count($university_posts);
 ?>
@@ -38,7 +38,7 @@ $count_university = count($university_posts);
                     <div class="clear"></div>
                 </div>
                 <div>
-                    <div class="university_text"> 
+                    <div class="university_text default-content-css"> 
                 <?php the_content(); ?>
                     </div>
                 </div>

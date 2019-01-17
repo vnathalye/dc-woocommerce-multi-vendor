@@ -222,6 +222,21 @@ global $WCMp;
             <?php do_action( 'wcmp_after_product_excerpt_metabox_panel', $post->ID ); ?>
             </div>
             <div class="col-md-4">
+                <?php if( ( get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') == 'Enable' ) ) :
+                $product_categories = wcmp_get_product_terms_HTML( 'product_cat', $post->ID, apply_filters( 'wcmp_vendor_can_add_product_category', false, get_current_user_id() ) ); ?>
+                <?php if ( $product_categories ) : ?>
+                    <div class="panel panel-default pannel-outer-heading">
+                        <div class="panel-heading">
+                            <h3 class="pull-left"><?php esc_html_e( 'Product categories', 'woocommerce' ); ?></h3>
+                        </div>
+                        <div class="panel-body panel-content-padding form-group-wrapper"> 
+                            <?php
+                            echo $product_categories;
+                            ?>
+                        </div>
+                    </div>
+                <?php endif;
+                endif; ?>
                 <?php $product_tags = wcmp_get_product_terms_HTML( 'product_tag', $post->ID, apply_filters( 'wcmp_vendor_can_add_product_tag', true, get_current_user_id() ), false ); ?>
                 <?php if ( $product_tags ) : ?>
                     <div class="panel panel-default pannel-outer-heading">

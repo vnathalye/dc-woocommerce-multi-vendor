@@ -29,6 +29,8 @@ Class WCMp_Admin_Dashboard {
         // Vendor save product
         add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
         add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
+        
+        add_filter( 'wcmp_vendor_dashboard_add_product_url', array( &$this, 'wcmp_vendor_dashboard_add_product_url' ), 10 );
 
         // Init export functions
         $this->export_csv();
@@ -2133,6 +2135,13 @@ Class WCMp_Admin_Dashboard {
         } else {
             wc_add_notice( $post_id->get_error_message(), 'error' );
         }
+    }
+    
+    public function wcmp_vendor_dashboard_add_product_url( $url ) {
+        if( !get_wcmp_vendor_settings('is_singleproductmultiseller', 'general') == 'Enable' && get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') == 'Enable' ){
+            return esc_url(wcmp_get_vendor_dashboard_endpoint_url(get_wcmp_vendor_settings('wcmp_edit_product_endpoint', 'vendor', 'general', 'edit-product')));
+        }
+        return $url;
     }
 
 }

@@ -64,7 +64,6 @@ class WCMp_Product {
             add_filter('woocommerce_duplicate_product_exclude_taxonomies', array($this, 'exclude_taxonomies_copy_to_draft'), 10, 1);
             add_filter('woocommerce_duplicate_product_exclude_meta', array($this, 'exclude_postmeta_copy_to_draft'), 10, 1);
             add_action('woocommerce_product_duplicate', array($this, 'wcmp_product_duplicate_update_meta'), 10, 2);
-            //add_action('publish_product', array($this, 'update_data_to_products_map_table'), 10, 2);
             add_action('save_post_product', array($this, 'update_duplicate_product_title'), 10, 3);
             add_filter('woocommerce_product_tabs', array(&$this, 'product_single_product_multivendor_tab'));
             add_action('woocommerce_single_product_summary', array($this, 'product_single_product_multivendor_tab_link'), 60);
@@ -200,6 +199,7 @@ class WCMp_Product {
                 $i = 0;
                 foreach ($mapped_products as $result) {
                     $result = wc_get_product($result);
+                    if( $result ) :
                     $result_post = get_post($result->get_id());
                     $vendor_data = get_wcmp_product_vendors($result->get_id());
                     //$_product = wc_get_product($result->ID);
@@ -244,38 +244,12 @@ class WCMp_Product {
                         }
                         $i++;
                     }
+                    endif;
                 }
             }
         }
         return array('results' => $mapped_products, 'more_product_array' => $more_product_array);
     }
-
-//    function update_data_to_products_map_table($post_id, $post) {
-//        global $wpdb;
-//        //$post = get_post($post_id);
-//        $post->post_title = get_post_meta($post_id, '_wcmp_parent_product_id', true) ? get_post(get_post_meta($post_id, '_wcmp_parent_product_id', true))->post_title : $post->post_title;
-//        if ($post->post_type == 'product') {
-//            if (isset($post->post_title)) {
-//                $searchstr = $post->post_title;
-//                $searchstr = str_replace("'", "", $searchstr);
-//                $searchstr = str_replace('"', '', $searchstr);
-//                $results = $wpdb->get_results("select * from {$wpdb->prefix}wcmp_products_map where replace(replace(product_title, '\'',''), '\"','') = '{$searchstr}' ");
-//                if (is_array($results) && (count($results) > 0)) {
-//                    $id_of_similar = $results[0]->ID;
-//                    $product_ids = $results[0]->product_ids;
-//                    $product_ids_arr = explode(',', $product_ids);
-//                    if (is_array($product_ids_arr) && in_array($post_id, $product_ids_arr)) {
-//                        
-//                    } else {
-//                        $product_ids = $product_ids . ',' . $post->ID;
-//                        $wpdb->query("update {$wpdb->prefix}wcmp_products_map set product_ids = '{$product_ids}' where ID = {$id_of_similar}");
-//                    }
-//                } else {
-//                    $wpdb->query("insert into {$wpdb->prefix}wcmp_products_map set product_title='{$searchstr}', product_ids = '{$post->ID}' ");
-//                }
-//            }
-//        }
-//    }
 
     function update_duplicate_product_title($post_ID, $post, $update) {
         global $wpdb;
@@ -1745,6 +1719,8 @@ class WCMp_Product {
         global $post;
         if( $post && $post->post_type != 'product' ) return;
         if( !is_user_wcmp_vendor( get_current_user_id() ) ) return;
+        if( ( get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') == 'Enable' ) ) return;
+        
         if( isset( $_REQUEST['post'] ) && isset( $_REQUEST['action'] ) &&  $_REQUEST['action'] == 'edit' ){
             // product category
             remove_meta_box( 'product_catdiv', 'product', 'side' );
@@ -1846,5 +1822,5 @@ class WCMp_Product {
             return $links;
         }
     }
-
+    
 }

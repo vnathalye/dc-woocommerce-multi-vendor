@@ -182,19 +182,42 @@ class WCMP_Vendor_Shipping_Method extends WC_Shipping_Method {
     */
     public function calculate_shipping( $package = array() ) {
         $rates = array();
-        
-        $zone = WC_Shipping_Zones::get_zone_matching_package( $package );
-        $vendor_id = $package['vendor_id'];
 
-        if ( empty( $vendor_id ) ) {
-            return;
+        // changed by Vivek Athalye @vnathalye - start
+        // Ref: https://wordpress.org/support/topic/shipping-rate-calculation-for-different-regions/
+        $shipping_methods = array();
+
+        // we want to find out shipping zone for given destinations
+        $try_destinations = array();
+        $pkg = $package;
+        $try_destinations[] = $pkg; // first try to find out shipping zone for the complete destination as is
+        $pkg['destination']['postcode'] = '';
+        $try_destinations[] = $pkg; // if no shipping method is found, then remove the postcode and try to find out new shipping zone 
+        $pkg['destination']['state'] = '';
+        $try_destinations[] = $pkg; // if no shipping method is found, then remove the state and try to find out new shipping zone
+
+        foreach ($try_destinations as $pack) {
+        // changed by Vivek Athalye @vnathalye - end
+
+            $zone = WC_Shipping_Zones::get_zone_matching_package( $pack ); // changed by Vivek Athalye @vnathalye - changed $package to $pack
+            $vendor_id = $package['vendor_id'];
+
+            if ( empty( $vendor_id ) ) {
+                return;
+            }
+            
+            $shipping_methods = WCMP_Shipping_Zone::get_shipping_methods( $zone->get_id(), $vendor_id );
+
+            /*if ( !self::is_shipping_enabled_for_seller( $vendor_id ) ) {
+                return;
+            }*/
+
+        // changed by Vivek Athalye @vnathalye - start
+            if( !empty( $shipping_methods ) ) {
+                break;
+            }
         }
-        
-        $shipping_methods = WCMP_Shipping_Zone::get_shipping_methods( $zone->get_id(), $vendor_id );
-        
-        /*if ( !self::is_shipping_enabled_for_seller( $vendor_id ) ) {
-            return;
-        }*/
+        // changed by Vivek Athalye @vnathalye - end
 
         if ( empty( $shipping_methods ) ) {
             return;

@@ -145,7 +145,7 @@ class WCMp_Capabilities {
      */
     public function wcmp_wc_product_sku_enabled($state) {
         $user = wp_get_current_user();
-        if (is_admin() && is_user_wcmp_vendor($user)) {
+        if ( is_user_wcmp_vendor($user) ) {
             return apply_filters( 'wcmp_vendor_product_sku_enabled', true , $user->ID );
         }
         return $state;

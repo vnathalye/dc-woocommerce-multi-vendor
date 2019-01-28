@@ -95,21 +95,43 @@
             createMarker(store);
 	}); 
         
-        $('#locationText').on('input', function(){
-            var value = $(this).val();
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({address: value}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var res_location = results[0].geometry.location;
-                    map.setCenter(res_location);
-                    // set center position
-                    $('#wcmp_vlist_center_lat').val(res_location.lat());
-                    $('#wcmp_vlist_center_lng').val(res_location.lng());
-                } else {  
+        if( wcmp_vendor_list_script_data.autocomplete ) {
+            var input = document.getElementById("locationText");
+            var autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.addListener("place_changed", function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    window.alert("Autocomplete returned place contains no geometry");
+                    return;
                 }
+                // If the place has a geometry, then present it on a map.
+                if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);
+                }
+                // set center position
+                $('#wcmp_vlist_center_lat').val(place.geometry.location.lat());
+                $('#wcmp_vlist_center_lng').val(place.geometry.location.lng());
+                //place.geometry.location.lat(),place.geometry.location.lng()
             });
-        });
-  
+        } else {
+            $('#locationText').on('input', function(){
+                var value = $(this).val();
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({address: value}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var res_location = results[0].geometry.location;
+                        map.setCenter(res_location);
+                        // set center position
+                        $('#wcmp_vlist_center_lat').val(res_location.lat());
+                        $('#wcmp_vlist_center_lng').val(res_location.lng());
+                    } else {  
+                    }
+                });
+            });
+        }
     }
     
     google.maps.event.addDomListener(window, "load", initialize);

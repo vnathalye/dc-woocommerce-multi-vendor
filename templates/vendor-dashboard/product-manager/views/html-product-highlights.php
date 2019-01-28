@@ -115,7 +115,7 @@ global $WCMp;
         <?php endif; ?>
         <div class="product-title-wrap <?php echo ( $self->is_spmv() || $is_update ) ? 'product-edit-mode' : 'product-add-mode'; ?>"> <!-- product-add-mode / product-edit-mode according to flow -->
             <div class="pull-left product-title-inner full-1080"> 
-                <p clas="pro-title">
+                <p class="pro-title">
                     <label><?php _e('Product Title', 'dc-woocommerce-multi-vendor'); ?>: </label>
                     <strong class="editable-content"><?php echo $product_object->get_title( 'edit' ); ?></strong>
                     <?php if( !$self->is_spmv() && $is_update ) : ?>
@@ -133,7 +133,7 @@ global $WCMp;
                 <p class="pro-view"><?php echo wcmp_get_post_permalink_html( $product_object->get_id() ); ?></p>
                 <?php endif; ?>
                 <?php if( get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable' ) : ?>
-                <p clas="gtin-field-wrap">
+                <p class="gtin-field-wrap">
                     <?php if( $self->is_spmv() && !empty($self->get_gtin_no()) ) { ?>
                     <label><?php if( $self->get_gtin_term() ) echo $self->get_gtin_term()->name; else _e('GTIN', 'dc-woocommerce-multi-vendor'); ?>: </label>
                     <?php }elseif( $self->is_spmv() && empty($self->get_gtin_no()) ){ }elseif( $is_update ){ ?>

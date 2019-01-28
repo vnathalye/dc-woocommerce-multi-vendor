@@ -175,8 +175,8 @@ class WCMp_Ajax {
             'post_mime_type' => $image_type,
             'guid' => $url
         );
-
-        unset($object['ID']);
+        // Its override actual image with cropped one
+        if( !apply_filters( 'wcmp_crop_image_override_with_original', false, $attachment_id, $_POST ) ) unset($object['ID']); 
 
         $attachment_id = wp_insert_attachment($object, $cropped);
 
@@ -1903,7 +1903,7 @@ class WCMp_Ajax {
                     $row ['select_product'] = '<input type="checkbox" class="select_' . $product->get_status() . '" name="selected_products[' . $product->get_id() . ']" value="' . $product->get_id() . '" data-title="' . $product->get_title() . '" data-sku="' . $product->get_sku() . '"/>';
                     $row ['image'] = '<td>' . $product->get_image(apply_filters('wcmp_vendor_product_list_image_size', array(40, 40))) . '</td>';
                     $row ['name'] = '<td><a href="' . esc_url($edit_product_link) . '">' . $product->get_title() . '</a>' . $action_html . '</td>';
-                    $row ['price'] = '<td>' . wcmp_get_price_to_display( $product ) . '</td>';
+                    $row ['price'] = '<td>' . $product->get_price_html() . '</td>';
                     $row ['stock'] = '<td>' . $stock_html . '</td>';
                     $row ['categories'] = '<td>' . $product_cats . '</td>';
                     $row ['date'] = '<td>' . $date . '</td>';
@@ -2808,7 +2808,7 @@ class WCMp_Ajax {
             $tag_name = $tag->name;
             $status = true;
         }
-        wp_send_json(array('status' => $status, 'tag_name' => $tag_name, 'message' => $message));
+        wp_send_json(array('status' => $status, 'tag' => $tag, 'tag_name' => $tag_name, 'message' => $message));
         die;
     }
 

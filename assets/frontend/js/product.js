@@ -499,8 +499,9 @@ var wcmpAfmProductEditor = ( function ( $ ) {
                         url: wcmp_advance_product_params.ajax_url,
                         data: data,
                         success: function ( response ) {
-                            if ( response.status ) {
-                                isNew.replaceWith( '<option selected value="' + isNew.val() + '">' + isNew.val() + '</option>' );
+                            if ( response.status ) { 
+                                var option_value = ( response.tag ) ? response.tag.term_id : isNew.val();
+                                isNew.replaceWith( '<option selected value="' + option_value + '">' + isNew.val() + '</option>' );
                             } else {
                                 if ( response.message != '' ) {
                                     $( '.woocommerce-error,woocommerce-message' ).remove();

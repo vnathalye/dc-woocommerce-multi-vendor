@@ -37,7 +37,6 @@ class WCMp_Products_Edit_Product {
         
         if ( ! $this->no_cap ) {
             do_action( 'after_wcmp_edit_product_endpoint_load', $this->product_id, $this->product_object, $this->post_object );
-            add_action( 'after_wcmp_edit_product_tags_metabox_panel', array( $this, 'add_taxonomy_metaboxes' ) );
         }
         // If vendor's have policy overwrite capability, add policy tab to product data tab panel
         if ( get_wcmp_vendor_settings( 'is_policy_on', 'general' ) == 'Enable' && apply_filters( 'wcmp_vendor_can_overwrite_policies', true ) ) {
@@ -334,19 +333,6 @@ class WCMp_Products_Edit_Product {
         }
     }
 
-    public function add_taxonomy_metaboxes() {
-        ob_start();
-        $product_taxonomies = get_object_taxonomies( 'product', 'objects' );
-        if ( ! empty( $product_taxonomies ) ) {
-            foreach ( $product_taxonomies as $product_taxonomy ) {
-                if ( ! in_array( $product_taxonomy->name, apply_filters( 'afm_exclude_handled_taxonomies', array( 'product_cat', 'product_tag' ) ) ) ) {
-                    if ( $product_taxonomy->public && $product_taxonomy->show_ui && $product_taxonomy->meta_box_cb ) {
-                        afm()->template->get_template( 'products/metabox/html-taxonomy-metabox.php', array( 'product_id' => $this->product_id, 'product_taxonomy' => $product_taxonomy ) );
-                    }
-                }
-            }
-        }
-    }
     
     /**
      * Check product is in SPMV product or not

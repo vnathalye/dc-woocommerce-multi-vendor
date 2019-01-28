@@ -1968,7 +1968,7 @@ Class WCMp_Admin_Dashboard {
                     $errors[] = $error->get_error_message();
                 }
 
-                do_action( 'wcmp_process_product_object', $product );
+                do_action( 'wcmp_process_product_object', $product, $_POST );
 
                 $product->save();
 

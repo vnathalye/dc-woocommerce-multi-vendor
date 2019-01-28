@@ -91,7 +91,7 @@ defined( 'ABSPATH' ) || exit;
                 </tr>
                 <?php
                 $enable_variation = apply_filters( 'attribute_tab_enable_variation_checkbox', array( 'variable' ) );
-                if ( call_user_func_array( "afm_is_allowed_product_type", $enable_variation ) ) :
+                if ( call_user_func_array( "wcmp_is_allowed_product_type", $enable_variation ) ) :
                 $show_classes = implode( ' ', preg_filter( '/^/', 'show_if_', $enable_variation ) );
                 ?>
                 <tr>

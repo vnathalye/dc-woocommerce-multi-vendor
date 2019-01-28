@@ -5,7 +5,7 @@ Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
 Tested up to: 5.0.3
 Requires PHP: 5.6
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,6 +115,21 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.3.1 - 2019-01-22 =
+* Added - Advance marketplace product listing settings added for admin.
+* Added - GTIN settings added for admin.
+* Added - Autocomplete added on vendor list search by location.
+* Added - Suspended vendor restriction added on vendor widget list.
+* Added - Vendorwise content restriction added on wp_editor quick link option.
+* UI - Rtl support added for product category classify section.
+* UI - Knowledgebase html content added.
+* Tweak - Todo list pending vendor approval url change from wp users to WCMp > Vendors.
+* Fix - SPMV settings checking on product search for add product.
+* Fix - Shipping module settings on profile progress bar.
+* Dev - Redirect url `wcmp_vendor_save_product_redirect_url` filter added.
+* Dev - Redirect url `wcmp_widget_vendor_list_query_args` filter added.
+* Updated - Language file.
+
 = 3.3.0 - 2019-01-10 =
 * Added - Marketplace product addition by categories, product GTIN or name.
 * UI - New vendor add product section.

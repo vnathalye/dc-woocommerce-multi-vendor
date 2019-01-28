@@ -295,6 +295,14 @@
         return Math.floor(num * fixed) / fixed;
     }
 
+    var bodyDirection;
+    if ($("body").hasClass("rtl")) {
+        bodyDirection = 'right';
+    } else{
+        bodyDirection = 'left';
+    }
+
+
     function checkCategoryScroller(){ 
 
         currentColumnNumber = catWrapper.find('.cat-column').last().attr('data-level'); 
@@ -302,14 +310,28 @@
         if(currentColumnNumber > columnItem){
             scrollAmmount = (currentColumnNumber - columnItem) * get_cat_width;
             addWidthToWrapper = catParent.width() + scrollAmmount;
-            catWrapper.css(
-                {
-                    'width': addWidthToWrapper, 
-                    'margin-left': -scrollAmmount
-                }
-            ); 
+            if(bodyDirection == 'left'){
+                catWrapper.css(
+                    {
+                        'width': addWidthToWrapper, 
+                        'margin-left': -scrollAmmount
+                    }
+                ); 
+            } else{
+                catWrapper.css(
+                    {
+                        'width': addWidthToWrapper, 
+                        'margin-right': -scrollAmmount
+                    }
+                ); 
+            }
         } else{
-            catWrapper.css({'width': catParent.width(), 'margin-left': 0});
+            if(bodyDirection == 'left'){
+                catWrapper.css({'width': catParent.width(), 'margin-left': 0});
+            } else{
+                catWrapper.css({'width': catParent.width(), 'margin-right': 0});
+            }
+            
         }
          
     }    
@@ -327,21 +349,21 @@
 
     function productCatLeftScroller(){  
         scrollAmmount = scrollAmmount - get_cat_width;
-        catWrapper.css(
-            {
-                'margin-left': -scrollAmmount
-            }
-        ); 
+        if(bodyDirection == 'left'){
+            catWrapper.css({'margin-left': -scrollAmmount}); 
+        } else{
+            catWrapper.css({'margin-right': -scrollAmmount}); 
+        }        
         enableRightArrow = true; 
     }
     function productCatRightScroller(){
         if( currentColumnNumber >= columnItem && (columnItem * get_cat_width < addWidthToWrapper - scrollAmmount - get_cat_width)){
             scrollAmmount = scrollAmmount + get_cat_width;
-            catWrapper.css(
-                {
-                    'margin-left': -scrollAmmount
-                }
-            ); 
+            if(bodyDirection == 'left'){
+                catWrapper.css({'margin-left': -scrollAmmount}); 
+            } else{
+                catWrapper.css({'margin-right': -scrollAmmount}); 
+            }
         }
     }
     

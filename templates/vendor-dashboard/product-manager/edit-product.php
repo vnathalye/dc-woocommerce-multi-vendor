@@ -32,7 +32,7 @@ global $WCMp;
         <div class="product-primary-info custom-panel"> 
             <div class="right-primary-info"> 
                 <div class="form-group-wrapper">
-                    <div class="form-group">
+                    <div class="form-group product-short-description">
                         <label class="control-label col-md-12 pt-0" for="product_short_description"><?php esc_html_e( 'Product short description', 'woocommerce' ); ?></label>
                         <div class="col-md-12">
                             <?php
@@ -51,7 +51,7 @@ global $WCMp;
                         </div>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group product-description">
                         <label class="control-label col-md-12" for="product_description"><?php esc_attr_e( 'Product description', 'woocommerce' ); ?></label>
                         <div class="col-md-12">
                             <?php
@@ -208,7 +208,7 @@ global $WCMp;
                             $WCMp->template->get_template( 'vendor-dashboard/product-manager/views/html-product-data-attributes.php', array( 'self' => $self, 'product_object' => $product_object, 'post' => $post ) );
                             $WCMp->template->get_template( 'vendor-dashboard/product-manager/views/html-product-data-advanced.php', array( 'self' => $self, 'product_object' => $product_object, 'post' => $post ) );
                             ?>
-                            <?php do_action( 'wcmp_product_tabs_content' ); ?>
+                            <?php do_action( 'wcmp_product_tabs_content', $self, $product_object, $post ); ?>
                         </div>
                         <!-- Tab content End -->
                     </div>        

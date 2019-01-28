@@ -72,62 +72,6 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
         }
 
         /**
-         * Filter vendor list
-         * @global object $WCMp
-         * @param string $orderby
-         * @param string $order
-         * @param string $product_category
-         * @return array
-         */
-        public static function get_vendor($orderby = 'registered', $order = 'ASC', $product_category = '') {
-            global $WCMp;
-            $vendor_info = array();
-            $block_vendors = wp_list_pluck(wcmp_get_all_blocked_vendors(), 'id');
-            if ($product_category) {
-                $args = array(
-                    'posts_per_page' => -1,
-                    'post_type' => 'product',
-                    'tax_query' => array(
-                        array(
-                            'taxonomy' => 'product_cat',
-                            'field' => 'term_id',
-                            'terms' => absint($product_category)
-                        )
-                    )
-                );
-                $products = get_posts($args);
-                $product_ids = wp_list_pluck($products, 'ID');
-                foreach ($product_ids as $product_id) {
-                    $vendor = get_wcmp_product_vendors($product_id);
-                    if ($vendor && !in_array($vendor->id, $block_vendors)) {
-                        $vendor_info[$vendor->id] = array(
-                            'vendor_permalink' => $vendor->permalink,
-                            'vendor_name' => $vendor->page_title,
-                            'vendor_image' => $vendor->get_image() ? $vendor->get_image('image', array(125, 125)) : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png',
-                            'ID' => $vendor->id,
-                            'term_id' => $vendor->term_id
-                        );
-                    }
-                }
-            } else {
-                $sort_type = isset($_REQUEST['vendor_sort_type']) ? $_REQUEST['vendor_sort_type'] : '';
-                $vendors = get_wcmp_vendors(apply_filters('wcmp_vendor_list_get_wcmp_vendors_args', array('orderby' => $orderby, 'order' => $order), $sort_type, $_GET));
-                foreach ($vendors as $vendor) {
-                    if (!in_array($vendor->id, $block_vendors)) {
-                        $vendor_info[$vendor->id] = array(
-                            'vendor_permalink' => $vendor->permalink,
-                            'vendor_name' => $vendor->page_title,
-                            'vendor_image' => $vendor->get_image() ? $vendor->get_image('image', array(125, 125)) : $WCMp->plugin_url . 'assets/images/WP-stdavatar.png',
-                            'ID' => $vendor->id,
-                            'term_id' => $vendor->term_id
-                        );
-                    }
-                }
-            }
-            return $vendor_info;
-        }
-
-        /**
          * Output vendor list shortcode
          * @global object $WCMp
          * @param array $atts
@@ -158,7 +102,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                 $query['orderby'] = 'meta_value';
             }
             // backward supports
-            $query = apply_filters('wcmp_vendor_list_get_wcmp_vendors_args', $query, $order_by, $_REQUEST);
+            $query = apply_filters('wcmp_vendor_list_get_wcmp_vendors_args', $query, $order_by, $_REQUEST, $atts);
 
             $vendors_query = self::get_vendors_query($query, $_REQUEST, apply_filters('wcmp_vendor_list_ignore_pagination', false));
             $vendors = $vendors_query->get_results();
@@ -204,7 +148,7 @@ if (!class_exists('WCMp_Shortcode_Vendor_List')) {
                     ),
                     'map_style_title' => __('Styled Map', 'dc-woocommerce-multi-vendor'),
                 ),
-                
+                'autocomplete' => true,
             );
             $WCMp->localize_script('wcmp_vendor_list', apply_filters('wcmp_vendor_list_script_data_params',$script_param, $_REQUEST));
             $radius = apply_filters('wcmp_vendor_list_filter_radius_data', array(5,10,20,30,50));

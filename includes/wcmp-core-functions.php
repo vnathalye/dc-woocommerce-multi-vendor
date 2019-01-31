@@ -3511,12 +3511,15 @@ if (!function_exists('wcmp_list_categories')) {
 if (!function_exists('wcmp_get_shipping_zone')) {
 
     function wcmp_get_shipping_zone($zoneID = '') {
-        if (isset($zoneID) && $zoneID != '') {
-            $zones = WCMP_Shipping_Zone::get_zone($zoneID);
-        } else {
-            $zones = WCMP_Shipping_Zone::get_zones();
-        }
-        return $zones;
+        $zones = array();
+		if( class_exists( 'WCMP_Shipping_Zone' ) ) :
+			if ( isset($zoneID) && $zoneID != '' ) {
+				$zones = WCMP_Shipping_Zone::get_zone($zoneID);
+			} else {
+				$zones = WCMP_Shipping_Zone::get_zones();
+			}
+		endif;
+		return $zones;
     }
 
 }

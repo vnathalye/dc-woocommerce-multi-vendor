@@ -14,9 +14,6 @@ if (!defined('ABSPATH')) {
 global $WCMp;
 $vendor = get_wcmp_vendor(get_current_vendor_id());
 do_action('before_wcmp_vendor_dashboard_product_list_table');
-
-$product = wc_get_product(1770);
-print_r($product->get_price_html());
 ?>
 <div class="col-md-12 all-products-wrapper">
     <div class="panel panel-default panel-pading">

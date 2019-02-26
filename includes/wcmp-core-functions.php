@@ -3511,15 +3511,17 @@ if (!function_exists('wcmp_list_categories')) {
 if (!function_exists('wcmp_get_shipping_zone')) {
 
     function wcmp_get_shipping_zone($zoneID = '') {
+        global $WCMp;
         $zones = array();
-		if( class_exists( 'WCMP_Shipping_Zone' ) ) :
-			if ( isset($zoneID) && $zoneID != '' ) {
-				$zones = WCMP_Shipping_Zone::get_zone($zoneID);
-			} else {
-				$zones = WCMP_Shipping_Zone::get_zones();
-			}
-		endif;
-		return $zones;
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
+        if ( isset($zoneID) && $zoneID != '' ) {
+                $zones = WCMP_Shipping_Zone::get_zone($zoneID);
+        } else {
+                $zones = WCMP_Shipping_Zone::get_zones();
+        }
+        return $zones;
     }
 
 }
@@ -3725,6 +3727,9 @@ if ( ! function_exists( 'wcmp_default_product_types' ) ) {
     function wcmp_default_product_types() {
         return array(
             'simple'   => __( 'Simple product', 'woocommerce' ),
+            'grouped'  => __( 'Grouped product', 'woocommerce' ),
+            'external' => __( 'External/Affiliate product', 'woocommerce' ),
+            'variable' => __( 'Variable product', 'woocommerce' ),
         );
     }
 

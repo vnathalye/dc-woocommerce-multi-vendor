@@ -1943,13 +1943,13 @@ class WCMp_Ajax {
                 )
             );
             $vendor_unpaid_total_orders = $vendor->get_orders(false, false, $meta_query);
-            if (isset($requestData['start']) && isset($requestData['length'])) {
-                $vendor_unpaid_orders = $vendor->get_orders($requestData['length'], $requestData['start'], $meta_query);
-            }
+//            if (isset($requestData['start']) && isset($requestData['length'])) {
+//                $vendor_unpaid_orders = $vendor->get_orders($requestData['length'], $requestData['start'], $meta_query);
+//            }
             $data = array();
             $commission_threshold_time = isset($WCMp->vendor_caps->payment_cap['commission_threshold_time']) && !empty($WCMp->vendor_caps->payment_cap['commission_threshold_time']) ? $WCMp->vendor_caps->payment_cap['commission_threshold_time'] : 0;
-            if ($vendor_unpaid_orders) {
-                foreach ($vendor_unpaid_orders as $commission_id => $order_id) {
+            if ($vendor_unpaid_total_orders) {
+                foreach ($vendor_unpaid_total_orders as $commission_id => $order_id) {
                     $order = wc_get_order($order_id);
                     $vendor_share = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order->get_id()));
                     if (!isset($vendor_share['total'])) {
@@ -1981,11 +1981,13 @@ class WCMp_Ajax {
                     $data[] = apply_filters('wcmp_vendor_withdrawal_list_row_data', $row, $commission_id);
                 }
             }
+            $total_array = $data;
+            $data = array_slice( $data, $requestData['start'], $requestData['length'] );
 
             $json_data = array(
                 "draw" => intval($requestData['draw']), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
-                "recordsTotal" => intval(count($data)), // total number of records
-                "recordsFiltered" => intval(count($data)), // total number of records after searching, if there is no searching then totalFiltered = totalData
+                "recordsTotal" => intval(count($total_array)), // total number of records
+                "recordsFiltered" => intval(count($total_array)), // total number of records after searching, if there is no searching then totalFiltered = totalData
                 "data" => $data   // total data array
             );
             wp_send_json($json_data);
@@ -2953,8 +2955,11 @@ class WCMp_Ajax {
         global $WCMp;
 
         $zones = array();
-
+        
         if (isset($_POST['zoneID'])) {
+            if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                $WCMp->load_vendor_shipping();
+            }
             $zones = WCMP_Shipping_Zone::get_zone($_POST['zoneID']);
         }
         
@@ -3037,11 +3042,14 @@ class WCMp_Ajax {
     }
 
     public function wcmp_add_shipping_method() {
+        global $WCMp;
         $data = array(
             'zone_id' => $_POST['zoneID'],
             'method_id' => $_POST['method']
         );
-
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
         $result = WCMP_Shipping_Zone::add_shipping_methods($data);
 
         if (is_wp_error($result)) {
@@ -3059,7 +3067,11 @@ class WCMp_Ajax {
         if (empty($args['settings']['title'])) {
             wp_send_json_error(__('Shipping title must be required', 'dc-woocommerce-multi-vendor'));
         }
-
+        
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
+        
         $result = WCMP_Shipping_Zone::update_shipping_method($args);
         
         $WCMp->load_class( 'shipping-gateway' );
@@ -3079,11 +3091,16 @@ class WCMp_Ajax {
     }
 
     public function wcmp_delete_shipping_method() {
+        global $WCMp;
         $data = array(
             'zone_id' => $_POST['zoneID'],
             'instance_id' => $_POST['instance_id']
         );
-
+        
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
+        
         $result = WCMP_Shipping_Zone::delete_shipping_methods($data);
 
         if (is_wp_error($result)) {
@@ -3094,11 +3111,15 @@ class WCMp_Ajax {
     }
 
     public function wcmp_toggle_shipping_method() {
+        global $WCMp;
         $data = array(
             'instance_id' => $_POST['instance_id'],
             'zone_id' => $_POST['zoneID'],
             'checked' => ( $_POST['checked'] == 'true' ) ? 1 : 0
         );
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
         $result = WCMP_Shipping_Zone::toggle_shipping_method($data);
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
@@ -3108,9 +3129,13 @@ class WCMp_Ajax {
     }
     
     public function wcmp_configure_shipping_method(){
+        global $WCMp;
         $zone_id = isset($_POST['zoneId']) ? absint($_POST['zoneId']) : 0;
         $method_id = isset($_POST['methodId']) ? $_POST['methodId'] : '';
         if ($zone_id) {
+            if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                $WCMp->load_vendor_shipping();
+            }
             $zones = WCMP_Shipping_Zone::get_zone($zone_id);
             $vendor_shipping_methods = $zones['shipping_methods'];
             $config_settings = array();

@@ -597,15 +597,15 @@ class WCMp_Commission {
         header("Content-Disposition: attachment;filename={$filename}");
         header("Content-Transfer-Encoding: binary");
         // Set CSV headers
-        $headers = array(
+        $headers = apply_filters('wcmp_vendor_commission_data_header',array(
             'Recipient',
             'Currency',
             'Commission',
             'Shipping',
             'Tax',
             'Total',
-            'Status'
-        );
+            'Status',
+        ));
         $commissions_data = array();
         $currency = get_woocommerce_currency();
         foreach ($post_ids as $commission) {
@@ -613,7 +613,7 @@ class WCMp_Commission {
             $commission_staus = get_post_meta($commission, '_paid_status', true);
             $commission_amounts = get_wcmp_vendor_order_amount(array('vendor_id' => $commission_data->vendor->id, 'commission_id' => $commission));
             $recipient = get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) ? get_user_meta($commission_data->vendor->id, '_vendor_paypal_email', true) : $commission_data->vendor->page_title;
-            $commissions_data[] = array(
+            $commissions_data[] = apply_filters('wcmp_vendor_commission_data', array(
                 $recipient,
                 $currency,
                 $commission_amounts['commission_amount'],
@@ -621,7 +621,7 @@ class WCMp_Commission {
                 $commission_amounts['tax_amount'] + $commission_amounts['shipping_tax_amount'],
                 $commission_amounts['total'],
                 $commission_staus
-            );
+            ), $commission_data);
         }
         // Initiate output buffer and open file
         ob_start();

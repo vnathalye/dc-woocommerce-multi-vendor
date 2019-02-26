@@ -27,8 +27,12 @@ Class WCMp_Admin_Dashboard {
         // Vendor store updater info
         add_action('wcmp_dashboard_setup', array(&$this, 'wcmp_dashboard_setup_updater'), 6);
         // Vendor save product
-        add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
-        add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
+        if ( current_user_can( 'edit_products' ) ) {
+            add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
+        }
+        if ( current_vendor_can( 'edit_shop_coupon' ) ) {
+            add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
+        }
         
         add_filter( 'wcmp_vendor_dashboard_add_product_url', array( &$this, 'wcmp_vendor_dashboard_add_product_url' ), 10 );
 
@@ -501,6 +505,9 @@ Class WCMp_Admin_Dashboard {
                 <?php wp_nonce_field( 'backend_vendor_shipping_data', 'vendor_shipping_data' ); ?>
                 <?php 
                 if ($zone_id) {
+                    if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                        $WCMp->load_vendor_shipping();
+                    }
                     $zones = WCMP_Shipping_Zone::get_zone($zone_id);
                     if ($zones)
                         $zone = WC_Shipping_Zones::get_zone(absint($zone_id));
@@ -886,6 +893,9 @@ Class WCMp_Admin_Dashboard {
                         }
                     }
                 }
+                if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                    $WCMp->load_vendor_shipping();
+                }
                 WCMP_Shipping_Zone::save_location($location, $zone_id);
 
                 $WCMp->load_class('shipping-gateway');
@@ -1188,6 +1198,9 @@ Class WCMp_Admin_Dashboard {
                     }
                 }
             }
+        }
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
         }
         WCMP_Shipping_Zone::save_location($location, $zone_id);
 

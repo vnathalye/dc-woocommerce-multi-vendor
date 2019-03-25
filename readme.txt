@@ -1,11 +1,11 @@
 === WC Marketplace ===
-Contributors: Dualcube, greyparrots, arimghosh, purnendu, itzmekhokan
+Contributors: Dualcube, greyparrots, purnendu, itzmekhokan
 Tags: multi vendor marketplace, woocommerce multivendor marketplace, multi seller store, product vendors, best marketplace plugin, multi seller, one product multi seller, woocommerce vendors, ebay, etsy, amazon, commission rate
 Donate link: https://wc-marketplace.com/donate
 Requires at least: 4.2
 Tested up to: 5.1
 Requires PHP: 5.6
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,6 +116,12 @@ Ans. Obviously, you can! Join in on our [GitHub repository](https://github.com/d
 
 
 == Changelog ==
+= 3.3.3 - 2019-03-05 =
+* Added - `Low stock threshold` settings added in product inventory settings.
+* Tweak - New product email product edit link changed from backend to frontend.
+* Fix - Language issue on WCMp date.
+* Fix - WCMp core product types supported issue.
+
 = 3.3.2 - 2019-02-26 =
 * Added - Contact vendor email with WC_Mail template.
 * Fix - Core wcmp_get_shipping_zone function issue fixed.

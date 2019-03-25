@@ -81,6 +81,15 @@ defined( 'ABSPATH' ) || exit;
                                 </select> 
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3 col-md-3" for="_low_stock_amount">
+                                <?php _e( 'Low stock threshold', 'woocommerce' ); ?>
+                                <span class="img_tip" data-desc="<?php esc_html_e( 'When product stock reaches this amount you will be notified by email', 'woocommerce' ); ?>"></span>
+                            </label>
+                            <div class="col-md-6 col-sm-9">
+                                <input class="form-control" type="text" id="_low_stock_amount" name="_low_stock_amount" value="<?php echo $product_object->get_low_stock_amount( 'edit' ); ?>" placeholder="<?php echo get_option( 'woocommerce_notify_low_stock_amount' ); ?>" /> 
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>

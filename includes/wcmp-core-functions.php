@@ -274,11 +274,11 @@ if (!function_exists('doProductVendorLOG')) {
         global $WCMp;
         $file = $WCMp->plugin_path . 'log/product_vendor.log';
         if (file_exists($file)) {
-            $temphandle = @fopen($file, 'w+'); // @codingStandardsIgnoreLine.
-            @fclose($temphandle); // @codingStandardsIgnoreLine.
-            if (defined('FS_CHMOD_FILE')) {
-                @chmod($file, FS_CHMOD_FILE); // @codingStandardsIgnoreLine.
-            }
+//            $temphandle = @fopen($file, 'w+'); // @codingStandardsIgnoreLine.
+//            @fclose($temphandle); // @codingStandardsIgnoreLine.
+//            if (defined('FS_CHMOD_FILE')) {
+//                @chmod($file, FS_CHMOD_FILE); // @codingStandardsIgnoreLine.
+//            }
             // Open the file to get existing content
             $current = file_get_contents($file);
             if ($current) {
@@ -2665,7 +2665,7 @@ if (!function_exists('wcmp_date')) {
     function wcmp_date($date) {
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone('UTC'));
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(get_vendor_timezone_string()));
-        return $date->format(get_option('date_format'));
+        return $date->date_i18n( get_option('date_format'), $date );
     }
 
 }
@@ -3727,9 +3727,6 @@ if ( ! function_exists( 'wcmp_default_product_types' ) ) {
     function wcmp_default_product_types() {
         return array(
             'simple'   => __( 'Simple product', 'woocommerce' ),
-            'grouped'  => __( 'Grouped product', 'woocommerce' ),
-            'external' => __( 'External/Affiliate product', 'woocommerce' ),
-            'variable' => __( 'Variable product', 'woocommerce' ),
         );
     }
 

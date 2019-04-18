@@ -521,7 +521,7 @@ class WCMp_Commission {
 
             case '_commission_vendor':
                 if ($data && strlen($data) > 0) {
-                    $vendor_user_id = get_woocommerce_term_meta($data, '_vendor_user_id', true);
+                    $vendor_user_id = get_term_meta($data, '_vendor_user_id', true);
                     if ($vendor_user_id) {
                         $vendor = get_wcmp_vendor($vendor_user_id);
                         $edit_url = get_edit_user_link($vendor_user_id);
@@ -537,7 +537,7 @@ class WCMp_Commission {
             case '_commission_earning':
                 $order_id = get_post_meta($id, '_commission_order_id', true);
                 $commission_vendor = get_post_meta($id, '_commission_vendor', true);
-                $vendor_user_id = get_woocommerce_term_meta($commission_vendor, '_vendor_user_id', true);
+                $vendor_user_id = get_term_meta($commission_vendor, '_vendor_user_id', true);
                 $vendor = get_wcmp_vendor($vendor_user_id);
                 if($vendor){
                     $vendor_total = get_wcmp_vendor_order_amount(array('vendor_id' => $vendor->id, 'order_id' => $order_id));

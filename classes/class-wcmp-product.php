@@ -1501,10 +1501,10 @@ class WCMp_Product {
      * @param Object $term
      */
     public function edit_product_cat_commission_fields($term) {
-        $commision = get_woocommerce_term_meta($term->term_id, 'commision', true);
-        $commission_percentage = get_woocommerce_term_meta($term->term_id, 'commission_percentage', true);
-        $fixed_with_percentage = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage', true);
-        $fixed_with_percentage_qty = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage_qty', true);
+        $commision = get_term_meta($term->term_id, 'commision', true);
+        $commission_percentage = get_term_meta($term->term_id, 'commission_percentage', true);
+        $fixed_with_percentage = get_term_meta($term->term_id, 'fixed_with_percentage', true);
+        $fixed_with_percentage_qty = get_term_meta($term->term_id, 'fixed_with_percentage_qty', true);
         ?>
         <?php if ('fixed' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'percent' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
             <tr class="form-field">

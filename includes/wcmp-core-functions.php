@@ -208,7 +208,7 @@ if (!function_exists('get_wcmp_vendor_by_term')) {
     function get_wcmp_vendor_by_term($term_id) {
         $vendor = false;
         if (!empty($term_id)) {
-            $user_id = get_term_meta($term_id, '_vendor_user_id');
+            $user_id = get_term_meta($term_id, '_vendor_user_id', true);
             if (is_user_wcmp_vendor($user_id)) {
                 $vendor = get_wcmp_vendor($user_id);
             }

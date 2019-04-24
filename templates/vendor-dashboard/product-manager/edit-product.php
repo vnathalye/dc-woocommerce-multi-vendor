@@ -32,7 +32,7 @@ global $WCMp;
         <div class="product-primary-info custom-panel"> 
             <div class="right-primary-info"> 
                 <div class="form-group-wrapper">
-                    <div class="form-group">
+                    <div class="form-group product-short-description">
                         <label class="control-label col-md-12 pt-0" for="product_short_description"><?php esc_html_e( 'Product short description', 'woocommerce' ); ?></label>
                         <div class="col-md-12">
                             <?php
@@ -51,7 +51,7 @@ global $WCMp;
                         </div>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group product-description">
                         <label class="control-label col-md-12" for="product_description"><?php esc_attr_e( 'Product description', 'woocommerce' ); ?></label>
                         <div class="col-md-12">
                             <?php
@@ -191,7 +191,7 @@ global $WCMp;
                                         </li>
                                     <?php endif; ?>
                                 <?php endforeach; ?>
-                                <?php do_action( 'wcmp_product_write_panel_tabs' ); ?>
+                                <?php do_action( 'wcmp_product_write_panel_tabs', $post->ID ); ?>
                             </ul>
                         </div>
                         <!-- Nav tabs End -->
@@ -206,9 +206,10 @@ global $WCMp;
                             }
                             $WCMp->template->get_template( 'vendor-dashboard/product-manager/views/html-product-data-linked-products.php', array( 'self' => $self, 'product_object' => $product_object, 'post' => $post ) );
                             $WCMp->template->get_template( 'vendor-dashboard/product-manager/views/html-product-data-attributes.php', array( 'self' => $self, 'product_object' => $product_object, 'post' => $post ) );
+                            do_action( 'wcmp_after_attribute_product_tabs_content', $self, $product_object, $post );
                             $WCMp->template->get_template( 'vendor-dashboard/product-manager/views/html-product-data-advanced.php', array( 'self' => $self, 'product_object' => $product_object, 'post' => $post ) );
                             ?>
-                            <?php do_action( 'wcmp_product_tabs_content' ); ?>
+                            <?php do_action( 'wcmp_product_tabs_content', $self, $product_object, $post ); ?>
                         </div>
                         <!-- Tab content End -->
                     </div>        
@@ -220,6 +221,7 @@ global $WCMp;
         <div class="row">
             <div class="col-md-8">
             <?php do_action( 'wcmp_after_product_excerpt_metabox_panel', $post->ID ); ?>
+            <?php do_action( 'wcmp_afm_after_product_excerpt_metabox_panel', $post->ID ); ?>
             </div>
             <div class="col-md-4">
                 <?php if( ( get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') == 'Enable' ) ) :
@@ -254,6 +256,30 @@ global $WCMp;
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php 
+                $custom_taxonomies = get_object_taxonomies( 'product', 'objects' );
+                if( $custom_taxonomies ){
+                    foreach ( $custom_taxonomies as $taxonomy ) {
+                        if ( in_array( $taxonomy->name, array( 'product_cat', 'product_tag' ) ) ) continue;
+                        if ( $taxonomy->public && $taxonomy->show_ui && $taxonomy->meta_box_cb ) { ?>
+                            <div class="panel panel-default pannel-outer-heading">
+                                <div class="panel-heading">
+                                    <h3 class="pull-left"><?php echo $taxonomy->label; ?></h3>
+                                </div>
+                                <div class="panel-body panel-content-padding form-group-wrapper">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <?php
+                                            echo wcmp_get_product_terms_HTML( $taxonomy->name, $post->ID, apply_filters( 'wcmp_vendor_can_add_'.$taxonomy->name, false, get_current_user_id() ) );
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php }
+                    }
+                }
+                ?>
                 <?php do_action( 'after_wcmp_product_tags_metabox_panel', $post->ID ); ?>
             </div>
         </div>

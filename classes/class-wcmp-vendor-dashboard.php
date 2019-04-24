@@ -27,8 +27,12 @@ Class WCMp_Admin_Dashboard {
         // Vendor store updater info
         add_action('wcmp_dashboard_setup', array(&$this, 'wcmp_dashboard_setup_updater'), 6);
         // Vendor save product
-        add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
-        add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
+        if ( current_user_can( 'edit_products' ) ) {
+            add_action( 'template_redirect', array( &$this, 'save_product' ), 90 );
+        }
+        if ( current_vendor_can( 'edit_shop_coupon' ) ) {
+            add_action( 'template_redirect', array( &$this, 'save_coupon' ), 90 );
+        }
         
         add_filter( 'wcmp_vendor_dashboard_add_product_url', array( &$this, 'wcmp_vendor_dashboard_add_product_url' ), 10 );
 
@@ -501,6 +505,9 @@ Class WCMp_Admin_Dashboard {
                 <?php wp_nonce_field( 'backend_vendor_shipping_data', 'vendor_shipping_data' ); ?>
                 <?php 
                 if ($zone_id) {
+                    if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                        $WCMp->load_vendor_shipping();
+                    }
                     $zones = WCMP_Shipping_Zone::get_zone($zone_id);
                     if ($zones)
                         $zone = WC_Shipping_Zones::get_zone(absint($zone_id));
@@ -886,6 +893,9 @@ Class WCMp_Admin_Dashboard {
                         }
                     }
                 }
+                if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+                    $WCMp->load_vendor_shipping();
+                }
                 WCMP_Shipping_Zone::save_location($location, $zone_id);
 
                 $WCMp->load_class('shipping-gateway');
@@ -1188,6 +1198,9 @@ Class WCMp_Admin_Dashboard {
                     }
                 }
             }
+        }
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
         }
         WCMP_Shipping_Zone::save_location($location, $zone_id);
 
@@ -1851,11 +1864,6 @@ Class WCMp_Admin_Dashboard {
                     }
                 }
                 
-                // if product has different multi level categories hierarchy, save the default
-                if( isset( $_POST['_default_cat_hierarchy_term_id'] ) ){
-                    update_post_meta( $post_id, '_default_cat_hierarchy_term_id', absint( $_POST['_default_cat_hierarchy_term_id'] ) );
-                }
-
                 // Process product type first so we have the correct class to run setters.
                 $product_type = empty( $_POST['product-type'] ) ? WC_Product_Factory::get_product_type( $post_id ) : sanitize_title( stripslashes( $_POST['product-type'] ) );
 
@@ -1864,6 +1872,12 @@ Class WCMp_Admin_Dashboard {
                 // Set Product Catagories
                 $catagories = isset( $_POST['tax_input']['product_cat'] ) ? array_filter( array_map( 'intval', (array) $_POST['tax_input']['product_cat'] ) ) : array();
                 wp_set_object_terms( $post_id, $catagories, 'product_cat' );
+                // if product has different multi level categories hierarchy, save the default
+                if( isset( $_POST['_default_cat_hierarchy_term_id'] ) && in_array( $_POST['_default_cat_hierarchy_term_id'], $catagories ) ){
+                    update_post_meta( $post_id, '_default_cat_hierarchy_term_id', absint( $_POST['_default_cat_hierarchy_term_id'] ) );
+                }else{
+                    delete_post_meta( $post_id, '_default_cat_hierarchy_term_id' );
+                }
                 // Set Product Tags
                 $tags = isset( $_POST['tax_input']['product_tag'] ) ? wp_parse_id_list( $_POST['tax_input']['product_tag'] ) : array();
                 wp_set_object_terms( $post_id, $tags, 'product_tag' );
@@ -1946,6 +1960,7 @@ Class WCMp_Admin_Dashboard {
                         'sku'                => isset( $_POST['_sku'] ) ? wc_clean( $_POST['_sku'] ) : null,
                         'manage_stock'       => ! empty( $_POST['_manage_stock'] ),
                         'stock_quantity'     => $stock,
+                        'low_stock_amount'   => isset( $_POST['_low_stock_amount'] ) && '' !== $_POST['_low_stock_amount'] ? wc_stock_amount( wp_unslash( $_POST['_low_stock_amount'] ) ) : '',
                         'backorders'         => isset( $_POST['_backorders'] ) ? wc_clean( $_POST['_backorders'] ) : null,
                         'stock_status'       => isset( $_POST['_stock_status'] ) ? wc_clean( $_POST['_stock_status'] ) : null,
                         'sold_individually'  => ! empty( $_POST['_sold_individually'] ),
@@ -1968,7 +1983,7 @@ Class WCMp_Admin_Dashboard {
                     $errors[] = $error->get_error_message();
                 }
 
-                do_action( 'wcmp_process_product_object', $product );
+                do_action( 'wcmp_process_product_object', $product, $_POST );
 
                 $product->save();
 

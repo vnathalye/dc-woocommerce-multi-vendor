@@ -24,6 +24,7 @@ global $WCMp;
     <div class="panel-heading">
         <h1><span class="primary-color"><span><?php _e( 'Step 2 of', 'dc-woocommerce-multi-vendor' );?></span> <?php _e( '2:', 'dc-woocommerce-multi-vendor' );?></span> <?php _e( 'Add Product Details', 'dc-woocommerce-multi-vendor' );?></h1>
         <?php if( get_transient( 'classified_product_terms_vendor'. get_current_user_id() ) || ($self->is_spmv() && $post) || $is_update ) : ?>
+        <?php do_action( 'wcmp_afm_before_product_highlights_category_wrap', $post->ID, $product_object, $post ); ?> 
         <div class="cat-breadcrumb-wrap">
         <?php 
             if( get_transient( 'classified_product_terms_vendor'. get_current_user_id() ) ){
@@ -64,7 +65,7 @@ global $WCMp;
                         $flag++;
                     }
                     // give option to set default terms hierarchy
-                    if( $nos_hierarchy > 1 ){ ?>
+                    if( $nos_hierarchy > 1 && ( get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') != 'Enable' ) ){ ?>
                     <p class="pull-right multiple-cat-hierarchy"><?php _e( 'Select a different category :', 'dc-woocommerce-multi-vendor' );?>
                         <strong id="multiple-cat-hierarchy-lbl" class="primary-color">
                             <button type="button" class="multi-cat-choose-dflt-btn editabble-button" data-toggle="collapse" data-target="#multi_cat_hierarchy_visiblity"><u><?php _e( 'Choose default', 'dc-woocommerce-multi-vendor' );?></u> <i class="wcmp-font ico-downarrow-2-icon"></i></button>
@@ -112,10 +113,12 @@ global $WCMp;
             }
         ?>
         </div>
+        <?php do_action( 'wcmp_afm_after_product_highlights_category_wrap', $post->ID, $product_object, $post ); ?> 
         <?php endif; ?>
+        <?php do_action( 'wcmp_afm_before_product_highlights_title_wrap', $post->ID, $product_object, $post ); ?> 
         <div class="product-title-wrap <?php echo ( $self->is_spmv() || $is_update ) ? 'product-edit-mode' : 'product-add-mode'; ?>"> <!-- product-add-mode / product-edit-mode according to flow -->
             <div class="pull-left product-title-inner full-1080"> 
-                <p clas="pro-title">
+                <p class="pro-title">
                     <label><?php _e('Product Title', 'dc-woocommerce-multi-vendor'); ?>: </label>
                     <strong class="editable-content"><?php echo $product_object->get_title( 'edit' ); ?></strong>
                     <?php if( !$self->is_spmv() && $is_update ) : ?>
@@ -133,7 +136,7 @@ global $WCMp;
                 <p class="pro-view"><?php echo wcmp_get_post_permalink_html( $product_object->get_id() ); ?></p>
                 <?php endif; ?>
                 <?php if( get_wcmp_vendor_settings('is_gtin_enable', 'general') == 'Enable' ) : ?>
-                <p clas="gtin-field-wrap">
+                <p class="gtin-field-wrap">
                     <?php if( $self->is_spmv() && !empty($self->get_gtin_no()) ) { ?>
                     <label><?php if( $self->get_gtin_term() ) echo $self->get_gtin_term()->name; else _e('GTIN', 'dc-woocommerce-multi-vendor'); ?>: </label>
                     <?php }elseif( $self->is_spmv() && empty($self->get_gtin_no()) ){ }elseif( $is_update ){ ?>
@@ -195,6 +198,7 @@ global $WCMp;
                     </div>
                 </div>
             </div>
+            <?php do_action( 'wcmp_afm_after_product_highlights_title_wrap', $post->ID, $product_object, $post ); ?> 
         </div>
     </div>
 </div>

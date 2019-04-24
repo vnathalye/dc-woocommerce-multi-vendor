@@ -546,6 +546,20 @@ ul {
   padding: 0;
   margin: 0; }
 
+.default-content-css ul {
+  display: block;
+  list-style-type: disc;
+  -webkit-margin-before: 1em;
+  -webkit-margin-after: 1em;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-start: 40px; }
+  .default-content-css ul li {
+    display: list-item;
+    text-align: -webkit-match-parent; }
+.default-content-css h1, .default-content-css h2, .default-content-css h3 {
+  margin: 0.5em 0; }
+
 @media screen and (max-width: 480px) {
   h1 {
     font-size: 21px;
@@ -639,6 +653,9 @@ ul {
 
 .border {
   border: solid 1px #d3dbe2; }
+
+.no-border {
+  border: 0; }
 
 span.form-text {
   display: block; }
@@ -1265,6 +1282,9 @@ mark {
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
   border: none; }
+
+.tab-content > .active {
+  opacity: 1; }
 
 .form-group {
   margin-bottom: 20px;
@@ -4748,8 +4768,8 @@ body .select2-container--default .select2-search--inline .select2-search__field[
 .wcmp-font.ico-downarrow-2-icon::before {
   content: '\e938'; }
 
-.wcmp-product-cat-level .mCSB_inside > .mCSB_container {
-  margin-right: 0;
+.wcmp-product-cat-level .mCSB_container {
+  margin-right: 0 !important;
   width: 100%;
   min-height: 100%; }
 
@@ -4865,12 +4885,18 @@ body .select2-container--default .select2-search--inline .select2-search__field[
       height: 30px;
       vertical-align: top;
       position: absolute;
-      background: red;
+      background: #f36f5a;
       z-index: 1;
       margin: -6px 0 0 -36px;
-      border-radius: 50%; }
-  .change-status .editabble-button {
-    margin-top: 1px; }
+      border-radius: 50%;
+      line-height: 30px;
+      text-align: center;
+      color: #fff; }
+  .change-status .order-status-edit-button {
+    margin: 3px 0 0 10px;
+    cursor: pointer;
+    color: #3f85b9;
+    float: left; }
   .change-status .dropdown-panel {
     margin-top: 8px; }
 
@@ -5319,6 +5345,15 @@ select[name="wcmp-vendor-orders_length"] {
     background: #202627 !important;
     border-color: #202627 !important; }
 
+.customer-detail-inner {
+  border: 1px solid #d3dbe2;
+  padding: 15px;
+  margin: 10px 5px; }
+  .customer-detail-inner h3 {
+    margin-bottom: 10px; }
+  .customer-detail-inner p {
+    margin-bottom: 5px; }
+
 .icon-header {
   margin-bottom: 25px; }
   .icon-header > span {
@@ -5351,6 +5386,8 @@ select[name="wcmp-vendor-orders_length"] {
 .single-order-detail-table table .shipping-row .order-item-img {
   padding: 15px 10px;
   font-size: 30px; }
+.single-order-detail-table table .shipping-row .refund-btn {
+  vertical-align: bottom; }
 .single-order-detail-table table .refund-row td {
   vertical-align: bottom !important; }
 .single-order-detail-table table table {
@@ -5361,10 +5398,31 @@ select[name="wcmp-vendor-orders_length"] {
     padding-right: 15px;
     padding-left: 0; }
 
+.download-product-permission input.form-control {
+  width: 400px;
+  max-width: 100%; }
+
 .order-action li i {
   margin-right: 5px;
   font-size: 20px;
   vertical-align: middle; }
+.order-action .list-group-item {
+  border: 0;
+  border-top: 1px solid #d3dbe2; }
+  .order-action .list-group-item:first-child {
+    border: 0; }
+  .order-action .list-group-item a {
+    display: table; }
+    .order-action .list-group-item a i {
+      display: table-cell;
+      vertical-align: top;
+      padding-right: 10px; }
+.order-action form {
+  margin-bottom: 5px; }
+  .order-action form select.form-control {
+    width: 250px;
+    max-width: 100%;
+    margin-right: 5px; }
 
 .order-notes .order-note {
   padding: 15px 12px;
@@ -5376,6 +5434,8 @@ select[name="wcmp-vendor-orders_length"] {
     color: #626c6f; }
     .order-notes .order-note p:last-child {
       margin: 0; }
+  .order-notes .order-note span {
+    color: #212121; }
   .order-notes .order-note:after {
     content: '';
     position: absolute;
@@ -5417,30 +5477,35 @@ select[name="wcmp-vendor-orders_length"] {
 .top-order-note th {
   padding-right: 10px; }
 
-@media screen and (min-width: 992px) {
-  .order-address-info > .row {
-    display: flex; } }
-.order-address-info .col-md-4 .border {
-  padding: 20px 25px;
-  height: 100%; }
-  .order-address-info .col-md-4 .border h3 {
-    margin-bottom: 8px; }
-  .order-address-info .col-md-4 .border p {
-    margin-bottom: 3px; }
-  .order-address-info .col-md-4 .border .customer-detail {
-    display: table; }
-    .order-address-info .col-md-4 .border .customer-detail .icon {
-      display: table-cell;
-      vertical-align: top; }
-      .order-address-info .col-md-4 .border .customer-detail .icon i {
-        font-size: 25px;
-        margin-right: 10px;
-        background: #d3dce1;
-        padding: 13px;
-        vertical-align: top;
-        display: inline-block; }
-    .order-address-info .col-md-4 .border .customer-detail p {
-      margin-bottom: 1px; }
+.order-detail-top-panel > .panel-heading {
+  overflow: visible !important; }
+
+.order-address-info {
+  border-top: 0 !important; }
+  @media screen and (min-width: 992px) {
+    .order-address-info > .row {
+      display: flex; } }
+  .order-address-info .col-md-4 .border {
+    padding: 20px 25px;
+    height: 100%; }
+    .order-address-info .col-md-4 .border h3 {
+      margin-bottom: 8px; }
+    .order-address-info .col-md-4 .border p {
+      margin-bottom: 3px; }
+    .order-address-info .col-md-4 .border .customer-detail {
+      display: table; }
+      .order-address-info .col-md-4 .border .customer-detail .icon {
+        display: table-cell;
+        vertical-align: top; }
+        .order-address-info .col-md-4 .border .customer-detail .icon i {
+          font-size: 25px;
+          margin-right: 10px;
+          background: #d3dce1;
+          padding: 16px 14px;
+          vertical-align: top;
+          display: inline-block; }
+      .order-address-info .col-md-4 .border .customer-detail p {
+        margin-bottom: 1px; }
 
 .transaction-details #vendor_transactions_date_filter {
   margin: 0 0 -33px 0; }
@@ -5612,5 +5677,16 @@ select[name="wcmp-vendor-orders_length"] {
   padding-bottom: 20px; }
 #usage_restriction_coupon_data .coupon-products-wrap .select2.select2-container {
   margin-bottom: 10px; }
+
+.vendor-announcements .ui-accordion .ui-accordion-header{
+overflow: visible;
+}
+.vendor-announcements .ui-accordion .ui-accordion-header:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
 
 /*# sourceMappingURL=vendor_dashboard.css.map */

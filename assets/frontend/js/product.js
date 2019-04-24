@@ -185,7 +185,7 @@ var wcmpAfmProductEditor = ( function ( $ ) {
             media = this.mediaController();
             downloads = this.downloadsController();
             attributes = this.attributeController();
-            variations = this.variationController();
+            //variations = this.variationController();
             this.setupEnvironment();
         },
         mediaController: function ( ) {
@@ -477,7 +477,7 @@ var wcmpAfmProductEditor = ( function ( $ ) {
             media.init();
             downloads.init();
             attributes.init();
-            variations.init();
+            //variations.init();
 
             this.salePriceDateFieldInit( $( '#woocommerce-product-data' ) );
             //Make download files sortable
@@ -499,8 +499,9 @@ var wcmpAfmProductEditor = ( function ( $ ) {
                         url: wcmp_advance_product_params.ajax_url,
                         data: data,
                         success: function ( response ) {
-                            if ( response.status ) {
-                                isNew.replaceWith( '<option selected value="' + isNew.val() + '">' + isNew.val() + '</option>' );
+                            if ( response.status ) { 
+                                var option_value = ( response.tag ) ? response.tag.term_id : isNew.val();
+                                isNew.replaceWith( '<option selected value="' + option_value + '">' + isNew.val() + '</option>' );
                             } else {
                                 if ( response.message != '' ) {
                                     $( '.woocommerce-error,woocommerce-message' ).remove();
@@ -862,6 +863,7 @@ var wcmpAfmProductEditor = ( function ( $ ) {
                         var this_page = window.location.toString();
                         this_page = this_page.replace( /(?:\/#?|\/\d+\/?)?$/, '/' + wcmp_advance_product_params.product_id + '/' );
                         $wrapper.unblock();
+                        $wrapper.trigger('wcmp_after_save_attribute_triggered');
                         // Load variations panel.
 //                        $( '#variable_product_options' ).load( this_page + ' #variable_product_options_inner', function () {
 //                            $( '#variable_product_options' ).trigger( 'reload' );

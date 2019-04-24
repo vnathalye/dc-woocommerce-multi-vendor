@@ -109,7 +109,7 @@ class WCMp_Product {
         // Hide products backend fields as per new product modifications
         add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ), 99 );
         // show default product categories
-        if( !apply_filters( 'wcmp_show_product_default_categories_hierarchy', false ) ) {
+        if( !apply_filters( 'wcmp_show_product_default_categories_hierarchy', false ) || ( get_wcmp_vendor_settings('is_disable_marketplace_plisting', 'general') != 'Enable' ) ) {
             add_filter( 'wcmp_vendor_product_list_row_product_categories', array($this, 'show_default_product_cats_in_vendor_list'), 10, 2);
             add_filter( 'woocommerce_admin_product_term_list', array($this, 'show_default_product_cats_in_wp_backend'), 99, 5);
             add_filter( 'term_links-product_cat', array($this, 'show_default_product_cats_product_single'), 99);
@@ -972,6 +972,13 @@ class WCMp_Product {
                     }
                 }
             }
+            
+            // Default cat hierarchy reset
+            $has_default_cat = get_post_meta( $post_id, '_default_cat_hierarchy_term_id', false );
+            $catagories = isset( $_POST['tax_input']['product_cat'] ) ? array_filter( array_map( 'intval', (array) $_POST['tax_input']['product_cat'] ) ) : array();
+            if( $has_default_cat && !in_array( $has_default_cat, $catagories ) ){
+                delete_post_meta( $post_id, '_default_cat_hierarchy_term_id' );
+            }
         }
     }
 
@@ -1494,10 +1501,10 @@ class WCMp_Product {
      * @param Object $term
      */
     public function edit_product_cat_commission_fields($term) {
-        $commision = get_woocommerce_term_meta($term->term_id, 'commision', true);
-        $commission_percentage = get_woocommerce_term_meta($term->term_id, 'commission_percentage', true);
-        $fixed_with_percentage = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage', true);
-        $fixed_with_percentage_qty = get_woocommerce_term_meta($term->term_id, 'fixed_with_percentage_qty', true);
+        $commision = get_term_meta($term->term_id, 'commision', true);
+        $commission_percentage = get_term_meta($term->term_id, 'commission_percentage', true);
+        $fixed_with_percentage = get_term_meta($term->term_id, 'fixed_with_percentage', true);
+        $fixed_with_percentage_qty = get_term_meta($term->term_id, 'fixed_with_percentage_qty', true);
         ?>
         <?php if ('fixed' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed') || 'percent' === get_wcmp_vendor_settings('commission_type', 'payment', '', 'fixed')): ?>
             <tr class="form-field">
@@ -1802,6 +1809,7 @@ class WCMp_Product {
     
     public function show_default_product_cats_product_single( $terms = array() ){
         global $product;
+        if( !is_object( $product )) $product = wc_get_product( get_the_ID() );
         if(is_product() && $product){
             $default_cat_hierarchy = get_post_meta( $product->get_id(), '_default_cat_hierarchy_term_id', true );
             if( !$default_cat_hierarchy ) return $terms;

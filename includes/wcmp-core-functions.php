@@ -208,7 +208,7 @@ if (!function_exists('get_wcmp_vendor_by_term')) {
     function get_wcmp_vendor_by_term($term_id) {
         $vendor = false;
         if (!empty($term_id)) {
-            $user_id = get_woocommerce_term_meta($term_id, '_vendor_user_id');
+            $user_id = get_term_meta($term_id, '_vendor_user_id', true);
             if (is_user_wcmp_vendor($user_id)) {
                 $vendor = get_wcmp_vendor($user_id);
             }
@@ -274,11 +274,11 @@ if (!function_exists('doProductVendorLOG')) {
         global $WCMp;
         $file = $WCMp->plugin_path . 'log/product_vendor.log';
         if (file_exists($file)) {
-            $temphandle = @fopen($file, 'w+'); // @codingStandardsIgnoreLine.
-            @fclose($temphandle); // @codingStandardsIgnoreLine.
-            if (defined('FS_CHMOD_FILE')) {
-                @chmod($file, FS_CHMOD_FILE); // @codingStandardsIgnoreLine.
-            }
+//            $temphandle = @fopen($file, 'w+'); // @codingStandardsIgnoreLine.
+//            @fclose($temphandle); // @codingStandardsIgnoreLine.
+//            if (defined('FS_CHMOD_FILE')) {
+//                @chmod($file, FS_CHMOD_FILE); // @codingStandardsIgnoreLine.
+//            }
             // Open the file to get existing content
             $current = file_get_contents($file);
             if ($current) {
@@ -2665,7 +2665,7 @@ if (!function_exists('wcmp_date')) {
     function wcmp_date($date) {
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone('UTC'));
         $date = wc_string_to_datetime($date)->setTimezone(new DateTimeZone(get_vendor_timezone_string()));
-        return $date->format(get_option('date_format'));
+        return $date->date_i18n( get_option('date_format'), $date );
     }
 
 }
@@ -3511,10 +3511,15 @@ if (!function_exists('wcmp_list_categories')) {
 if (!function_exists('wcmp_get_shipping_zone')) {
 
     function wcmp_get_shipping_zone($zoneID = '') {
-        if (isset($zoneID) && $zoneID != '') {
-            $zones = WCMP_Shipping_Zone::get_zone($zoneID);
+        global $WCMp;
+        $zones = array();
+        if( !class_exists( 'WCMP_Shipping_Zone' ) ) {
+            $WCMp->load_vendor_shipping();
+        }
+        if ( isset($zoneID) && $zoneID != '' ) {
+                $zones = WCMP_Shipping_Zone::get_zone($zoneID);
         } else {
-            $zones = WCMP_Shipping_Zone::get_zones();
+                $zones = WCMP_Shipping_Zone::get_zones();
         }
         return $zones;
     }
@@ -3766,7 +3771,7 @@ if ( ! function_exists( 'get_current_vendor_shipping_classes' ) ) {
             $shipping_classes = get_terms( 'product_shipping_class', array( 'hide_empty' => 0 ) );
             foreach ( $shipping_classes as $shipping_class ) {
                 if ( apply_filters( 'wcmp_allowed_only_vendor_shipping_class', true ) ) {
-                    $vendor_id = absint( get_woocommerce_term_meta( $shipping_class->term_id, 'vendor_id', true ) );
+                    $vendor_id = absint( get_term_meta( $shipping_class->term_id, 'vendor_id', true ) );
                     if ( $vendor_id === $current_vendor_id ) {
                         $shipping_options[$shipping_class->term_id] = $shipping_class->name;
                     }
